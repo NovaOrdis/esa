@@ -4,8 +4,8 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.novaordis.esa</groupId>
-    <artifactId>esa</artifactId>
+    <groupId>io.novaordis.esa</groupId>
+    <artifactId>novaordis-esa</artifactId>
     <packaging>jar</packaging>
 
     <version>1-SNAPSHOT</version>
@@ -18,9 +18,6 @@
     </properties>
 
     <build>
-
-        <finalName>playground-project-template</finalName>
-
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -65,7 +62,6 @@
                 <groupId>io.novaordis.clad</groupId>
                 <artifactId>novaordis-clad</artifactId>
                 <version>${novaordis-clad-version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

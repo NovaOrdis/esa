@@ -14,17 +14,33 @@
  * limitations under the License.
  */
 
-package com.novaordis.esa;
+package io.novaordis.esa;
+
+import io.novaordis.clad.UserErrorException;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class Test {
+public class Main {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
+
+    public static void main(String[] args) throws Exception {
+
+        try {
+
+            EventStreamAnalyzer esa = new EventStreamAnalyzer();
+            esa.executeCommandLine(args);
+        }
+        catch(UserErrorException e) {
+
+            System.err.println(e.getMessage());
+        }
+
+    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 

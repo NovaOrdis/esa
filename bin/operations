@@ -1,0 +1,584 @@
+#!/bin/bash
+#
+#
+#
+
+debug=false
+verbose=false
+command=""
+declare -a arguments
+project_home=""
+
+function usage() {
+cat  <<EOF
+Nova Ordis Release Tools
+
+Usage:
+
+    <command> [global-options] <command-arguments> | operations [global-options] <command> <command-arguments>
+
+Global Options:
+
+    -v | --verbose - verbose execution.
+
+Commands:
+
+    install-release-tools <project-home-directory>
+
+        Install the release tools into the 'bin' subdirectory of the specified project home directory.
+        A target directory qualifies as "project home directory" if it has a Maven pom.xml in it.
+
+
+    install [-f|--force]
+
+
+EOF
+}
+
+function main() {
+
+    #
+    # The script is supposed to work both if commands are specified on command line or if we use symbolic links named
+    # to match the commands
+    #
+
+    identify-command-and-arguments $@
+
+    debug "global debug: ${debug}"
+    debug "global verbose: ${verbose}"
+    debug "command: ${command}"
+    local i=0
+    while [ ${i} -lt ${#arguments[*]} ]; do
+        debug "arg ${i}: ${arguments[${i}]}"
+        ((i++))
+    done
+
+    [ "${command}" = "" ] && { usage; exit 0; }
+
+    #
+    # set project home
+    #
+    project_home=$(dirname $0)/..
+
+    #
+    # execute the top-level operation, the function expects all its arguments in the "arguments" global array
+    #
+    do-${command}
+}
+
+#
+# Activated by --verbose|-v. Relies on a "verbose" global variable
+#
+function debug
+{
+    ${verbose} && echo "$@" 1>&2;
+    return 0
+}
+
+#
+# Activated by --verbose|-v. Relies on a "verbose" global variable
+#
+function debug-arguments
+{
+    ${verbose} && echo "${FUNCNAME[1]}($@)" 1>&2;
+    return 0
+}
+
+#
+# Send error information at stderr and exit. The return code is 255.
+#
+function fail
+{
+    echo "[error]: $@" 1>&2 && exit 255
+}
+
+#
+# Send info at stderr (not to interfere with function returns)
+#
+function info
+{
+    echo "$@" 1>&2;
+    return 0
+}
+
+#
+# figures out the command and the arguments. If the method completes successfully, global variable "command" contains
+# the command and the global array "arguments" contains the arguments. The function also identifies global options
+# such as -v|--verbose, -d|--debug and sets the global variables accordingly - it does not pass those global options
+# as arguments to the command function.
+#
+function identify-command-and-arguments() {
+
+    local name_under_which_we_are_invoked=$(basename $0)
+
+    if [ "${name_under_which_we_are_invoked}" = "operations" ]; then
+        debug " we are being called directly, command is among the arguments"
+    else
+        # we are being called via a symbolic link, the command is the name of the link
+        command=${name_under_which_we_are_invoked}
+    fi
+
+    #
+    # argument loop
+    #
+    local i=0
+    while [ -n "$1" ]; do
+        if [ "$1" = "--debug" -o "$1" = "-d" ]; then
+            debug=true
+        elif [ "$1" = "--verbose" -o "$1" = "-v" ]; then
+            verbose=true
+        elif [ "${1:0:1}" = "-" ]; then
+             # an argument, command cannot start with -
+             arguments[${i}]=$1
+             ((i++))
+        elif [ "${command}" = "" ]; then
+             # the first non-switch argument is the command
+             command=$1
+        else
+             arguments[${i}]=$1
+             ((i++))
+        fi
+        shift
+    done
+}
+
+#
+# utilities
+#
+
+#
+# return the POM project name (<name>)
+#
+function get-project-name() {
+
+    local pom_file=${project_home}/pom.xml
+    [ -f ${pom_file} ] || fail "pom.xml file ${pom_file} not found"
+
+    local name
+    name=$(grep -m 1 "^ *<name>" ${pom_file})
+    [ -z "${name}" ] && fail "<name> not found in ${pom_file}"
+    name=${name#*>}
+    name=${name%%\<*}
+    [ -z ${name} ] && fail "could not extract name from ${pom_file}"
+    echo ${name}
+}
+
+#
+# returns the project version as specified in the pom.xml file
+#
+function get-version() {
+
+    local pom_file=${project_home}/pom.xml
+    [ -f ${pom_file} ] || fail "pom.xml file ${pom_file} not found"
+    local line;
+    local artifact_base_name;
+
+    line=$(grep -m 1 "^ *<version>" ${pom_file})
+    [ -z "${line}" ] && fail "<version> not found in ${pom_file}"
+
+    local version=${line#*>}
+    version=${version%%\<*}
+    [ "${version}" = "" ] && fail "could not extract version from ${pom_file}"
+    echo ${version}
+}
+
+#
+# returns the artifact extension as specified in the pom.xml file
+#
+function get-artifact-extension() {
+
+    local pom_file=${project_home}/pom.xml
+    [ -f ${pom_file} ] || fail "pom.xml file ${pom_file} not found"
+    local line;
+    line=$(grep -m 1 "^ *<packaging>" ${pom_file})
+    [ -z "${line}" ] && fail "<packaging> not found in ${pom_file}"
+
+    local extension=${line#*>}
+    extension=${extension%%\<*}
+    [ "${extension}" = "" ] && fail "could not extract extension from ${pom_file}"
+    echo ${extension}
+}
+
+#
+# returns the artifact base name from pom.xml by reading 'finalName' (if exists) or 'artifactId' if 'finalName'
+# does not exist. The base name does not contain any version or extension information.
+#
+function get-artifact-base-name()
+{
+    local pom_file=${project_home}/pom.xml
+    [ -f ${pom_file} ] || fail "pom.xml file ${pom_file} not found"
+    local line;
+    local artifact_base_name;
+
+    # first try 'finalName' ...
+    line=$(grep -m 1 "^ *<finalName>" ${pom_file})
+    if [ -z "${line}" ]; then
+        # ... then try 'artifactId'.
+        line=$(grep -m 1 "^ *<artifactId>" ${pom_file})
+        [ -z "${line}" ] && fail "<artifactId> not found in ${pom_file}"
+    fi
+    artifact_base_name=${line#*>}
+    artifact_base_name=${artifact_base_name%%\<*}
+    [ -z "${artifact_base_name}" ] && fail "could not extract artifact base name from ${pom_file}"
+    echo ${artifact_base_name}
+}
+
+#
+# returns the artifact file name, as it will be generated by Maven, including base name, optionally version and
+# extension. It's either 'finalName' + extension (if exists) or 'artifactId' + version + extension.
+#
+function get-artifact-file-name()
+{
+    local pom_file=${project_home}/pom.xml
+    [ -f ${pom_file} ] || fail "pom.xml file ${pom_file} not found"
+
+    local prefix
+    local postfix=".$(get-artifact-extension)"
+
+    # first try 'finalName' ...
+    prefix=$(grep -m 1 "^ *<finalName>" ${pom_file})
+    if [ -z "${prefix}" ]; then
+        # ... then 'artifactId'
+        prefix=$(grep -m 1 "^ *<artifactId>" ${pom_file})
+        postfix="-$(get-version).$(get-artifact-extension)"
+    fi
+
+    [ -z "${prefix}" ] && fail "<artifactId> not found in ${pom_file}"
+
+    prefix=${prefix#*>}
+    prefix=${prefix%%\<*}
+    [ -z "${prefix}" ] && fail "failed to extract artifact file prefix from ${pom_file}"
+    echo ${prefix}${postfix}
+}
+
+function get-installation-zip-file-name() {
+    echo "$(get-artifact-base-name)-$(get-version).zip"
+}
+
+#
+# return the application-specific run wrapper name. Usually is the application's "short name", which is called
+# from command line. Conventionally, is the POM project name
+#
+function get-run-wrapper-name() {
+    echo $(get-project-name)
+}
+
+#
+# gets the final location (pre-zip) of the directory containing the run wrapper, identifies the run wrapper
+# and configures it (main class, etc).
+#
+function configure-run-wrapper()
+{
+    debug-arguments $@
+
+    local zip_bin_dir=$1
+
+    [ -z "${zip_bin_dir}" ] && fail "'zip_bin_dir' not provided"
+    [ -d ${zip_bin_dir} ] || fail "'zip_bin_dir' ${zip_bin_dir} not a directory"
+
+    #
+    # identify the run wrapper
+    #
+
+    local run_wrapper_file
+
+    for i in $(ls ${zip_bin_dir}); do
+        debug "looking at ${zip_bin_dir}/${i} ..."
+        if grep -q "^main_class=\${main_class}" ${zip_bin_dir}/${i}; then
+            [ -n "${run_wrapper_file}" ] && fail "two run wrapper files found: ${run_wrapper_file}, ${zip_bin_dir}/${i}"
+            run_wrapper_file=${zip_bin_dir}/${i}
+        fi
+    done
+
+    [ -z "${run_wrapper_file}" ] && fail "no run wrapper file found in ${zip_bin_dir}"
+
+    debug "run wrapper file: ${run_wrapper_file}"
+
+    local main_class
+    main_class=$(find-main-class) || exit 1
+    debug "main_class: ${main_class}"
+
+    local tf=${project_home}/target/sed.tmp
+    sed -e 's/^main_class=\${main_class}.*$/main_class='"${main_class}"'/' ${run_wrapper_file} > ${tf} || fail "failed to sed into ${tf}"
+    if diff ${run_wrapper_file} ${tf} > /dev/null; then
+        fail "${run_wrapper_file} and ${tf} are identical, no substitution has been made"
+    fi
+
+    mv ${project_home}/target/sed.tmp ${run_wrapper_file} && \
+        debug "main_class set to '${main_class}' in ${run_wrapper_file}" || \
+        fail "failed to mv ${project_home}/target/sed.tmp ${run_wrapper_file}"
+}
+
+#
+# heuristics to find the main class of the application. Returns the main class in the format "com.example.Main"
+#
+function find-main-class()
+{
+    local src_dir=${project_home}/src/main
+    local line
+    line=$(grep -r "public static void main" ${src_dir}/* | head -n 1) || fail "failed to grep ${src_dir}/*"
+    debug "line: ${line}"
+
+    [ -z "${line}" ] && fail "did not find 'public static void main' in ${src_dir}/*"
+
+    local file
+    file=${line%%:*}
+    debug "file: ${file}"
+    [ -f ${file} ] || fail "file ${file} does not exist"
+
+    local package
+    package=$(grep "^package.*;" ${file} | sed -e 's/^package \(.*\);.*$/\1/') || fail "failed to grep/sed for package"
+    debug "package: ${package}"
+    [ -z "${package}" ] && fail "failed to identify the package name in ${file}"
+
+    local class_name
+    class_name=$(grep "^public class " ${file} | sed -e 's/^public class \(.*\)/\1/' | tr -d '\012' | tr -d '\015') || fail "failed to grep/sed for class name"
+    class_name=${class_name%% *}
+    debug "class_name: >${class_name}<"
+    [ -z "${class_name}" ] && fail "failed to identify the class name in ${file}"
+
+    echo "${package}.${class_name}"
+}
+
+function get-dependencies()
+{
+    local maven_quiet="-q"
+    ${verbose} && maven_quiet=""
+    (cd ${project_home}; mvn ${maven_quiet} dependency:build-classpath -Dmdep.pathSeparator=" " -Dmdep.outputFile=./target/dependencies.txt 1>&2) && debug "executed mvn ${maven_quiet} dependency:build-classpath -Dmdep.pathSeparator=\" \" -Dmdep.outputFile=./target/dependencies.txt" || exit 1
+    cat ${project_home}/target/dependencies.txt
+}
+
+#
+# we don't check whether it exists or not, we just build it. If it exists, we overwrite it.
+#
+# returns the newly created zip file path
+#
+function build-installation-zip-file() {
+
+    local artifact_path=${project_home}/target/$(get-artifact-file-name)
+
+    [ ! -f ${artifact_path}  ] && fail "project artifact $(get-artifact-file-name) not found - build the project manually"
+
+#    local skip_tests_arg
+#    ${no_tests} && skip_tests_arg="-Dmaven.test.skip=true"
+#    local maven_quiet="-q"
+#    ${verbose} && maven_quiet=""
+#    (cd ${project_home}; mvn ${maven_quiet} clean package ${skip_tests_arg}) && debug "mvn ${maven_quiet} clean package ${skip_tests_arg}" || exit 1
+
+    local zip_file_base_name=$(get-artifact-base-name)-$(get-version)
+    local zip_root_dir=${project_home}/target/${zip_file_base_name}
+
+    if [ -d ${zip_root_dir} ]; then
+        rm -r ${zip_root_dir} && info "deleted zip root directory ${zip_root_dir}" || fail "failed to delete zip root directory ${zip_root_dir}"
+    fi
+
+    mkdir ${zip_root_dir} && \
+        debug "created zip root directory ${zip_root_dir}" || \
+        fail "failed to create zip root directory ${zip_root_dir}"
+    mkdir ${zip_root_dir}/lib && \
+        debug "created zip root directory ${zip_root_dir}/lib" || \
+        fail "failed to create zip root directory ${zip_root_dir}/lib"
+    mkdir ${zip_root_dir}/bin && \
+        debug "created zip root directory ${zip_root_dir}/bin" || \
+        fail "failed to create zip root directory ${zip_root_dir}/bin"
+    cp ${artifact_path} ${zip_root_dir}/lib && \
+        debug "copied $(basename ${artifact_path}) in ${zip_root_dir}/lib" || exit 1;
+    cp ${project_home}/src/main/bash/* ${zip_root_dir}/bin && \
+        debug "copied scripts to ${zip_root_dir}/bin" || exit 1;
+    configure-run-wrapper ${zip_root_dir}/bin && \
+        debug "successfully configured the run wrapper" || exit 1;
+    chmod a+rx ${zip_root_dir}/bin/* && \
+        debug "chmod a+rx ${zip_root_dir}/bin/*" || exit 1;
+    cp ${project_home}/README.md ${zip_root_dir} && \
+        debug "copied ${project_home}/README.md ${zip_root_dir}/" || exit 1;
+
+    local dependencies
+    dependencies=$(get-dependencies) || exit 1
+    debug "dependencies: ${dependencies}"
+    for i in ${dependencies}; do
+        [ -f ${i} ] || fail "dependency ${i} does not exist"
+        cp ${i} ${zip_root_dir}/lib && \
+            debug "copied dependency ${i} in ${zip_root_dir}/lib" || exit 1;
+    done
+
+    local zip_quiet="-q"
+    ${verbose} && zip_quiet=""
+
+    local zip_file_name=${zip_file_base_name}.zip
+    (cd ${project_home}/target; zip ${zip_quiet} -r ${zip_file_name} ${zip_file_base_name}) 1>&2 && \
+        debug "created ${project_home}/target/${zip_file_name}" || \
+        exit 1
+
+    echo ${project_home}/target/${zip_file_name}
+}
+
+#
+# Expands the zip file and installs the application locally in the system directory where third-party software is
+# installed (such as /opt or /usr/local). The the version is already installed, fail unless the 'force' argument is
+# set to true
+#
+# returns the home directory of the installed application
+#
+function install()
+{
+    debug-arguments $@
+
+    local zip_file=$1
+    local target_dir=$2 # the system directory where third-party software is installed (/opt or /usr/local)
+    local force=$3 # if not specified, defaults to "false"
+
+    [ -z ${zip_file} ] && fail "${FUNCNAME[0]}: no zip file name provided"
+    [ -z ${target_dir} ] && fail "${FUNCNAME[0]}: no target directory name provided"
+    [ -d ${target_dir} ] || fail "${FUNCNAME[0]}: target directory ${target_dir} does not exist"
+    [ -z ${force} ] && force=false
+
+    local application_home_dir=${target_dir}/$(basename ${zip_file} .zip)
+    debug "application_home_dir: ${application_home_dir}"
+
+    if [ -d ${application_home_dir} ]; then
+
+        ! ${force} && fail "${application_home_dir} already installed. Use '-f' or '--force' to overwrite"
+
+        # --force was used, remove the existing directory for a clean installation
+        rm -r ${application_home_dir} && \
+            debug "removed existing ${application_home_dir}" || \
+            fail "failed to remove existing ${application_home_dir}"
+    fi
+
+    local unzip_quiet="-q"
+    ${verbose} && unzip_quiet=""
+
+    unzip ${unzip_quiet} ${zip_file} -d ${target_dir} && \
+        debug "unzipped ${zip_file} into ${target_dir}" || \
+        fail "failed to unzip ${zip_file} into ${target_dir}"
+
+    local link_name=$(basename ${zip_file} .zip)
+    link_name=${link_name%%-[0-9]*} # be prepared to handle <name>-1.0.0, <name>-1.0.0-SNAPSHOT, etc.
+    debug "link_name: ${link_name}"
+
+    if [ -h ${target_dir}/${link_name} ]; then
+        rm ${target_dir}/${link_name} && \
+            debug "removed existing link ${target_dir}/${link_name}" || \
+            fail "failed to remove existing link ${target_dir}/${link_name}"
+    fi
+
+    # prefer relative links, this increases the chance they'll work over NFS
+    (cd ${target_dir}; ln -s ./$(basename ${application_home_dir}) ${link_name}) && \
+        debug "linked ./$(basename ${application_home_dir}) to ${link_name}" || \
+        fail "failed to link ./$(basename ${application_home_dir}) to ${link_name}"
+
+    echo "${application_home_dir}"
+}
+
+########################################################################################################################
+# top level operations, exposed as external commands - they expect the arguments in the "arguments" global array
+########################################################################################################################
+
+#
+# expects all its arguments in the "arguments" global array
+#
+function do-install-release-tools() {
+
+    local project_home=${arguments[0]};
+    [ "${project_home}" = "" ] && fail "specify the home directory of the project to install the release tools into ..."
+
+    # sanity check - make sure the directory we're installing into is a project - it must have a pom.xml
+
+    local pom_file=${project_home}/pom.xml
+
+    [ -f ${pom_file} ] || fail "${project_home} does not seem to be the home of a project, there is no pom.xml file in it."
+
+    info "installing NovaOrdis release tools into ${project_home} ..."
+
+    local bin_dir=${project_home}/bin
+    if [ ! -d ${bin_dir} ]; then
+        mkdir ${bin_dir} && info "created ${bin_dir}" || fail "failed to create ${bin_dir}"
+    fi
+
+    # copy ourselves into bin - we will overwrite an existing "operations" file and that allows us to easily upgrade
+    cp $0 ${bin_dir} && info "copied $0 into ${bin_dir}" || fail "failed to copy $0 into ${bin_dir}"
+
+    #
+    # these are the links to ./operations that are going to be created in ./bin
+    #
+    local links="install";
+    # create symbolic links
+    (cd ${bin_dir}; \
+        for link in ${links}; \
+        do if [ ! -h ${link} ]; then \
+                ln -s $(basename $0) ${link} && \
+                    info "linked ./$(basename $0) as ./${link}" || \
+                    fail "failed to link ./$(basename $0) as ./${link}"; \
+           fi \
+        done \
+    )
+
+    # create the run wrapper target directory and turn the run wrapper template into the final run script
+    # for the application
+
+    local run_wrapper_dir=${project_home}/src/main/bash
+    if [ ! -d ${run_wrapper_dir} ]; then
+        mkdir ${run_wrapper_dir} && \
+            info "created ${run_wrapper_dir}" || \
+            fail "failed to create ${run_wrapper_dir}"
+    fi
+
+    local run_wrapper_template=$(dirname $0)/run-wrapper-template
+    local run_wrapper_name
+    run_wrapper_name=$(get-run-wrapper-name) || exit 1
+    local run_wrapper_path=${run_wrapper_dir}/${run_wrapper_name}
+    cp ${run_wrapper_template} ${run_wrapper_path} && \
+        info "copied ${run_wrapper_template} as ${run_wrapper_path}" || \
+        fail "failed to copy ${run_wrapper_template} as ${run_wrapper_path}"
+    chmod a+x ${run_wrapper_path} && \
+        debug "chmod a+x ${run_wrapper_path}" || \
+        fail "failed to chmod a+x ${run_wrapper_path}"
+}
+
+#
+# expects all its arguments in the "arguments" global array
+#
+function do-install() {
+
+    #
+    # process arguments
+    #
+
+    local force=false
+
+    local i=0
+    while [ ${i} -lt ${#arguments[*]} ]; do
+        local arg=${arguments[${i}]}
+        debug "do-install arg ${i}: ${arg}"
+        if [ "${arg}" = "-f" -o "${arg}" = "--force" ]; then
+            force=true
+        fi
+        ((i++))
+    done
+
+    #
+    # checking pre-requisites
+    #
+
+    [ -z ${RUNTIME_DIR} ] && fail "RUNTIME_DIR environment variable not set, don't know where to install"
+
+    debug "checking whether the project installation zip has been built ..."
+
+    local zip_file_name
+    zip_file_name=$(get-installation-zip-file-name) || exit 1
+    debug "zip_file_name: ${zip_file_name}"
+
+    local zip_file_path=${project_home}/target/${zip_file_name}
+
+    if [ ! -f ${zip_file_path} ]; then
+        debug "zip file ${zip_file_path} does not exist"
+        zip_file_path=$(build-installation-zip-file) || exit 1
+    fi
+
+    local installed_path
+    installed_path=$(install ${zip_file_path} ${RUNTIME_DIR} ${force}) || exit 1
+
+    info "installed $(basename ${installed_path}) in $(dirname ${installed_path})"
+}
+
+main $@

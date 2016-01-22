@@ -14,25 +14,33 @@
  * limitations under the License.
  */
 
-package com.novaordis.esa;
+package io.novaordis.esa;
+
+import io.novaordis.clad.CommandLineDriven;
+import io.novaordis.clad.UserErrorException;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class Main {
+public class EventStreamAnalyzer implements CommandLineDriven {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    public static void main(String[] args) throws Exception {
-
-    }
-
     // Attributes ------------------------------------------------------------------------------------------------------
 
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    // CommandLineDriven implementation --------------------------------------------------------------------------------
+
+    @Override
+    public void executeCommandLine(String[] strings) throws UserErrorException {
+
+
+        throw new RuntimeException("executeCommandLine() NOT YET IMPLEMENTED");
+    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
