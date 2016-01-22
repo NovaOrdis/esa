@@ -28,12 +28,13 @@ public class TestDate {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final DateFormat REFERENCE_DATE_FORMAT = new SimpleDateFormat("");
+    public static final DateFormat REFERENCE_DATE_FORMAT = new SimpleDateFormat("MM/dd/yy HH:mm:ss Z");
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    public static final Date create(String s) {
-        throw new RuntimeException("NYE");
+    public static Date create(String s) throws Exception {
+
+        return (Date)REFERENCE_DATE_FORMAT.parseObject(s);
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------

@@ -65,15 +65,31 @@ public class HttpdLogEventFactory implements LogEventFactory {
         for(HttpdFormatElement fe: fes) {
 
             char c = line.charAt(cursor);
+            char closingChar = ' ';
 
-            // find the next gap
+            // find the next gap or the next closing character
 
             if (c == '"') {
                 throw new RuntimeException("\" NOT PROPERLY HANDLED YET");
             }
+            else if (c == '[') {
 
-            int i = line.indexOf(' ', cursor);
+                //
+                // so far, we only know of timestamp that has its values specified between [...]
+                //
+                if (!HttpdFormatElement.TIMESTAMP.equals(fe)) {
+                    throw new RuntimeException("NOT YET IMPLEMENTED: '[' implies a timestamp but we got a " + fe);
+                }
 
+                closingChar = ']';
+
+                //
+                // advance the cursor with 1, we will discard '[' when sending the timestamp for parsing
+                //
+                cursor ++;
+            }
+
+            int i = line.indexOf(closingChar, cursor);
             String value = line.substring(cursor, i);
             Object o = fe.parse(value);
             e.setValue(fe, o);

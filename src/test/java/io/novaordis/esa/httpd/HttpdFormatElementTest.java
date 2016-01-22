@@ -17,11 +17,19 @@
 package io.novaordis.esa.httpd;
 
 import io.novaordis.esa.FormatElementTest;
+import io.novaordis.esa.ParsingException;
 import io.novaordis.esa.TestDate;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.ParseException;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -30,6 +38,8 @@ import static org.junit.Assert.assertNull;
 public class HttpdFormatElementTest extends FormatElementTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(HttpdFormatElementTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -71,8 +81,24 @@ public class HttpdFormatElementTest extends FormatElementTest {
 
         HttpdFormatElement e = HttpdFormatElement.TIMESTAMP;
         assertEquals("%t", e.getLiteral());
-        assertEquals(TestDate.create("09/18/16 19:18:28 -0400"), e.parse("18/Sep/2016:19:18:28 -0400"));
+        Date d = (Date)e.parse("18/Sep/2016:19:18:28 -0400");
+        assertEquals(TestDate.create("09/18/16 19:18:28 -0400"), d);
         assertNull(e.parse("-"));
+    }
+
+    @Test
+    public void timestamp_InvalidStringRepresentationFormat() throws Exception {
+
+        HttpdFormatElement e = HttpdFormatElement.TIMESTAMP;
+        try {
+            e.parse("something that is not a date");
+            fail("should have thrown exception");
+        }
+        catch(ParsingException pe) {
+
+            log.info(pe.getMessage());
+            assertTrue(pe.getCause() instanceof ParseException);
+        }
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
