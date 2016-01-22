@@ -16,30 +16,15 @@
 
 package io.novaordis.esa;
 
-import io.novaordis.clad.UserErrorException;
-
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class Main {
+public abstract class EventProcessorTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
-
-    public static void main(String[] args) throws Exception {
-
-        try {
-
-            EventStreamAnalyzer esa = new EventStreamAnalyzer();
-            esa.executeCommandLine(args);
-        }
-        catch(UserErrorException e) {
-
-            System.err.println(e.getMessage());
-        }
-    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
@@ -50,6 +35,8 @@ public class Main {
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    protected abstract EventProcessor getEventProcessorToTest() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

@@ -16,30 +16,20 @@
 
 package io.novaordis.esa;
 
-import io.novaordis.clad.UserErrorException;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class Main {
+public abstract class EventTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
-
-    public static void main(String[] args) throws Exception {
-
-        try {
-
-            EventStreamAnalyzer esa = new EventStreamAnalyzer();
-            esa.executeCommandLine(args);
-        }
-        catch(UserErrorException e) {
-
-            System.err.println(e.getMessage());
-        }
-    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
@@ -47,9 +37,30 @@ public class Main {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    @Test
+    public void noSuchFormatElement() throws Exception {
+
+        Event e = getEventToTest();
+
+        //noinspection Convert2Lambda
+        Object value = e.getValue(new MockFormatElement("no-such-format-element"));
+
+        assertNull(value);
+    }
+
+    @Test
+    public void emptyEventsHaveZeroValues() throws Exception {
+
+        Event e = getEventToTest();
+        assertNull(e.getTimestamp());
+        assertEquals(0, e.getValueCount());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    protected abstract Event getEventToTest() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

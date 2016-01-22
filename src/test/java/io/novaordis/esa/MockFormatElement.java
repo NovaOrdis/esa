@@ -16,34 +16,48 @@
 
 package io.novaordis.esa;
 
-import io.novaordis.clad.UserErrorException;
-
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/22/16
  */
-public class Main {
+public class MockFormatElement implements FormatElement {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    public static void main(String[] args) throws Exception {
-
-        try {
-
-            EventStreamAnalyzer esa = new EventStreamAnalyzer();
-            esa.executeCommandLine(args);
-        }
-        catch(UserErrorException e) {
-
-            System.err.println(e.getMessage());
-        }
-    }
-
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private String literal;
+    private Class type;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    public MockFormatElement(String literal) {
+        this(literal, null);
+    }
+
+    public MockFormatElement(String literal, Class type) {
+        this.literal = literal;
+        this.type = type;
+    }
+
+    // FormatElement implementation ------------------------------------------------------------------------------------
+
+    @Override
+    public String getLiteral() {
+        return literal;
+    }
+
+    @Override
+    public Object parse(String logStringRepresentation) throws ParsingException {
+        throw new RuntimeException("parse() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public Class getType() {
+        return type;
+    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 

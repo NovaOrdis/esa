@@ -16,36 +16,41 @@
 
 package io.novaordis.esa;
 
-import io.novaordis.clad.UserErrorException;
+import java.util.Date;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class Main {
+public abstract class EventBase implements Event {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    public static void main(String[] args) throws Exception {
-
-        try {
-
-            EventStreamAnalyzer esa = new EventStreamAnalyzer();
-            esa.executeCommandLine(args);
-        }
-        catch(UserErrorException e) {
-
-            System.err.println(e.getMessage());
-        }
-    }
-
     // Attributes ------------------------------------------------------------------------------------------------------
+
+    private Date timestamp;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    // Event implementation --------------------------------------------------------------------------------------------
+
+    @Override
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    @Override
+    public int getValueCount() {
+        return timestamp == null ? 0 : 1;
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public void setTimestamp(Date d) {
+        this.timestamp = d;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
