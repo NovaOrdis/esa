@@ -73,11 +73,6 @@ public class HttpdLogFormat implements LogFormat {
         return formatElements;
     }
 
-    @Override
-    public Pattern createPattern() {
-        throw new RuntimeException("createPattern() NOT YET IMPLEMENTED");
-    }
-
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Override

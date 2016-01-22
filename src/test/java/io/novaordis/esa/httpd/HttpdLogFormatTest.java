@@ -59,17 +59,6 @@ public class HttpdLogFormatTest extends LogFormatTest {
     }
 
     @Test
-    public void pattern() throws Exception {
-
-        HttpdLogFormat logFormat = new HttpdLogFormat(HttpdFormatElement.REMOTE_HOST);
-
-        Pattern pattern =  logFormat.createPattern();
-
-        String patternAsString = pattern.pattern();
-        assertEquals("", patternAsString);
-    }
-
-    @Test
     public void unbalancedDoubleQuotes() throws Exception {
 
         try {

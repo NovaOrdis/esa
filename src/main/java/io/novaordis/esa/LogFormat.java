@@ -32,15 +32,10 @@ public interface LogFormat {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
-     * @return the list of format elements, in order. For performance reasons, the implementations will return the
-     * underlying (and most likely mutable) storage, because there's no reason not to do so. If we reach the conclusion
-     * that this convention is too dangerous, we can change this in the future.
+     * @return the list of format elements, in order. For performance reasons, the implementations could return the
+     * underlying storage. It may or may be not mutable, depending on the implementation's decision. It's probably
+     * safest to assume it's mutable - but consult the implementation's documentation for more details.
      */
     List<? extends FormatElement> getFormatElements();
-
-    /**
-     * @return a new Pattern instance generated based on the log format.
-     */
-    Pattern createPattern();
 
 }

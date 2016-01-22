@@ -16,14 +16,13 @@
 
 package io.novaordis.esa;
 
+import io.novaordis.esa.httpd.HttpdFormatElement;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -42,20 +41,6 @@ public abstract class LogFormatTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
-    public void createPatternsMakesDifferentInstances() throws Exception {
-
-        LogFormat format = getLogFormatToTest();
-
-        Pattern p = format.createPattern();
-        assertNotNull(p);
-
-        Pattern p2 = format.createPattern();
-        assertNotNull(p2);
-
-        assertNotEquals(p, p2);
-    }
-
-    @Test
     public void getFormatElements_ReturnsTheUnderlyingStorage() throws Exception {
 
         FormatElement e = getTestFormatElement();
@@ -69,12 +54,14 @@ public abstract class LogFormatTest {
         assertEquals(e, fes.get(0));
         assertEquals(e2, fes.get(1));
 
-        fes.remove(0);
+        // test mutability
+        fes.set(0, null);
 
         List<? extends FormatElement> fes2 = format.getFormatElements();
 
-        assertEquals(1, fes2.size());
-        assertEquals(e2, fes.get(0));
+        assertEquals(2, fes2.size());
+        assertNull(fes.get(0));
+        assertEquals(e2, fes.get(1));
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
