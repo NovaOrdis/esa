@@ -118,6 +118,21 @@ public class HttpdLogEventTest extends EventTest {
         assertEquals(2, e.getValueCount());
     }
 
+    @Test
+    public void setAndGetTimestamp() throws Exception {
+
+        HttpdLogEvent e = new HttpdLogEvent();
+
+        assertNull(e.getTimestamp());
+
+        assertNull(e.setTimestamp(new Date(1L)));
+
+        assertEquals(new Date(1L), e.getTimestamp());
+
+        assertEquals(new Date(1L), e.setTimestamp(new Date(2L)));
+        assertEquals(new Date(2L), e.getTimestamp());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

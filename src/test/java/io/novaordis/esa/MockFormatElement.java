@@ -59,6 +59,21 @@ public class MockFormatElement implements FormatElement {
         return type;
     }
 
+    @Override
+    public boolean isLeftEnclosure() {
+        throw new RuntimeException("isLeftEnclosure() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public boolean isRightEnclosure() {
+        throw new RuntimeException("isRightEnclosure() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public FormatElement getMatchingEnclosure() {
+        throw new RuntimeException("getMatchingEnclosure() NOT YET IMPLEMENTED");
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     // Package protected -----------------------------------------------------------------------------------------------

@@ -48,8 +48,14 @@ public abstract class EventBase implements Event {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public void setTimestamp(Date d) {
+    /**
+     * @return the old timestamp value or null if none was set
+     */
+    public Date setTimestamp(Date d) {
+
+        Date old = this.timestamp;
         this.timestamp = d;
+        return old;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

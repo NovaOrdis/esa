@@ -23,6 +23,7 @@ import org.junit.Test;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 /**
@@ -40,11 +41,36 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
+    @Test
+    public void emptyEnclosure_Brackets() throws Exception {
+
+        String commonPattern = "[]";
+
+        HttpdLogEventFactory factory = new HttpdLogEventFactory(
+                new HttpdLogFormat(HttpdFormatElement.OPENING_BRACKET, HttpdFormatElement.CLOSING_BRACKET));
+
+        HttpdLogEvent le = factory.parse(commonPattern);
+        assertNotNull(le);
+        assertNull(le.getTimestamp());
+    }
+
+    @Test
+    public void emptyEnclosure_DoubleQuotes() throws Exception {
+
+        String commonPattern = "\"  \"";
+
+        HttpdLogEventFactory factory = new HttpdLogEventFactory(
+                new HttpdLogFormat(HttpdFormatElement.DOUBLE_QUOTES, HttpdFormatElement.DOUBLE_QUOTES));
+
+        HttpdLogEvent le = factory.parse(commonPattern);
+        assertNotNull(le);
+        assertNull(le.getTimestamp());
+    }
 
     @Test
     public void common1() throws Exception {
 
-        String commonPattern = "127.0.0.1 - bob [10/Oct/2016:13:55:36 -0700] \"GET /test.gif HTTP/1.1\" 200 2326";
+        String commonPattern = "127.0.0.1 - bob [10/Oct/2016:13:55:36 -0700] \"GET /test.gif HTTP/1.1\"";
 
         HttpdLogEventFactory factory = new HttpdLogEventFactory(HttpdLogFormat.COMMON);
 
@@ -53,9 +79,7 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
         assertNull(le.getRemoteLogname());
         assertEquals("bob", le.getRemoteUser());
         assertEquals(TestDate.create("10/10/16 13:55:36 -0700"), le.getTimestamp());
-        assertEquals("", le.getRequestLine());
-        assertEquals(200, le.getStatusCode());
-        assertEquals(2326, le.getResponseEntityBodySize());
+        assertEquals("GET /test.gif HTTP/1.1", le.getRequestLine());
     }
 
     @Test
@@ -68,6 +92,36 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
     public void common3() throws Exception {
 
         String commonPattern = "172.20.2.42 - - [11/Jan/2016:12:22:23 -0800] \"INFO / HTTP/1.1\" 403 3985";
+    }
+
+    @Test
+    public void custom() throws Exception {
+
+        String commonPattern = "127.0.0.1 bob [10/Oct/2016:13:55:36 -0700] \"GET /test.gif HTTP/1.1\" 200 2326";
+
+        HttpdLogFormat format = new HttpdLogFormat(
+                HttpdFormatElement.REMOTE_HOST,
+                HttpdFormatElement.REMOTE_USER,
+                HttpdFormatElement.OPENING_BRACKET,
+                HttpdFormatElement.TIMESTAMP,
+                HttpdFormatElement.CLOSING_BRACKET,
+                HttpdFormatElement.DOUBLE_QUOTES,
+                HttpdFormatElement.FIRST_REQUEST_LINE,
+                HttpdFormatElement.DOUBLE_QUOTES,
+                HttpdFormatElement.STATUS_CODE,
+                HttpdFormatElement.RESPONSE_ENTITY_BODY_SIZE);
+
+        HttpdLogEventFactory factory = new HttpdLogEventFactory(format);
+
+        HttpdLogEvent le = factory.parse(commonPattern);
+        assertEquals("127.0.0.1", le.getRemoteHost());
+        assertNull(le.getRemoteLogname());
+        assertEquals("bob", le.getRemoteUser());
+        assertEquals(TestDate.create("10/10/16 13:55:36 -0700"), le.getTimestamp());
+        assertEquals("GET /test.gif HTTP/1.1", le.getRequestLine());
+        assertEquals(200, le.getStatusCode().intValue());
+        assertNull(le.getOriginalRequestStatusCode());
+        assertEquals(2326, le.getResponseEntityBodySize().longValue());
     }
 
     @Test
@@ -84,6 +138,20 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
         assertEquals("127.0.0.1", le.getRemoteHost());
         assertNull(le.getTimestamp());
         assertNull(le.getRemoteUser());
+    }
+
+    @Test
+    public void logLineThatUsesSingleQuotes() throws Exception {
+
+        String line = "'GET /test.gif HTTP/1.1'";
+
+        HttpdLogEventFactory factory = new HttpdLogEventFactory(new HttpdLogFormat(
+                HttpdFormatElement.SINGLE_QUOTE,
+                HttpdFormatElement.FIRST_REQUEST_LINE,
+                HttpdFormatElement.SINGLE_QUOTE));
+
+        HttpdLogEvent le = factory.parse(line);
+        assertEquals("GET /test.gif HTTP/1.1", le.getRequestLine());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

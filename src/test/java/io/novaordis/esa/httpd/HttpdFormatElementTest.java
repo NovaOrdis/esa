@@ -27,6 +27,8 @@ import java.text.ParseException;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -50,12 +52,52 @@ public class HttpdFormatElementTest extends FormatElementTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
+    public void doubleQuotes() throws Exception {
+
+        HttpdFormatElement e = HttpdFormatElement.DOUBLE_QUOTES;
+        assertTrue(e.isLeftEnclosure());
+        assertTrue(e.isRightEnclosure());
+        assertEquals(HttpdFormatElement.DOUBLE_QUOTES, e.getMatchingEnclosure());
+    }
+
+    @Test
+    public void singleQuote() throws Exception {
+
+        HttpdFormatElement e = HttpdFormatElement.SINGLE_QUOTE;
+        assertTrue(e.isLeftEnclosure());
+        assertTrue(e.isRightEnclosure());
+        assertEquals(HttpdFormatElement.SINGLE_QUOTE, e.getMatchingEnclosure());
+    }
+
+    @Test
+    public void openingBracket() throws Exception {
+
+        HttpdFormatElement e = HttpdFormatElement.OPENING_BRACKET;
+        assertTrue(e.isLeftEnclosure());
+        assertFalse(e.isRightEnclosure());
+        assertEquals(HttpdFormatElement.CLOSING_BRACKET, e.getMatchingEnclosure());
+    }
+
+    @Test
+    public void closingBracket() throws Exception {
+
+        HttpdFormatElement e = HttpdFormatElement.CLOSING_BRACKET;
+        assertFalse(e.isLeftEnclosure());
+        assertTrue(e.isRightEnclosure());
+        assertEquals(HttpdFormatElement.OPENING_BRACKET, e.getMatchingEnclosure());
+    }
+
+    @Test
     public void remoteHost() throws Exception {
 
         HttpdFormatElement e = HttpdFormatElement.REMOTE_HOST;
         assertEquals("%h", e.getLiteral());
         assertEquals("127.0.0.1", e.parse("127.0.0.1"));
         assertNull(e.parse("-"));
+
+        assertFalse(e.isLeftEnclosure());
+        assertFalse(e.isRightEnclosure());
+        assertNull(e.getMatchingEnclosure());
     }
 
     @Test
@@ -65,6 +107,10 @@ public class HttpdFormatElementTest extends FormatElementTest {
         assertEquals("%l", e.getLiteral());
         assertEquals("blah", e.parse("blah"));
         assertNull(e.parse("-"));
+
+        assertFalse(e.isLeftEnclosure());
+        assertFalse(e.isRightEnclosure());
+        assertNull(e.getMatchingEnclosure());
     }
 
     @Test
@@ -74,6 +120,10 @@ public class HttpdFormatElementTest extends FormatElementTest {
         assertEquals("%u", e.getLiteral());
         assertEquals("blah", e.parse("blah"));
         assertNull(e.parse("-"));
+
+        assertFalse(e.isLeftEnclosure());
+        assertFalse(e.isRightEnclosure());
+        assertNull(e.getMatchingEnclosure());
     }
 
     @Test
@@ -84,6 +134,10 @@ public class HttpdFormatElementTest extends FormatElementTest {
         Date d = (Date)e.parse("18/Sep/2016:19:18:28 -0400");
         assertEquals(TestDate.create("09/18/16 19:18:28 -0400"), d);
         assertNull(e.parse("-"));
+
+        assertFalse(e.isLeftEnclosure());
+        assertFalse(e.isRightEnclosure());
+        assertNull(e.getMatchingEnclosure());
     }
 
     @Test
@@ -99,6 +153,51 @@ public class HttpdFormatElementTest extends FormatElementTest {
             log.info(pe.getMessage());
             assertTrue(pe.getCause() instanceof ParseException);
         }
+    }
+
+    @Test
+    public void originalRequestStatusCode() throws Exception {
+
+        HttpdFormatElement e = HttpdFormatElement.ORIGINAL_REQUEST_STATUS_CODE;
+        assertEquals("%s", e.getLiteral());
+        Integer i = (Integer)e.parse("200");
+        assertNotNull(i);
+        assertEquals(200, i.intValue());
+        assertNull(e.parse("-"));
+
+        assertFalse(e.isLeftEnclosure());
+        assertFalse(e.isRightEnclosure());
+        assertNull(e.getMatchingEnclosure());
+    }
+
+    @Test
+    public void statusCode() throws Exception {
+
+        HttpdFormatElement e = HttpdFormatElement.STATUS_CODE;
+        assertEquals("%>s", e.getLiteral());
+        Integer i = (Integer)e.parse("400");
+        assertNotNull(i);
+        assertEquals(400, i.intValue());
+        assertNull(e.parse("-"));
+
+        assertFalse(e.isLeftEnclosure());
+        assertFalse(e.isRightEnclosure());
+        assertNull(e.getMatchingEnclosure());
+    }
+
+    @Test
+    public void responseEntityBodySide() throws Exception {
+
+        HttpdFormatElement e = HttpdFormatElement.RESPONSE_ENTITY_BODY_SIZE;
+        assertEquals("%b", e.getLiteral());
+        Long l = (Long)e.parse("12345");
+        assertNotNull(l);
+        assertEquals(12345L, l.longValue());
+        assertNull(e.parse("-"));
+
+        assertFalse(e.isLeftEnclosure());
+        assertFalse(e.isRightEnclosure());
+        assertNull(e.getMatchingEnclosure());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

@@ -61,44 +61,65 @@ public class HttpdLogEventFactory implements LogEventFactory {
 
         List<HttpdFormatElement> fes = logFormat.getFormatElements();
 
+        char c;
         int cursor = 0;
+        HttpdFormatElement expectedRightEnclosure = null;
+
         for(HttpdFormatElement fe: fes) {
 
-            char c = line.charAt(cursor);
-            char closingChar = ' ';
-
-            // find the next gap or the next closing character
-
-            if (c == '"') {
-                throw new RuntimeException("\" NOT PROPERLY HANDLED YET");
-            }
-            else if (c == '[') {
+            if (expectedRightEnclosure != null) {
 
                 //
-                // so far, we only know of timestamp that has its values specified between [...]
+                // we only accept just zero or one intermediary format element while waiting for an enclosure to close
                 //
-                if (!HttpdFormatElement.TIMESTAMP.equals(fe)) {
-                    throw new RuntimeException("NOT YET IMPLEMENTED: '[' implies a timestamp but we got a " + fe);
+
+                if (fe.equals(expectedRightEnclosure)) {
+                    // empty enclosure or consumed enclosure, advance the cursor and continue
+                    while(line.charAt(cursor) == ' ') { cursor++; }
+                    if ((c = line.charAt(cursor)) != fe.getLiteral().charAt(0)) {
+                        throw new ParsingException("expecting " + fe + " but got " + c);
+                    }
+                    cursor++;
+                    while(cursor < line.length() && line.charAt(cursor) == ' ') { cursor++; }
+                    expectedRightEnclosure = null;
+                    continue;
                 }
 
-                closingChar = ']';
+                //
+                // at this point, we'll parse the enclosed element below
+                //
+            }
+            else if (fe.isLeftEnclosure()) {
+                expectedRightEnclosure = (HttpdFormatElement)fe.getMatchingEnclosure();
+
+                // advance the cursor until the first non-blank character and make sure it's the expected left enclosure
+                // format element
+
+                while(line.charAt(cursor) == ' ') { cursor++; }
+                if ((c = line.charAt(cursor)) != fe.getLiteral().charAt(0)) {
+                    throw new ParsingException("expecting " + fe + " but got " + c);
+                }
+                cursor++;
 
                 //
-                // advance the cursor with 1, we will discard '[' when sending the timestamp for parsing
+                // we're good - iterate until we find the matching right enclosure
                 //
-                cursor ++;
+
+                continue;
             }
 
+            char closingChar = expectedRightEnclosure != null ? expectedRightEnclosure.getLiteral().charAt(0) : ' ';
+
+            // find the next closing element or the next gap
+
             int i = line.indexOf(closingChar, cursor);
+            i = i == -1 ? line.length() : i;
             String value = line.substring(cursor, i);
             Object o = fe.parse(value);
             e.setValue(fe, o);
 
             // advance the cursor to the next non-blank character
-            //noinspection StatementWithEmptyBody
-            while(line.charAt(i) == ' ') {
-                i++;
-            }
+            while(i < line.length() && line.charAt(i) == ' ') { i++; }
             cursor = i;
         }
 

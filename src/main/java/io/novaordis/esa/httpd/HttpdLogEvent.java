@@ -20,6 +20,7 @@ import io.novaordis.clad.UserErrorException;
 import io.novaordis.esa.EventBase;
 import io.novaordis.esa.FormatElement;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -71,6 +72,13 @@ public class HttpdLogEvent extends EventBase {
                     "type mismatch, " + value.getClass() + " \"" + value + "\" is not a valid type for " + e);
         }
 
+        if (HttpdFormatElement.TIMESTAMP.equals(e)) {
+            // the timestamp is stored in superclass
+            Date oldTimestamp = getTimestamp();
+            setTimestamp((Date)value);
+            return oldTimestamp;
+        }
+
         return values.put(e, value);
     }
 
@@ -101,19 +109,32 @@ public class HttpdLogEvent extends EventBase {
     }
 
     public String getRemoteUser() {
-        throw new RuntimeException("getRemoteUser() NOT YET IMPLEMENTED");
+        return (String)getValue(HttpdFormatElement.REMOTE_USER);
     }
 
     public String getRequestLine() {
-        throw new RuntimeException("getRequestLine() NOT YET IMPLEMENTED");
+        return (String)getValue(HttpdFormatElement.FIRST_REQUEST_LINE);
     }
 
-    public int getStatusCode() {
-        throw new RuntimeException("getStatusCode() NOT YET IMPLEMENTED");
+    /**
+     * @return may return null.
+     */
+    public Integer getStatusCode() {
+        return (Integer)getValue(HttpdFormatElement.STATUS_CODE);
     }
 
-    public long getResponseEntityBodySize() {
-        throw new RuntimeException("getResponseEntityBodySize() NOT YET IMPLEMENTED");
+    /**
+     * @return may return null.
+     */
+    public Integer getOriginalRequestStatusCode() {
+        return (Integer)getValue(HttpdFormatElement.ORIGINAL_REQUEST_STATUS_CODE);
+    }
+
+    /**
+     * @return may return null.
+     */
+    public Long getResponseEntityBodySize() {
+        return (Long)getValue(HttpdFormatElement.RESPONSE_ENTITY_BODY_SIZE);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

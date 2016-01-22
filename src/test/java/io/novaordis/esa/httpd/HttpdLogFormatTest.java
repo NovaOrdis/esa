@@ -19,11 +19,14 @@ package io.novaordis.esa.httpd;
 import io.novaordis.esa.FormatElement;
 import io.novaordis.esa.LogFormatTest;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -32,6 +35,8 @@ import static org.junit.Assert.assertEquals;
 public class HttpdLogFormatTest extends LogFormatTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(HttpdLogFormatTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -62,6 +67,45 @@ public class HttpdLogFormatTest extends LogFormatTest {
 
         String patternAsString = pattern.pattern();
         assertEquals("", patternAsString);
+    }
+
+    @Test
+    public void unbalancedDoubleQuotes() throws Exception {
+
+        try {
+            new HttpdLogFormat(HttpdFormatElement.DOUBLE_QUOTES);
+            fail("should have thrown exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
+    }
+
+    @Test
+    public void unbalancedDoubleQuotes2() throws Exception {
+
+        try {
+            new HttpdLogFormat(
+                    HttpdFormatElement.REMOTE_HOST,
+                    HttpdFormatElement.DOUBLE_QUOTES,
+                    HttpdFormatElement.TIMESTAMP);
+            fail("should have thrown exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
+    }
+
+    @Test
+    public void unbalancedSingleQuotes() throws Exception {
+
+        try {
+            new HttpdLogFormat(HttpdFormatElement.SINGLE_QUOTE);
+            fail("should have thrown exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

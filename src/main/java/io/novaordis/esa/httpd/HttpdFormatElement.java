@@ -31,6 +31,21 @@ import java.util.Date;
 public enum HttpdFormatElement implements FormatElement {
 
     //
+    // a double quote, if present, must always be balanced, otherwise the format will throw an exception when
+    // constructed
+    //
+    DOUBLE_QUOTES("\"", Character.class),
+
+    //
+    // a single quote, if present, must always be balanced, otherwise the format will throw an exception when
+    // constructed
+    //
+    SINGLE_QUOTE("'", Character.class),
+
+    OPENING_BRACKET("[", Character.class),
+    CLOSING_BRACKET("]'", Character.class),
+
+    //
     // Remote host name or IP address. Will log the IP address if HostnameLookups is set to Off, which is the default.
     //
     REMOTE_HOST("%h", String.class),
@@ -49,13 +64,28 @@ public enum HttpdFormatElement implements FormatElement {
     // Time the request was received, in the format [18/Sep/2011:19:18:28 -0400]. The last number indicates the timezone
     // offset from GMT
     //
-    TIMESTAMP("%t", Date.class, new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z"))
+    TIMESTAMP("%t", Date.class, new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z")),
 
     //
-    //  \"%r\" %>s %b"
+    // First line of request. Note that the first line is enclosed in quotes, you must explicitly specify the
+    // DOUBLE_QUOTES or SINGLE_QUOTE format element.
     //
+    FIRST_REQUEST_LINE("%r", String.class),
 
-    ;
+    //
+    // The status code of the original request (whether was internally redirected or not). Stored as Integer.
+    //
+    ORIGINAL_REQUEST_STATUS_CODE("%s", Integer.class),
+
+    //
+    // The status code of the final request (whether was internally redirected or not). Stored as Integer.
+    //
+    STATUS_CODE("%>s", Integer.class),
+
+    //
+    // Response entity body size. Stored as Long.
+    //
+    RESPONSE_ENTITY_BODY_SIZE("%b", Long.class);
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -120,9 +150,28 @@ public enum HttpdFormatElement implements FormatElement {
             }
         }
 
-        // 10/Oct/2016:13:55:36 -0700
+        if (Integer.class.equals(type)) {
 
-        throw new RuntimeException("parse() for " + getType() + " NOT IMPLEMENTED YET");
+            try {
+                return new Integer(logStringRepresentation);
+            }
+            catch(Exception e) {
+                throw new ParsingException(
+                        this + " string representation \"" + logStringRepresentation + "\" is not a valid integer", e);
+            }
+        }
+
+        if (Long.class.equals(type)) {
+            try {
+                return new Long(logStringRepresentation);
+            }
+            catch(Exception e) {
+                throw new ParsingException(
+                        this + " string representation \"" + logStringRepresentation + "\" is not a valid long", e);
+            }
+        }
+
+        throw new RuntimeException(this + ": parse() for " + getType() + " NOT IMPLEMENTED YET");
     }
 
     @Override
@@ -131,12 +180,44 @@ public enum HttpdFormatElement implements FormatElement {
         return type;
     }
 
+    @Override
+    public boolean isLeftEnclosure() {
+
+        return DOUBLE_QUOTES.equals(this) || SINGLE_QUOTE.equals(this) || OPENING_BRACKET.equals(this);
+    }
+
+    @Override
+    public boolean isRightEnclosure() {
+
+        return DOUBLE_QUOTES.equals(this) || SINGLE_QUOTE.equals(this) || CLOSING_BRACKET.equals(this);
+    }
+
+    @Override
+    public FormatElement getMatchingEnclosure() {
+
+        if (DOUBLE_QUOTES.equals(this)) {
+            return DOUBLE_QUOTES;
+        }
+        else if (SINGLE_QUOTE.equals(this)) {
+            return SINGLE_QUOTE;
+        }
+        else if (OPENING_BRACKET.equals(this)) {
+            return CLOSING_BRACKET;
+        }
+        else if (CLOSING_BRACKET.equals(this)) {
+            return OPENING_BRACKET;
+        }
+        else {
+            return null;
+        }
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Override
     public String toString() {
 
-        return super.toString() + " " + getLiteral();
+        return super.toString() + " " + (DOUBLE_QUOTES.equals(this) ? "\\" : "") + getLiteral();
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

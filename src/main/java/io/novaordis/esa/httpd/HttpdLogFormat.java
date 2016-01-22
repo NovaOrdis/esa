@@ -16,7 +16,6 @@
 
 package io.novaordis.esa.httpd;
 
-import io.novaordis.esa.FormatElement;
 import io.novaordis.esa.LogFormat;
 
 import java.util.Arrays;
@@ -36,7 +35,12 @@ public class HttpdLogFormat implements LogFormat {
             HttpdFormatElement.REMOTE_HOST,
             HttpdFormatElement.REMOTE_LOGNAME,
             HttpdFormatElement.REMOTE_USER,
-            HttpdFormatElement.TIMESTAMP);
+            HttpdFormatElement.OPENING_BRACKET,
+            HttpdFormatElement.TIMESTAMP,
+            HttpdFormatElement.CLOSING_BRACKET,
+            HttpdFormatElement.DOUBLE_QUOTES,
+            HttpdFormatElement.FIRST_REQUEST_LINE,
+            HttpdFormatElement.DOUBLE_QUOTES);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -47,10 +51,15 @@ public class HttpdLogFormat implements LogFormat {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
-     * @param formatElements duplicate format elements are acceptable.
+     * @param formatElements duplicate format elements are acceptable. Quotes (HttpdFormatElement.DOUBLE_QUOTES and
+     *                       HttpdFormatElement.SINGLE_QUOTE), if present, must always be balanced, or the constructor
+     *                       will throw an exception.
+     *
+     * @exception IllegalArgumentException on unbalanced quotes
      */
-    public HttpdLogFormat(HttpdFormatElement... formatElements) {
+    public HttpdLogFormat(HttpdFormatElement... formatElements) throws IllegalArgumentException {
 
+        checkBalancedQuotes(formatElements);
         this.formatElements = Arrays.asList(formatElements);
     }
 
@@ -90,6 +99,34 @@ public class HttpdLogFormat implements LogFormat {
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    /**
+     * @throws IllegalArgumentException on unbalanced quotes.
+     */
+    private static void checkBalancedQuotes(HttpdFormatElement[] elements) throws IllegalArgumentException {
+
+        boolean openSingleQuote = false;
+        boolean openDoubleQuote = false;
+
+        for(HttpdFormatElement e: elements) {
+
+            if (HttpdFormatElement.DOUBLE_QUOTES.equals(e)) {
+                openDoubleQuote = !openDoubleQuote;
+            }
+
+            if (HttpdFormatElement.SINGLE_QUOTE.equals(e)) {
+                openSingleQuote = !openSingleQuote;
+            }
+        }
+
+        if (openDoubleQuote) {
+            throw new IllegalArgumentException("unbalanced double quotes");
+        }
+
+        if (openSingleQuote) {
+            throw new IllegalArgumentException("unbalanced single quote");
+        }
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

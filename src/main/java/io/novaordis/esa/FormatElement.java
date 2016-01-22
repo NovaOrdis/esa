@@ -47,4 +47,23 @@ public interface FormatElement {
      */
     Class getType();
 
+    /**
+     * @return true if this element is used to enclose at the left a string (possibly containing multiple spaces).
+     * Examples: left bracket, double quotes, single quote.
+     */
+    boolean isLeftEnclosure();
+
+    /**
+     * @return true if this element is used to enclose at the right a string (possibly containing multiple spaces).
+     * Examples: right bracket, double quotes, single quote.
+     */
+    boolean isRightEnclosure();
+
+    /**
+     * If this element is an enclosure, the method returns corresponding matching enclosure (right brace if we
+     * are a left brace, left brace if we are a right brace, double quotes if we are double quotes, single quote if
+     * we are a single quote. Return null if this element is not an enclosure.
+     */
+    FormatElement getMatchingEnclosure();
+
 }
