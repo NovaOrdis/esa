@@ -19,6 +19,10 @@ package io.novaordis.esa;
 import java.util.Date;
 
 /**
+ * A generic timed event.
+ *
+ * It has a timestamp and an arbitrary number of typed properties.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
@@ -34,28 +38,6 @@ public interface Event {
      * @return may return null
      */
     Date getTimestamp();
-
-    /**
-     * @return the value corresponding to the specified format element or null if there is no corresponding value
-     * in the log event ("-" in the httpd logs, or whether the log format does contain the given format element.
-     *
-     * TODO: maybe this belongs to a "LogEvent" sub-interface, as we may have events that do not come from logs,
-     *       so they cannot be associated with format elements.
-     */
-    Object getValue(FormatElement e);
-
-    /**
-     * @param value the value associated with the given FormatElement. Can be null, and this has the semantics of
-     *              "erasing" the old value, if any.
-     *
-     * @return the previous value, if any, or null
-     *
-     * TODO: maybe this belongs to a "LogEvent" sub-interface, as we may have events that do not come from logs,
-     *       so they cannot be associated with format elements.
-     *
-     * @exception IllegalArgumentException if the value's type does not match the format element.
-     */
-    Object setValue(FormatElement e, Object value);
 
     /**
      * @return the number of non-null values for this event. Non-null time stamp counts as a value.

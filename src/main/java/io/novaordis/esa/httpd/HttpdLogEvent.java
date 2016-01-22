@@ -16,14 +16,12 @@
 
 package io.novaordis.esa.httpd;
 
-import io.novaordis.clad.UserErrorException;
 import io.novaordis.esa.EventBase;
 import io.novaordis.esa.FormatElement;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -48,19 +46,32 @@ public class HttpdLogEvent extends EventBase {
 
     // Event implementation --------------------------------------------------------------------------------------------
 
-    /**
-     * @see io.novaordis.esa.Event#getValue(FormatElement)
-     */
     @Override
+    public int getValueCount() {
+
+        return super.getValueCount() + values.size();
+    }
+
+    // Methods related to the fact that these events come from a HTTP log - this is where the httpd log format details
+    // are important ---------------------------------------------------------------------------------------------------
+
+    /**
+     * @return the value corresponding to the specified format element or null if there is no corresponding value
+     * in the log event ("-" in the httpd logs, or whether the log format does contain the given format element.
+     */
     public Object getValue(FormatElement e) {
 
         return values.get(e);
     }
 
     /**
-     * @see io.novaordis.esa.Event#setValue(FormatElement, Object)
+     * @param value the value associated with the given FormatElement. Can be null, and this has the semantics of
+     *              "erasing" the old value, if any.
+     *
+     * @return the previous value, if any, or null
+     *
+     * @exception IllegalArgumentException if the value's type does not match the format element.
      */
-    @Override
     public Object setValue(FormatElement e, Object value) {
 
         if (value == null) {
@@ -80,12 +91,6 @@ public class HttpdLogEvent extends EventBase {
         }
 
         return values.put(e, value);
-    }
-
-    @Override
-    public int getValueCount() {
-
-        return super.getValueCount() + values.size();
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

@@ -16,6 +16,7 @@
 
 package io.novaordis.esa.httpd;
 
+import io.novaordis.esa.Event;
 import io.novaordis.esa.EventTest;
 import io.novaordis.esa.MockFormatElement;
 import org.junit.Test;
@@ -47,18 +48,29 @@ public class HttpdLogEventTest extends EventTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
+    public void noSuchFormatElement() throws Exception {
+
+        HttpdLogEvent e = getEventToTest();
+
+        //noinspection Convert2Lambda
+        Object value = e.getValue(new MockFormatElement("no-such-format-element"));
+
+        assertNull(value);
+    }
+
+    @Test
     public void setValue_CorrectType() throws Exception {
 
         HttpdLogEvent e = new HttpdLogEvent();
 
         MockFormatElement formatElement = new MockFormatElement("LONG_MOCK", Long.class);
 
-        Object old = e.setValue(formatElement, new Long(1));
+        Object old = e.setValue(formatElement, 1L);
         assertNull(old);
 
         assertEquals(1L, e.getValue(formatElement));
 
-        Object old2 = e.setValue(formatElement, new Long(2));
+        Object old2 = e.setValue(formatElement, 2L);
         assertEquals(1L, old2);
 
         assertEquals(2L, e.getValue(formatElement));
@@ -74,7 +86,7 @@ public class HttpdLogEventTest extends EventTest {
         Object old = e.setValue(formatElement, null);
         assertNull(old);
 
-        Object old2 = e.setValue(formatElement, new Long(1));
+        Object old2 = e.setValue(formatElement, 1L);
         assertNull(old2);
 
         assertEquals(1L, e.getValue(formatElement));
@@ -113,7 +125,7 @@ public class HttpdLogEventTest extends EventTest {
         assertEquals(1, e.getValueCount());
 
         MockFormatElement mfe = new MockFormatElement("LONG_MOCK", Long.class);
-        e.setValue(mfe, new Long(1L));
+        e.setValue(mfe, 1L);
 
         assertEquals(2, e.getValueCount());
     }

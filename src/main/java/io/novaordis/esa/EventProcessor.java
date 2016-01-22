@@ -30,6 +30,6 @@ public interface EventProcessor {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    void process(Event event) throws UserErrorException;
+    void process(Event event) throws Exception;
 
 }

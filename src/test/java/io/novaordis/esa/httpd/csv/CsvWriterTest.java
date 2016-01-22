@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
+package io.novaordis.esa.httpd.csv;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import io.novaordis.esa.EventProcessor;
+import io.novaordis.esa.EventProcessorTest;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/22/16
  */
-public abstract class EventTest {
+public class CsvWriterTest extends EventProcessorTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -37,19 +35,15 @@ public abstract class EventTest {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    @Test
-    public void emptyEventsHaveZeroValues() throws Exception {
-
-        Event e = getEventToTest();
-        assertNull(e.getTimestamp());
-        assertEquals(0, e.getValueCount());
-    }
-
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    protected abstract Event getEventToTest() throws Exception;
+    @Override
+    protected EventProcessor getEventProcessorToTest() throws Exception {
+
+        return new CsvWriter();
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

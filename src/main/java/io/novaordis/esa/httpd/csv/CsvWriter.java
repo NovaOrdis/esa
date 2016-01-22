@@ -14,81 +14,51 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
+package io.novaordis.esa.httpd.csv;
 
-import io.novaordis.clad.CommandLineDriven;
 import io.novaordis.clad.UserErrorException;
-import io.novaordis.esa.httpd.csv.CsvWriter;
-import io.novaordis.esa.httpd.HttpdLogEventFactory;
-import io.novaordis.esa.httpd.HttpdLogFormat;
-import io.novaordis.esa.httpd.HttpdLogEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.novaordis.esa.Event;
+import io.novaordis.esa.EventProcessor;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.OutputStream;
 
 /**
+ * An event processor that writes the events in a CSV format at the output stream.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/22/16
  */
-public class EventStreamAnalyzer implements CommandLineDriven {
+public class CsvWriter implements EventProcessor {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(EventStreamAnalyzer.class);
-
-    public static final int BUFFER_SIZE = 1024 * 1024;
-
     // Static ----------------------------------------------------------------------------------------------------------
+
+    public static String toCsvLine(Event event) {
+        return ",";
+    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private OutputStream outputStream;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    // CommandLineDriven implementation --------------------------------------------------------------------------------
+    // EventProcessor implementation -----------------------------------------------------------------------------------
 
     @Override
-    public void executeCommandLine(String[] strings) throws UserErrorException {
+    public void process(Event event) throws Exception {
 
-        HttpdLogFormat httpdLogFormat = new HttpdLogFormat();
-        HttpdLogEventFactory eventFactory = new HttpdLogEventFactory(httpdLogFormat);
-
-        CsvWriter csvWriter = new CsvWriter();
-        csvWriter.setOutputStream(System.out);
-
-        BufferedReader input = null;
-
-        try {
-
-            input = new BufferedReader(new InputStreamReader(System.in), BUFFER_SIZE);
-
-            String line;
-            while ((line = input.readLine()) != null) {
-
-                HttpdLogEvent le = eventFactory.parse(line);
-                csvWriter.process(le);
-            }
-        }
-        catch(Exception e) {
-            throw new RuntimeException(e);
-        }
-        finally {
-
-            if (input != null) {
-
-                try {
-                    input.close();
-                }
-                catch(IOException e) {
-                    log.error("failed to close input stream", e);
-                }
-            }
-        }
+        String line = toCsvLine(event);
+        line += "\n";
+        outputStream.write(line.getBytes());
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public void setOutputStream(OutputStream os) {
+        this.outputStream = os;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
