@@ -18,8 +18,11 @@ package io.novaordis.esa;
 
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -38,11 +41,51 @@ public abstract class EventTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
-    public void emptyEventsHaveZeroValues() throws Exception {
+    public void emptyEvent() throws Exception {
 
         Event e = getEventToTest();
         assertNull(e.getTimestamp());
         assertEquals(0, e.getPropertyCount());
+        assertTrue(e.getPropertyNames().isEmpty());
+        assertNull(e.getPropertyValue("I-am-sure-there-is-no-such-property"));
+    }
+
+    @Test
+    public void settingAndGettingProperties() throws Exception {
+
+        Event e = getEventToTest();
+        assertEquals(0, e.getPropertyCount());
+
+        Object o = e.setPropertyValue("s", "this is a string");
+        assertNull(o);
+
+        assertEquals("this is a string", e.getPropertyValue("s"));
+
+        o = e.setPropertyValue("s", "this is another string");
+        assertEquals("this is a string", o);
+
+        assertEquals("this is another string", e.getPropertyValue("s"));
+        o = e.setPropertyValue("s", null);
+
+        assertEquals("this is another string", o);
+        assertNull(e.getPropertyValue("s"));
+    }
+
+
+    @Test
+    public void keyOrder() throws Exception {
+
+        Event e = getEventToTest();
+        assertEquals(0, e.getPropertyCount());
+
+        e.setPropertyValue("s", "this is a string");
+        e.setPropertyValue("i", 1L);
+
+        List<String> names = e.getPropertyNames();
+
+        assertEquals(2, names.size());
+        assertEquals("i", names.get(0));
+        assertEquals("s", names.get(1));
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

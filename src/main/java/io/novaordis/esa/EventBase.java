@@ -16,7 +16,11 @@
 
 package io.novaordis.esa;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -32,7 +36,13 @@ public abstract class EventBase implements Event {
 
     private Date timestamp;
 
+    private SortedMap<String, Object> properties;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    protected EventBase() {
+        this.properties = new TreeMap<>();
+    }
 
     // Event implementation --------------------------------------------------------------------------------------------
 
@@ -44,6 +54,28 @@ public abstract class EventBase implements Event {
     @Override
     public int getPropertyCount() {
         return timestamp == null ? 0 : 1;
+    }
+
+    @Override
+    public List<String> getPropertyNames() {
+
+        // the sorted map returns its keys in ascending order
+        return new ArrayList<>(properties.keySet());
+    }
+
+    @Override
+    public Object getPropertyValue(String name) {
+        return properties.get(name);
+    }
+
+    @Override
+    public Object setPropertyValue(String name, Object value) {
+
+        if (value == null) {
+            return properties.remove(name);
+        }
+
+        return properties.put(name, value);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

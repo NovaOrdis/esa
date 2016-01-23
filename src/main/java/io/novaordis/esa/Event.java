@@ -17,6 +17,7 @@
 package io.novaordis.esa;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * A generic timed event.
@@ -43,5 +44,24 @@ public interface Event {
      * @return the number of non-null properties for this event. Non-null time stamp counts as a value.
      */
     int getPropertyCount();
+
+    /**
+     * @return the list of property names this event carries values for, in the "preferred" order, which can be
+     * used when displaying the event.
+     */
+    List<String> getPropertyNames();
+
+    /**
+     * @param name
+     * @return a typed value - may return null.
+     */
+    Object getPropertyValue(String name);
+
+    /**
+     * @param value - null is acceptable, it has a "remove" semantics.
+     *
+     * @return the previous value or null.
+     */
+    Object setPropertyValue(String name, Object value);
 
 }
