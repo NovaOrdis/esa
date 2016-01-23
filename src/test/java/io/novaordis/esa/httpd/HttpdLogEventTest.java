@@ -52,7 +52,7 @@ public class HttpdLogEventTest extends EventTest {
         HttpdLogEvent e = getEventToTest();
 
         //noinspection Convert2Lambda
-        Object value = e.getValue(new MockFormatElement("no-such-format-element"));
+        Object value = e.getLogValue(new MockFormatElement("no-such-format-element"));
 
         assertNull(value);
     }
@@ -64,15 +64,15 @@ public class HttpdLogEventTest extends EventTest {
 
         MockFormatElement formatElement = new MockFormatElement("LONG_MOCK", Long.class);
 
-        Object old = e.setValue(formatElement, 1L);
+        Object old = e.setLogValue(formatElement, 1L);
         assertNull(old);
 
-        assertEquals(1L, e.getValue(formatElement));
+        assertEquals(1L, e.getLogValue(formatElement));
 
-        Object old2 = e.setValue(formatElement, 2L);
+        Object old2 = e.setLogValue(formatElement, 2L);
         assertEquals(1L, old2);
 
-        assertEquals(2L, e.getValue(formatElement));
+        assertEquals(2L, e.getLogValue(formatElement));
     }
 
     @Test
@@ -82,18 +82,18 @@ public class HttpdLogEventTest extends EventTest {
 
         MockFormatElement formatElement = new MockFormatElement("LONG_MOCK", Long.class);
 
-        Object old = e.setValue(formatElement, null);
+        Object old = e.setLogValue(formatElement, null);
         assertNull(old);
 
-        Object old2 = e.setValue(formatElement, 1L);
+        Object old2 = e.setLogValue(formatElement, 1L);
         assertNull(old2);
 
-        assertEquals(1L, e.getValue(formatElement));
+        assertEquals(1L, e.getLogValue(formatElement));
 
-        Object old3 = e.setValue(formatElement, null);
+        Object old3 = e.setLogValue(formatElement, null);
         assertEquals(1L, old3);
 
-        assertNull(e.getValue(formatElement));
+        assertNull(e.getLogValue(formatElement));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class HttpdLogEventTest extends EventTest {
         MockFormatElement formatElement = new MockFormatElement("LONG_MOCK", Long.class);
 
         try {
-            e.setValue(formatElement, "this should cause failure");
+            e.setLogValue(formatElement, "this should cause failure");
             fail("should have thrown exception");
         }
         catch(IllegalArgumentException iae) {
@@ -124,7 +124,7 @@ public class HttpdLogEventTest extends EventTest {
         assertEquals(1, e.getPropertyCount());
 
         MockFormatElement mfe = new MockFormatElement("LONG_MOCK", Long.class);
-        e.setValue(mfe, 1L);
+        e.setLogValue(mfe, 1L);
 
         assertEquals(2, e.getPropertyCount());
     }

@@ -59,20 +59,20 @@ public class HttpdLogEvent extends EventBase {
      * @return the value corresponding to the specified format element or null if there is no corresponding value
      * in the log event ("-" in the httpd logs, or whether the log format does contain the given format element.
      */
-    public Object getValue(FormatElement e) {
+    public Object getLogValue(FormatElement e) {
 
         return values.get(e);
     }
 
     /**
-     * @param value the value associated with the given FormatElement. Can be null, and this has the semantics of
-     *              "erasing" the old value, if any.
+     * @param value the value associated with the given FormatElement in the log entry corresponding to this event. Can
+     *              be null, and this has the semantics of "erasing" the old value, if any.
      *
      * @return the previous value, if any, or null
      *
      * @exception IllegalArgumentException if the value's type does not match the format element.
      */
-    public Object setValue(FormatElement e, Object value) {
+    public Object setLogValue(FormatElement e, Object value) {
 
         if (value == null) {
             return values.remove(e);
@@ -101,7 +101,7 @@ public class HttpdLogEvent extends EventBase {
      * @return may return null
      */
     public String getRemoteHost() {
-        return (String)getValue(HttpdFormatElement.REMOTE_HOST);
+        return (String) getLogValue(HttpdFormatElement.REMOTE_HOST);
     }
 
     /**
@@ -110,36 +110,36 @@ public class HttpdLogEvent extends EventBase {
      * @return may return null
      */
     public String getRemoteLogname() {
-        return (String)getValue(HttpdFormatElement.REMOTE_LOGNAME);
+        return (String) getLogValue(HttpdFormatElement.REMOTE_LOGNAME);
     }
 
     public String getRemoteUser() {
-        return (String)getValue(HttpdFormatElement.REMOTE_USER);
+        return (String) getLogValue(HttpdFormatElement.REMOTE_USER);
     }
 
     public String getRequestLine() {
-        return (String)getValue(HttpdFormatElement.FIRST_REQUEST_LINE);
+        return (String) getLogValue(HttpdFormatElement.FIRST_REQUEST_LINE);
     }
 
     /**
      * @return may return null.
      */
     public Integer getStatusCode() {
-        return (Integer)getValue(HttpdFormatElement.STATUS_CODE);
+        return (Integer) getLogValue(HttpdFormatElement.STATUS_CODE);
     }
 
     /**
      * @return may return null.
      */
     public Integer getOriginalRequestStatusCode() {
-        return (Integer)getValue(HttpdFormatElement.ORIGINAL_REQUEST_STATUS_CODE);
+        return (Integer) getLogValue(HttpdFormatElement.ORIGINAL_REQUEST_STATUS_CODE);
     }
 
     /**
      * @return may return null.
      */
     public Long getResponseEntityBodySize() {
-        return (Long)getValue(HttpdFormatElement.RESPONSE_ENTITY_BODY_SIZE);
+        return (Long) getLogValue(HttpdFormatElement.RESPONSE_ENTITY_BODY_SIZE);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

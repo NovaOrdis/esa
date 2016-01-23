@@ -19,6 +19,7 @@ package io.novaordis.esa.httpd.csv;
 import io.novaordis.clad.UserErrorException;
 import io.novaordis.esa.Event;
 import io.novaordis.esa.EventProcessor;
+import io.novaordis.esa.httpd.HttpdLogEvent;
 
 import java.io.OutputStream;
 

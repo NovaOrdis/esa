@@ -116,7 +116,7 @@ public class HttpdLogEventFactory implements LogEventFactory {
             i = i == -1 ? line.length() : i;
             String value = line.substring(cursor, i);
             Object o = fe.parse(value);
-            e.setValue(fe, o);
+            e.setLogValue(fe, o);
 
             // advance the cursor to the next non-blank character
             while(i < line.length() && line.charAt(i) == ' ') { i++; }
