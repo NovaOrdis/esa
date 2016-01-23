@@ -44,6 +44,30 @@ public class HttpdLogFormat implements LogFormat {
             HttpdFormatElement.STATUS_CODE,
             HttpdFormatElement.RESPONSE_ENTITY_BODY_SIZE);
 
+    // this is a pattern used for performance, it contains thread names and request durations and it does not log
+    // remote logname, which is useless anyway. For WildFly, this is the pattern:
+    //
+    // "%I" %h %u [%t] "%r" %s %b %D
+    //
+    // "&quot;%I&quot; %h %l %u [%t] &quot;%r&quot; %s %b %D"
+    //
+    // "thread name" remote-host remote-user [timestamp] "first request line" status-code response-body-size request-duration-ms
+    public static final HttpdLogFormat PERFORMANCE_ANALYSIS = new HttpdLogFormat(
+            HttpdFormatElement.DOUBLE_QUOTES,
+            HttpdFormatElement.THREAD_NAME,
+            HttpdFormatElement.DOUBLE_QUOTES,
+            HttpdFormatElement.REMOTE_HOST,
+            HttpdFormatElement.REMOTE_USER,
+            HttpdFormatElement.OPENING_BRACKET,
+            HttpdFormatElement.TIMESTAMP,
+            HttpdFormatElement.CLOSING_BRACKET,
+            HttpdFormatElement.DOUBLE_QUOTES,
+            HttpdFormatElement.FIRST_REQUEST_LINE,
+            HttpdFormatElement.DOUBLE_QUOTES,
+            HttpdFormatElement.ORIGINAL_REQUEST_STATUS_CODE,
+            HttpdFormatElement.RESPONSE_ENTITY_BODY_SIZE,
+            HttpdFormatElement.REQUEST_PROCESSING_TIME_MS);
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------

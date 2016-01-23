@@ -149,6 +149,13 @@ public class HttpdLogEvent extends EventBase {
         return (String) getLogValue(HttpdFormatElement.THREAD_NAME);
     }
 
+    /**
+     * @return may return null.
+     */
+    public Long getRequestProcessingTimeMs() {
+        return (Long) getLogValue(HttpdFormatElement.REQUEST_PROCESSING_TIME_MS);
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

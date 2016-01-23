@@ -135,6 +135,25 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
         assertEquals(2326, le.getResponseEntityBodySize().longValue());
     }
 
+    @Test
+    public void performance() throws Exception {
+
+        String line = "\"default task-1\" 127.0.0.1 - [21/Jan/2016:09:32:56 -0800] \"GET /something HTTP/1.1\" 404 74 27";
+
+        HttpdLogEventFactory factory = new HttpdLogEventFactory(HttpdLogFormat.PERFORMANCE_ANALYSIS);
+
+        HttpdLogEvent le = factory.parse(line);
+        assertEquals("default task-1", le.getThreadName());
+        assertEquals("127.0.0.1", le.getRemoteHost());
+        assertNull(le.getRemoteUser());
+        assertEquals(TestDate.create("01/21/16 09:32:56 -0800"), le.getTimestamp());
+        assertEquals("GET /something HTTP/1.1", le.getRequestLine());
+        assertEquals(404, le.getOriginalRequestStatusCode().intValue());
+        assertNull(le.getStatusCode());
+        assertEquals(74, le.getResponseEntityBodySize().longValue());
+        assertEquals(27, le.getRequestProcessingTimeMs().longValue());
+    }
+
     /**
      * The current implementation parses the following format wrongly, because it has (yet) no way to detect
      * that the thread name has spaces. In the future I might add more heuristics.
