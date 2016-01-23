@@ -16,7 +16,6 @@
 
 package io.novaordis.esa.httpd.csv;
 
-import io.novaordis.clad.UserErrorException;
 import io.novaordis.esa.Event;
 import io.novaordis.esa.EventProcessor;
 import io.novaordis.esa.httpd.HttpdLogEvent;
@@ -41,7 +40,15 @@ public class CsvWriter implements EventProcessor {
 
     public static String toCsvLine(DateFormat timestampFormat, HttpdLogEvent event) {
 
-        return timestampFormat.format(event.getTimestamp()) + ", -";
+        String s =
+                timestampFormat.format(event.getTimestamp()) + ", " +
+                event.getThreadName() + ", " +
+                event.getFirstRequestLine() + ", " +
+                event.getOriginalRequestStatusCode() + ", " +
+                event.getResponseEntityBodySize() + ", " +
+                event.getRequestProcessingTimeMs();
+
+        return s;
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------

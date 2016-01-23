@@ -117,7 +117,7 @@ public class HttpdLogEvent extends EventBase {
         return (String) getLogValue(HttpdFormatElement.REMOTE_USER);
     }
 
-    public String getRequestLine() {
+    public String getFirstRequestLine() {
         return (String) getLogValue(HttpdFormatElement.FIRST_REQUEST_LINE);
     }
 

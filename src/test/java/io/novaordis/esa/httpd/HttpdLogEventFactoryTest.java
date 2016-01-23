@@ -83,7 +83,7 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
         assertNull(le.getRemoteLogname());
         assertEquals("bob", le.getRemoteUser());
         assertEquals(TestDate.create("10/10/16 13:55:36 -0700"), le.getTimestamp());
-        assertEquals("GET /test.gif HTTP/1.1", le.getRequestLine());
+        assertEquals("GET /test.gif HTTP/1.1", le.getFirstRequestLine());
         assertEquals(200, le.getStatusCode().intValue());
         assertEquals(1024, le.getResponseEntityBodySize().longValue());
     }
@@ -100,7 +100,7 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
         assertNull(le.getRemoteLogname());
         assertNull(le.getRemoteUser());
         assertEquals(TestDate.create("01/09/16 20:06:07 -0800"), le.getTimestamp());
-        assertEquals("OPTIONS * HTTP/1.0", le.getRequestLine());
+        assertEquals("OPTIONS * HTTP/1.0", le.getFirstRequestLine());
         assertEquals(200, le.getStatusCode().intValue());
         assertNull(le.getResponseEntityBodySize());
     }
@@ -129,7 +129,7 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
         assertNull(le.getRemoteLogname());
         assertEquals("bob", le.getRemoteUser());
         assertEquals(TestDate.create("10/10/16 13:55:36 -0700"), le.getTimestamp());
-        assertEquals("GET /test.gif HTTP/1.1", le.getRequestLine());
+        assertEquals("GET /test.gif HTTP/1.1", le.getFirstRequestLine());
         assertEquals(200, le.getStatusCode().intValue());
         assertNull(le.getOriginalRequestStatusCode());
         assertEquals(2326, le.getResponseEntityBodySize().longValue());
@@ -147,7 +147,7 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
         assertEquals("127.0.0.1", le.getRemoteHost());
         assertNull(le.getRemoteUser());
         assertEquals(TestDate.create("01/21/16 09:32:56 -0800"), le.getTimestamp());
-        assertEquals("GET /something HTTP/1.1", le.getRequestLine());
+        assertEquals("GET /something HTTP/1.1", le.getFirstRequestLine());
         assertEquals(404, le.getOriginalRequestStatusCode().intValue());
         assertNull(le.getStatusCode());
         assertEquals(74, le.getResponseEntityBodySize().longValue());
@@ -218,7 +218,7 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
                 HttpdFormatElement.SINGLE_QUOTE));
 
         HttpdLogEvent le = factory.parse(line);
-        assertEquals("GET /test.gif HTTP/1.1", le.getRequestLine());
+        assertEquals("GET /test.gif HTTP/1.1", le.getFirstRequestLine());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

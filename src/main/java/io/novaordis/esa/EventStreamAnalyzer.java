@@ -53,25 +53,8 @@ public class EventStreamAnalyzer implements CommandLineDriven {
     @Override
     public void executeCommandLine(String[] strings) throws UserErrorException {
 
-        // TODO - how do I infer this from the log file? I need to externalize it in a friendly way
-        HttpdLogFormat httpdLogFormat = new HttpdLogFormat(
-                HttpdFormatElement.THREAD_NAME,
-                HttpdFormatElement.REMOTE_HOST,
-                HttpdFormatElement.REMOTE_LOGNAME,
-                HttpdFormatElement.REMOTE_USER,
-                HttpdFormatElement.OPENING_BRACKET,
-                HttpdFormatElement.TIMESTAMP,
-                HttpdFormatElement.CLOSING_BRACKET,
-                HttpdFormatElement.DOUBLE_QUOTES,
-                HttpdFormatElement.FIRST_REQUEST_LINE,
-                HttpdFormatElement.DOUBLE_QUOTES,
-                HttpdFormatElement.STATUS_CODE,
-                HttpdFormatElement.RESPONSE_ENTITY_BODY_SIZE,
-                HttpdFormatElement.REQUEST_PROCESSING_TIME_MS
-        );
-
-
-        HttpdLogEventFactory eventFactory = new HttpdLogEventFactory(httpdLogFormat);
+        // TODO - how do I infer the log format from the log file? I need to externalize it in a friendly way
+        HttpdLogEventFactory eventFactory = new HttpdLogEventFactory(HttpdLogFormat.PERFORMANCE_ANALYSIS);
 
         CsvWriter csvWriter = new CsvWriter();
         csvWriter.setOutputStream(System.out);
