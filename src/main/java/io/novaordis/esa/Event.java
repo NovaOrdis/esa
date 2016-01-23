@@ -40,8 +40,8 @@ public interface Event {
     Date getTimestamp();
 
     /**
-     * @return the number of non-null values for this event. Non-null time stamp counts as a value.
+     * @return the number of non-null properties for this event. Non-null time stamp counts as a value.
      */
-    int getValueCount();
+    int getPropertyCount();
 
 }

@@ -42,7 +42,7 @@ public abstract class EventTest {
 
         Event e = getEventToTest();
         assertNull(e.getTimestamp());
-        assertEquals(0, e.getValueCount());
+        assertEquals(0, e.getPropertyCount());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

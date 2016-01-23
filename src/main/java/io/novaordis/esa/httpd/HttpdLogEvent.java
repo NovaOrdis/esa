@@ -47,9 +47,9 @@ public class HttpdLogEvent extends EventBase {
     // Event implementation --------------------------------------------------------------------------------------------
 
     @Override
-    public int getValueCount() {
+    public int getPropertyCount() {
 
-        return super.getValueCount() + values.size();
+        return super.getPropertyCount() + values.size();
     }
 
     // Methods related to the fact that these events come from a HTTP log - this is where the httpd log format details

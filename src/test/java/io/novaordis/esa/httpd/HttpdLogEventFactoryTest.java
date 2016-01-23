@@ -20,8 +20,6 @@ import io.novaordis.esa.LogEventFactoryTest;
 import io.novaordis.esa.TestDate;
 import org.junit.Test;
 
-import java.util.Date;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -134,7 +132,7 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
 
         HttpdLogEvent le = factory.parse(line);
 
-        assertEquals(1, le.getValueCount());
+        assertEquals(1, le.getPropertyCount());
         assertEquals("127.0.0.1", le.getRemoteHost());
         assertNull(le.getTimestamp());
         assertNull(le.getRemoteUser());

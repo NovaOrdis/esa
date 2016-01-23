@@ -42,7 +42,7 @@ public abstract class EventBase implements Event {
     }
 
     @Override
-    public int getValueCount() {
+    public int getPropertyCount() {
         return timestamp == null ? 0 : 1;
     }
 

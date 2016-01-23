@@ -16,7 +16,6 @@
 
 package io.novaordis.esa.httpd;
 
-import io.novaordis.esa.Event;
 import io.novaordis.esa.EventTest;
 import io.novaordis.esa.MockFormatElement;
 import org.junit.Test;
@@ -119,15 +118,15 @@ public class HttpdLogEventTest extends EventTest {
         HttpdLogEvent e = new HttpdLogEvent();
 
         assertNull(e.getTimestamp());
-        assertEquals(0, e.getValueCount());
+        assertEquals(0, e.getPropertyCount());
 
         e.setTimestamp(new Date(1));
-        assertEquals(1, e.getValueCount());
+        assertEquals(1, e.getPropertyCount());
 
         MockFormatElement mfe = new MockFormatElement("LONG_MOCK", Long.class);
         e.setValue(mfe, 1L);
 
-        assertEquals(2, e.getValueCount());
+        assertEquals(2, e.getPropertyCount());
     }
 
     @Test
