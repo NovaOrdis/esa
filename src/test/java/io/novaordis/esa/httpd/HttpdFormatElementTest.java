@@ -200,6 +200,35 @@ public class HttpdFormatElementTest extends FormatElementTest {
         assertNull(e.getMatchingEnclosure());
     }
 
+    @Test
+    public void threadName() throws Exception {
+
+        HttpdFormatElement e = HttpdFormatElement.THREAD_NAME;
+        assertEquals("%I", e.getLiteral());
+        String s = (String)e.parse("some thread name");
+        assertEquals("some thread name", s);
+        assertNull(e.parse("-"));
+
+        assertFalse(e.isLeftEnclosure());
+        assertFalse(e.isRightEnclosure());
+        assertNull(e.getMatchingEnclosure());
+    }
+
+    @Test
+    public void requestProcessingTimeMs() throws Exception {
+
+        HttpdFormatElement e = HttpdFormatElement.REQUEST_PROCESSING_TIME_MS;
+        assertEquals("%D", e.getLiteral());
+        Long l = (Long)e.parse("12345");
+        assertNotNull(l);
+        assertEquals(12345L, l.longValue());
+        assertNull(e.parse("-"));
+
+        assertFalse(e.isLeftEnclosure());
+        assertFalse(e.isRightEnclosure());
+        assertNull(e.getMatchingEnclosure());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

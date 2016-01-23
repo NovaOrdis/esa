@@ -97,7 +97,7 @@ public class HttpdLogEventFactory implements LogEventFactory {
 
                 while(line.charAt(cursor) == ' ') { cursor++; }
                 if ((c = line.charAt(cursor)) != fe.getLiteral().charAt(0)) {
-                    throw new ParsingException("expecting " + fe + " but got " + c);
+                    throw new ParsingException("expecting " + fe + " but got '" + c + "'");
                 }
                 cursor++;
 

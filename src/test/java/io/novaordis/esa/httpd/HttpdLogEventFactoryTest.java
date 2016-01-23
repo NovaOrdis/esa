@@ -17,12 +17,16 @@
 package io.novaordis.esa.httpd;
 
 import io.novaordis.esa.LogEventFactoryTest;
+import io.novaordis.esa.ParsingException;
 import io.novaordis.esa.TestDate;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -31,6 +35,8 @@ import static org.junit.Assert.assertNull;
 public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(HttpdLogEventFactoryTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -68,7 +74,7 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
     @Test
     public void common1() throws Exception {
 
-        String commonPattern = "127.0.0.1 - bob [10/Oct/2016:13:55:36 -0700] \"GET /test.gif HTTP/1.1\"";
+        String commonPattern = "127.0.0.1 - bob [10/Oct/2016:13:55:36 -0700] \"GET /test.gif HTTP/1.1\" 200 1024";
 
         HttpdLogEventFactory factory = new HttpdLogEventFactory(HttpdLogFormat.COMMON);
 
@@ -78,18 +84,25 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
         assertEquals("bob", le.getRemoteUser());
         assertEquals(TestDate.create("10/10/16 13:55:36 -0700"), le.getTimestamp());
         assertEquals("GET /test.gif HTTP/1.1", le.getRequestLine());
+        assertEquals(200, le.getStatusCode().intValue());
+        assertEquals(1024, le.getResponseEntityBodySize().longValue());
     }
 
     @Test
     public void common2() throws Exception {
 
-        String commonPattern = "172.20.2.41 - - [09/Jan/2016:20:06:07 -0800] \"OPTIONS * HTTP/1.0\" 200 -";
-    }
+        String line = "172.20.2.41 - - [09/Jan/2016:20:06:07 -0800] \"OPTIONS * HTTP/1.0\" 200 -";
 
-    @Test
-    public void common3() throws Exception {
+        HttpdLogEventFactory factory = new HttpdLogEventFactory(HttpdLogFormat.COMMON);
 
-        String commonPattern = "172.20.2.42 - - [11/Jan/2016:12:22:23 -0800] \"INFO / HTTP/1.1\" 403 3985";
+        HttpdLogEvent le = factory.parse(line);
+        assertEquals("172.20.2.41", le.getRemoteHost());
+        assertNull(le.getRemoteLogname());
+        assertNull(le.getRemoteUser());
+        assertEquals(TestDate.create("01/09/16 20:06:07 -0800"), le.getTimestamp());
+        assertEquals("OPTIONS * HTTP/1.0", le.getRequestLine());
+        assertEquals(200, le.getStatusCode().intValue());
+        assertNull(le.getResponseEntityBodySize());
     }
 
     @Test
@@ -120,6 +133,43 @@ public class HttpdLogEventFactoryTest extends LogEventFactoryTest {
         assertEquals(200, le.getStatusCode().intValue());
         assertNull(le.getOriginalRequestStatusCode());
         assertEquals(2326, le.getResponseEntityBodySize().longValue());
+    }
+
+    /**
+     * The current implementation parses the following format wrongly, because it has (yet) no way to detect
+     * that the thread name has spaces. In the future I might add more heuristics.
+     * @throws Exception
+     */
+    @Test
+    public void threadNameHasNoSeparators() throws Exception {
+
+        String line = "default task-1 127.0.0.1";
+
+        HttpdLogFormat format = new HttpdLogFormat(HttpdFormatElement.THREAD_NAME, HttpdFormatElement.REMOTE_HOST);
+
+        HttpdLogEventFactory factory = new HttpdLogEventFactory(format);
+
+        HttpdLogEvent le = factory.parse(line);
+        assertEquals("default", le.getThreadName());
+        assertEquals("task-1", le.getRemoteHost());
+    }
+
+    @Test
+    public void timestampHasNoSeparators() throws Exception {
+
+        String line = "127.0.0.1 - - 20/Jan/2016:03:42:11 -0800 \"GET /something HTTP/1.1\" 1024";
+
+        HttpdLogFormat format = HttpdLogFormat.COMMON;
+        HttpdLogEventFactory factory = new HttpdLogEventFactory(format);
+
+        try {
+            factory.parse(line);
+            fail("should have thrown exception");
+        }
+        catch(ParsingException e) {
+            log.info(e.getMessage());
+            assertEquals("expecting OPENING_BRACKET [ but got '2'", e.getMessage());
+        }
     }
 
     @Test

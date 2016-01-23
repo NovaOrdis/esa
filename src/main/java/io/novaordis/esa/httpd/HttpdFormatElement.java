@@ -85,7 +85,22 @@ public enum HttpdFormatElement implements FormatElement {
     //
     // Response entity body size. Stored as Long.
     //
-    RESPONSE_ENTITY_BODY_SIZE("%b", Long.class);
+    RESPONSE_ENTITY_BODY_SIZE("%b", Long.class),
+
+    //
+    // The name of the thread processing the request.
+    //
+    // Note that this is actually the WildFly convention, not Apache httpd convention (Apache httpd logs "bytes
+    // received, including request and headers" for %I)
+    //
+    THREAD_NAME("%I", String.class),
+
+    //
+    // The time taken to serve the request. WildFly logs the time in milliseconds for %D, while Apache httpd logs the
+    // time in microseconds for the same %D.
+    //
+    REQUEST_PROCESSING_TIME_MS("%D", Long.class);
+
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -99,7 +114,7 @@ public enum HttpdFormatElement implements FormatElement {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    private HttpdFormatElement(String literal, Class type) {
+    HttpdFormatElement(String literal, Class type) {
 
         this(literal, type, null);
     }
@@ -107,7 +122,7 @@ public enum HttpdFormatElement implements FormatElement {
     /**
      * @param format an optional Format (can be null) which specifies the string representation format.
      */
-    private HttpdFormatElement(String literal, Class type, Format format) {
+    HttpdFormatElement(String literal, Class type, Format format) {
 
         this.literal = literal;
         this.type = type;

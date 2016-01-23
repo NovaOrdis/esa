@@ -22,6 +22,8 @@ import io.novaordis.esa.EventProcessor;
 import io.novaordis.esa.httpd.HttpdLogEvent;
 
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 /**
  * An event processor that writes the events in a CSV format at the output stream.
@@ -33,24 +35,34 @@ public class CsvWriter implements EventProcessor {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    public static final DateFormat DEFAULT_TIMESTAMP_FORMAT = new SimpleDateFormat("HH:mm:ss");
+
     // Static ----------------------------------------------------------------------------------------------------------
 
-    public static String toCsvLine(Event event) {
-        return ",";
+    public static String toCsvLine(DateFormat timestampFormat, HttpdLogEvent event) {
+
+        return timestampFormat.format(event.getTimestamp()) + ", -";
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private OutputStream outputStream;
 
+    private DateFormat timestampFormat;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    public CsvWriter() {
+
+        this.timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
+    }
 
     // EventProcessor implementation -----------------------------------------------------------------------------------
 
     @Override
     public void process(Event event) throws Exception {
 
-        String line = toCsvLine(event);
+        String line = toCsvLine(timestampFormat, (HttpdLogEvent)event);
         line += "\n";
         outputStream.write(line.getBytes());
     }
@@ -59,6 +71,14 @@ public class CsvWriter implements EventProcessor {
 
     public void setOutputStream(OutputStream os) {
         this.outputStream = os;
+    }
+
+    public DateFormat getTimestampFormat() {
+        return timestampFormat;
+    }
+
+    public void setTimestampFormat(DateFormat df) {
+        this.timestampFormat = df;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

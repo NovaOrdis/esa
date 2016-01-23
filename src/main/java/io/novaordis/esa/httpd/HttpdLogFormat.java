@@ -40,7 +40,9 @@ public class HttpdLogFormat implements LogFormat {
             HttpdFormatElement.CLOSING_BRACKET,
             HttpdFormatElement.DOUBLE_QUOTES,
             HttpdFormatElement.FIRST_REQUEST_LINE,
-            HttpdFormatElement.DOUBLE_QUOTES);
+            HttpdFormatElement.DOUBLE_QUOTES,
+            HttpdFormatElement.STATUS_CODE,
+            HttpdFormatElement.RESPONSE_ENTITY_BODY_SIZE);
 
     // Static ----------------------------------------------------------------------------------------------------------
 

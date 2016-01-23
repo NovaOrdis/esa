@@ -142,6 +142,13 @@ public class HttpdLogEvent extends EventBase {
         return (Long) getLogValue(HttpdFormatElement.RESPONSE_ENTITY_BODY_SIZE);
     }
 
+    /**
+     * @return may return null.
+     */
+    public String getThreadName() {
+        return (String) getLogValue(HttpdFormatElement.THREAD_NAME);
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
