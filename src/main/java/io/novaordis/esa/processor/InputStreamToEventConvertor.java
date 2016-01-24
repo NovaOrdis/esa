@@ -14,67 +14,75 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
+package io.novaordis.esa.processor;
 
-import io.novaordis.clad.UserErrorException;
-import io.novaordis.esa.processor.EventCSVWriter;
-import io.novaordis.esa.processor.HttpdLogParser;
-import io.novaordis.esa.processor.InputStreamToEventConvertor;
-import io.novaordis.esa.processor.SingleThreadedEventProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.novaordis.esa.event.Event;
+import io.novaordis.esa.event.special.EndOfStreamEvent;
+import io.novaordis.esa.event.special.StringEvent;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
+ * This logic reads a byte stream, identifies lines and generates a new StringEvent per line.
+ *
+ * Guaranteed single threaded.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/23/16
  */
-public class EventStreamAnalyzer {
+public class InputStreamToEventConvertor implements ByteLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    private static final Logger log = LoggerFactory.getLogger(EventStreamAnalyzer.class);
-
-    public static final int BUFFER_SIZE = 1024 * 1024;
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private StringBuilder sb;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    // CommandLineDriven implementation --------------------------------------------------------------------------------
+    public InputStreamToEventConvertor() {
 
-    public void run() throws UserErrorException {
+        this.sb = new StringBuilder();
+    }
 
-        SingleThreadedEventProcessor one = new SingleThreadedEventProcessor("file to event convertor");
+    // ByteLogic implementation ----------------------------------------------------------------------------------------
 
-        //        BufferedReader input = null;
-//
-//        try {
-//
-//            input = new BufferedReader(new InputStreamReader(System.in), BUFFER_SIZE);
+    @Override
+    public List<Event> process(int b) {
 
-        one.setInput(System.in);
-        one.setByteLogic(new InputStreamToEventConvertor());
-        one.setOutput(new ArrayBlockingQueue<>(10000));
+        List<Event> result;
 
-        SingleThreadedEventProcessor two = new SingleThreadedEventProcessor("httpd log parser");
-        two.setInput(one.getOutputQueue());
-        two.setEventLogic(new HttpdLogParser());
-        two.setOutput(new ArrayBlockingQueue<>(10000));
+        if (b == -1) {
 
-        SingleThreadedEventProcessor three = new SingleThreadedEventProcessor("csv writer");
-        three.setInput(two.getOutputQueue());
-        three.setEventLogic(new EventCSVWriter());
-        three.setOutput(System.out);
+            //
+            // end of stream
+            //
 
-        one.start();
-        two.start();
-        three.start();
+            if (sb.length() == 0) {
+                result = Collections.singletonList(new EndOfStreamEvent());
+            }
+            else
+            {
+                result = Arrays.asList(new StringEvent(sb.toString()), new EndOfStreamEvent());
+            }
+            sb.setLength(0);
+            return result;
+        }
+        else if (b == '\n') {
 
-        three.waitForEndOfStream();
+            result =  Collections.singletonList(new StringEvent(sb.toString()));
+            sb.setLength(0);
+        }
+        else {
+            sb.append((char) b);
+            result = Collections.emptyList();
+        }
+
+        return result;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

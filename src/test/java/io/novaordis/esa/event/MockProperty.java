@@ -14,36 +14,50 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
-
-import io.novaordis.clad.UserErrorException;
+package io.novaordis.esa.event;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/23/16
  */
-public class Main {
+public class MockProperty implements Property {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    public static void main(String[] args) throws Exception {
-
-        try {
-
-            EventStreamAnalyzer esa = new EventStreamAnalyzer();
-            esa.run();
-        }
-        catch(UserErrorException e) {
-
-            System.err.println(e.getMessage());
-        }
-    }
-
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private String name;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    public MockProperty(String name) {
+        this.name = name;
+    }
+
+    // Property implementation -----------------------------------------------------------------------------------------
+
+    @Override
+    public String getName() {
+
+        return name;
+    }
+
+    @Override
+    public Class getType() {
+        throw new RuntimeException("getType() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public Object getValue() {
+        throw new RuntimeException("getValue() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public MeasureUnit getMeasureUnit() {
+        throw new RuntimeException("getMeasureUnit() NOT YET IMPLEMENTED");
+    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 

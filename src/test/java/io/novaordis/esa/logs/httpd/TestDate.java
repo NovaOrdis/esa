@@ -14,36 +14,35 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
+package io.novaordis.esa.logs.httpd;
 
-import io.novaordis.clad.UserErrorException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class Main {
+public class TestDate {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    public static final DateFormat REFERENCE_DATE_FORMAT = new SimpleDateFormat("MM/dd/yy HH:mm:ss Z");
+
     // Static ----------------------------------------------------------------------------------------------------------
 
-    public static void main(String[] args) throws Exception {
+    public static Date create(String s) throws Exception {
 
-        try {
-
-            EventStreamAnalyzer esa = new EventStreamAnalyzer();
-            esa.run();
-        }
-        catch(UserErrorException e) {
-
-            System.err.println(e.getMessage());
-        }
+        return (Date)REFERENCE_DATE_FORMAT.parseObject(s);
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    private TestDate() {
+    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 

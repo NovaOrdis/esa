@@ -14,29 +14,15 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
-
-import io.novaordis.clad.UserErrorException;
-import io.novaordis.esa.processor.EventCSVWriter;
-import io.novaordis.esa.processor.HttpdLogParser;
-import io.novaordis.esa.processor.InputStreamToEventConvertor;
-import io.novaordis.esa.processor.SingleThreadedEventProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ArrayBlockingQueue;
+package io.novaordis.esa.logs;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/22/16
  */
-public class EventStreamAnalyzer {
+public class ParsingException extends Exception {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    private static final Logger log = LoggerFactory.getLogger(EventStreamAnalyzer.class);
-
-    public static final int BUFFER_SIZE = 1024 * 1024;
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -44,37 +30,20 @@ public class EventStreamAnalyzer {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    // CommandLineDriven implementation --------------------------------------------------------------------------------
+    public ParsingException() {
+        super();
+    }
 
-    public void run() throws UserErrorException {
+    public ParsingException(String message) {
+        super(message);
+    }
 
-        SingleThreadedEventProcessor one = new SingleThreadedEventProcessor("file to event convertor");
+    public ParsingException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-        //        BufferedReader input = null;
-//
-//        try {
-//
-//            input = new BufferedReader(new InputStreamReader(System.in), BUFFER_SIZE);
-
-        one.setInput(System.in);
-        one.setByteLogic(new InputStreamToEventConvertor());
-        one.setOutput(new ArrayBlockingQueue<>(10000));
-
-        SingleThreadedEventProcessor two = new SingleThreadedEventProcessor("httpd log parser");
-        two.setInput(one.getOutputQueue());
-        two.setEventLogic(new HttpdLogParser());
-        two.setOutput(new ArrayBlockingQueue<>(10000));
-
-        SingleThreadedEventProcessor three = new SingleThreadedEventProcessor("csv writer");
-        three.setInput(two.getOutputQueue());
-        three.setEventLogic(new EventCSVWriter());
-        three.setOutput(System.out);
-
-        one.start();
-        two.start();
-        three.start();
-
-        three.waitForEndOfStream();
+    public ParsingException(Throwable cause) {
+        super(cause);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

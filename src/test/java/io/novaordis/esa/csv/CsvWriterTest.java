@@ -14,32 +14,20 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
+package io.novaordis.esa.csv;
 
-import io.novaordis.clad.UserErrorException;
+import io.novaordis.esa.EventProcessor;
+import io.novaordis.esa.EventProcessorTest;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/22/16
  */
-public class Main {
+public class CsvWriterTest extends EventProcessorTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
-
-    public static void main(String[] args) throws Exception {
-
-        try {
-
-            EventStreamAnalyzer esa = new EventStreamAnalyzer();
-            esa.run();
-        }
-        catch(UserErrorException e) {
-
-            System.err.println(e.getMessage());
-        }
-    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
@@ -50,6 +38,12 @@ public class Main {
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected EventProcessor getEventProcessorToTest() throws Exception {
+
+        return new CsvWriter();
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

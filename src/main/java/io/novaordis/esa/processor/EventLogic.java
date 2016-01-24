@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
+package io.novaordis.esa.processor;
 
-import io.novaordis.esa.logs.httpd.LogLine;
+import io.novaordis.esa.event.Event;
 
 /**
+ * Logic that knows how to process Events.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/23/16
  */
-public interface EventProcessor {
+public interface EventLogic extends Logic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,6 +32,9 @@ public interface EventProcessor {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    void process(LogLine event) throws Exception;
+    /**
+     * @return the result. May return null when multiple input events are required to create a single output event.
+     */
+    Event process(Event event);
 
 }

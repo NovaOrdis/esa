@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
+package io.novaordis.esa.event.special;
 
-import io.novaordis.clad.UserErrorException;
-import io.novaordis.esa.processor.EventCSVWriter;
-import io.novaordis.esa.processor.HttpdLogParser;
-import io.novaordis.esa.processor.InputStreamToEventConvertor;
-import io.novaordis.esa.processor.SingleThreadedEventProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.novaordis.esa.event.Event;
+import io.novaordis.esa.event.Property;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/23/16
  */
-public class EventStreamAnalyzer {
+public class EndOfStreamEvent implements Event {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    private static final Logger log = LoggerFactory.getLogger(EventStreamAnalyzer.class);
-
-    public static final int BUFFER_SIZE = 1024 * 1024;
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -44,37 +36,31 @@ public class EventStreamAnalyzer {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    // CommandLineDriven implementation --------------------------------------------------------------------------------
+    // Event implementation --------------------------------------------------------------------------------------------
 
-    public void run() throws UserErrorException {
+    @Override
+    public Date getTimestamp() {
+        throw new RuntimeException("getTimestamp() NOT YET IMPLEMENTED");
+    }
 
-        SingleThreadedEventProcessor one = new SingleThreadedEventProcessor("file to event convertor");
+    @Override
+    public List<Property> getProperties() {
+        throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
+    }
 
-        //        BufferedReader input = null;
-//
-//        try {
-//
-//            input = new BufferedReader(new InputStreamReader(System.in), BUFFER_SIZE);
+    @Override
+    public Property getProperty(String name) {
+        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
+    }
 
-        one.setInput(System.in);
-        one.setByteLogic(new InputStreamToEventConvertor());
-        one.setOutput(new ArrayBlockingQueue<>(10000));
+    @Override
+    public Property getProperty(int index) {
+        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
+    }
 
-        SingleThreadedEventProcessor two = new SingleThreadedEventProcessor("httpd log parser");
-        two.setInput(one.getOutputQueue());
-        two.setEventLogic(new HttpdLogParser());
-        two.setOutput(new ArrayBlockingQueue<>(10000));
-
-        SingleThreadedEventProcessor three = new SingleThreadedEventProcessor("csv writer");
-        three.setInput(two.getOutputQueue());
-        three.setEventLogic(new EventCSVWriter());
-        three.setOutput(System.out);
-
-        one.start();
-        two.start();
-        three.start();
-
-        three.waitForEndOfStream();
+    @Override
+    public Property setProperty(int index, Property property) {
+        throw new RuntimeException("setProperty() NOT YET IMPLEMENTED");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

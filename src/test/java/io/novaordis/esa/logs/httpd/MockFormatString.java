@@ -14,36 +14,67 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
+package io.novaordis.esa.logs.httpd;
 
-import io.novaordis.clad.UserErrorException;
+import io.novaordis.esa.logs.ParsingException;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/22/16
  */
-public class Main {
+public class MockFormatString implements FormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    public static void main(String[] args) throws Exception {
-
-        try {
-
-            EventStreamAnalyzer esa = new EventStreamAnalyzer();
-            esa.run();
-        }
-        catch(UserErrorException e) {
-
-            System.err.println(e.getMessage());
-        }
-    }
-
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private String literal;
+    private Class type;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    public MockFormatString(String literal) {
+        this(literal, null);
+    }
+
+    public MockFormatString(String literal, Class type) {
+        this.literal = literal;
+        this.type = type;
+    }
+
+    // FormatStrings implementation ------------------------------------------------------------------------------------
+
+    @Override
+    public String getLiteral() {
+        return literal;
+    }
+
+    @Override
+    public Object parse(String logStringRepresentation) throws ParsingException {
+        throw new RuntimeException("parse() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public Class getType() {
+        return type;
+    }
+
+    @Override
+    public boolean isLeftEnclosure() {
+        throw new RuntimeException("isLeftEnclosure() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public boolean isRightEnclosure() {
+        throw new RuntimeException("isRightEnclosure() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public FormatString getMatchingEnclosure() {
+        throw new RuntimeException("getMatchingEnclosure() NOT YET IMPLEMENTED");
+    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 

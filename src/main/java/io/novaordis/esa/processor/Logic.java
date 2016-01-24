@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
-
-import io.novaordis.esa.logs.httpd.LogLine;
+package io.novaordis.esa.processor;
 
 /**
+ * Logic knows to process either Events or bytes.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/23/16
  */
-public interface EventProcessor {
+public interface Logic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,6 +30,5 @@ public interface EventProcessor {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    void process(LogLine event) throws Exception;
 
 }

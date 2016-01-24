@@ -14,38 +14,47 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
+package io.novaordis.esa.logs;
 
-import io.novaordis.clad.UserErrorException;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/23/16
  */
-public class Main {
+public class ParsingExceptionTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
-
-    public static void main(String[] args) throws Exception {
-
-        try {
-
-            EventStreamAnalyzer esa = new EventStreamAnalyzer();
-            esa.run();
-        }
-        catch(UserErrorException e) {
-
-            System.err.println(e.getMessage());
-        }
-    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void constructor1() throws Exception {
+
+        //noinspection ThrowableInstanceNeverThrown
+        ParsingException e = new ParsingException();
+        assertNull(e.getCause());
+        assertNull(e.getMessage());
+    }
+
+    @Test
+    public void constructor4() throws Exception {
+
+        //noinspection ThrowableInstanceNeverThrown
+        ParsingException e = new ParsingException(new RuntimeException());
+        assertTrue(e.getCause() instanceof RuntimeException);
+        assertEquals("java.lang.RuntimeException", e.getMessage());
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

@@ -14,29 +14,19 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
+package io.novaordis.esa.processor;
 
-import io.novaordis.clad.UserErrorException;
-import io.novaordis.esa.processor.EventCSVWriter;
-import io.novaordis.esa.processor.HttpdLogParser;
-import io.novaordis.esa.processor.InputStreamToEventConvertor;
-import io.novaordis.esa.processor.SingleThreadedEventProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.novaordis.esa.event.Event;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.List;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/23/16
  */
-public class EventStreamAnalyzer {
+public class MockByteLogic implements ByteLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    private static final Logger log = LoggerFactory.getLogger(EventStreamAnalyzer.class);
-
-    public static final int BUFFER_SIZE = 1024 * 1024;
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -44,37 +34,11 @@ public class EventStreamAnalyzer {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    // CommandLineDriven implementation --------------------------------------------------------------------------------
+    // ByteLogic implementation ----------------------------------------------------------------------------------------
 
-    public void run() throws UserErrorException {
-
-        SingleThreadedEventProcessor one = new SingleThreadedEventProcessor("file to event convertor");
-
-        //        BufferedReader input = null;
-//
-//        try {
-//
-//            input = new BufferedReader(new InputStreamReader(System.in), BUFFER_SIZE);
-
-        one.setInput(System.in);
-        one.setByteLogic(new InputStreamToEventConvertor());
-        one.setOutput(new ArrayBlockingQueue<>(10000));
-
-        SingleThreadedEventProcessor two = new SingleThreadedEventProcessor("httpd log parser");
-        two.setInput(one.getOutputQueue());
-        two.setEventLogic(new HttpdLogParser());
-        two.setOutput(new ArrayBlockingQueue<>(10000));
-
-        SingleThreadedEventProcessor three = new SingleThreadedEventProcessor("csv writer");
-        three.setInput(two.getOutputQueue());
-        three.setEventLogic(new EventCSVWriter());
-        three.setOutput(System.out);
-
-        one.start();
-        two.start();
-        three.start();
-
-        three.waitForEndOfStream();
+    @Override
+    public List<Event> process(int b) {
+        throw new RuntimeException("process() NOT YET IMPLEMENTED");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

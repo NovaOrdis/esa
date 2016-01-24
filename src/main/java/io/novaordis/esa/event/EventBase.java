@@ -14,38 +14,46 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
+package io.novaordis.esa.event;
 
-import io.novaordis.clad.UserErrorException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class Main {
+public abstract class EventBase implements Event {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    public static void main(String[] args) throws Exception {
-
-        try {
-
-            EventStreamAnalyzer esa = new EventStreamAnalyzer();
-            esa.run();
-        }
-        catch(UserErrorException e) {
-
-            System.err.println(e.getMessage());
-        }
-    }
-
     // Attributes ------------------------------------------------------------------------------------------------------
+
+    private Date timestamp;
+    private List<Property> properties;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    // Event implementation --------------------------------------------------------------------------------------------
+
+    @Override
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
+
+    /**
+     * @return the old timestamp value or null if none was set
+     */
+    public Date setTimestamp(Date d) {
+
+        Date old = this.timestamp;
+        this.timestamp = d;
+        return old;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
-
-import io.novaordis.esa.logs.httpd.LogLine;
+package io.novaordis.esa.event;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/23/16
  */
-public interface EventProcessor {
+public interface MeasureUnit {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
-
-    void process(LogLine event) throws Exception;
 
 }

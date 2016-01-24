@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
+package io.novaordis.esa.processor;
 
-import io.novaordis.esa.logs.httpd.LogLine;
+import io.novaordis.esa.event.Event;
+
+import java.io.InputStream;
+import java.util.List;
 
 /**
+ * Logic that knows how to process bytes and make events out of them.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/23/16
  */
-public interface EventProcessor {
+public interface ByteLogic extends Logic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,6 +35,16 @@ public interface EventProcessor {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    void process(LogLine event) throws Exception;
+    /**
+     * Even if we pass an int as argument, that int is actually a byte resulted from an InputStream.read(). From
+     * InputStream.read() documentation: "Reads the next byte of data from the input stream. The value byte is
+     * returned as an <code>int</code> in the range <code>0</code> to <code>255</code>." -1 means end of stream.
+     *
+     * @return a list of events, which may be empty when multiple bytes are required to generate a single event, it
+     * may contain just one element, or it may contain multiple elements. It is never null.
+     *
+     * @see InputStream#read()
+     */
+    List<Event> process(int b);
 
 }
