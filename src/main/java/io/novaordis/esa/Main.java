@@ -84,6 +84,8 @@ public class Main {
                 //
                 // document synchronization primitives
                 //
+
+                throw new RuntimeException(this + ".eventStreamEnded() NOT YET IMPLEMENTED");
             }
         };
 

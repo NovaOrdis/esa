@@ -18,8 +18,11 @@ package io.novaordis.esa.core;
 
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -40,7 +43,7 @@ public abstract class ComponentTest {
     @Test
     public void nullName() throws Exception {
 
-        Component c = getEventPipelineComponentToTest(null);
+        Component c = getComponentToTest(null);
 
         assertNull(c.getName());
 
@@ -52,16 +55,48 @@ public abstract class ComponentTest {
     @Test
     public void name() throws Exception {
 
-        Component c = getEventPipelineComponentToTest("test");
+        Component c = getComponentToTest("test");
 
         assertEquals("test", c.getName());
+    }
+
+    @Test
+    public void endOfStreamListeners() throws Exception {
+
+        Component c = getComponentToTest("test");
+
+        assertTrue(c.getEndOfStreamListeners().isEmpty());
+
+        MockEndOfStreamListener meos = new MockEndOfStreamListener();
+
+        c.addEndOfStreamListener(meos);
+
+        List<EndOfStreamListener> endOfStreamListeners = c.getEndOfStreamListeners();
+
+        assertEquals(1, endOfStreamListeners.size());
+        assertEquals(meos, endOfStreamListeners.get(0));
+
+        MockEndOfStreamListener meos2 = new MockEndOfStreamListener();
+
+        c.addEndOfStreamListener(meos2);
+
+        endOfStreamListeners = c.getEndOfStreamListeners();
+
+        assertEquals(2, endOfStreamListeners.size());
+        assertEquals(meos, endOfStreamListeners.get(0));
+        assertEquals(meos2, endOfStreamListeners.get(1));
+
+        c.clearEndOfStreamListeners();
+
+        endOfStreamListeners = c.getEndOfStreamListeners();
+        assertTrue(endOfStreamListeners.isEmpty());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    protected abstract Component getEventPipelineComponentToTest(String name) throws Exception;
+    protected abstract Component getComponentToTest(String name) throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

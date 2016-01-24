@@ -36,6 +36,12 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private BlockingQueue<Event> inputQueue;
+
+    private OutputStreamConversionLogic conversionLogic;
+
+    private OutputStream outputStream;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public OutputStreamTerminator() {
@@ -46,7 +52,7 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
         super(name);
     }
 
-    // Service implementation ------------------------------------------------------------------------------------------
+    // Component implementation ----------------------------------------------------------------------------------------
 
     @Override
     public void start() throws Exception {
@@ -58,43 +64,50 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
         throw new RuntimeException("stop() NOT YET IMPLEMENTED");
     }
 
-    @Override
-    public void addEndOfStreamListener(EndOfStreamListener listener) {
-        throw new RuntimeException("addEndOfStreamListener() NOT YET IMPLEMENTED");
-    }
-
-    // Consumer implementation -----------------------------------------------------------------------------------------
+    // Terminator implementation ---------------------------------------------------------------------------------------
 
     @Override
     public BlockingQueue<Event> getInputQueue() {
-        throw new RuntimeException("getInputQueue() NOT YET IMPLEMENTED");
+
+        return inputQueue;
     }
 
     @Override
     public void setInputQueue(BlockingQueue<Event> inputQueue) {
-        throw new RuntimeException("setInputQueue() NOT YET IMPLEMENTED");
+
+        this.inputQueue = inputQueue;
     }
 
+    /**
+     * @exception IllegalArgumentException if the conversion logic being fed is not an OutputStreamConversionLogic
+     */
     @Override
     public void setConversionLogic(ConversionLogic conversionLogic) {
-        throw new RuntimeException("setConversionLogic() NOT YET IMPLEMENTED");
+
+        if (!(conversionLogic instanceof OutputStreamConversionLogic)) {
+
+            throw new IllegalArgumentException(this + " only accepts OutputStreamConversionLogic instances");
+        }
+
+        this.conversionLogic = (OutputStreamConversionLogic)conversionLogic;
     }
 
     @Override
-    public ConversionLogic getConversionLogic() {
-        throw new RuntimeException("getConversionLogic() NOT YET IMPLEMENTED");
+    public OutputStreamConversionLogic getConversionLogic() {
+
+        return conversionLogic;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
     public OutputStream getOutputStream() {
 
-        throw new RuntimeException("getOutputStream() NOT YET IMPLEMENTED");
+        return outputStream;
     }
 
     public void setOutputStream(OutputStream outputStream) {
 
-        throw new RuntimeException("setOutputStream() NOT YET IMPLEMENTED");
+        this.outputStream = outputStream;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

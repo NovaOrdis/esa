@@ -17,19 +17,12 @@
 package io.novaordis.esa.core;
 
 import io.novaordis.esa.core.event.Event;
-import org.junit.Test;
-
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public abstract class InitiatorTest extends ComponentTest {
+public class MockOutputStreamConversionLogic extends MockConversionLogic implements OutputStreamConversionLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -39,43 +32,23 @@ public abstract class InitiatorTest extends ComponentTest {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    // OutputStreamConversionLogic implementation ----------------------------------------------------------------------
+
+    @Override
+    public boolean process(Event inputEvent) {
+        throw new RuntimeException("process() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public byte[] getBytes() {
+        throw new RuntimeException("getBytes() NOT YET IMPLEMENTED");
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
-
-    @Test
-    public void conversionLogic() throws Exception {
-
-        Initiator initiator = getComponentToTest("test");
-
-        assertNull(initiator.getConversionLogic());
-
-        MockConversionLogic conversionLogic = new MockConversionLogic();
-
-        initiator.setConversionLogic(conversionLogic);
-
-        assertEquals(conversionLogic, initiator.getConversionLogic());
-    }
-
-    @Test
-    public void outputQueue() throws Exception {
-
-        Initiator initiator = getComponentToTest("test");
-
-        assertNull(initiator.getOutputQueue());
-
-        ArrayBlockingQueue<Event> queue = new ArrayBlockingQueue<>(1);
-
-        BlockingQueue<Event> installedQueue = initiator.setOutputQueue(queue);
-
-        assertEquals(queue, installedQueue);
-        assertEquals(queue, initiator.getOutputQueue());
-    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
-
-    @Override
-    protected abstract Initiator getComponentToTest(String name) throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

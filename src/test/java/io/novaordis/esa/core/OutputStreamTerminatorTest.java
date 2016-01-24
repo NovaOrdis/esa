@@ -20,8 +20,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -32,11 +32,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class InputStreamInitiatorTest extends InitiatorTest {
+public class OutputStreamTerminatorTest extends TerminatorTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(InputStreamInitiatorTest.class);
+    private static final Logger log = LoggerFactory.getLogger(OutputStreamTerminatorTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -51,67 +51,66 @@ public class InputStreamInitiatorTest extends InitiatorTest {
     public void conversionLogic() throws Exception {
 
         //
-        // input stream initiators only accept input stream conversion logic
+        // output stream terminators only accept output stream conversion logic
         //
 
-        Initiator initiator = getComponentToTest("test");
+        Terminator terminator = getComponentToTest("test");
 
-        assertNull(initiator.getConversionLogic());
+        assertNull(terminator.getConversionLogic());
 
         MockConversionLogic conversionLogic = new MockConversionLogic();
 
         try {
-            initiator.setConversionLogic(conversionLogic);
-            fail("should throw IllegalArgumentException because we're feeding a non-InputStreamConversionLogic");
+            terminator.setConversionLogic(conversionLogic);
+            fail("should throw IllegalArgumentException because we're feeding a non-OutputStreamConversionLogic");
         }
         catch(IllegalArgumentException e) {
             log.info(e.getMessage());
-
         }
 
-        assertNull(initiator.getConversionLogic());
+        assertNull(terminator.getConversionLogic());
 
-        InputStreamConversionLogic inputStreamConversionLogic = new MockInputStreamConversionLogic();
+        OutputStreamConversionLogic outputStreamConversionLogic = new MockOutputStreamConversionLogic();
 
-        initiator.setConversionLogic(inputStreamConversionLogic);
+        terminator.setConversionLogic(outputStreamConversionLogic);
 
-        assertEquals(inputStreamConversionLogic, initiator.getConversionLogic());
+        assertEquals(outputStreamConversionLogic, terminator.getConversionLogic());
     }
 
     @Test
     public void toStringWithNoName() {
 
-        InputStreamInitiator initiator = new InputStreamInitiator();
+        OutputStreamTerminator terminator = new OutputStreamTerminator();
 
-        String s = initiator.toString();
+        String s = terminator.toString();
 
         log.info(s);
 
-        assertTrue(s.matches("InputStreamInitiator\\[.*\\]"));
+        assertTrue(s.matches("OutputStreamTerminator\\[.*\\]"));
     }
 
     @Test
-    public void inputStream() throws Exception {
+    public void outputStream() throws Exception {
 
-        InputStreamInitiator initiator = getComponentToTest("test");
+        OutputStreamTerminator terminator = getComponentToTest("test");
 
-        assertNull(initiator.getInputStream());
+        assertNull(terminator.getOutputStream());
 
-        InputStream is = new ByteArrayInputStream(new byte[0]);
+        OutputStream os = new ByteArrayOutputStream();
 
-        initiator.setInputStream(is);
+        terminator.setOutputStream(os);
 
-        assertEquals(is, initiator.getInputStream());
+        assertEquals(os, terminator.getOutputStream());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
-    // Protected -------------------------------------------------------------------------------------------------------
-
     @Override
-    protected InputStreamInitiator getComponentToTest(String name) {
-        return new InputStreamInitiator(name);
+    protected OutputStreamTerminator getComponentToTest(String name) throws Exception {
+        return new OutputStreamTerminator(name);
     }
+
+    // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
 

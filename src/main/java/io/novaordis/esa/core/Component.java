@@ -16,6 +16,8 @@
 
 package io.novaordis.esa.core;
 
+import java.util.List;
+
 /**
  * An event pipeline component: an instance that can be used as part of an event pipeline. It could have a name, it can
  * be started and stopped and can have listeners registered on it. Usually starting involves putting internal threads
@@ -33,6 +35,7 @@ public interface Component {
     // Public ----------------------------------------------------------------------------------------------------------
 
     String getName();
+
     void setName(String name);
 
     /**
@@ -45,7 +48,21 @@ public interface Component {
      */
     void stop();
 
+    /**
+     * Adds an EndOfStream event listener at the end of the list.
+     */
     void addEndOfStreamListener(EndOfStreamListener listener);
+
+    /**
+     * Returns the EndOfStream event listener list. Consult with implementation whether the list is the actual
+     * underlying storage or a copy.
+     */
+    List<EndOfStreamListener> getEndOfStreamListeners();
+
+    /**
+     * Clears the EndOfStream event listener list
+     */
+    void clearEndOfStreamListeners();
 
 
 }

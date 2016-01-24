@@ -20,7 +20,6 @@ import io.novaordis.esa.core.event.Event;
 import org.junit.Test;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -29,7 +28,7 @@ import static org.junit.Assert.assertNull;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public abstract class InitiatorTest extends ComponentTest {
+public abstract class TerminatorTest extends ComponentTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -42,32 +41,31 @@ public abstract class InitiatorTest extends ComponentTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
-    public void conversionLogic() throws Exception {
+    public void inputQueue() throws Exception {
 
-        Initiator initiator = getComponentToTest("test");
+        Terminator terminator = getComponentToTest("test");
 
-        assertNull(initiator.getConversionLogic());
+        assertNull(terminator.getInputQueue());
 
-        MockConversionLogic conversionLogic = new MockConversionLogic();
+        ArrayBlockingQueue<Event> inputQueue = new ArrayBlockingQueue<Event>(1);
 
-        initiator.setConversionLogic(conversionLogic);
+        terminator.setInputQueue(inputQueue);
 
-        assertEquals(conversionLogic, initiator.getConversionLogic());
+        assertEquals(inputQueue, terminator.getInputQueue());
     }
 
     @Test
-    public void outputQueue() throws Exception {
+    public void conversionLogic() throws Exception {
 
-        Initiator initiator = getComponentToTest("test");
+        Terminator terminator = getComponentToTest("test");
 
-        assertNull(initiator.getOutputQueue());
+        assertNull(terminator.getConversionLogic());
 
-        ArrayBlockingQueue<Event> queue = new ArrayBlockingQueue<>(1);
+        MockConversionLogic conversionLogic = new MockConversionLogic();
 
-        BlockingQueue<Event> installedQueue = initiator.setOutputQueue(queue);
+        terminator.setConversionLogic(conversionLogic);
 
-        assertEquals(queue, installedQueue);
-        assertEquals(queue, initiator.getOutputQueue());
+        assertEquals(conversionLogic, terminator.getConversionLogic());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -75,7 +73,7 @@ public abstract class InitiatorTest extends ComponentTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected abstract Initiator getComponentToTest(String name) throws Exception;
+    protected abstract Terminator getComponentToTest(String name) throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

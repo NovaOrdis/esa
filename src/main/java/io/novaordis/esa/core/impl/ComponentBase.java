@@ -17,6 +17,10 @@
 package io.novaordis.esa.core.impl;
 
 import io.novaordis.esa.core.Component;
+import io.novaordis.esa.core.EndOfStreamListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -32,13 +36,16 @@ public abstract class ComponentBase implements Component {
 
     private String name;
 
+    private List<EndOfStreamListener> endOfStreamListeners;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     protected ComponentBase(String name) {
         this.name = name;
+        this.endOfStreamListeners = new ArrayList<>();
     }
 
-    // Public ----------------------------------------------------------------------------------------------------------
+    // Component implementation ----------------------------------------------------------------------------------------
 
     /**
      * Can be null.
@@ -53,6 +60,39 @@ public abstract class ComponentBase implements Component {
     public void setName(String name) {
 
         this.name = name;
+    }
+
+    @Override
+    public void addEndOfStreamListener(EndOfStreamListener listener) {
+
+        endOfStreamListeners.add(listener);
+    }
+
+    /**
+     * Warning: returns the underlying storage so handle with care.
+     */
+    @Override
+    public List<EndOfStreamListener> getEndOfStreamListeners() {
+
+        return endOfStreamListeners;
+    }
+
+    @Override
+    public void clearEndOfStreamListeners() {
+
+        endOfStreamListeners.clear();
+    }
+
+    // Public ----------------------------------------------------------------------------------------------------------
+
+    @Override
+    public String toString() {
+
+        if (getName() == null) {
+            return getClass().getSimpleName() + "[" + Integer.toHexString(System.identityHashCode(this)) + "]";
+        }
+
+        return name;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

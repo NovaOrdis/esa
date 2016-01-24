@@ -39,6 +39,10 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
 
     private InputStream inputStream;
 
+    private InputStreamConversionLogic conversionLogic;
+
+    private BlockingQueue<Event> outputQueue;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public InputStreamInitiator() {
@@ -61,31 +65,38 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
         throw new RuntimeException("stop() NOT YET IMPLEMENTED");
     }
 
-    @Override
-    public void addEndOfStreamListener(EndOfStreamListener listener) {
-        throw new RuntimeException("addEndOfStreamListener() NOT YET IMPLEMENTED");
-    }
-
     // Initiator implementation ----------------------------------------------------------------------------------------
 
     @Override
     public BlockingQueue<Event> getOutputQueue() {
-        throw new RuntimeException("getOutputQueue() NOT YET IMPLEMENTED");
+        return outputQueue;
     }
 
     @Override
-    public void setOutputQueue(BlockingQueue<Event> outputQueue) {
-        throw new RuntimeException("setOutputQueue() NOT YET IMPLEMENTED");
+    public BlockingQueue<Event> setOutputQueue(BlockingQueue<Event> outputQueue) {
+
+        this.outputQueue = outputQueue;
+        return this.outputQueue;
     }
 
+    /**
+     * @exception IllegalArgumentException if the conversion logic being fed is not an InputStreamConversionLogic
+     */
     @Override
     public void setConversionLogic(ConversionLogic conversionLogic) {
-        throw new RuntimeException("setConversionLogic() NOT YET IMPLEMENTED");
+
+        if (!(conversionLogic instanceof InputStreamConversionLogic)) {
+
+            throw new IllegalArgumentException(this + " only accepts InputStreamConversionLogic instances");
+        }
+
+        this.conversionLogic = (InputStreamConversionLogic)conversionLogic;
     }
 
     @Override
-    public ConversionLogic getConversionLogic() {
-        throw new RuntimeException("getConversionLogic() NOT YET IMPLEMENTED");
+    public InputStreamConversionLogic getConversionLogic() {
+
+        return conversionLogic;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -98,13 +109,6 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
     public void setInputStream(InputStream inputStream) {
 
         this.inputStream = inputStream;
-    }
-
-    @Override
-    public String toString() {
-
-        return getName() == null ?
-                "InputStreamInitiator[" + Integer.toHexString(System.identityHashCode(this)) + "]" : getName();
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

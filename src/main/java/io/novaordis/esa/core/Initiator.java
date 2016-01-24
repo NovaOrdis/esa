@@ -47,7 +47,10 @@ public interface Initiator extends Component {
 
     BlockingQueue<Event> getOutputQueue();
 
-    void setOutputQueue(BlockingQueue<Event> outputQueue);
+    /**
+     * @return the queue that has just been successfully installed.
+     */
+    BlockingQueue<Event> setOutputQueue(BlockingQueue<Event> outputQueue);
 
     void setConversionLogic(ConversionLogic conversionLogic);
 

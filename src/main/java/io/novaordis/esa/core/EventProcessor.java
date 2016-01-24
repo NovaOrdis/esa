@@ -36,6 +36,12 @@ public class EventProcessor extends ComponentBase implements Component {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private BlockingQueue<Event> inputQueue;
+
+    private ProcessingLogic logic;
+
+    private BlockingQueue<Event> outputQueue;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public EventProcessor() {
@@ -58,35 +64,36 @@ public class EventProcessor extends ComponentBase implements Component {
         throw new RuntimeException("stop() NOT YET IMPLEMENTED");
     }
 
-    @Override
-    public void addEndOfStreamListener(EndOfStreamListener listener) {
-        throw new RuntimeException("addEndOfStreamListener() NOT YET IMPLEMENTED");
-    }
-
     // Public ----------------------------------------------------------------------------------------------------------
 
     public BlockingQueue<Event> getInputQueue() {
-        throw new RuntimeException("getInputQueue() NOT YET IMPLEMENTED");
+
+        return inputQueue;
     }
 
     public void setInputQueue(BlockingQueue<Event> inputQueue) {
-        throw new RuntimeException("setInputQueue() NOT YET IMPLEMENTED");
+
+        this.inputQueue = inputQueue;
     }
 
     public BlockingQueue<Event> getOutputQueue() {
-        throw new RuntimeException("getOutputQueue() NOT YET IMPLEMENTED");
+
+        return outputQueue;
     }
 
     public void setOutputQueue(BlockingQueue<Event> outputQueue) {
-        throw new RuntimeException("setOutputQueue() NOT YET IMPLEMENTED");
+
+        this.outputQueue = outputQueue;
     }
 
-    public void setProcessingLogic(ProcessingLogic processingLogic) {
-        throw new RuntimeException("setProcessingLogic() NOT YET IMPLEMENTED");
+    public void setProcessingLogic(ProcessingLogic logic) {
+
+        this.logic = logic;
     }
 
     public ProcessingLogic getProcessingLogic() {
-        throw new RuntimeException("getProcessingLogic() NOT YET IMPLEMENTED");
+
+        return logic;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
