@@ -16,6 +16,8 @@
 
 package io.novaordis.esa;
 
+import io.novaordis.esa.processor.EventProcessor;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16

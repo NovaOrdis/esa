@@ -201,26 +201,7 @@ public class SingleThreadedEventProcessor {
                     // read bytes/event from input, apply logic an write the resulting event to output
                     //
 
-                    if (inputQueue != null) {
-
-                        Event event = inputQueue.take();
-
-                        if (debug) { log.debug(SingleThreadedEventProcessor.this + " read event from the input queue"); }
-
-                        List<Event> outputEvents = eventLogic.process(event);
-
-                        if (!outputEvents.isEmpty()) {
-
-                            // attempt to put in queue and block until space becomes 217
-                            for(Event e: outputEvents) {
-
-                                outputQueue.put(e);
-
-                                if (debug) { log.debug(SingleThreadedEventProcessor.this + " wrote event to the output queue"); }
-                            }
-                        }
-                    }
-                    else if (inputStream != null) {
+                    if (inputStream != null) {
 
                         int b;
 
@@ -236,6 +217,29 @@ public class SingleThreadedEventProcessor {
                         if (!outputEvents.isEmpty()) {
 
                             // attempt to put in queue and block until space becomes available
+                            for(Event e: outputEvents) {
+
+                                outputQueue.put(e);
+
+                                if (debug) { log.debug(SingleThreadedEventProcessor.this + " wrote event to the output queue"); }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //
+                        // we expect events on the input queue
+                        //
+
+                        Event event = inputQueue.take();
+
+                        if (debug) { log.debug(SingleThreadedEventProcessor.this + " read event from the input queue"); }
+
+                        List<Event> outputEvents = eventLogic.process(event);
+
+                        if (!outputEvents.isEmpty()) {
+
+                            // attempt to put in queue and block until space becomes 217
                             for(Event e: outputEvents) {
 
                                 outputQueue.put(e);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
+package io.novaordis.esa.processor;
 
 import io.novaordis.esa.logs.httpd.LogLine;
 

@@ -16,7 +16,7 @@
 
 package io.novaordis.esa.csv;
 
-import io.novaordis.esa.EventProcessor;
+import io.novaordis.esa.processor.EventProcessor;
 import io.novaordis.esa.EventProcessorTest;
 
 /**

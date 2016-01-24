@@ -17,6 +17,12 @@
 package io.novaordis.esa;
 
 import io.novaordis.clad.UserErrorException;
+import io.novaordis.esa.processor.EventCSVWriter;
+import io.novaordis.esa.processor.HttpdLogParser;
+import io.novaordis.esa.processor.InputStreamConverter;
+import io.novaordis.esa.processor.SingleThreadedEventProcessor;
+
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -26,19 +32,35 @@ public class Main {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    public static final int QUEUE_SIZE = 10;
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     public static void main(String[] args) throws Exception {
 
-        try {
+        SingleThreadedEventProcessor one = new SingleThreadedEventProcessor("input stream reader");
 
-            EventStreamAnalyzer esa = new EventStreamAnalyzer();
-            esa.run();
-        }
-        catch(UserErrorException e) {
+        one.setInput(System.in);
+        one.setByteLogic(new InputStreamConverter());
+        one.setOutput(new ArrayBlockingQueue<>(QUEUE_SIZE));
 
-            System.err.println(e.getMessage());
-        }
+        SingleThreadedEventProcessor two = new SingleThreadedEventProcessor("httpd log parser");
+        two.setInput(one.getOutputQueue());
+        two.setEventLogic(new HttpdLogParser());
+        two.setOutput(new ArrayBlockingQueue<>(QUEUE_SIZE));
+
+        SingleThreadedEventProcessor three = new SingleThreadedEventProcessor("csv writer");
+        three.setInput(two.getOutputQueue());
+        three.setEventLogic(new EventCSVWriter());
+        three.setOutput(System.out);
+
+        one.start();
+        two.start();
+        three.start();
+
+        three.waitForEndOfStream();
+
+        Thread.currentThread().sleep(3600 * 1000L);
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------
