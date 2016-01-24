@@ -17,6 +17,7 @@
 package io.novaordis.esa.core;
 
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.impl.ComponentBase;
 
 import java.io.InputStream;
 import java.util.concurrent.BlockingQueue;
@@ -28,7 +29,7 @@ import java.util.concurrent.BlockingQueue;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class InputStreamInitiator implements Initiator {
+public class InputStreamInitiator extends ComponentBase implements Initiator {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -36,12 +37,16 @@ public class InputStreamInitiator implements Initiator {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String name;
+    private InputStream inputStream;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    public InputStreamInitiator() {
+        this(null);
+    }
+
     public InputStreamInitiator(String name) {
-        this.name = name;
+        super(name);
     }
 
     // Service implementation ------------------------------------------------------------------------------------------
@@ -87,14 +92,19 @@ public class InputStreamInitiator implements Initiator {
 
     public InputStream getInputStream() {
 
-        throw new RuntimeException("getInputStream() NOT YET IMPLEMENTED");
-
+        return inputStream;
     }
 
     public void setInputStream(InputStream inputStream) {
 
-        throw new RuntimeException("setInputStream() NOT YET IMPLEMENTED");
+        this.inputStream = inputStream;
+    }
 
+    @Override
+    public String toString() {
+
+        return getName() == null ?
+                "InputStreamInitiator[" + Integer.toHexString(System.identityHashCode(this)) + "]" : getName();
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

@@ -16,28 +16,15 @@
 
 package io.novaordis.esa.core;
 
-import io.novaordis.esa.core.event.Event;
-
-import java.util.concurrent.BlockingQueue;
-
 /**
- * Initiator of an event stream - it creates events from where there weren't before and places them on its output queue.
- * Example: an instance that reads lines from a log file and creates an Event instance for each line.
- *
- * The main concern of the initiator is to handle threading and interaction with the queues. The single threaded
- * byte-to-event (or something else) conversion logic is the responsibility of the initiation logic classes:
- *
- * @see InputStreamConversionLogic
- *
- * We exposed an interface instead of settling to the InputStreamInitiator class because we foresee other initiator
- * implementations: implementations that turn messages into events, implementations that turn HTTP requests into
- * events, etc.
- *
+ * An event pipeline component: an instance that can be used as part of an event pipeline. It could have a name, it can
+ * be started and stopped and can have listeners registered on it. Usually starting involves putting internal threads
+ * to work.
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public interface Initiator extends Component {
+public interface Component {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -45,12 +32,20 @@ public interface Initiator extends Component {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    BlockingQueue<Event> getOutputQueue();
+    String getName();
+    void setName(String name);
 
-    void setOutputQueue(BlockingQueue<Event> outputQueue);
+    /**
+     * Idempotent.
+     */
+    void start() throws Exception;
 
-    void setConversionLogic(ConversionLogic conversionLogic);
+    /**
+     * Idempotent.
+     */
+    void stop();
 
-    ConversionLogic getConversionLogic();
+    void addEndOfStreamListener(EndOfStreamListener listener);
+
 
 }

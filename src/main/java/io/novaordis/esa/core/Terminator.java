@@ -35,7 +35,7 @@ import java.util.concurrent.BlockingQueue;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public interface Terminator extends EventPipelineComponent {
+public interface Terminator extends Component {
 
     // Constants -------------------------------------------------------------------------------------------------------
 

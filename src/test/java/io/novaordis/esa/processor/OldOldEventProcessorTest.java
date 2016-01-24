@@ -47,178 +47,178 @@ public class OldOldEventProcessorTest {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    @Test
-    public void inputQueueAndInputStreamAreMutuallyExclusive() throws Exception {
+//    @Test
+//    public void inputQueueAndInputStreamAreMutuallyExclusive() throws Exception {
+//
+//        OldEventProcessor step = new OldEventProcessor();
+//
+//        step.setInput(new ArrayBlockingQueue<>(1));
+//
+//        try {
+//            step.setInput(new ByteArrayInputStream(new byte[1]));
+//            fail("should have thrown exception, the input stream and the input queue are mutually exclusive");
+//        }
+//        catch(IllegalStateException e) {
+//            log.info(e.getMessage());
+//        }
+//    }
 
-        OldEventProcessor step = new OldEventProcessor();
+//    @Test
+//    public void inputStreamAndInputQueueAreMutuallyExclusive() throws Exception {
+//
+//        OldEventProcessor step = new OldEventProcessor();
+//
+//        step.setInput(new ByteArrayInputStream(new byte[1]));
+//
+//        try {
+//            step.setInput(new ArrayBlockingQueue<>(1));
+//            fail("should have thrown exception, the input stream and the input queue are mutually exclusive");
+//        }
+//        catch(IllegalStateException e) {
+//            log.info(e.getMessage());
+//        }
+//    }
 
-        step.setInput(new ArrayBlockingQueue<>(1));
+//    @Test
+//    public void outputQueueAndOutputStreamAreMutuallyExclusive() throws Exception {
+//
+//        OldEventProcessor step = new OldEventProcessor();
+//
+//        step.setOutput(new ArrayBlockingQueue<>(1));
+//
+//        try {
+//            step.setOutput(new ByteArrayOutputStream());
+//            fail("should have thrown exception, the output stream and the output queue are mutually exclusive");
+//        }
+//        catch(IllegalStateException e) {
+//            log.info(e.getMessage());
+//        }
+//    }
 
-        try {
-            step.setInput(new ByteArrayInputStream(new byte[1]));
-            fail("should have thrown exception, the input stream and the input queue are mutually exclusive");
-        }
-        catch(IllegalStateException e) {
-            log.info(e.getMessage());
-        }
-    }
+//    @Test
+//    public void outputStreamAndOutputQueueAreMutuallyExclusive() throws Exception {
+//
+//        OldEventProcessor step = new OldEventProcessor();
+//
+//        step.setOutput(new ByteArrayOutputStream());
+//
+//        try {
+//            step.setOutput(new ArrayBlockingQueue<>(1));
+//            fail("should have thrown exception, the output stream and the output queue are mutually exclusive");
+//        }
+//        catch(IllegalStateException e) {
+//            log.info(e.getMessage());
+//        }
+//    }
 
-    @Test
-    public void inputStreamAndInputQueueAreMutuallyExclusive() throws Exception {
+//    @Test
+//    public void redundantStartIsFrownedUpon() throws Exception {
+//
+//        OldEventProcessor step = new OldEventProcessor();
+//
+//        step.start();
+//
+//        assertTrue(step.isRunning());
+//
+//        try {
+//            step.start();
+//            fail("should have thrown exception, redundant start");
+//        }
+//        catch (IllegalStateException e) {
+//            log.info(e.getMessage());
+//        }
+//
+//        assertTrue(step.isRunning());
+//
+//        step.stop();
+//
+//        assertFalse(step.isRunning());
+//    }
 
-        OldEventProcessor step = new OldEventProcessor();
+//    @Test
+//    public void startDoesNotSucceedBecauseThereIsNoLogic() throws Exception {
+//
+//        OldEventProcessor step = new OldEventProcessor();
+//
+//        assertNull(step.getByteLogic());
+//
+//        try {
+//            step.start();
+//            fail("should have thrown exception, no logic");
+//        }
+//        catch (IllegalStateException e) {
+//            log.info(e.getMessage());
+//        }
+//        assertFalse(step.isRunning());
+//    }
 
-        step.setInput(new ByteArrayInputStream(new byte[1]));
+//    @Test
+//    public void startDoesNotSucceedBecauseOfMissingInputAndLogicRequiresInput() throws Exception {
+//
+//        OldEventProcessor step = new OldEventProcessor();
+//
+//        assertNull(step.getInputQueue());
+//        assertNull(step.getInputStream());
+//
+//        // the logic requires input
+//        step.setByteLogic(new MockByteOldLogic());
+//        fail("MAKE SURE THE LOGIC REQUIRES INPUT");
+//
+//        try {
+//            step.start();
+//            fail("should have thrown exception, no inputs");
+//        }
+//        catch (IllegalStateException e) {
+//            log.info(e.getMessage());
+//        }
+//        assertFalse(step.isRunning());
+//    }
 
-        try {
-            step.setInput(new ArrayBlockingQueue<>(1));
-            fail("should have thrown exception, the input stream and the input queue are mutually exclusive");
-        }
-        catch(IllegalStateException e) {
-            log.info(e.getMessage());
-        }
-    }
+//    @Test
+//    public void startDoesNotSucceedBecauseOfMissingOutputAndLogicRequiresOutput() throws Exception {
+//
+//        OldEventProcessor step = new OldEventProcessor();
+//
+//        assertNull(step.getOutputQueue());
+//        assertNull(step.getOutputStream());
+//
+//        // the logic requires output
+//        step.setByteLogic(new MockByteOldLogic());
+//        fail("MAKE SURE THE LOGIC REQUIRES OUTPUT");
+//
+//        try {
+//            step.start();
+//            fail("should have thrown exception, no outputs");
+//        }
+//        catch (IllegalStateException e) {
+//            log.info(e.getMessage());
+//        }
+//        assertFalse(step.isRunning());
+//    }
 
-    @Test
-    public void outputQueueAndOutputStreamAreMutuallyExclusive() throws Exception {
+//    @Test
+//    public void endOfInputStream() throws Exception {
+//
+//        fail("RETURN HERE");
+//    }
 
-        OldEventProcessor step = new OldEventProcessor();
+//    @Test
+//    public void endOfInputQueue() throws Exception {
+//
+//        fail("RETURN HERE");
+//    }
 
-        step.setOutput(new ArrayBlockingQueue<>(1));
+//    @Test
+//    public void threadInterruption() throws Exception {
+//
+//        fail("Make sure that an interrupted thread does not kill the processor and it is logged as warning");
+//    }
 
-        try {
-            step.setOutput(new ByteArrayOutputStream());
-            fail("should have thrown exception, the output stream and the output queue are mutually exclusive");
-        }
-        catch(IllegalStateException e) {
-            log.info(e.getMessage());
-        }
-    }
-
-    @Test
-    public void outputStreamAndOutputQueueAreMutuallyExclusive() throws Exception {
-
-        OldEventProcessor step = new OldEventProcessor();
-
-        step.setOutput(new ByteArrayOutputStream());
-
-        try {
-            step.setOutput(new ArrayBlockingQueue<>(1));
-            fail("should have thrown exception, the output stream and the output queue are mutually exclusive");
-        }
-        catch(IllegalStateException e) {
-            log.info(e.getMessage());
-        }
-    }
-
-    @Test
-    public void redundantStartIsFrownedUpon() throws Exception {
-
-        OldEventProcessor step = new OldEventProcessor();
-
-        step.start();
-
-        assertTrue(step.isRunning());
-
-        try {
-            step.start();
-            fail("should have thrown exception, redundant start");
-        }
-        catch (IllegalStateException e) {
-            log.info(e.getMessage());
-        }
-
-        assertTrue(step.isRunning());
-
-        step.stop();
-
-        assertFalse(step.isRunning());
-    }
-
-    @Test
-    public void startDoesNotSucceedBecauseThereIsNoLogic() throws Exception {
-
-        OldEventProcessor step = new OldEventProcessor();
-
-        assertNull(step.getByteLogic());
-
-        try {
-            step.start();
-            fail("should have thrown exception, no logic");
-        }
-        catch (IllegalStateException e) {
-            log.info(e.getMessage());
-        }
-        assertFalse(step.isRunning());
-    }
-
-    @Test
-    public void startDoesNotSucceedBecauseOfMissingInputAndLogicRequiresInput() throws Exception {
-
-        OldEventProcessor step = new OldEventProcessor();
-
-        assertNull(step.getInputQueue());
-        assertNull(step.getInputStream());
-
-        // the logic requires input
-        step.setByteLogic(new MockByteOldLogic());
-        fail("MAKE SURE THE LOGIC REQUIRES INPUT");
-
-        try {
-            step.start();
-            fail("should have thrown exception, no inputs");
-        }
-        catch (IllegalStateException e) {
-            log.info(e.getMessage());
-        }
-        assertFalse(step.isRunning());
-    }
-
-    @Test
-    public void startDoesNotSucceedBecauseOfMissingOutputAndLogicRequiresOutput() throws Exception {
-
-        OldEventProcessor step = new OldEventProcessor();
-
-        assertNull(step.getOutputQueue());
-        assertNull(step.getOutputStream());
-
-        // the logic requires output
-        step.setByteLogic(new MockByteOldLogic());
-        fail("MAKE SURE THE LOGIC REQUIRES OUTPUT");
-
-        try {
-            step.start();
-            fail("should have thrown exception, no outputs");
-        }
-        catch (IllegalStateException e) {
-            log.info(e.getMessage());
-        }
-        assertFalse(step.isRunning());
-    }
-
-    @Test
-    public void endOfInputStream() throws Exception {
-
-        fail("RETURN HERE");
-    }
-
-    @Test
-    public void endOfInputQueue() throws Exception {
-
-        fail("RETURN HERE");
-    }
-
-    @Test
-    public void threadInterruption() throws Exception {
-
-        fail("Make sure that an interrupted thread does not kill the processor and it is logged as warning");
-    }
-
-    @Test
-    public void inputStreamFault() throws Exception {
-
-        fail("simulate an InputStream read() fault - what is the best way to deal with the outcome?");
-    }
+//    @Test
+//    public void inputStreamFault() throws Exception {
+//
+//        fail("simulate an InputStream read() fault - what is the best way to deal with the outcome?");
+//    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

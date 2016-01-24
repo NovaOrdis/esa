@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.csv;
-
-import io.novaordis.esa.processor.OldEventProcessor;
-import io.novaordis.esa.EventProcessorTest;
+package io.novaordis.esa.core;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/22/16
+ * @since 1/24/16
  */
-public class CsvWriterTest extends EventProcessorTest {
+public class InputStreamInitiatorTest extends InitiatorTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -40,9 +37,8 @@ public class CsvWriterTest extends EventProcessorTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected OldEventProcessor getEventProcessorToTest() throws Exception {
-
-        return new CsvWriter();
+    protected InputStreamInitiator getInitiatorToTest(String name) {
+        return new InputStreamInitiator(name);
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

@@ -24,8 +24,6 @@ import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.StringEventProducer;
 import io.novaordis.esa.csv.EventToCsvConverter;
 import io.novaordis.esa.logs.httpd.HttpdLogParsingLogic;
-import io.novaordis.esa.processor.EventCSVWriter;
-import io.novaordis.esa.processor.OldEventProcessor;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;

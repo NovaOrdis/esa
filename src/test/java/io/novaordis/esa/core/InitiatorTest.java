@@ -17,24 +17,34 @@
 package io.novaordis.esa.core;
 
 /**
- * An instance that can be part of an event pipeline. It can be started and stopped and can have listeners registered
- * on. Usually starting involves putting internal threads to work.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public interface EventPipelineComponent {
+public abstract class InitiatorTest extends ComponentTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
+    // Attributes ------------------------------------------------------------------------------------------------------
+
+    // Constructors ----------------------------------------------------------------------------------------------------
+
     // Public ----------------------------------------------------------------------------------------------------------
 
-    void start() throws Exception;
-    void stop();
+    // Package protected -----------------------------------------------------------------------------------------------
 
-    void addEndOfStreamListener(EndOfStreamListener listener);
+    // Protected -------------------------------------------------------------------------------------------------------
 
+    protected abstract Initiator getInitiatorToTest(String name) throws Exception;
+
+    @Override
+    protected Component getEventPipelineComponentToTest(String name) throws Exception {
+        return getInitiatorToTest(name);
+    }
+
+    // Private ---------------------------------------------------------------------------------------------------------
+
+    // Inner classes ---------------------------------------------------------------------------------------------------
 
 }

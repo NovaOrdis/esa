@@ -17,6 +17,7 @@
 package io.novaordis.esa.core;
 
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.impl.ComponentBase;
 
 import java.io.OutputStream;
 import java.util.concurrent.BlockingQueue;
@@ -27,7 +28,7 @@ import java.util.concurrent.BlockingQueue;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class OutputStreamTerminator implements Terminator {
+public class OutputStreamTerminator extends ComponentBase implements Terminator {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -35,12 +36,14 @@ public class OutputStreamTerminator implements Terminator {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String name;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    public OutputStreamTerminator() {
+        this(null);
+    }
+
     public OutputStreamTerminator(String name) {
-        this.name = name;
+        super(name);
     }
 
     // Service implementation ------------------------------------------------------------------------------------------
