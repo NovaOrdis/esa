@@ -17,12 +17,16 @@
 package io.novaordis.esa.core;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -31,6 +35,8 @@ import static org.junit.Assert.assertTrue;
 public abstract class ComponentTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(ComponentTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -92,11 +98,57 @@ public abstract class ComponentTest {
         assertTrue(endOfStreamListeners.isEmpty());
     }
 
+    // start() ---------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void startAndStop() throws Exception {
+
+        Component c = getComponentToTest("test");
+
+        assertFalse(c.isActive());
+
+        try {
+            c.start();
+            fail("should have thrown IllegalArgumentException because the component is not properly configured for start");
+        }
+        catch(IllegalStateException e) {
+            log.info(e.getMessage());
+        }
+
+        assertFalse(c.isActive());
+
+        configureForStart(c);
+
+        c.start();
+
+        assertTrue(c.isActive());
+
+        //
+        // test idempotence
+        //
+        c.start();
+
+        assertTrue(c.isActive());
+
+        c.stop();
+
+        assertFalse(c.isActive());
+
+        //
+        // test idempotence
+        //
+        c.stop();
+
+        assertFalse(c.isActive());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
     protected abstract Component getComponentToTest(String name) throws Exception;
+
+    protected abstract void configureForStart(Component c) throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

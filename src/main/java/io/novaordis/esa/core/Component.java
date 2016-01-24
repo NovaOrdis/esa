@@ -39,14 +39,28 @@ public interface Component {
     void setName(String name);
 
     /**
-     * Idempotent.
+     * Starts the internal thread (or threads) so the components begins to read from its input, process and write to
+     * its output.
+     *
+     * The implementation is idempotent: once started, subsequent start() calls are noops.
+     *
+     * @exception IllegalStateException if the component is not properly configured: it needs an input queue (or stream)
+     * processing or conversion logic and an output queue (or stream).
      */
     void start() throws Exception;
 
     /**
-     * Idempotent.
+     * Synchronously stop the component: the method won't exit until the component is stopped and released its
+     * resources.
+     *
+     * The implementation is idempotent: once stopped, subsequent stop() calls are noops.
      */
     void stop();
+
+    /**
+     * @return true if the component was started and it is in a state that allows it to process events.
+     */
+    boolean isActive();
 
     /**
      * Adds an EndOfStream event listener at the end of the list.

@@ -52,18 +52,6 @@ public class EventProcessor extends ComponentBase implements Component {
         super(name);
     }
 
-    // Service implementation ------------------------------------------------------------------------------------------
-
-    @Override
-    public void start() throws Exception {
-        throw new RuntimeException("start() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public void stop() {
-        throw new RuntimeException("stop() NOT YET IMPLEMENTED");
-    }
-
     // Public ----------------------------------------------------------------------------------------------------------
 
     public BlockingQueue<Event> getInputQueue() {
@@ -99,6 +87,28 @@ public class EventProcessor extends ComponentBase implements Component {
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    // Overrides -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected void insureReadyForStart() throws IllegalStateException {
+
+        //
+        // we need the input queue, the processing logic and the output queue in place
+        //
+
+        if (inputQueue == null) {
+            throw new IllegalStateException(this + " not properly configured, it is missing its input queue");
+        }
+
+        if (logic == null) {
+            throw new IllegalStateException(this + " not properly configured, it is missing its processing logic");
+        }
+
+        if (outputQueue == null) {
+            throw new IllegalStateException(this + " not properly configured, it is missing its output queue");
+        }
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

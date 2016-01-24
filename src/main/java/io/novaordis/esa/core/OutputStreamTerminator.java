@@ -52,18 +52,6 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
         super(name);
     }
 
-    // Component implementation ----------------------------------------------------------------------------------------
-
-    @Override
-    public void start() throws Exception {
-        throw new RuntimeException("start() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public void stop() {
-        throw new RuntimeException("stop() NOT YET IMPLEMENTED");
-    }
-
     // Terminator implementation ---------------------------------------------------------------------------------------
 
     @Override
@@ -113,6 +101,28 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    // Overrides -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected void insureReadyForStart() throws IllegalStateException {
+
+        //
+        // we need the input queue, the conversion logic and the output stream in place
+        //
+
+        if (inputQueue == null) {
+            throw new IllegalStateException(this + " not properly configured, it is missing its input queue");
+        }
+
+        if (conversionLogic == null) {
+            throw new IllegalStateException(this + " not properly configured, it is missing its conversion logic");
+        }
+
+        if (outputStream == null) {
+            throw new IllegalStateException(this + " not properly configured, it is missing its output stream");
+        }
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

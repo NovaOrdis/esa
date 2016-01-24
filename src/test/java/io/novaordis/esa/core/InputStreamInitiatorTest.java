@@ -16,12 +16,14 @@
 
 package io.novaordis.esa.core;
 
+import io.novaordis.esa.core.event.Event;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -104,6 +106,46 @@ public class InputStreamInitiatorTest extends InitiatorTest {
         assertEquals(is, initiator.getInputStream());
     }
 
+    @Test
+    public void insureReadyForStart() throws Exception {
+
+        InputStreamInitiator initiator = getComponentToTest("test");
+
+        try {
+            initiator.insureReadyForStart();
+            fail("should throw exception, initiator not ready for start");
+        }
+        catch(IllegalStateException e) {
+            log.info(e.getMessage());
+        }
+
+        initiator.setInputStream(new ByteArrayInputStream(new byte[1]));
+
+        try {
+            initiator.insureReadyForStart();
+            fail("should throw exception, initiator not ready for start");
+        }
+        catch(IllegalStateException e) {
+            log.info(e.getMessage());
+        }
+
+        initiator.setConversionLogic(new MockInputStreamConversionLogic());
+
+        try {
+            initiator.insureReadyForStart();
+            fail("should throw exception, initiator not ready for start");
+        }
+        catch(IllegalStateException e) {
+            log.info(e.getMessage());
+        }
+
+        initiator.setOutputQueue(new ArrayBlockingQueue<Event>(1));
+
+        initiator.insureReadyForStart();
+
+        log.info("ok");
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
@@ -111,6 +153,20 @@ public class InputStreamInitiatorTest extends InitiatorTest {
     @Override
     protected InputStreamInitiator getComponentToTest(String name) {
         return new InputStreamInitiator(name);
+    }
+
+    @Override
+    protected void configureForStart(Component c) throws Exception {
+
+        if (!(c instanceof InputStreamInitiator)) {
+            throw new Exception("not an InputStreamInitiator");
+        }
+
+        InputStreamInitiator inputStreamInitiator = (InputStreamInitiator)c;
+
+        inputStreamInitiator.setInputStream(new ByteArrayInputStream(new byte[0]));
+        inputStreamInitiator.setConversionLogic(new MockInputStreamConversionLogic());
+        inputStreamInitiator.setOutputQueue(new ArrayBlockingQueue<>(1));
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

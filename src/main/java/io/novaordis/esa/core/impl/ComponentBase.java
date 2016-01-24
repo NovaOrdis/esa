@@ -18,6 +18,8 @@ package io.novaordis.esa.core.impl;
 
 import io.novaordis.esa.core.Component;
 import io.novaordis.esa.core.EndOfStreamListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,8 @@ public abstract class ComponentBase implements Component {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    private static final Logger log = LoggerFactory.getLogger(ComponentBase.class);
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -38,11 +42,16 @@ public abstract class ComponentBase implements Component {
 
     private List<EndOfStreamListener> endOfStreamListeners;
 
+    private volatile boolean active;
+
+    private Thread thread;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     protected ComponentBase(String name) {
         this.name = name;
         this.endOfStreamListeners = new ArrayList<>();
+        this.active = false;
     }
 
     // Component implementation ----------------------------------------------------------------------------------------
@@ -83,6 +92,50 @@ public abstract class ComponentBase implements Component {
         endOfStreamListeners.clear();
     }
 
+    /**
+     * @see Component#start()
+     */
+    @Override
+    public void start() throws Exception {
+
+        if (active) {
+
+            //
+            // we're idempotent
+            //
+
+            log.debug(this + " already started");
+            return;
+        }
+
+        insureReadyForStart();
+
+        //
+        // we're ready for start, start the thread
+        //
+
+        thread = new Thread(new ComponentRunnable(), getThreadName());
+
+        thread.start();
+
+        active = true;
+
+        log.debug(this + " started");
+    }
+
+    /**
+     * @see Component#stop()
+     */
+    @Override
+    public void stop() {
+        throw new RuntimeException("stop() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Override
@@ -99,8 +152,31 @@ public abstract class ComponentBase implements Component {
 
     // Protected -------------------------------------------------------------------------------------------------------
 
+    /**
+     * Makes sure the component is ready for start: all its dependencies are in place, etc. If the method completes
+     * successfully, it means the component is ready for start.
+     *
+     * @exception IllegalStateException if the component is not ready for start.
+     */
+    protected abstract void insureReadyForStart() throws IllegalStateException;
+
     // Private ---------------------------------------------------------------------------------------------------------
 
+    private String getThreadName() {
+
+        return getName() + " Thread";
+    }
+
     // Inner classes ---------------------------------------------------------------------------------------------------
+
+    private class ComponentRunnable implements Runnable {
+
+        // Runnable implementation -------------------------------------------------------------------------------------
+
+        @Override
+        public void run() {
+            throw new RuntimeException("run() NOT YET IMPLEMENTED");
+        }
+    }
 
 }

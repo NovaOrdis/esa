@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -103,11 +104,65 @@ public class OutputStreamTerminatorTest extends TerminatorTest {
         assertEquals(os, terminator.getOutputStream());
     }
 
+    @Test
+    public void insureReadyForStart() throws Exception {
+
+        OutputStreamTerminator terminator = getComponentToTest("test");
+
+        try {
+            terminator.insureReadyForStart();
+            fail("should throw exception, terminator not ready for start");
+        }
+        catch(IllegalStateException e) {
+            log.info(e.getMessage());
+        }
+
+        terminator.setInputQueue(new ArrayBlockingQueue<>(1));
+
+        try {
+            terminator.insureReadyForStart();
+            fail("should throw exception, terminator not ready for start");
+        }
+        catch(IllegalStateException e) {
+            log.info(e.getMessage());
+        }
+
+        terminator.setConversionLogic(new MockOutputStreamConversionLogic());
+
+        try {
+            terminator.insureReadyForStart();
+            fail("should throw exception, terminator not ready for start");
+        }
+        catch(IllegalStateException e) {
+            log.info(e.getMessage());
+        }
+
+        terminator.setOutputStream(new ByteArrayOutputStream());
+
+        terminator.insureReadyForStart();
+
+        log.info("ok");
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     @Override
     protected OutputStreamTerminator getComponentToTest(String name) throws Exception {
         return new OutputStreamTerminator(name);
+    }
+
+    @Override
+    protected void configureForStart(Component c) throws Exception {
+
+        if (!(c instanceof OutputStreamTerminator)) {
+            throw new Exception("not an OutputStreamTerminator");
+        }
+
+        OutputStreamTerminator outputStreamTerminator = (OutputStreamTerminator)c;
+
+        outputStreamTerminator.setInputQueue(new ArrayBlockingQueue<>(1));
+        outputStreamTerminator.setConversionLogic(new MockOutputStreamConversionLogic());
+        outputStreamTerminator.setOutputStream(new ByteArrayOutputStream());
     }
 
     // Protected -------------------------------------------------------------------------------------------------------

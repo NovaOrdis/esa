@@ -53,18 +53,6 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
         super(name);
     }
 
-    // Service implementation ------------------------------------------------------------------------------------------
-
-    @Override
-    public void start() throws Exception {
-        throw new RuntimeException("start() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public void stop() {
-        throw new RuntimeException("stop() NOT YET IMPLEMENTED");
-    }
-
     // Initiator implementation ----------------------------------------------------------------------------------------
 
     @Override
@@ -114,6 +102,27 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected void insureReadyForStart() throws IllegalStateException {
+
+        //
+        // we need the input stream, the conversion logic and the output queue in place
+        //
+
+        if (inputStream == null) {
+            throw new IllegalStateException(this + " not properly configured, it is missing its input stream");
+        }
+
+        if (conversionLogic == null) {
+            throw new IllegalStateException(this + " not properly configured, it is missing its conversion logic");
+        }
+
+        if (outputQueue == null) {
+            throw new IllegalStateException(this + " not properly configured, it is missing its output queue");
+        }
+
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

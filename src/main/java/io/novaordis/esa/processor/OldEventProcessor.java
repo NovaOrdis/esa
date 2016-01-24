@@ -160,9 +160,6 @@ public class OldEventProcessor {
         log.debug(this + " started");
     }
 
-    /**
-     * Synchronously stop - the method won't exit until the processor is stopped and released its resourced.
-     */
     public void stop() {
         throw new RuntimeException("NOT YET IMPLEMENTED");
     }

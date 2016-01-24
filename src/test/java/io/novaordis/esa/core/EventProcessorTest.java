@@ -26,6 +26,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -105,6 +106,46 @@ public class EventProcessorTest extends ComponentTest {
         assertEquals(queue, eventProcessor.getOutputQueue());
     }
 
+    @Test
+    public void insureReadyForStart() throws Exception {
+
+        EventProcessor eventProcessor = getComponentToTest("test");
+
+        try {
+            eventProcessor.insureReadyForStart();
+            fail("should throw exception, processor not ready for start");
+        }
+        catch(IllegalStateException e) {
+            log.info(e.getMessage());
+        }
+
+        eventProcessor.setInputQueue(new ArrayBlockingQueue<>(1));
+
+        try {
+            eventProcessor.insureReadyForStart();
+            fail("should throw exception, processor not ready for start");
+        }
+        catch(IllegalStateException e) {
+            log.info(e.getMessage());
+        }
+
+        eventProcessor.setProcessingLogic(new MockProcessingLogic());
+
+        try {
+            eventProcessor.insureReadyForStart();
+            fail("should throw exception, processor not ready for start");
+        }
+        catch(IllegalStateException e) {
+            log.info(e.getMessage());
+        }
+
+        eventProcessor.setOutputQueue(new ArrayBlockingQueue<>(1));
+
+        eventProcessor.insureReadyForStart();
+
+        log.info("ok");
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
@@ -113,6 +154,20 @@ public class EventProcessorTest extends ComponentTest {
     protected EventProcessor getComponentToTest(String name) throws Exception {
 
         return new EventProcessor(name);
+    }
+
+    @Override
+    protected void configureForStart(Component c) throws Exception {
+
+        if (!(c instanceof EventProcessor)) {
+            throw new Exception("not an EventProcessor");
+        }
+
+        EventProcessor eventProcessor = (EventProcessor)c;
+
+        eventProcessor.setInputQueue(new ArrayBlockingQueue<>(1));
+        eventProcessor.setProcessingLogic(new MockProcessingLogic());
+        eventProcessor.setOutputQueue(new ArrayBlockingQueue<>(1));
     }
 
     // Private ---------------------------------------------------------------------------------------------------------
