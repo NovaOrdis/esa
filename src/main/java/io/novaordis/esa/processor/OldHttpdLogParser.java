@@ -19,71 +19,73 @@ package io.novaordis.esa.processor;
 import io.novaordis.esa.event.OldEvent;
 import io.novaordis.esa.event.special.EndOfStreamOldEvent;
 import io.novaordis.esa.event.special.StringOldEvent;
+import io.novaordis.esa.logs.httpd.LogFormat;
+import io.novaordis.esa.logs.httpd.LogLine;
+import io.novaordis.esa.logs.httpd.LogParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * This logic reads bytes coming from an input byte stream, identifies lines and generates a new StringEvent per line.
- * At the end of stream generates an EndOfStreamEvent.
- *
- * Guaranteed single threaded.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/23/16
  */
-public class InputStreamConverter implements ByteOldLogic {
+public class OldHttpdLogParser implements EventOldLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(OldHttpdLogParser.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private StringBuilder sb;
+    private LogParser parser;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public InputStreamConverter() {
+    public OldHttpdLogParser() {
 
-        this.sb = new StringBuilder();
+        // TODO - how do I infer the log format from the log file? I need to externalize it in a friendly way
+        this.parser = new LogParser(LogFormat.PERFORMANCE_ANALYSIS);
+
     }
 
-    // ByteLogic implementation ----------------------------------------------------------------------------------------
+    // EventLogic ------------------------------------------------------------------------------------------------------
 
     @Override
-    public List<OldEvent> process(int b) {
+    public List<OldEvent> process(OldEvent inputEvent) {
 
-        List<OldEvent> result;
+        //
+        // we only process StringEvents and EndOfStreamEvents, we warn for everything else
+        //
 
-        if (b == -1) {
+        if (inputEvent instanceof EndOfStreamOldEvent) {
 
-            //
-            // end of stream
-            //
-
-            if (sb.length() == 0) {
-                result = Collections.singletonList(new EndOfStreamOldEvent());
-            }
-            else
-            {
-                result = Arrays.asList(new StringOldEvent(sb.toString()), new EndOfStreamOldEvent());
-            }
-            sb.setLength(0);
-            return result;
+            return Collections.singletonList(inputEvent);
         }
-        else if (b == '\n') {
+        else if (inputEvent instanceof StringOldEvent) {
 
-            result =  Collections.singletonList(new StringOldEvent(sb.toString()));
-            sb.setLength(0);
+            String s = ((StringOldEvent)inputEvent).get();
+
+            try {
+
+                LogLine logLine = parser.parse(s);
+                OldEvent outputEvent = LogLine.toEvent(logLine);
+                return Collections.singletonList(outputEvent);
+            }
+            catch (Exception e) {
+
+                log.error("parsing failed", e);
+                return Collections.emptyList();
+            }
         }
         else {
-            sb.append((char) b);
-            result = Collections.emptyList();
+            log.warn("unknown event type " + inputEvent + ", ignoring ...");
+            return Collections.emptyList();
         }
-
-        return result;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

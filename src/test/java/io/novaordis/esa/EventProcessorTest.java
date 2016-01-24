@@ -16,7 +16,7 @@
 
 package io.novaordis.esa;
 
-import io.novaordis.esa.processor.EventProcessor;
+import io.novaordis.esa.processor.OldEventProcessor;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -38,7 +38,7 @@ public abstract class EventProcessorTest {
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    protected abstract EventProcessor getEventProcessorToTest() throws Exception;
+    protected abstract OldEventProcessor getEventProcessorToTest() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

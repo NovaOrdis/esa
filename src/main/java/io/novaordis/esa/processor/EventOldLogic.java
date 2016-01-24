@@ -16,30 +16,28 @@
 
 package io.novaordis.esa.processor;
 
+import io.novaordis.esa.event.OldEvent;
+
+import java.util.List;
+
 /**
+ * Logic that knows how to process Events.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/23/16
  */
-public abstract class ByteLogicTest {
+public interface EventOldLogic extends OldLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    // Attributes ------------------------------------------------------------------------------------------------------
-
-    // Constructors ----------------------------------------------------------------------------------------------------
-
     // Public ----------------------------------------------------------------------------------------------------------
 
-    // Package protected -----------------------------------------------------------------------------------------------
-
-    // Protected -------------------------------------------------------------------------------------------------------
-
-    protected abstract ByteOldLogic getByteLogicToTest() throws Exception;
-
-    // Private ---------------------------------------------------------------------------------------------------------
-
-    // Inner classes ---------------------------------------------------------------------------------------------------
+    /**
+     * @return a list of output events, which may be empty when multiple input events are consumed in order to generate
+     * a single output event, it may contain just one element, or it may contain multiple elements. It is never null.
+     */
+    List<OldEvent> process(OldEvent inputEvent);
 
 }

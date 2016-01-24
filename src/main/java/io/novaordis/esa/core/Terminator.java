@@ -14,32 +14,42 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.processor;
+package io.novaordis.esa.core;
+
+import io.novaordis.esa.core.event.Event;
+
+import java.util.concurrent.BlockingQueue;
 
 /**
+ * Terminator of an event stream - it reads events from its input queue and turns them into something else.
+ *
+ * The main concern of the terminator is to handle threading and interaction with the queues. The single threaded
+ * event-to-byte (or something else) conversion logic is the responsibility of the termination logic classes:
+ *
+ * @see OutputStreamConversionLogic
+ *
+ * We exposed an interface instead of settling to the OutputStreamTerminator class because we foresee other terminator
+ * implementations: implementations that turn events into messages, implementations that events into HTTP requests,
+ * etc.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 1/24/16
  */
-public abstract class ByteLogicTest {
+public interface Terminator extends EventPipelineComponent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    // Attributes ------------------------------------------------------------------------------------------------------
-
-    // Constructors ----------------------------------------------------------------------------------------------------
-
     // Public ----------------------------------------------------------------------------------------------------------
 
-    // Package protected -----------------------------------------------------------------------------------------------
+    BlockingQueue<Event> getInputQueue();
 
-    // Protected -------------------------------------------------------------------------------------------------------
+    void setInputQueue(BlockingQueue<Event> inputQueue);
 
-    protected abstract ByteOldLogic getByteLogicToTest() throws Exception;
+    void setConversionLogic(ConversionLogic conversionLogic);
 
-    // Private ---------------------------------------------------------------------------------------------------------
+    ConversionLogic getConversionLogic();
 
-    // Inner classes ---------------------------------------------------------------------------------------------------
 
 }

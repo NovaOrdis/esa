@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.processor;
+package io.novaordis.esa.core;
+
+import io.novaordis.esa.core.event.Event;
+
+import java.util.List;
 
 /**
+ * The pluggable event processing logic that turns one or more input events into one or more output events.
+ *
+ * IMPORTANT: the processing logic will be always invoked in a single threaded context.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 1/24/16
  */
-public abstract class ByteLogicTest {
+public interface ProcessingLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    // Attributes ------------------------------------------------------------------------------------------------------
-
-    // Constructors ----------------------------------------------------------------------------------------------------
-
     // Public ----------------------------------------------------------------------------------------------------------
 
-    // Package protected -----------------------------------------------------------------------------------------------
-
-    // Protected -------------------------------------------------------------------------------------------------------
-
-    protected abstract ByteOldLogic getByteLogicToTest() throws Exception;
-
-    // Private ---------------------------------------------------------------------------------------------------------
-
-    // Inner classes ---------------------------------------------------------------------------------------------------
+    List<Event> process(Event inputEvent);
 
 }

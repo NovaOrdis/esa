@@ -29,7 +29,7 @@ import java.util.List;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public interface Event {
+public interface OldEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 

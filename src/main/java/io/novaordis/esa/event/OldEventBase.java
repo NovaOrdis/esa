@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.csv;
+package io.novaordis.esa.event;
 
-import io.novaordis.esa.processor.OldEventProcessor;
-import io.novaordis.esa.EventProcessorTest;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/22/16
+ * @since 1/21/16
  */
-public class CsvWriterTest extends EventProcessorTest {
+public abstract class OldEventBase implements OldEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -31,19 +31,33 @@ public class CsvWriterTest extends EventProcessorTest {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private Date timestamp;
+    private List<Property> properties;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    // Event implementation --------------------------------------------------------------------------------------------
+
+    @Override
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
+
+    /**
+     * @return the old timestamp value or null if none was set
+     */
+    public Date setTimestamp(Date d) {
+
+        Date old = this.timestamp;
+        this.timestamp = d;
+        return old;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
-
-    @Override
-    protected OldEventProcessor getEventProcessorToTest() throws Exception {
-
-        return new CsvWriter();
-    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

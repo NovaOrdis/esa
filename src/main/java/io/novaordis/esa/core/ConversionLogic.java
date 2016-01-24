@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.processor;
+package io.novaordis.esa.core;
 
 /**
- * Logic knows to process either Events or bytes.
+ * @see InputStreamConversionLogic
+ * @see OutputStreamConversionLogic
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 1/24/16
  */
-public interface Logic {
+public interface ConversionLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
-
 
 }

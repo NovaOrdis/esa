@@ -38,9 +38,9 @@ public class HttpLogParserTest extends EventLogicTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected HttpdLogParser getEventLogicToTest() throws Exception {
+    protected OldHttpdLogParser getEventLogicToTest() throws Exception {
 
-        return new HttpdLogParser();
+        return new OldHttpdLogParser();
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

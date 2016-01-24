@@ -16,8 +16,8 @@
 
 package io.novaordis.esa.logs.httpd;
 
-import io.novaordis.esa.event.Event;
-import io.novaordis.esa.event.EventImpl;
+import io.novaordis.esa.event.OldEvent;
+import io.novaordis.esa.event.OldEventImpl;
 import io.novaordis.esa.event.MeasureUnit;
 import io.novaordis.esa.event.Property;
 
@@ -40,9 +40,9 @@ public class LogLine {
     /**
      * Converts LogLine instances to Events that can be send further down the pipeline.
      */
-    public static Event toEvent(LogLine logLine) {
+    public static OldEvent toEvent(LogLine logLine) {
 
-        EventImpl event = new EventImpl();
+        OldEventImpl event = new OldEventImpl();
         event.setTimestamp(logLine.timestamp);
         event.addProperty(new Property() {
             @Override

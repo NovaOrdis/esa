@@ -16,30 +16,35 @@
 
 package io.novaordis.esa.processor;
 
+import io.novaordis.esa.event.OldEvent;
+
+import java.io.InputStream;
+import java.util.List;
+
 /**
+ * Logic that knows how to process bytes and make events out of them.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/23/16
  */
-public abstract class ByteLogicTest {
+public interface ByteOldLogic extends OldLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    // Attributes ------------------------------------------------------------------------------------------------------
-
-    // Constructors ----------------------------------------------------------------------------------------------------
-
     // Public ----------------------------------------------------------------------------------------------------------
 
-    // Package protected -----------------------------------------------------------------------------------------------
-
-    // Protected -------------------------------------------------------------------------------------------------------
-
-    protected abstract ByteOldLogic getByteLogicToTest() throws Exception;
-
-    // Private ---------------------------------------------------------------------------------------------------------
-
-    // Inner classes ---------------------------------------------------------------------------------------------------
+    /**
+     * Even if we pass an int as argument, that int is actually a byte resulted from an InputStream.read(). From
+     * InputStream.read() documentation: "Reads the next byte of data from the input stream. The value byte is
+     * returned as an <code>int</code> in the range <code>0</code> to <code>255</code>." -1 means end of stream.
+     *
+     * @return a list of events, which may be empty when multiple bytes are required to generate a single event, it
+     * may contain just one element, or it may contain multiple elements. It is never null.
+     *
+     * @see InputStream#read()
+     */
+    List<OldEvent> process(int b);
 
 }

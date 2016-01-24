@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.csv;
+package io.novaordis.esa.processor;
 
-import io.novaordis.esa.processor.OldEventProcessor;
-import io.novaordis.esa.EventProcessorTest;
+import io.novaordis.esa.event.OldEvent;
+
+import java.util.List;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/22/16
+ * @since 1/23/16
  */
-public class CsvWriterTest extends EventProcessorTest {
+public class MockByteOldLogic implements ByteOldLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -33,17 +34,18 @@ public class CsvWriterTest extends EventProcessorTest {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    // ByteLogic implementation ----------------------------------------------------------------------------------------
+
+    @Override
+    public List<OldEvent> process(int b) {
+        throw new RuntimeException("process() NOT YET IMPLEMENTED");
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
-
-    @Override
-    protected OldEventProcessor getEventProcessorToTest() throws Exception {
-
-        return new CsvWriter();
-    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

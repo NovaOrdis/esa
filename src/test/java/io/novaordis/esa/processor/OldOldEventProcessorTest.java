@@ -33,11 +33,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/23/16
  */
-public class SingleThreadedEventProcessorTest {
+public class OldOldEventProcessorTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(SingleThreadedEventProcessor.class);
+    private static final Logger log = LoggerFactory.getLogger(OldEventProcessor.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ public class SingleThreadedEventProcessorTest {
     @Test
     public void inputQueueAndInputStreamAreMutuallyExclusive() throws Exception {
 
-        SingleThreadedEventProcessor step = new SingleThreadedEventProcessor();
+        OldEventProcessor step = new OldEventProcessor();
 
         step.setInput(new ArrayBlockingQueue<>(1));
 
@@ -66,7 +66,7 @@ public class SingleThreadedEventProcessorTest {
     @Test
     public void inputStreamAndInputQueueAreMutuallyExclusive() throws Exception {
 
-        SingleThreadedEventProcessor step = new SingleThreadedEventProcessor();
+        OldEventProcessor step = new OldEventProcessor();
 
         step.setInput(new ByteArrayInputStream(new byte[1]));
 
@@ -82,7 +82,7 @@ public class SingleThreadedEventProcessorTest {
     @Test
     public void outputQueueAndOutputStreamAreMutuallyExclusive() throws Exception {
 
-        SingleThreadedEventProcessor step = new SingleThreadedEventProcessor();
+        OldEventProcessor step = new OldEventProcessor();
 
         step.setOutput(new ArrayBlockingQueue<>(1));
 
@@ -98,7 +98,7 @@ public class SingleThreadedEventProcessorTest {
     @Test
     public void outputStreamAndOutputQueueAreMutuallyExclusive() throws Exception {
 
-        SingleThreadedEventProcessor step = new SingleThreadedEventProcessor();
+        OldEventProcessor step = new OldEventProcessor();
 
         step.setOutput(new ByteArrayOutputStream());
 
@@ -114,7 +114,7 @@ public class SingleThreadedEventProcessorTest {
     @Test
     public void redundantStartIsFrownedUpon() throws Exception {
 
-        SingleThreadedEventProcessor step = new SingleThreadedEventProcessor();
+        OldEventProcessor step = new OldEventProcessor();
 
         step.start();
 
@@ -138,7 +138,7 @@ public class SingleThreadedEventProcessorTest {
     @Test
     public void startDoesNotSucceedBecauseThereIsNoLogic() throws Exception {
 
-        SingleThreadedEventProcessor step = new SingleThreadedEventProcessor();
+        OldEventProcessor step = new OldEventProcessor();
 
         assertNull(step.getByteLogic());
 
@@ -155,13 +155,13 @@ public class SingleThreadedEventProcessorTest {
     @Test
     public void startDoesNotSucceedBecauseOfMissingInputAndLogicRequiresInput() throws Exception {
 
-        SingleThreadedEventProcessor step = new SingleThreadedEventProcessor();
+        OldEventProcessor step = new OldEventProcessor();
 
         assertNull(step.getInputQueue());
         assertNull(step.getInputStream());
 
         // the logic requires input
-        step.setByteLogic(new MockByteLogic());
+        step.setByteLogic(new MockByteOldLogic());
         fail("MAKE SURE THE LOGIC REQUIRES INPUT");
 
         try {
@@ -177,13 +177,13 @@ public class SingleThreadedEventProcessorTest {
     @Test
     public void startDoesNotSucceedBecauseOfMissingOutputAndLogicRequiresOutput() throws Exception {
 
-        SingleThreadedEventProcessor step = new SingleThreadedEventProcessor();
+        OldEventProcessor step = new OldEventProcessor();
 
         assertNull(step.getOutputQueue());
         assertNull(step.getOutputStream());
 
         // the logic requires output
-        step.setByteLogic(new MockByteLogic());
+        step.setByteLogic(new MockByteOldLogic());
         fail("MAKE SURE THE LOGIC REQUIRES OUTPUT");
 
         try {

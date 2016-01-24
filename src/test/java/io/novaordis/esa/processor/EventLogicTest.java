@@ -36,7 +36,7 @@ public abstract class EventLogicTest {
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    protected abstract EventLogic getEventLogicToTest() throws Exception;
+    protected abstract EventOldLogic getEventLogicToTest() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

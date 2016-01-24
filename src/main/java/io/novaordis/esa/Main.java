@@ -16,13 +16,19 @@
 
 package io.novaordis.esa;
 
-import io.novaordis.clad.UserErrorException;
+import io.novaordis.esa.core.EndOfStreamListener;
+import io.novaordis.esa.core.InputStreamInitiator;
+import io.novaordis.esa.core.EventProcessor;
+import io.novaordis.esa.core.OutputStreamTerminator;
+import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.StringEventProducer;
+import io.novaordis.esa.csv.EventToCsvConverter;
+import io.novaordis.esa.logs.httpd.HttpdLogParsingLogic;
 import io.novaordis.esa.processor.EventCSVWriter;
-import io.novaordis.esa.processor.HttpdLogParser;
-import io.novaordis.esa.processor.InputStreamConverter;
-import io.novaordis.esa.processor.SingleThreadedEventProcessor;
+import io.novaordis.esa.processor.OldEventProcessor;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -38,27 +44,60 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        SingleThreadedEventProcessor one = new SingleThreadedEventProcessor("input stream reader");
+//        EventProcessor inputStreamReader = new EventProcessor("Input Stream Reader");
+//        inputStreamReader.setInput(System.in);
+//        inputStreamReader.setByteLogic(new InputStreamConverter());
+//        inputStreamReader.setOutput(new ArrayBlockingQueue<>(QUEUE_SIZE));
 
-        one.setInput(System.in);
-        one.setByteLogic(new InputStreamConverter());
-        one.setOutput(new ArrayBlockingQueue<>(QUEUE_SIZE));
+        InputStreamInitiator initiator = new InputStreamInitiator("Input Stream Reader");
+        initiator.setInputStream(System.in);
+        initiator.setConversionLogic(new StringEventProducer());
+        initiator.setOutputQueue(new ArrayBlockingQueue<>(QUEUE_SIZE));
 
-        SingleThreadedEventProcessor two = new SingleThreadedEventProcessor("httpd log parser");
-        two.setInput(one.getOutputQueue());
-        two.setEventLogic(new HttpdLogParser());
-        two.setOutput(new ArrayBlockingQueue<>(QUEUE_SIZE));
+        BlockingQueue<Event> streamReaderToParserQueue = initiator.getOutputQueue();
 
-        SingleThreadedEventProcessor three = new SingleThreadedEventProcessor("csv writer");
-        three.setInput(two.getOutputQueue());
-        three.setEventLogic(new EventCSVWriter());
-        three.setOutput(System.out);
+//        EventProcessor two = new EventProcessor("httpd log parser");
+//        two.setInput(inputStreamReader.getOutputQueue());
+//        two.setEventLogic(new HttpdLogParser());
+//        two.setOutput(new ArrayBlockingQueue<>(QUEUE_SIZE));
 
-        one.start();
-        two.start();
-        three.start();
+        EventProcessor httpdLogParser = new EventProcessor("HTTP Log Parser");
+        httpdLogParser.setInputQueue(streamReaderToParserQueue);
+        httpdLogParser.setProcessingLogic(new HttpdLogParsingLogic());
+        httpdLogParser.setOutputQueue(new ArrayBlockingQueue<>(QUEUE_SIZE));
 
-        three.waitForEndOfStream();
+        BlockingQueue<Event> parserToCsvWriterQueue = httpdLogParser.getOutputQueue();
+
+//        OldEventProcessor three = new OldEventProcessor("csv writer");
+//        three.setInput(two.getOutputQueue());
+//        three.setEventLogic(new EventCSVWriter());
+//        three.setOutput(System.out);
+
+        OutputStreamTerminator terminator = new OutputStreamTerminator("CSV Writer");
+        terminator.setInputQueue(parserToCsvWriterQueue);
+        terminator.setConversionLogic(new EventToCsvConverter());
+        terminator.setOutputStream(System.out);
+
+
+        EndOfStreamListener eos = new EndOfStreamListener() {
+            @Override
+            public void eventStreamEnded() {
+
+                //
+                // document synchronization primitives
+                //
+            }
+        };
+
+        terminator.addEndOfStreamListener(eos);
+
+        initiator.start();
+        httpdLogParser.start();
+        terminator.start();
+
+        //
+        // document synchronization primitives
+        //
 
         Thread.currentThread().sleep(3600 * 1000L);
     }

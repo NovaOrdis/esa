@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.event;
+package io.novaordis.esa.event.special;
 
-import java.util.ArrayList;
+import io.novaordis.esa.event.OldEvent;
+import io.novaordis.esa.event.Property;
+
+import java.util.Date;
 import java.util.List;
 
 /**
- * A generic event
+ * An event wrapper for lines. The wrapped String will never contain CR or LF.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/23/16
  */
-public class EventImpl extends EventBase {
+public class StringOldEvent implements OldEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -32,40 +36,34 @@ public class EventImpl extends EventBase {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private List<Property> properties;
+    private String s;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public EventImpl() {
-        this.properties = new ArrayList<>();
+    public StringOldEvent(String s) {
+        this.s = s;
     }
 
     // Event implementation --------------------------------------------------------------------------------------------
 
     @Override
+    public Date getTimestamp() {
+        throw new RuntimeException("getTimestamp() NOT YET IMPLEMENTED");
+    }
+
+    @Override
     public List<Property> getProperties() {
-        return properties;
+        throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
     }
 
     @Override
     public Property getProperty(String name) {
-
-        for(Property p: properties) {
-            if (p.getName().equals(name)) {
-                return p;
-            }
-        }
-
-        return null;
+        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
     }
 
     @Override
     public Property getProperty(int index) {
-
-        if (index < 0 || index >= properties.size()) {
-            return null;
-        }
-        return properties.get(index);
+        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
     }
 
     @Override
@@ -75,8 +73,12 @@ public class EventImpl extends EventBase {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public void addProperty(Property property) {
-        properties.add(property);
+    /**
+     * @return the wrapped string. May return an empty string but never null.
+     */
+    public String get() {
+
+        return s;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

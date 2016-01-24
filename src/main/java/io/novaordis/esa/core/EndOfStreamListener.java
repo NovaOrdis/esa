@@ -14,32 +14,22 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.processor;
+package io.novaordis.esa.core;
 
 /**
+ * A way to notify interested parties that the component the listener was added to has seen an EndOfStreamEvent.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 1/24/16
  */
-public abstract class ByteLogicTest {
+public interface EndOfStreamListener {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    // Attributes ------------------------------------------------------------------------------------------------------
-
-    // Constructors ----------------------------------------------------------------------------------------------------
-
     // Public ----------------------------------------------------------------------------------------------------------
 
-    // Package protected -----------------------------------------------------------------------------------------------
-
-    // Protected -------------------------------------------------------------------------------------------------------
-
-    protected abstract ByteOldLogic getByteLogicToTest() throws Exception;
-
-    // Private ---------------------------------------------------------------------------------------------------------
-
-    // Inner classes ---------------------------------------------------------------------------------------------------
+    void eventStreamEnded();
 
 }

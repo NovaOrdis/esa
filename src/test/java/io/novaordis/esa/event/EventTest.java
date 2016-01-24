@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
- * @see Event
+ * @see OldEvent
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
@@ -48,7 +48,7 @@ public abstract class EventTest {
     @Test
     public void emptyEvent() throws Exception {
 
-        Event e = getEventToTest();
+        OldEvent e = getEventToTest();
         assertNull(e.getTimestamp());
         assertEquals(0, e.getProperties().size());
         assertNull(e.getProperty("I-am-sure-there-is-no-such-property"));
@@ -60,7 +60,7 @@ public abstract class EventTest {
     @Test
     public void cannotSetAtNegativeIndex() throws Exception {
 
-        Event e = getEventToTest();
+        OldEvent e = getEventToTest();
 
         MockProperty mp = new MockProperty("test");
 
@@ -76,7 +76,7 @@ public abstract class EventTest {
     @Test
     public void setAndGetProperties() throws Exception {
 
-        Event e = getEventToTest();
+        OldEvent e = getEventToTest();
         assertTrue(e.getProperties().isEmpty());
 
         MockProperty mp = new MockProperty("test");
@@ -90,7 +90,7 @@ public abstract class EventTest {
     @Test
     public void sparseList() throws Exception {
 
-        Event e = getEventToTest();
+        OldEvent e = getEventToTest();
         assertTrue(e.getProperties().isEmpty());
 
         MockProperty mp = new MockProperty("test");
@@ -111,7 +111,7 @@ public abstract class EventTest {
     @Test
     public void cannotHaveTwoPropertiesWithTheSameName() throws Exception {
 
-        Event e = getEventToTest();
+        OldEvent e = getEventToTest();
 
         MockProperty mp = new MockProperty("test");
 
@@ -130,7 +130,7 @@ public abstract class EventTest {
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    protected abstract Event getEventToTest() throws Exception;
+    protected abstract OldEvent getEventToTest() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.processor;
-
-import io.novaordis.esa.event.Event;
-
-import java.util.List;
+package io.novaordis.esa.core;
 
 /**
- * Logic that knows how to process Events.
+ * An instance that can be part of an event pipeline. It can be started and stopped and can have listeners registered
+ * on. Usually starting involves putting internal threads to work.
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 1/24/16
  */
-public interface EventLogic extends Logic {
+public interface EventPipelineComponent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -34,10 +31,10 @@ public interface EventLogic extends Logic {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    /**
-     * @return a list of output events, which may be empty when multiple input events are consumed in order to generate
-     * a single output event, it may contain just one element, or it may contain multiple elements. It is never null.
-     */
-    List<Event> process(Event inputEvent);
+    void start() throws Exception;
+    void stop();
+
+    void addEndOfStreamListener(EndOfStreamListener listener);
+
 
 }

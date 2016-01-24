@@ -16,7 +16,7 @@
 
 package io.novaordis.esa.event.special;
 
-import io.novaordis.esa.event.Event;
+import io.novaordis.esa.event.OldEvent;
 import io.novaordis.esa.event.Property;
 
 import java.util.Date;
@@ -26,7 +26,7 @@ import java.util.List;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/23/16
  */
-public class EndOfStreamEvent implements Event {
+public class EndOfStreamOldEvent implements OldEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 

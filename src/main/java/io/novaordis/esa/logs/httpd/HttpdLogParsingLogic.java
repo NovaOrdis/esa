@@ -14,78 +14,32 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.processor;
+package io.novaordis.esa.logs.httpd;
 
-import io.novaordis.esa.event.Event;
-import io.novaordis.esa.event.special.EndOfStreamEvent;
-import io.novaordis.esa.event.special.StringEvent;
-import io.novaordis.esa.logs.httpd.LogFormat;
-import io.novaordis.esa.logs.httpd.LogLine;
-import io.novaordis.esa.logs.httpd.LogParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.novaordis.esa.core.ProcessingLogic;
+import io.novaordis.esa.core.event.Event;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 1/24/16
  */
-public class HttpdLogParser implements EventLogic {
+public class HttpdLogParsingLogic implements ProcessingLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    private static final Logger log = LoggerFactory.getLogger(HttpdLogParser.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private LogParser parser;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public HttpdLogParser() {
-
-        // TODO - how do I infer the log format from the log file? I need to externalize it in a friendly way
-        this.parser = new LogParser(LogFormat.PERFORMANCE_ANALYSIS);
-
-    }
-
-    // EventLogic ------------------------------------------------------------------------------------------------------
+    // ProcessingLogic implements --------------------------------------------------------------------------------------
 
     @Override
     public List<Event> process(Event inputEvent) {
-
-        //
-        // we only process StringEvents and EndOfStreamEvents, we warn for everything else
-        //
-
-        if (inputEvent instanceof EndOfStreamEvent) {
-
-            return Collections.singletonList(inputEvent);
-        }
-        else if (inputEvent instanceof StringEvent) {
-
-            String s = ((StringEvent)inputEvent).get();
-
-            try {
-
-                LogLine logLine = parser.parse(s);
-                Event outputEvent = LogLine.toEvent(logLine);
-                return Collections.singletonList(outputEvent);
-            }
-            catch (Exception e) {
-
-                log.error("parsing failed", e);
-                return Collections.emptyList();
-            }
-        }
-        else {
-            log.warn("unknown event type " + inputEvent + ", ignoring ...");
-            return Collections.emptyList();
-        }
+        throw new RuntimeException("process() NOT YET IMPLEMENTED");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

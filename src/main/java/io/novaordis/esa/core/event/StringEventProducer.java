@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.processor;
+package io.novaordis.esa.core.event;
 
-import io.novaordis.esa.event.Event;
+import io.novaordis.esa.core.InputStreamConversionLogic;
 
 import java.util.List;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 1/24/16
  */
-public class MockByteLogic implements ByteLogic {
+public class StringEventProducer implements InputStreamConversionLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -34,11 +34,16 @@ public class MockByteLogic implements ByteLogic {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    // ByteLogic implementation ----------------------------------------------------------------------------------------
+    // InputStreamConversionLogic implementation -----------------------------------------------------------------------
 
     @Override
-    public List<Event> process(int b) {
+    public boolean process(int b) {
         throw new RuntimeException("process() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public List<Event> getEvents() {
+        throw new RuntimeException("getEvents() NOT YET IMPLEMENTED");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

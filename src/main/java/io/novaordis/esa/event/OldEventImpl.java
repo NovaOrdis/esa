@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.event.special;
+package io.novaordis.esa.event;
 
-import io.novaordis.esa.event.Event;
-import io.novaordis.esa.event.Property;
-
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An event wrapper for lines. The wrapped String will never contain CR or LF.
- *
+ * A generic event
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 1/21/16
  */
-public class StringEvent implements Event {
+public class OldEventImpl extends OldEventBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -36,34 +32,40 @@ public class StringEvent implements Event {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String s;
+    private List<Property> properties;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public StringEvent(String s) {
-        this.s = s;
+    public OldEventImpl() {
+        this.properties = new ArrayList<>();
     }
 
     // Event implementation --------------------------------------------------------------------------------------------
 
     @Override
-    public Date getTimestamp() {
-        throw new RuntimeException("getTimestamp() NOT YET IMPLEMENTED");
-    }
-
-    @Override
     public List<Property> getProperties() {
-        throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
+        return properties;
     }
 
     @Override
     public Property getProperty(String name) {
-        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
+
+        for(Property p: properties) {
+            if (p.getName().equals(name)) {
+                return p;
+            }
+        }
+
+        return null;
     }
 
     @Override
     public Property getProperty(int index) {
-        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
+
+        if (index < 0 || index >= properties.size()) {
+            return null;
+        }
+        return properties.get(index);
     }
 
     @Override
@@ -73,12 +75,8 @@ public class StringEvent implements Event {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    /**
-     * @return the wrapped string. May return an empty string but never null.
-     */
-    public String get() {
-
-        return s;
+    public void addProperty(Property property) {
+        properties.add(property);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

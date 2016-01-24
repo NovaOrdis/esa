@@ -17,12 +17,10 @@
 package io.novaordis.esa.processor;
 
 import io.novaordis.esa.csv.CsvWriter;
-import io.novaordis.esa.event.Event;
-import io.novaordis.esa.event.EventImpl;
-import io.novaordis.esa.event.special.EndOfStreamEvent;
-import io.novaordis.esa.event.special.StringEvent;
+import io.novaordis.esa.event.OldEvent;
+import io.novaordis.esa.event.OldEventImpl;
+import io.novaordis.esa.event.special.EndOfStreamOldEvent;
 import io.novaordis.esa.logs.httpd.LogLine;
-import org.apache.log4j.pattern.LogEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +31,7 @@ import java.util.List;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/23/16
  */
-public class EventCSVWriter implements EventLogic {
+public class EventCSVWriter implements EventOldLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -56,16 +54,16 @@ public class EventCSVWriter implements EventLogic {
     // EventLogic ------------------------------------------------------------------------------------------------------
 
     @Override
-    public List<Event> process(Event inputEvent) {
+    public List<OldEvent> process(OldEvent inputEvent) {
         //
         // we only process EventImpls and EndOfStreamEvents, we warn for everything else
         //
 
-        if (inputEvent instanceof EndOfStreamEvent) {
+        if (inputEvent instanceof EndOfStreamOldEvent) {
 
             return Collections.singletonList(inputEvent);
         }
-        else if (inputEvent instanceof EventImpl) {
+        else if (inputEvent instanceof OldEventImpl) {
 
             LogLine le = (LogLine)inputEvent.getProperty(0).getValue();
 

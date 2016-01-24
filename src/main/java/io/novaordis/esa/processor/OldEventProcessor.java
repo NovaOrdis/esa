@@ -16,7 +16,7 @@
 
 package io.novaordis.esa.processor;
 
-import io.novaordis.esa.event.Event;
+import io.novaordis.esa.event.OldEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,11 +29,11 @@ import java.util.concurrent.BlockingQueue;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/23/16
  */
-public class SingleThreadedEventProcessor {
+public class OldEventProcessor {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(SingleThreadedEventProcessor.class);
+    private static final Logger log = LoggerFactory.getLogger(OldEventProcessor.class);
     private static final boolean debug = log.isDebugEnabled();
 
     // Static ----------------------------------------------------------------------------------------------------------
@@ -42,8 +42,8 @@ public class SingleThreadedEventProcessor {
 
     private String name;
 
-    private ByteLogic byteLogic;
-    private EventLogic eventLogic;
+    private ByteOldLogic byteLogic;
+    private EventOldLogic eventLogic;
 
     //
     // the input stream and the input queue are mutually exclusive - we can't have both
@@ -51,7 +51,7 @@ public class SingleThreadedEventProcessor {
 
     private InputStream inputStream;
 
-    private BlockingQueue<Event> inputQueue;
+    private BlockingQueue<OldEvent> inputQueue;
 
     //
     // the output stream and the output queue are mutually exclusive - we can't have both
@@ -59,23 +59,23 @@ public class SingleThreadedEventProcessor {
 
     private OutputStream outputStream;
 
-    private BlockingQueue<Event> outputQueue;
+    private BlockingQueue<OldEvent> outputQueue;
 
     private Thread thread;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public SingleThreadedEventProcessor() {
+    public OldEventProcessor() {
         this(null);
     }
 
-    public SingleThreadedEventProcessor(String name) {
+    public OldEventProcessor(String name) {
         this.name = name;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public void setInput(BlockingQueue<Event> inputQueue) {
+    public void setInput(BlockingQueue<OldEvent> inputQueue) {
 
         this.inputQueue = inputQueue;
     }
@@ -83,7 +83,7 @@ public class SingleThreadedEventProcessor {
     /**
      * @return may return null
      */
-    public BlockingQueue<Event> getInputQueue() {
+    public BlockingQueue<OldEvent> getInputQueue() {
         return inputQueue;
     }
 
@@ -99,7 +99,7 @@ public class SingleThreadedEventProcessor {
         return inputStream;
     }
 
-    public void setOutput(BlockingQueue<Event> outputQueue) {
+    public void setOutput(BlockingQueue<OldEvent> outputQueue) {
 
         this.outputQueue = outputQueue;
     }
@@ -107,7 +107,7 @@ public class SingleThreadedEventProcessor {
     /**
      * @return may return null
      */
-    public BlockingQueue<Event> getOutputQueue() {
+    public BlockingQueue<OldEvent> getOutputQueue() {
         return outputQueue;
     }
 
@@ -123,21 +123,21 @@ public class SingleThreadedEventProcessor {
         return outputStream;
     }
 
-    public void setByteLogic(ByteLogic logic) {
+    public void setByteLogic(ByteOldLogic logic) {
 
         this.byteLogic = logic;
     }
 
-    public ByteLogic getByteLogic() {
+    public ByteOldLogic getByteLogic() {
         return byteLogic;
     }
 
-    public void setEventLogic(EventLogic logic) {
+    public void setEventLogic(EventOldLogic logic) {
 
         this.eventLogic = logic;
     }
 
-    public EventLogic getEventLogic() {
+    public EventOldLogic getEventLogic() {
         return eventLogic;
     }
 
@@ -212,16 +212,16 @@ public class SingleThreadedEventProcessor {
                             throw new RuntimeException("NOT YET IMPLEMENTED");
                         }
 
-                        List<Event> outputEvents = byteLogic.process(b);
+                        List<OldEvent> outputEvents = byteLogic.process(b);
 
                         if (!outputEvents.isEmpty()) {
 
                             // attempt to put in queue and block until space becomes available
-                            for(Event e: outputEvents) {
+                            for(OldEvent e: outputEvents) {
 
                                 outputQueue.put(e);
 
-                                if (debug) { log.debug(SingleThreadedEventProcessor.this + " wrote event to the output queue"); }
+                                if (debug) { log.debug(OldEventProcessor.this + " wrote event to the output queue"); }
                             }
                         }
                     }
@@ -231,20 +231,20 @@ public class SingleThreadedEventProcessor {
                         // we expect events on the input queue
                         //
 
-                        Event event = inputQueue.take();
+                        OldEvent event = inputQueue.take();
 
-                        if (debug) { log.debug(SingleThreadedEventProcessor.this + " read event from the input queue"); }
+                        if (debug) { log.debug(OldEventProcessor.this + " read event from the input queue"); }
 
-                        List<Event> outputEvents = eventLogic.process(event);
+                        List<OldEvent> outputEvents = eventLogic.process(event);
 
                         if (!outputEvents.isEmpty()) {
 
                             // attempt to put in queue and block until space becomes 217
-                            for(Event e: outputEvents) {
+                            for(OldEvent e: outputEvents) {
 
                                 outputQueue.put(e);
 
-                                if (debug) { log.debug(SingleThreadedEventProcessor.this + " wrote event to the output queue"); }
+                                if (debug) { log.debug(OldEventProcessor.this + " wrote event to the output queue"); }
                             }
                         }
                     }

@@ -16,9 +16,9 @@
 
 package io.novaordis.esa.processor;
 
-import io.novaordis.esa.event.Event;
-import io.novaordis.esa.event.special.EndOfStreamEvent;
-import io.novaordis.esa.event.special.StringEvent;
+import io.novaordis.esa.event.OldEvent;
+import io.novaordis.esa.event.special.EndOfStreamOldEvent;
+import io.novaordis.esa.event.special.StringOldEvent;
 import org.junit.Test;
 
 import java.util.List;
@@ -52,9 +52,9 @@ public class InputStreamConverterTest extends ByteLogicTest {
         assertTrue(istec.process('l').isEmpty());
         assertTrue(istec.process('o').isEmpty());
 
-        List<Event> events = istec.process('\n');
+        List<OldEvent> events = istec.process('\n');
         assertEquals(1, events.size());
-        StringEvent se = (StringEvent)events.get(0);
+        StringOldEvent se = (StringOldEvent)events.get(0);
         String s = se.get();
         assertEquals("hello", s);
     }
@@ -64,15 +64,15 @@ public class InputStreamConverterTest extends ByteLogicTest {
 
         InputStreamConverter istec = getByteLogicToTest();
 
-        List<Event> events = istec.process('\n');
+        List<OldEvent> events = istec.process('\n');
         assertEquals(1, events.size());
 
-        StringEvent se = (StringEvent)events.get(0);
+        StringOldEvent se = (StringOldEvent)events.get(0);
         assertEquals("", se.get());
 
         events = istec.process('\n');
         assertEquals(1, events.size());
-        assertEquals("", ((StringEvent)events.get(0)).get());
+        assertEquals("", ((StringOldEvent)events.get(0)).get());
     }
 
     @Test
@@ -82,11 +82,11 @@ public class InputStreamConverterTest extends ByteLogicTest {
 
         assertTrue(istec.process('h').isEmpty());
 
-        List<Event> events = istec.process(-1);
+        List<OldEvent> events = istec.process(-1);
         assertEquals(2, events.size());
-        StringEvent se = (StringEvent)events.get(0);
+        StringOldEvent se = (StringOldEvent)events.get(0);
         assertEquals("h", se.get());
-        assertTrue(events.get(1) instanceof EndOfStreamEvent);
+        assertTrue(events.get(1) instanceof EndOfStreamOldEvent);
     }
 
     @Test
@@ -95,13 +95,13 @@ public class InputStreamConverterTest extends ByteLogicTest {
         InputStreamConverter istec = getByteLogicToTest();
 
         assertTrue(istec.process('h').isEmpty());
-        List<Event> events = istec.process('\n');
+        List<OldEvent> events = istec.process('\n');
         assertEquals(1, events.size());
-        assertEquals("h", ((StringEvent)events.get(0)).get());
+        assertEquals("h", ((StringOldEvent)events.get(0)).get());
 
         events = istec.process(-1);
         assertEquals(1, events.size());
-        assertTrue(events.get(0) instanceof EndOfStreamEvent);
+        assertTrue(events.get(0) instanceof EndOfStreamOldEvent);
     }
 
 
@@ -110,9 +110,9 @@ public class InputStreamConverterTest extends ByteLogicTest {
 
         InputStreamConverter istec = getByteLogicToTest();
 
-        List<Event> events = istec.process(-1);
+        List<OldEvent> events = istec.process(-1);
         assertEquals(1, events.size());
-        assertTrue(events.get(0) instanceof EndOfStreamEvent);
+        assertTrue(events.get(0) instanceof EndOfStreamOldEvent);
     }
 
 //    @Test

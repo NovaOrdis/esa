@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.event;
+package io.novaordis.esa.csv;
 
-import java.util.Date;
-import java.util.List;
+import io.novaordis.esa.core.OutputStreamConversionLogic;
+import io.novaordis.esa.core.event.Event;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/24/16
  */
-public abstract class EventBase implements Event {
+public class EventToCsvConverter implements OutputStreamConversionLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -31,29 +31,21 @@ public abstract class EventBase implements Event {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private Date timestamp;
-    private List<Property> properties;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    // Event implementation --------------------------------------------------------------------------------------------
+    // OutputStreamConversionLogic implementation ----------------------------------------------------------------------
 
     @Override
-    public Date getTimestamp() {
-        return timestamp;
+    public boolean process(Event inputEvent) {
+        throw new RuntimeException("process() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public byte[] getBytes() {
+        throw new RuntimeException("getBytes() NOT YET IMPLEMENTED");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
-
-    /**
-     * @return the old timestamp value or null if none was set
-     */
-    public Date setTimestamp(Date d) {
-
-        Date old = this.timestamp;
-        this.timestamp = d;
-        return old;
-    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
