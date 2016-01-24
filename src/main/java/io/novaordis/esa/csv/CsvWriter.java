@@ -16,7 +16,6 @@
 
 package io.novaordis.esa.csv;
 
-import io.novaordis.esa.processor.EventProcessor;
 import io.novaordis.esa.logs.httpd.LogLine;
 
 import java.io.OutputStream;
@@ -29,7 +28,7 @@ import java.text.SimpleDateFormat;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/22/16
  */
-public class CsvWriter implements EventProcessor {
+public class CsvWriter {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -63,9 +62,6 @@ public class CsvWriter implements EventProcessor {
         this.timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
     }
 
-    // EventProcessor implementation -----------------------------------------------------------------------------------
-
-    @Override
     public void process(LogLine event) throws Exception {
 
         String line = toCsvLine(timestampFormat, (LogLine)event);
