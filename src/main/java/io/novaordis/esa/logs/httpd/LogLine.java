@@ -16,6 +16,11 @@
 
 package io.novaordis.esa.logs.httpd;
 
+import io.novaordis.esa.event.Event;
+import io.novaordis.esa.event.EventImpl;
+import io.novaordis.esa.event.MeasureUnit;
+import io.novaordis.esa.event.Property;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +36,38 @@ public class LogLine {
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
+
+    /**
+     * Converts LogLine instances to Events that can be send further down the pipeline.
+     */
+    public static Event toEvent(LogLine logLine) {
+
+        EventImpl event = new EventImpl();
+        event.setTimestamp(logLine.timestamp);
+        event.addProperty(new Property() {
+            @Override
+            public String getName() {
+                return "log-line";
+            }
+
+            @Override
+            public Class getType() {
+                return Long.class;
+            }
+
+            @Override
+            public Object getValue() {
+                return logLine;
+            }
+
+            @Override
+            public MeasureUnit getMeasureUnit() {
+                throw new RuntimeException("getMeasureUnit() NOT YET IMPLEMENTED");
+            }
+        });
+
+        return event;
+    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 

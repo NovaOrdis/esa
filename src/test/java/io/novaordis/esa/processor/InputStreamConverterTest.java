@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/23/16
  */
-public class InputStreamToEventConvertorTest extends ByteLogicTest {
+public class InputStreamConverterTest extends ByteLogicTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ public class InputStreamToEventConvertorTest extends ByteLogicTest {
     @Test
     public void oneLine() throws Exception {
 
-        InputStreamToEventConvertor istec = getByteLogicToTest();
+        InputStreamConverter istec = getByteLogicToTest();
         assertTrue(istec.process('h').isEmpty());
         assertTrue(istec.process('e').isEmpty());
         assertTrue(istec.process('l').isEmpty());
@@ -62,7 +62,7 @@ public class InputStreamToEventConvertorTest extends ByteLogicTest {
     @Test
     public void emptyLine() throws Exception {
 
-        InputStreamToEventConvertor istec = getByteLogicToTest();
+        InputStreamConverter istec = getByteLogicToTest();
 
         List<Event> events = istec.process('\n');
         assertEquals(1, events.size());
@@ -78,7 +78,7 @@ public class InputStreamToEventConvertorTest extends ByteLogicTest {
     @Test
     public void endOfStreamAfterSomeCharacters() throws Exception {
 
-        InputStreamToEventConvertor istec = getByteLogicToTest();
+        InputStreamConverter istec = getByteLogicToTest();
 
         assertTrue(istec.process('h').isEmpty());
 
@@ -92,7 +92,7 @@ public class InputStreamToEventConvertorTest extends ByteLogicTest {
     @Test
     public void endOfStreamAfterNewLine() throws Exception {
 
-        InputStreamToEventConvertor istec = getByteLogicToTest();
+        InputStreamConverter istec = getByteLogicToTest();
 
         assertTrue(istec.process('h').isEmpty());
         List<Event> events = istec.process('\n');
@@ -108,7 +108,7 @@ public class InputStreamToEventConvertorTest extends ByteLogicTest {
     @Test
     public void endOfStreamRightAtTheBeginning() throws Exception {
 
-        InputStreamToEventConvertor istec = getByteLogicToTest();
+        InputStreamConverter istec = getByteLogicToTest();
 
         List<Event> events = istec.process(-1);
         assertEquals(1, events.size());
@@ -130,9 +130,9 @@ public class InputStreamToEventConvertorTest extends ByteLogicTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected InputStreamToEventConvertor getByteLogicToTest() throws Exception {
+    protected InputStreamConverter getByteLogicToTest() throws Exception {
 
-        return new InputStreamToEventConvertor();
+        return new InputStreamConverter();
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

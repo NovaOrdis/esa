@@ -14,81 +14,70 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.processor;
+package io.novaordis.esa.event;
 
-import io.novaordis.esa.event.Event;
-import io.novaordis.esa.event.special.EndOfStreamEvent;
-import io.novaordis.esa.event.special.StringEvent;
-import io.novaordis.esa.logs.httpd.LogFormat;
-import io.novaordis.esa.logs.httpd.LogLine;
-import io.novaordis.esa.logs.httpd.LogParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * A generic event
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 1/21/16
  */
-public class HttpdLogParser implements EventLogic {
+public class EventImpl extends EventBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    private static final Logger log = LoggerFactory.getLogger(HttpdLogParser.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private LogParser parser;
+    private List<Property> properties;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public HttpdLogParser() {
-
-        // TODO - how do I infer the log format from the log file? I need to externalize it in a friendly way
-        this.parser = new LogParser(LogFormat.PERFORMANCE_ANALYSIS);
-
+    public EventImpl() {
+        this.properties = new ArrayList<>();
     }
 
-    // EventLogic ------------------------------------------------------------------------------------------------------
+    // Event implementation --------------------------------------------------------------------------------------------
 
     @Override
-    public List<Event> process(Event inputEvent) {
+    public List<Property> getProperties() {
+        return properties;
+    }
 
-        //
-        // we only process StringEvents and EndOfStreamEvents, we warn for everything else
-        //
+    @Override
+    public Property getProperty(String name) {
 
-        if (inputEvent instanceof EndOfStreamEvent) {
-
-            return Collections.singletonList(inputEvent);
-        }
-        else if (inputEvent instanceof StringEvent) {
-
-            String s = ((StringEvent)inputEvent).get();
-
-            try {
-
-                LogLine logLine = parser.parse(s);
-                Event outputEvent = LogLine.toEvent(logLine);
-                return Collections.singletonList(outputEvent);
-            }
-            catch (Exception e) {
-
-                log.error("parsing failed", e);
-                return Collections.emptyList();
+        for(Property p: properties) {
+            if (p.getName().equals(name)) {
+                return p;
             }
         }
-        else {
-            log.warn("unknown event type " + inputEvent + ", ignoring ...");
-            return Collections.emptyList();
+
+        return null;
+    }
+
+    @Override
+    public Property getProperty(int index) {
+
+        if (index < 0 || index >= properties.size()) {
+            return null;
         }
+        return properties.get(index);
+    }
+
+    @Override
+    public Property setProperty(int index, Property property) {
+        throw new RuntimeException("setProperty() NOT YET IMPLEMENTED");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public void addProperty(Property property) {
+        properties.add(property);
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

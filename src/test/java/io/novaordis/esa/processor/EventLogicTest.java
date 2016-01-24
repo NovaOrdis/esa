@@ -16,28 +16,30 @@
 
 package io.novaordis.esa.processor;
 
-import io.novaordis.esa.event.Event;
-
-import java.util.List;
-
 /**
- * Logic that knows how to process Events.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/23/16
  */
-public interface EventLogic extends Logic {
+public abstract class EventLogicTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
+    // Attributes ------------------------------------------------------------------------------------------------------
+
+    // Constructors ----------------------------------------------------------------------------------------------------
+
     // Public ----------------------------------------------------------------------------------------------------------
 
-    /**
-     * @return a list of output events, which may be empty when multiple input events are consumed in order to generate
-     * a single output event, it may contain just one element, or it may contain multiple elements. It is never null.
-     */
-    List<Event> process(Event inputEvent);
+    // Package protected -----------------------------------------------------------------------------------------------
+
+    // Protected -------------------------------------------------------------------------------------------------------
+
+    protected abstract EventLogic getEventLogicToTest() throws Exception;
+
+    // Private ---------------------------------------------------------------------------------------------------------
+
+    // Inner classes ---------------------------------------------------------------------------------------------------
 
 }

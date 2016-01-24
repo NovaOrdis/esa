@@ -16,10 +16,9 @@
 
 package io.novaordis.esa;
 
-import io.novaordis.clad.UserErrorException;
 import io.novaordis.esa.processor.EventCSVWriter;
 import io.novaordis.esa.processor.HttpdLogParser;
-import io.novaordis.esa.processor.InputStreamToEventConvertor;
+import io.novaordis.esa.processor.InputStreamConverter;
 import io.novaordis.esa.processor.SingleThreadedEventProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +35,9 @@ public class EventStreamAnalyzer {
 
     private static final Logger log = LoggerFactory.getLogger(EventStreamAnalyzer.class);
 
-    public static final int BUFFER_SIZE = 1024 * 1024;
-
     // Static ----------------------------------------------------------------------------------------------------------
+
+    public static final int QUEUE_SIZE = 10;
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
@@ -46,24 +45,18 @@ public class EventStreamAnalyzer {
 
     // CommandLineDriven implementation --------------------------------------------------------------------------------
 
-    public void run() throws UserErrorException {
+    public void run() throws Exception {
 
-        SingleThreadedEventProcessor one = new SingleThreadedEventProcessor("file to event convertor");
-
-        //        BufferedReader input = null;
-//
-//        try {
-//
-//            input = new BufferedReader(new InputStreamReader(System.in), BUFFER_SIZE);
+        SingleThreadedEventProcessor one = new SingleThreadedEventProcessor("input stream reader");
 
         one.setInput(System.in);
-        one.setByteLogic(new InputStreamToEventConvertor());
-        one.setOutput(new ArrayBlockingQueue<>(10000));
+        one.setByteLogic(new InputStreamConverter());
+        one.setOutput(new ArrayBlockingQueue<>(QUEUE_SIZE));
 
         SingleThreadedEventProcessor two = new SingleThreadedEventProcessor("httpd log parser");
         two.setInput(one.getOutputQueue());
         two.setEventLogic(new HttpdLogParser());
-        two.setOutput(new ArrayBlockingQueue<>(10000));
+        two.setOutput(new ArrayBlockingQueue<>(QUEUE_SIZE));
 
         SingleThreadedEventProcessor three = new SingleThreadedEventProcessor("csv writer");
         three.setInput(two.getOutputQueue());
@@ -75,6 +68,9 @@ public class EventStreamAnalyzer {
         three.start();
 
         three.waitForEndOfStream();
+
+        log.info("sleeping ...");
+        Thread.currentThread().sleep(3600 * 1000L);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

@@ -16,23 +16,11 @@
 
 package io.novaordis.esa.processor;
 
-import io.novaordis.esa.event.Event;
-import io.novaordis.esa.event.special.EndOfStreamEvent;
-import io.novaordis.esa.event.special.StringEvent;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 /**
- * This logic reads a byte stream, identifies lines and generates a new StringEvent per line.
- *
- * Guaranteed single threaded.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/23/16
  */
-public class InputStreamToEventConvertor implements ByteLogic {
+public class HttpLogParserTest extends EventLogicTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -40,56 +28,20 @@ public class InputStreamToEventConvertor implements ByteLogic {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private StringBuilder sb;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public InputStreamToEventConvertor() {
-
-        this.sb = new StringBuilder();
-    }
-
-    // ByteLogic implementation ----------------------------------------------------------------------------------------
-
-    @Override
-    public List<Event> process(int b) {
-
-        List<Event> result;
-
-        if (b == -1) {
-
-            //
-            // end of stream
-            //
-
-            if (sb.length() == 0) {
-                result = Collections.singletonList(new EndOfStreamEvent());
-            }
-            else
-            {
-                result = Arrays.asList(new StringEvent(sb.toString()), new EndOfStreamEvent());
-            }
-            sb.setLength(0);
-            return result;
-        }
-        else if (b == '\n') {
-
-            result =  Collections.singletonList(new StringEvent(sb.toString()));
-            sb.setLength(0);
-        }
-        else {
-            sb.append((char) b);
-            result = Collections.emptyList();
-        }
-
-        return result;
-    }
-
     // Public ----------------------------------------------------------------------------------------------------------
+
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected HttpdLogParser getEventLogicToTest() throws Exception {
+
+        return new HttpdLogParser();
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

@@ -34,6 +34,7 @@ public class SingleThreadedEventProcessor {
     // Constants -------------------------------------------------------------------------------------------------------
 
     private static final Logger log = LoggerFactory.getLogger(SingleThreadedEventProcessor.class);
+    private static final boolean debug = log.isDebugEnabled();
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -150,7 +151,10 @@ public class SingleThreadedEventProcessor {
             throw new IllegalStateException(this + " already started");
         }
 
-        thread = new Thread(new Executor());
+        String threadName = name != null ?
+                name + " Thread" : "Event Processor " + Integer.toHexString(System.identityHashCode(this)) + " Thread";
+
+        thread = new Thread(new Executor(), threadName);
         thread.start();
 
         log.debug(this + " started");
@@ -201,12 +205,19 @@ public class SingleThreadedEventProcessor {
 
                         Event event = inputQueue.take();
 
-                        Event result = eventLogic.process(event);
+                        if (debug) { log.debug(SingleThreadedEventProcessor.this + " read event from the input queue"); }
 
-                        if (result != null) {
+                        List<Event> outputEvents = eventLogic.process(event);
 
-                            // attempt to put in queue and block until space becomes available
-                            outputQueue.put(result);
+                        if (!outputEvents.isEmpty()) {
+
+                            // attempt to put in queue and block until space becomes 217
+                            for(Event e: outputEvents) {
+
+                                outputQueue.put(e);
+
+                                if (debug) { log.debug(SingleThreadedEventProcessor.this + " wrote event to the output queue"); }
+                            }
                         }
                     }
                     else if (inputStream != null) {
@@ -220,13 +231,16 @@ public class SingleThreadedEventProcessor {
                             throw new RuntimeException("NOT YET IMPLEMENTED");
                         }
 
-                        List<Event> result = byteLogic.process(b);
+                        List<Event> outputEvents = byteLogic.process(b);
 
-                        if (!result.isEmpty()) {
+                        if (!outputEvents.isEmpty()) {
 
                             // attempt to put in queue and block until space becomes available
-                            for(Event e: result) {
+                            for(Event e: outputEvents) {
+
                                 outputQueue.put(e);
+
+                                if (debug) { log.debug(SingleThreadedEventProcessor.this + " wrote event to the output queue"); }
                             }
                         }
                     }
