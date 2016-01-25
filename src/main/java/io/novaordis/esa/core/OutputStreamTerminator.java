@@ -147,8 +147,8 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
     }
 
     @Override
-    protected void decommission() {
-        throw new RuntimeException("decommission() NOT YET IMPLEMENTED");
+    protected void clean() {
+        throw new RuntimeException("clean() NOT YET IMPLEMENTED");
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

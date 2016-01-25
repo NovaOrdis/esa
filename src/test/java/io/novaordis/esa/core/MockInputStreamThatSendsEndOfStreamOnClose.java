@@ -16,72 +16,87 @@
 
 package io.novaordis.esa.core;
 
-import io.novaordis.esa.core.event.EndOfStreamEvent;
-import io.novaordis.esa.core.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class MockInputStreamConversionLogic extends MockConversionLogic implements InputStreamConversionLogic {
+public class MockInputStreamThatSendsEndOfStreamOnClose extends InputStream {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(MockInputStreamThatSendsEndOfStreamOnClose.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private CountDownLatch endOfStreamLatch;
-
-    private EndOfStreamEvent endOfStreamEvent;
+    private CountDownLatch enteringReadLatch;
+    private CountDownLatch inReadLatch;
+    private volatile boolean closeInvoked;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public MockInputStreamConversionLogic() {
+    public MockInputStreamThatSendsEndOfStreamOnClose() {
 
-        endOfStreamLatch = new CountDownLatch(1);
+        inReadLatch = new CountDownLatch(1);
+        enteringReadLatch = new CountDownLatch(1);
     }
 
-    // InputStreamConversionLogic implementation -----------------------------------------------------------------------
+    // InputStream overrides  ------------------------------------------------------------------------------------------
 
-    /**
-     * Simplified implementation: we ignore everything except for the end-of-stream.
-     */
     @Override
-    public boolean process(int b) {
+    public int read() throws IOException {
 
-        if (b == -1) {
+        //
+        // block until we're closed and then send EOS
+        //
 
-            endOfStreamLatch.countDown();
-            endOfStreamEvent = new EndOfStreamEvent();
-            return true;
+        try {
+
+            log.info(this + " blocked calling thread \"" + Thread.currentThread().getName() + "\" in read()");
+            enteringReadLatch.countDown();
+            inReadLatch.await();
+        }
+        catch (InterruptedException e) {
+
+            throw new RuntimeException("InterruptedException HANDLING NOT YET IMPLEMENTED");
         }
 
-        return false;
+        log.info(this + " sending EOS");
+        return -1;
     }
 
     @Override
-    public List<Event> getEvents() {
+    public void close() {
 
-        if (endOfStreamEvent == null) {
-            return Collections.emptyList();
-        }
+        closeInvoked = true;
 
-        EndOfStreamEvent e = endOfStreamEvent;
-        endOfStreamEvent = null;
-        return Collections.singletonList(e);
+        log.info(this + " closing");
+        inReadLatch.countDown();
+        log.info(this + " closed");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public boolean waitForEndOfStreamMs(long timeoutMs) throws InterruptedException{
+    public CountDownLatch getEnteringReadLatch() {
+        return enteringReadLatch;
+    }
 
-        return endOfStreamLatch.await(timeoutMs, TimeUnit.MILLISECONDS);
+    public boolean wasCloseInvoked() {
+        return closeInvoked;
+    }
+
+    @Override
+    public String toString() {
+        return
+                "MockInputStreamThatSendsEndOfStreamOnClose[" + Integer.toHexString(System.identityHashCode(this)) + "]";
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

@@ -42,6 +42,13 @@ public interface InputStreamConversionLogic extends ConversionLogic {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
+     * Processes bytes arrived from the input stream. The conversion logic expects all bytes (including -1
+     * (end-of-stream)) to be handed over for conversion.
+     *
+     * The conversion logic <b>is NOT required</b> to send an EndOfStreamEvent event as the last event in the stream
+     * when -1 (end-of-stream) is received. If it does so, the EndOfStreamEvent will be gracefully handled by the
+     * enclosing component.
+     *
      * @return true if one or more Events are available for retrieval, and false if no event is available for retrieval.
      * If the returned value is true, the events can be retrieved and at the same time removed with getEvents(), which
      * is guaranteed to return a non-empty list. The return value has advisory value only, no harm will come from

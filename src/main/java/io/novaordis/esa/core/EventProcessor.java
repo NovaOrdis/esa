@@ -133,8 +133,8 @@ public class EventProcessor extends ComponentBase implements Component {
     }
 
     @Override
-    protected void decommission() {
-        throw new RuntimeException("decommission() NOT YET IMPLEMENTED");
+    protected void clean() {
+        throw new RuntimeException("clean() NOT YET IMPLEMENTED");
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

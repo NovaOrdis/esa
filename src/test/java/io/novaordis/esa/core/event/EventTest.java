@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core;
-
-import org.junit.Test;
-
-import static org.junit.Assert.fail;
+package io.novaordis.esa.core.event;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public abstract class InputStreamConversionLogicTest extends ConversionLogicTest {
+public abstract class EventTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -36,42 +32,11 @@ public abstract class InputStreamConversionLogicTest extends ConversionLogicTest
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    @Test
-    public void processBehaviorOnEOS() throws Exception {
-
-        InputStreamConversionLogic c = getConversionLogicToTest();
-
-        boolean result = c.process(-1);
-
-        fail("return here");
-    }
-
-    @Test
-    public void processBehaviorOnNegativeValue() throws Exception {
-
-        InputStreamConversionLogic c = getConversionLogicToTest();
-
-        boolean result = c.process(-1);
-
-        fail("return here");
-    }
-
-    @Test
-    public void processBehaviorOnIllegalyLargeValue() throws Exception {
-
-        InputStreamConversionLogic c = getConversionLogicToTest();
-
-        boolean result = c.process(256);
-
-        fail("return here");
-    }
-
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    @Override
-    protected abstract InputStreamConversionLogic getConversionLogicToTest() throws Exception;
+    protected abstract Event getEventToTest() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

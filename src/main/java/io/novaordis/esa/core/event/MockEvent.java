@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core;
-
-import org.junit.Test;
-
-import static org.junit.Assert.fail;
+package io.novaordis.esa.core.event;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public abstract class InputStreamConversionLogicTest extends ConversionLogicTest {
+public class MockEvent implements Event {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -32,46 +28,31 @@ public abstract class InputStreamConversionLogicTest extends ConversionLogicTest
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private Object payload;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    public MockEvent() {
+        this(null);
+    }
+
+    public MockEvent(Object payload) {
+        this.payload = payload;
+    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    @Test
-    public void processBehaviorOnEOS() throws Exception {
-
-        InputStreamConversionLogic c = getConversionLogicToTest();
-
-        boolean result = c.process(-1);
-
-        fail("return here");
+    public void setPayload(Object o) {
+        this.payload = o;
     }
 
-    @Test
-    public void processBehaviorOnNegativeValue() throws Exception {
-
-        InputStreamConversionLogic c = getConversionLogicToTest();
-
-        boolean result = c.process(-1);
-
-        fail("return here");
-    }
-
-    @Test
-    public void processBehaviorOnIllegalyLargeValue() throws Exception {
-
-        InputStreamConversionLogic c = getConversionLogicToTest();
-
-        boolean result = c.process(256);
-
-        fail("return here");
+    public Object getPayload() {
+        return payload;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
-
-    @Override
-    protected abstract InputStreamConversionLogic getConversionLogicToTest() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

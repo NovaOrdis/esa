@@ -16,20 +16,31 @@
 
 package io.novaordis.esa.core;
 
+import io.novaordis.esa.core.event.EndOfStreamEvent;
+import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.MockEvent;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -151,7 +162,7 @@ public class InputStreamInitiatorTest extends InitiatorTest {
     }
 
     @Test
-    public void closingInputStreamDoesNotReleaseABlockedThread_stopTimesOut() throws Exception {
+    public void closingInputStreamDoesNotReleaseBlockedThread_stopTimesOut() throws Exception {
 
         InputStreamInitiator inputStreamInitiator = new InputStreamInitiator();
 
@@ -222,24 +233,313 @@ public class InputStreamInitiatorTest extends InitiatorTest {
     }
 
     @Test
-    public void testWhetherClosingTheInputStreamReleasesABlockedReadingThread_ClosingDoesRelease_stopWorks()
-            throws Exception {
+    public void closingInputStreamDoesReleaseBlockedThread_stopExitsGracefully() throws Exception {
 
-        fail("Return here");
+        InputStreamInitiator inputStreamInitiator = new InputStreamInitiator();
+
+        //
+        // set a longer timeout, we expect stop to not timeout so it does not matter
+        //
+
+        inputStreamInitiator.setStopTimeoutMs(5000L);
+
+        MockInputStreamThatSendsEndOfStreamOnClose mis = new MockInputStreamThatSendsEndOfStreamOnClose();
+
+        inputStreamInitiator.setInputStream(mis);
+        MockInputStreamConversionLogic conversionLogic = new MockInputStreamConversionLogic();
+        inputStreamInitiator.setConversionLogic(conversionLogic);
+        inputStreamInitiator.setOutputQueue(new LinkedBlockingQueue<>());
+
+        inputStreamInitiator.start();
+
+        mis.getEnteringReadLatch().await();
+
+        //
+        // at this point the component thread is blocked in read()
+        //
+
+        Thread.sleep(10);
+
+        log.info("closing the component which in turn will close the stream ...");
+
+        boolean graceful = inputStreamInitiator.stop();
+
+        assertTrue(graceful);
+
+        //
+        // make sure InputStream.close() was invoked
+        //
+        assertTrue(mis.wasCloseInvoked());
+
+        //
+        // wait until the end-of-stream propagates to the conversion logic
+        //
+
+        long conversionLogicTimeout = 5000L;
+
+        boolean didNotTimeOut = conversionLogic.waitForEndOfStreamMs(conversionLogicTimeout);
+
+        if (didNotTimeOut) {
+            log.info("end of stream reached conversion logic");
+        }
+        else {
+            fail("we timed out (" + conversionLogicTimeout + " ms) waiting for the end of stream to reach the conversion logic");
+        }
+
+        //
+        // wait until we get an EndOfStream event on the output queue
+        //
+
+        BlockingQueue<Event> outputQueue = inputStreamInitiator.getOutputQueue();
+
+        long outputQueueTimeout = 5000L;
+
+        for(;;) {
+
+            Event e = outputQueue.poll(outputQueueTimeout, TimeUnit.MILLISECONDS);
+
+            if (e == null) {
+
+                fail("no event arrived on the queue for more than " + outputQueueTimeout + " ms");
+            }
+
+            if (e instanceof EndOfStreamEvent) {
+                //
+                // we're good
+                //
+                log.info("EndOfStreamEvent received");
+                break;
+            }
+            else {
+                //
+                // discard and return to polling
+                //
+                log.debug("" + e);
+            }
+        }
+
+
+        log.info("all EOS notifications and events received");
+
+        //
+        // make sure the component is in the correct "stopped" state
+        //
+
+        assertFalse(inputStreamInitiator.isActive());
+        assertTrue(inputStreamInitiator.isStopped());
     }
 
     @Test
-    public void stopBlocksForever() throws Exception {
-        fail("Return here");
+    public void conversionLogicExceptionHandling() throws Exception {
+
+        //
+        // we install a conversion logic that wraps each byte into MockEvent unless it gets 'x', in which case it
+        // throws a synthetic runtime exception. We send 'a' and then 'x' and we should get just one event and a
+        // closed component
+        //
+
+        final AtomicBoolean closeMethodInvoked = new AtomicBoolean(false);
+
+        InputStream is = new InputStream() {
+
+            private byte[] bytes = new byte[] { 'a', 'x' };
+            private int cursor = 0;
+            private boolean closed;
+
+            @Override
+            public int read() throws IOException {
+
+                if (closed) {
+                    throw new IOException("this stream is closed");
+                }
+
+                if (cursor == bytes.length) {
+                    closed = true;
+                    return -1;
+                }
+
+                return bytes[cursor ++];
+            }
+
+            @Override
+            public void close() {
+                closeMethodInvoked.set(true);
+            }
+        };
+
+        assertFalse(closeMethodInvoked.get());
+
+        InputStreamInitiator inputStreamInitiator = getComponentToTest("test");
+        inputStreamInitiator.setInputStream(is);
+        inputStreamInitiator.setConversionLogic(new InputStreamConversionLogic() {
+
+            private Event e;
+
+            @Override
+            public boolean process(int b) {
+
+                if (b == 'a') {
+
+                    e = new MockEvent((char)b);
+                    return true;
+                }
+                else {
+                    throw new RuntimeException("SYNTHETIC");
+                }
+            }
+
+            @Override
+            public List<Event> getEvents() {
+
+                if (e == null) {
+                    return Collections.emptyList();
+                }
+                else {
+                    Event e2 = e;
+                    e = null;
+                    return Collections.singletonList(e2);
+                }
+            }
+        });
+        inputStreamInitiator.setOutputQueue(new LinkedBlockingQueue<>());
+
+        inputStreamInitiator.start();
+
+        //
+        // we just busy poll for the component to stop
+        //
+        for(long timeout = 1000L, t0 = System.currentTimeMillis();;) {
+            if (inputStreamInitiator.isStopped()) { break; }
+            Thread.sleep(10);
+            if (System.currentTimeMillis() - t0 > timeout) { fail("polled more than " + timeout + " ms"); }
+        }
+
+        assertTrue(inputStreamInitiator.isStopped());
+
+        BlockingQueue<Event> oq = inputStreamInitiator.getOutputQueue();
+
+        assertTrue(oq.size() == 2);
+
+        MockEvent me = (MockEvent)oq.take();
+        assertEquals('a', me.getPayload());
+
+        EndOfStreamEvent eose = (EndOfStreamEvent)oq.take();
+        assertNotNull(eose);
     }
 
     @Test
-    public void testConversionException()
-            throws Exception {
+    public void conversionLogicPlacesAnEndOfStreamEventUponReceivingTheEndOfStream() throws Exception {
 
-        fail("Return here");
+        InputStreamInitiator isi = new InputStreamInitiator("test");
+        isi.setInputStream(new ByteArrayInputStream(new byte[] { 'a' }));
+        isi.setConversionLogic(new InputStreamConversionLogic() {
+            List<Event> events = new ArrayList<>();
+            private boolean closed;
+            @Override
+            public boolean process(int b) {
+
+                if (closed) {
+                    throw new IllegalStateException("we are closed");
+                }
+
+                if (b == -1) {
+                    //
+                    // we DO emit an EndOfStreamEvent
+                    //
+                    events.add(new EndOfStreamEvent());
+                    closed = true;
+                }
+                else {
+                    events.add(new MockEvent());
+                }
+
+                return true;
+            }
+
+            @Override
+            public List<Event> getEvents() {
+                List<Event> result = new ArrayList<Event>(events);
+                events.clear();
+                return result;
+            }
+        });
+        isi.setOutputQueue(new LinkedBlockingQueue<>());
+
+        isi.start();
+
+        //
+        // we just busy poll for the component to stop
+        //
+        for(long timeout = 1000L, t0 = System.currentTimeMillis();;) {
+            if (isi.isStopped()) { break; }
+            Thread.sleep(10);
+            if (System.currentTimeMillis() - t0 > timeout) { fail("polled more than " + timeout + " ms"); }
+        }
+
+        assertTrue(isi.isStopped());
+        assertEquals(2, isi.getOutputQueue().size());
+        MockEvent e = (MockEvent)isi.getOutputQueue().take();
+        assertNotNull(e);
+        EndOfStreamEvent e2 = (EndOfStreamEvent)isi.getOutputQueue().take();
+        assertNotNull(e2);
     }
 
+    @Test
+    public void conversionLogicDoesNotPlaceAnEndOfStreamEventUponReceivingTheEndOfStream() throws Exception {
+
+        InputStreamInitiator isi = new InputStreamInitiator("test");
+        isi.setInputStream(new ByteArrayInputStream(new byte[] { 'a' }));
+        isi.setConversionLogic(new InputStreamConversionLogic() {
+            List<Event> events = new ArrayList<>();
+            private boolean closed;
+            @Override
+            public boolean process(int b) {
+
+                if (closed) {
+                    throw new IllegalStateException("we are closed");
+                }
+
+                if (b == -1) {
+                    //
+                    // we DO NOT (!) emit an EndOfStreamEvent
+                    //
+                    closed = true;
+                    return false;
+                }
+                else {
+                    events.add(new MockEvent());
+                }
+
+                return true;
+            }
+
+            @Override
+            public List<Event> getEvents() {
+                List<Event> result = new ArrayList<Event>(events);
+                events.clear();
+                return result;
+            }
+        });
+        isi.setOutputQueue(new LinkedBlockingQueue<>());
+
+        isi.start();
+
+        //
+        // we just busy poll for the component to stop
+        //
+        for(long timeout = 1000L, t0 = System.currentTimeMillis();;) {
+            if (isi.isStopped()) { break; }
+            Thread.sleep(10);
+            if (System.currentTimeMillis() - t0 > timeout) { fail("polled more than " + timeout + " ms"); }
+        }
+
+        assertTrue(isi.isStopped());
+        assertEquals(2, isi.getOutputQueue().size());
+        MockEvent e = (MockEvent)isi.getOutputQueue().take();
+        assertNotNull(e);
+        EndOfStreamEvent e2 = (EndOfStreamEvent)isi.getOutputQueue().take();
+        assertNotNull(e2);
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

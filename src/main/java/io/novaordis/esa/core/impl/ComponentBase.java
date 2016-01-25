@@ -232,6 +232,9 @@ public abstract class ComponentBase implements Component {
 
         if (stopLatch == null) {
 
+            //
+            // it was cleared already
+            //
             return;
         }
 
@@ -241,26 +244,27 @@ public abstract class ComponentBase implements Component {
     /**
      * This method releases all resources at this level and renders the component inoperable.
      *
+     * Note that is is being invoked both from the "stop()" thread and from the component thread.
+     *
      * It is idempotent, so it can be invoked multiple times, from different threads.
      *
-     * Also see decommission() which is intended to release the resources at subclass level, and if the component thread
+     * Also see clean() which is intended to release the resources at subclass level, and if the component thread
      * is still blocked in I/O and cannot be unblocked, put the component in a state that will allow it to quickly exit
      * without any side effects when the component thread finally unblocks (if ever).
      *
-     * @see ComponentBase#decommission()
+     * @see ComponentBase#clean()
      */
     protected void renderInoperable() {
 
         active = false;
-        this.stopped = true;
+        stopped = true;
 
         //
-        // give the subclass instance to decommission itself then we clean at this level
+        // give the subclass instance to clean itself then we clean at this level
         //
 
         try {
-
-            decommission();
+            clean();
         }
         catch(Throwable t) {
 
@@ -270,7 +274,6 @@ public abstract class ComponentBase implements Component {
 
             log.warn(this + " decommissioning failed", t);
         }
-
 
         if (endOfStreamListeners != null) {
             clearEndOfStreamListeners();
@@ -316,8 +319,7 @@ public abstract class ComponentBase implements Component {
      *
      * @see ComponentBase#renderInoperable()
      */
-
-    protected abstract void decommission();
+    protected abstract void clean();
 
     // Private ---------------------------------------------------------------------------------------------------------
 
@@ -334,11 +336,22 @@ public abstract class ComponentBase implements Component {
      */
     private boolean waitForTheComponentThreadToExit() throws InterruptedException {
 
-        long javaUtilConcurrentWaitTime = getStopTimeoutMs();
-        // if zero or negative, wait forever
-        javaUtilConcurrentWaitTime = javaUtilConcurrentWaitTime <= 0 ? Long.MAX_VALUE : javaUtilConcurrentWaitTime;
+        if (stopLatch == null) {
+            return true;
+        }
 
-        return stopLatch == null || stopLatch.await(javaUtilConcurrentWaitTime, TimeUnit.MILLISECONDS);
+        long javaUtilConcurrentWaitTime = getStopTimeoutMs();
+
+        // if zero or negative, wait forever
+        if (javaUtilConcurrentWaitTime <= 0) {
+            log.debug("");
+            javaUtilConcurrentWaitTime = Long.MAX_VALUE;
+        }
+
+
+        //noinspection UnnecessaryLocalVariable
+        boolean graceful = stopLatch.await(javaUtilConcurrentWaitTime, TimeUnit.MILLISECONDS);
+        return graceful;
     }
 
     // Inner classes ---------------------------------------------------------------------------------------------------

@@ -16,12 +16,14 @@
 
 package io.novaordis.esa.core;
 
+import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.impl.ComponentBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -48,7 +50,9 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
 
     private BlockingQueue<Event> outputQueue;
 
-    private volatile boolean decommissioned;
+    // this is another way of saying "stopped" - we have a "stopped" variable in the super class and we don't want
+    // those to clash
+    private volatile boolean cleaned;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -58,7 +62,7 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
 
     public InputStreamInitiator(String name) {
         super(name);
-        this.decommissioned = false;
+        this.cleaned = false;
     }
 
     // Initiator implementation ----------------------------------------------------------------------------------------
@@ -142,13 +146,15 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
 
                 try {
 
-                    for(;!decommissioned;) {
+                    boolean endOfStream = false;
+                    boolean endOfStreamEventFound = false;
+                    for(; !cleaned; ) {
 
                         try {
 
                             int b = inputStream.read();
 
-                            if (decommissioned) {
+                            if (cleaned) {
 
                                 //
                                 // if we have been decommissioned after we enter the blocking read, drop everything on
@@ -157,10 +163,44 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
                                 return;
                             }
 
+                            if (b == -1) {
+
+                                log.debug(this + " received End-Of-Stream");
+                                endOfStream = true;
+                            }
+
                             conversionLogic.process(b);
 
+                            List<Event> events = conversionLogic.getEvents();
 
+                            for(Event e: events) {
 
+                                outputQueue.put(e);
+
+                                if (e instanceof EndOfStreamEvent) {
+                                    endOfStreamEventFound = true;
+                                }
+                            }
+
+                            if (endOfStream) {
+
+                                log.debug(this + " reached the end of the input stream, stopping ...");
+
+                                if (!endOfStreamEventFound) {
+                                    //
+                                    // the conversion logic did not generate an EndOfStreamEvent, do it ourselves
+                                    //
+                                    outputQueue.put(new EndOfStreamEvent());
+                                }
+
+                                //
+                                // we voluntarily stop, and since we are not blocked and read and we don't care what
+                                // comes on the input stream, there's no point in waiting on the stop latch, so we
+                                // release it in advance, since the finally block will execute after this
+                                releaseTheStopLatch();
+                                stop();
+                                break;
+                            }
                         }
                         catch(Throwable t) {
 
@@ -172,6 +212,15 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
                             //
 
                             log.error(InputStreamInitiator.this + " failed and it will irrecoverably shut down", t);
+
+                            //
+                            // we let downstream know that no more events will come from us - if we can
+                            //
+                            boolean endOfStreamSent = outputQueue.offer(new EndOfStreamEvent());
+
+                            if (!endOfStreamSent) {
+                                log.error(InputStreamInitiator.this + " attempted to sent and EndOfStream event but the output queue did not accept it");
+                            }
 
                             //
                             // cleanup
@@ -205,7 +254,12 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
 
         try {
 
+            log.debug(this + " closing the input stream " + inputStream);
+
             inputStream.close();
+
+            log.debug(this + " successfully closed the input stream");
+
             return true;
         }
         catch (Exception e) {
@@ -216,12 +270,21 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
     }
 
     /**
-     * @see ComponentBase#decommission()
+     * @see ComponentBase#clean()
      */
     @Override
-    protected void decommission() {
+    protected void clean() {
 
-        this.decommissioned = true;
+        //
+        // this puts the component in an unoperable state even if the read unblocks after shutdown
+        //
+
+        this.cleaned = true;
+
+        //
+        // do not nullify the input stream, conversion logic and the output queue, external clients may still need those
+        // references even after the component was stopped
+        //
     }
 
     // Private ---------------------------------------------------------------------------------------------------------
