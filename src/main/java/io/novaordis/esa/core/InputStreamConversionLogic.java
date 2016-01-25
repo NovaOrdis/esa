@@ -50,6 +50,10 @@ public interface InputStreamConversionLogic extends ConversionLogic {
      * belatedly invoke getEvents() - that would probably work assuming the conversion logic instance has sufficient
      * memory at its disposal to temporarily store the events.
      *
+     * Note that any exception thrown by this method will cause the component thread to exit, effectively rendering
+     * the component inoperable. The recommended method to deal with recoverable processing faults is to generate
+     * specific fault events.
+     *
      * @see InputStreamConversionLogic#getEvents()
      */
     boolean process(int b);

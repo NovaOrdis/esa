@@ -20,8 +20,9 @@ import java.util.List;
 
 /**
  * An event pipeline component: an instance that can be used as part of an event pipeline. It could have a name, it can
- * be started and stopped and can have listeners registered on it. Usually starting involves putting internal threads
- * to work.
+ * be started and stopped and can have listeners registered on it. All components have at least one internal thread.
+ * Some components may have in principle more than one thread, though the current API does not reflect this, getThread()
+ * implicitly indicates there is just a single thread.. Starting a component means putting the internal thread to work.
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
@@ -29,6 +30,8 @@ import java.util.List;
 public interface Component {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    public static final long DEFAULT_STOP_TIMEOUT_MS = 3000L;
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -50,17 +53,58 @@ public interface Component {
     void start() throws Exception;
 
     /**
-     * Synchronously stop the component: the method won't exit until the component is stopped and released its
-     * resources.
+     * Attempts to synchronously stop the component: the method won't exit until the component is stopped and it
+     * released its resources or a stop timeout occurred - this happens when the component is blocked reading its input
+     * stream and no content comes down the pipe - we attempt to close the input stream, but there are cases when
+     * closing the input stream does not send end-of-stream to the reader. In this case, those specific implementations
+     * should take precautions to put the component into a state that will allow it to quickly exit without any side
+     * effects when the read finally unblocks (if ever).
      *
      * The implementation is idempotent: once stopped, subsequent stop() calls are noops.
+     *
+     * IMPORTANT: once stopped, the component cannot be reused - if you need the functionality again, create a new one.
+     *
+     * @return true is the component stopped synchronously and gracefully or false if a timeout occured.
+     *
+     * @see Component#getStopTimeoutMs()
+     *
+     * @exception InterruptedException if the thread waiting on this component to stop is externally interrupted.
      */
-    void stop();
+    boolean stop() throws InterruptedException;
 
     /**
-     * @return true if the component was started and it is in a state that allows it to process events.
+     * Configure the stop timeout. Default value is DEFAULT_STOP_TIMEOUT_MS.
+     *
+     * @see Component#getStopTimeoutMs()
+     */
+    void setStopTimeoutMs(long stopTimeOutMs);
+
+    /**
+     * The amount of time in milliseconds to wait for a stop attempt to succeed. If the component could not be stopped
+     * within the specified time interval, stop() throws StopTimedOutException, but the implementations are advised to
+     * take precautions to put the component in a state that will allow it to quickly exit without any side effects when
+     * the blocking I/O operation that prevented the stop to complete finally unblocks (if ever).
+     *
+     * The default value is Component#DEFAULT_STOP_TIMEOUT_MS.
+     *
+     * Zero means potentially block forever.
+     */
+    long getStopTimeoutMs();
+
+    /**
+     * @return true if the component was started and it is in a state that allows it to process events. It does
+     * not necessarily mean it's currently processing events, which would be the case if no events are coming over the
+     * input queue/stream.
      */
     boolean isActive();
+
+    /**
+     * @return whether the component was stopped (stop() method was invoked and returned successfully or via timeout)
+     *
+     * Once stopped, a component cannot be reused anymore. If you need again the functionality, create a new similar
+     * component.
+     */
+    boolean isStopped();
 
     /**
      * Adds an EndOfStream event listener at the end of the list.
@@ -77,6 +121,11 @@ public interface Component {
      * Clears the EndOfStream event listener list
      */
     void clearEndOfStreamListeners();
+
+    /**
+     * @return the component thread. May return null if the component is stopped.
+     */
+    Thread getThread();
 
 
 }

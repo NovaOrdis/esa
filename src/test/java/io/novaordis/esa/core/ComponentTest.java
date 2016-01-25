@@ -98,7 +98,7 @@ public abstract class ComponentTest {
         assertTrue(endOfStreamListeners.isEmpty());
     }
 
-    // start() ---------------------------------------------------------------------------------------------------------
+    // start/stop() ----------------------------------------------------------------------------------------------------
 
     @Test
     public void startAndStop() throws Exception {
@@ -117,29 +117,63 @@ public abstract class ComponentTest {
 
         assertFalse(c.isActive());
 
+        //
+        // add an EndOfStreamListener to see if stop() clears them
+        //
+
+        c.addEndOfStreamListener(new MockEndOfStreamListener());
+
+
         configureForStart(c);
 
         c.start();
 
         assertTrue(c.isActive());
+        assertEquals(1, c.getEndOfStreamListeners().size());
 
         //
-        // test idempotence
+        // test start idempotence
         //
+
         c.start();
 
         assertTrue(c.isActive());
 
-        c.stop();
+        boolean timedOut = c.stop();
+
+        log.info("this component implementation did " + (timedOut ? "" : "NOT ") + "timed out on stop()");
+
+        assertFalse(timedOut);
 
         assertFalse(c.isActive());
 
         //
-        // test idempotence
+        // test stop idempotence
         //
+
         c.stop();
 
         assertFalse(c.isActive());
+
+        assertTrue(c.isStopped());
+
+        //
+        // normal stop clears resources (listeners, etc.)
+        //
+
+        assertTrue(c.getEndOfStreamListeners().isEmpty());
+    }
+
+    @Test
+    public void stopTimeout() throws Exception {
+
+        Component c = getComponentToTest("test");
+
+        assertEquals(Component.DEFAULT_STOP_TIMEOUT_MS, c.getStopTimeoutMs());
+
+        c.setStopTimeoutMs(Component.DEFAULT_STOP_TIMEOUT_MS + 1L);
+
+        assertEquals(Component.DEFAULT_STOP_TIMEOUT_MS + 1L, c.getStopTimeoutMs());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

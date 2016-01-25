@@ -18,6 +18,8 @@ package io.novaordis.esa.core;
 
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.impl.ComponentBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.concurrent.BlockingQueue;
@@ -33,6 +35,9 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    private static final Logger log = LoggerFactory.getLogger(InputStreamInitiator.class);
+    //private static final boolean debug = log.isDebugEnabled();
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -43,6 +48,8 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
 
     private BlockingQueue<Event> outputQueue;
 
+    private volatile boolean decommissioned;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public InputStreamInitiator() {
@@ -51,6 +58,7 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
 
     public InputStreamInitiator(String name) {
         super(name);
+        this.decommissioned = false;
     }
 
     // Initiator implementation ----------------------------------------------------------------------------------------
@@ -121,7 +129,99 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
         if (outputQueue == null) {
             throw new IllegalStateException(this + " not properly configured, it is missing its output queue");
         }
+    }
 
+    @Override
+    protected Runnable getRunnable() {
+
+        //noinspection Convert2Lambda
+        return new Runnable() {
+
+            @Override
+            public void run() {
+
+                try {
+
+                    for(;!decommissioned;) {
+
+                        try {
+
+                            int b = inputStream.read();
+
+                            if (decommissioned) {
+
+                                //
+                                // if we have been decommissioned after we enter the blocking read, drop everything on
+                                // the floor and exit
+                                //
+                                return;
+                            }
+
+                            conversionLogic.process(b);
+
+
+
+                        }
+                        catch(Throwable t) {
+
+                            //
+                            // any exception thrown by the conversion logic will be handled as irrecoverable - we
+                            // release the resources, we put the component in a "stopped" state and exit. The
+                            // recommended method to deal with recoverable processing faults is to generate specific
+                            // fault events.
+                            //
+
+                            log.error(InputStreamInitiator.this + " failed and it will irrecoverably shut down", t);
+
+                            //
+                            // cleanup
+                            //
+                            renderInoperable();
+                        }
+                    }
+                }
+                finally {
+
+                    //
+                    // no matter how we exit the processing loop, release the stop latch
+                    //
+                    releaseTheStopLatch();
+                }
+            }
+
+            @Override
+            public String toString() {
+                return InputStreamInitiator.this.toString() + "$Runnable";
+            }
+
+        };
+    }
+
+    /**
+     * @see ComponentBase#initiateShutdown()
+     */
+    @Override
+    protected boolean initiateShutdown() {
+
+        try {
+
+            inputStream.close();
+            return true;
+        }
+        catch (Exception e) {
+
+            log.error(this + " failed to close the input stream");
+            return false;
+        }
+    }
+
+    /**
+     * @see ComponentBase#decommission()
+     */
+    @Override
+    protected void decommission() {
+
+        this.decommissioned = true;
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

@@ -110,6 +110,33 @@ public class EventProcessor extends ComponentBase implements Component {
         }
     }
 
+    @Override
+    protected Runnable getRunnable() {
+
+        //noinspection Convert2Lambda
+        return new Runnable() {
+
+            @Override
+            public void run() {
+                throw new RuntimeException("run() NOT YET IMPLEMENTED");
+            }
+
+        };
+    }
+
+    /**
+     * @see ComponentBase#initiateShutdown()
+     */
+    @Override
+    protected boolean initiateShutdown() {
+        throw new RuntimeException("initiateShutdown() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    protected void decommission() {
+        throw new RuntimeException("decommission() NOT YET IMPLEMENTED");
+    }
+
     // Private ---------------------------------------------------------------------------------------------------------
 
     // Inner classes ---------------------------------------------------------------------------------------------------

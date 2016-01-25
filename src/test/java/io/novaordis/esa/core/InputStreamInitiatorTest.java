@@ -16,16 +16,20 @@
 
 package io.novaordis.esa.core;
 
-import io.novaordis.esa.core.event.Event;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -139,12 +143,104 @@ public class InputStreamInitiatorTest extends InitiatorTest {
             log.info(e.getMessage());
         }
 
-        initiator.setOutputQueue(new ArrayBlockingQueue<Event>(1));
+        initiator.setOutputQueue(new ArrayBlockingQueue<>(1));
 
         initiator.insureReadyForStart();
 
         log.info("ok");
     }
+
+    @Test
+    public void testWhetherClosingTheInputStreamReleasesABlockedReadingThread_ClosingDoesNotRelease_stopDoesNotWork()
+            throws Exception {
+
+        InputStreamInitiator inputStreamInitiator = new InputStreamInitiator();
+
+        //
+        // set a shorter timeout, we expect stop to timeout so we should exit fast
+        //
+
+        long testStopTimeout = 250L;
+
+        inputStreamInitiator.setStopTimeoutMs(testStopTimeout);
+
+        PipedOutputStream pos = new PipedOutputStream();
+        PipedInputStream pis = new PipedInputStream(pos);
+
+        //
+        // A piped input stream can be used to simulate a blocked read, but closing the piped input stream DOES NOT
+        // cause the read to end with EOS, so this is a good test case
+        //
+
+        inputStreamInitiator.setInputStream(pis);
+
+        inputStreamInitiator.setOutputQueue(new LinkedBlockingQueue<>());
+        inputStreamInitiator.setConversionLogic(new MockInputStreamConversionLogic());
+
+        inputStreamInitiator.start();
+
+        //
+        // wait for the component thread to block on an empty stream - iterated until its state is
+        // Thread.State.TIMED_WAITING
+        //
+
+        Thread componentThread = inputStreamInitiator.getThread();
+
+        long componentThreadBlockTimeout = 3001L;
+
+        for(long t0 = System.currentTimeMillis(); !componentThread.getState().equals(Thread.State.TIMED_WAITING); ) {
+            if (System.currentTimeMillis() - t0 > componentThreadBlockTimeout) {
+                throw new TimeoutException("timed out after " + componentThreadBlockTimeout + " ms");
+            }
+        }
+
+        assertEquals(Thread.State.TIMED_WAITING, componentThread.getState());
+
+        //
+        // the component thread is "blocked" in I/O, attempt to stop the initiator by closing the thread; we know
+        // that for a PipedInputStream close() does not send EOS
+        //
+
+        //
+        // we expect to wait at least getStopTimeoutMs() and then stop() should return true.
+        //
+
+        long t0 = System.currentTimeMillis();
+        boolean timedOut = inputStreamInitiator.stop();
+        long t1 = System.currentTimeMillis();
+
+        assertTrue(timedOut);
+        assertTrue(t1 - t0 >= inputStreamInitiator.getStopTimeoutMs());
+
+        //
+        // make sure that the initiator was put in a state that makes it quit without doing anything else when
+        // the I/O read operation finally unblocks (if ever). Any well written component will exit from everything
+        // if stopped.
+        //
+
+        assertFalse(inputStreamInitiator.isActive());
+        assertTrue(inputStreamInitiator.isStopped());
+    }
+
+    @Test
+    public void testWhetherClosingTheInputStreamReleasesABlockedReadingThread_ClosingDoesRelease_stopWorks()
+            throws Exception {
+
+        fail("Return here");
+    }
+
+    @Test
+    public void stopBlocksForever() throws Exception {
+        fail("Return here");
+    }
+
+    @Test
+    public void testConversionException()
+            throws Exception {
+
+        fail("Return here");
+    }
+
 
     // Package protected -----------------------------------------------------------------------------------------------
 
