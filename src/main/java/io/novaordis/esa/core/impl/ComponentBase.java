@@ -168,7 +168,7 @@ public abstract class ComponentBase implements Component {
 
         log.debug(componentThread + " shutdown initiated");
 
-        boolean timedOut = waitForTheComponentThreadToExit();
+        boolean normalExit = waitForTheComponentThreadToExit();
 
         //
         // regardless of whether the stop action completed successfully or timed out, render component in an inoperable
@@ -177,12 +177,12 @@ public abstract class ComponentBase implements Component {
 
         renderInoperable();
 
-        if (timedOut) {
+        if (!normalExit) {
 
             log.warn(this + " did not stop in " + getStopTimeoutMs() + " milliseconds, abandoning it ...");
         }
 
-        return !timedOut;
+        return normalExit;
     }
 
     @Override
@@ -329,8 +329,8 @@ public abstract class ComponentBase implements Component {
     /**
      * Blocks until the underlying component thread had exited.
      *
-     * @return true if the calling thread timed out waiting for the component thread to exit, or false if the
-     * component thread exited normally.
+     * @return <tt>true</tt> if the component thread exited normally. Returned <tt>false</tt> if the calling thread
+     * timed out waiting for the component thread to exit.
      */
     private boolean waitForTheComponentThreadToExit() throws InterruptedException {
 
@@ -338,7 +338,7 @@ public abstract class ComponentBase implements Component {
         // if zero or negative, wait forever
         javaUtilConcurrentWaitTime = javaUtilConcurrentWaitTime <= 0 ? Long.MAX_VALUE : javaUtilConcurrentWaitTime;
 
-        return (stopLatch != null && stopLatch.await(javaUtilConcurrentWaitTime, TimeUnit.MILLISECONDS));
+        return stopLatch == null || stopLatch.await(javaUtilConcurrentWaitTime, TimeUnit.MILLISECONDS);
     }
 
     // Inner classes ---------------------------------------------------------------------------------------------------

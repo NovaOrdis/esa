@@ -64,7 +64,7 @@ public interface Component {
      *
      * IMPORTANT: once stopped, the component cannot be reused - if you need the functionality again, create a new one.
      *
-     * @return true is the component stopped synchronously and gracefully or false if a timeout occured.
+     * @return true is the component stopped synchronously and gracefully or false if a timeout occurred.
      *
      * @see Component#getStopTimeoutMs()
      *

@@ -151,8 +151,7 @@ public class InputStreamInitiatorTest extends InitiatorTest {
     }
 
     @Test
-    public void testWhetherClosingTheInputStreamReleasesABlockedReadingThread_ClosingDoesNotRelease_stopDoesNotWork()
-            throws Exception {
+    public void closingInputStreamDoesNotReleaseABlockedThread_stopTimesOut() throws Exception {
 
         InputStreamInitiator inputStreamInitiator = new InputStreamInitiator();
 
@@ -197,19 +196,19 @@ public class InputStreamInitiatorTest extends InitiatorTest {
         assertEquals(Thread.State.TIMED_WAITING, componentThread.getState());
 
         //
-        // the component thread is "blocked" in I/O, attempt to stop the initiator by closing the thread; we know
-        // that for a PipedInputStream close() does not send EOS
+        // The component thread is "blocked" in I/O. Attempt to stop the initiator by closing the thread. W know that
+        // for a PipedInputStream close() does not send EOS so the component thread won't unblock
         //
 
         //
-        // we expect to wait at least getStopTimeoutMs() and then stop() should return true.
+        // we expect to wait at least getStopTimeoutMs() and then stop() should return false.
         //
 
         long t0 = System.currentTimeMillis();
-        boolean timedOut = inputStreamInitiator.stop();
+        boolean noTimeOut = inputStreamInitiator.stop();
         long t1 = System.currentTimeMillis();
 
-        assertTrue(timedOut);
+        assertFalse(noTimeOut);
         assertTrue(t1 - t0 >= inputStreamInitiator.getStopTimeoutMs());
 
         //

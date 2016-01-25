@@ -108,6 +108,7 @@ public abstract class ComponentTest {
         assertFalse(c.isActive());
 
         try {
+
             c.start();
             fail("should have thrown IllegalArgumentException because the component is not properly configured for start");
         }
@@ -143,7 +144,10 @@ public abstract class ComponentTest {
 
         log.info("this component implementation did " + (timedOut ? "" : "NOT ") + "timed out on stop()");
 
-        assertFalse(timedOut);
+        //
+        // stop() may or may not timeout depending on the underlying implementation (some can be shut down gracefully
+        // and some can't) so it does not make sense to test state.
+        //
 
         assertFalse(c.isActive());
 
@@ -165,7 +169,7 @@ public abstract class ComponentTest {
     }
 
     @Test
-    public void stopTimeout() throws Exception {
+    public void setAndSetStopTimeoutMs() throws Exception {
 
         Component c = getComponentToTest("test");
 
