@@ -133,8 +133,8 @@ public class EventProcessor extends ComponentBase implements Component {
     }
 
     @Override
-    protected void clean() {
-        throw new RuntimeException("clean() NOT YET IMPLEMENTED");
+    protected void clearStateInSubclass() {
+        throw new RuntimeException("clearStateInSubclass() NOT YET IMPLEMENTED");
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

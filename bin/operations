@@ -363,7 +363,7 @@ function build-installation-zip-file() {
 #    ${no_tests} && skip_tests_arg="-Dmaven.test.skip=true"
 #    local maven_quiet="-q"
 #    ${verbose} && maven_quiet=""
-#    (cd ${project_home}; mvn ${maven_quiet} clean package ${skip_tests_arg}) && debug "mvn ${maven_quiet} clean package ${skip_tests_arg}" || exit 1
+#    (cd ${project_home}; mvn ${maven_quiet} clearStateInSubclass package ${skip_tests_arg}) && debug "mvn ${maven_quiet} clearStateInSubclass package ${skip_tests_arg}" || exit 1
 
     local zip_file_base_name=$(get-artifact-base-name)-$(get-version)
     local zip_root_dir=${project_home}/target/${zip_file_base_name}
@@ -439,7 +439,7 @@ function install()
 
         ! ${force} && fail "${application_home_dir} already installed. Use '-f' or '--force' to overwrite"
 
-        # --force was used, remove the existing directory for a clean installation
+        # --force was used, remove the existing directory for a clearStateInSubclass installation
         rm -r ${application_home_dir} && \
             debug "removed existing ${application_home_dir}" || \
             fail "failed to remove existing ${application_home_dir}"

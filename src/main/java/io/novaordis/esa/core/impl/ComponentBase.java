@@ -175,7 +175,7 @@ public abstract class ComponentBase implements Component {
         // state
         //
 
-        renderInoperable();
+        clearStateInSuperclass();
 
         if (!normalExit) {
 
@@ -242,29 +242,30 @@ public abstract class ComponentBase implements Component {
     }
 
     /**
-     * This method releases all resources at this level and renders the component inoperable.
+     * This method releases all resources at the superclass and renders the component inoperable.
      *
      * Note that is is being invoked both from the "stop()" thread and from the component thread.
      *
      * It is idempotent, so it can be invoked multiple times, from different threads.
      *
-     * Also see clean() which is intended to release the resources at subclass level, and if the component thread
+     * Also see clearStateInSubclass() which is intended to release the resources at subclass level, and if the component thread
      * is still blocked in I/O and cannot be unblocked, put the component in a state that will allow it to quickly exit
      * without any side effects when the component thread finally unblocks (if ever).
      *
-     * @see ComponentBase#clean()
+     * @see ComponentBase#clearStateInSubclass()
      */
-    protected void renderInoperable() {
+    protected void clearStateInSuperclass() {
 
         active = false;
         stopped = true;
 
         //
-        // give the subclass instance to clean itself then we clean at this level
+        // give the subclass instance to clearStateInSubclass itself then we clearStateInSubclass at this level
         //
 
         try {
-            clean();
+
+            clearStateInSubclass();
         }
         catch(Throwable t) {
 
@@ -317,9 +318,9 @@ public abstract class ComponentBase implements Component {
      * in I/O and cannot be unblocked, the method should put the component in a state that will allow it to quickly exit
      * without any side effects when the component thread finally unblocks (if ever).
      *
-     * @see ComponentBase#renderInoperable()
+     * @see ComponentBase#clearStateInSuperclass()
      */
-    protected abstract void clean();
+    protected abstract void clearStateInSubclass();
 
     // Private ---------------------------------------------------------------------------------------------------------
 

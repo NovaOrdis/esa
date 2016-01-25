@@ -58,8 +58,8 @@ public interface InputStreamConversionLogic extends ConversionLogic {
      * memory at its disposal to temporarily store the events.
      *
      * Note that any exception thrown by this method will cause the component thread to exit, effectively rendering
-     * the component inoperable. The recommended method to deal with recoverable processing faults is to generate
-     * specific fault events.
+     * the component inoperable. The recommended method to deal with recoverable processing faults at this level is to
+     * generate specific fault events, not to throw exceptions.
      *
      * @see InputStreamConversionLogic#getEvents()
      */

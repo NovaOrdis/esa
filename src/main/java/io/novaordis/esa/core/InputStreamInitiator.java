@@ -52,7 +52,7 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
 
     // this is another way of saying "stopped" - we have a "stopped" variable in the super class and we don't want
     // those to clash
-    private volatile boolean cleaned;
+    private volatile boolean subStopped;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
 
     public InputStreamInitiator(String name) {
         super(name);
-        this.cleaned = false;
+        this.subStopped = false;
     }
 
     // Initiator implementation ----------------------------------------------------------------------------------------
@@ -146,19 +146,20 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
 
                 try {
 
-                    boolean endOfStream = false;
-                    boolean endOfStreamEventFound = false;
-                    for(; !cleaned; ) {
+                    boolean eos = false;
+                    boolean conversionLogicIssuedEoSEvent = false;
+
+                    for(; !subStopped; ) {
 
                         try {
 
                             int b = inputStream.read();
 
-                            if (cleaned) {
+                            if (subStopped) {
 
                                 //
-                                // if we have been decommissioned after we enter the blocking read, drop everything on
-                                // the floor and exit
+                                // if we have been decommissioned after we entered the blocking read, drop everything
+                                // on the floor and exit
                                 //
                                 return;
                             }
@@ -166,7 +167,7 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
                             if (b == -1) {
 
                                 log.debug(this + " received End-Of-Stream");
-                                endOfStream = true;
+                                eos = true;
                             }
 
                             conversionLogic.process(b);
@@ -178,25 +179,26 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
                                 outputQueue.put(e);
 
                                 if (e instanceof EndOfStreamEvent) {
-                                    endOfStreamEventFound = true;
+                                    conversionLogicIssuedEoSEvent = true;
                                 }
                             }
 
-                            if (endOfStream) {
+                            if (eos) {
 
-                                log.debug(this + " reached the end of the input stream, stopping ...");
+                                log.debug(this + " reached the end of the input stream and it is now stopping ...");
 
-                                if (!endOfStreamEventFound) {
+                                if (!conversionLogicIssuedEoSEvent) {
                                     //
-                                    // the conversion logic did not generate an EndOfStreamEvent, do it ourselves
+                                    // the conversion logic did not issue an EndOfStreamEvent, we do it ourselves
                                     //
                                     outputQueue.put(new EndOfStreamEvent());
                                 }
 
                                 //
-                                // we voluntarily stop, and since we are not blocked and read and we don't care what
-                                // comes on the input stream, there's no point in waiting on the stop latch, so we
-                                // release it in advance, since the finally block will execute after this
+                                // at this point we voluntarily stop, and since we are not blocked on read and we don't
+                                // care what comes on the input stream, there's no point in waiting on the stop latch
+                                // after attempting to stop - release it in advance, since the finally block, where we
+                                // normally release the latch, will execute only after stop() invocation
                                 releaseTheStopLatch();
                                 stop();
                                 break;
@@ -206,9 +208,9 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
 
                             //
                             // any exception thrown by the conversion logic will be handled as irrecoverable - we
-                            // release the resources, we put the component in a "stopped" state and exit. The
-                            // recommended method to deal with recoverable processing faults is to generate specific
-                            // fault events.
+                            // release the resources, we put the component in a stopped state and exit. The
+                            // recommended method to deal with recoverable processing faults in the conversion logic
+                            // is to generate specific fault events, not to throw exceptions.
                             //
 
                             log.error(InputStreamInitiator.this + " failed and it will irrecoverably shut down", t);
@@ -225,7 +227,7 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
                             //
                             // cleanup
                             //
-                            renderInoperable();
+                            clearStateInSuperclass();
                         }
                     }
                 }
@@ -270,16 +272,16 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
     }
 
     /**
-     * @see ComponentBase#clean()
+     * @see ComponentBase#clearStateInSubclass()
      */
     @Override
-    protected void clean() {
+    protected void clearStateInSubclass() {
 
         //
         // this puts the component in an unoperable state even if the read unblocks after shutdown
         //
 
-        this.cleaned = true;
+        this.subStopped = true;
 
         //
         // do not nullify the input stream, conversion logic and the output queue, external clients may still need those
