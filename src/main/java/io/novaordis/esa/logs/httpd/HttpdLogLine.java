@@ -16,10 +16,8 @@
 
 package io.novaordis.esa.logs.httpd;
 
-import io.novaordis.esa.event.OldEvent;
-import io.novaordis.esa.event.OldEventImpl;
-import io.novaordis.esa.event.MeasureUnit;
-import io.novaordis.esa.event.Property;
+import io.novaordis.esa.core.event.ContainerEvent;
+import io.novaordis.esa.core.event.Event;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -31,42 +29,18 @@ import java.util.Map;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class LogLine {
+public class HttpdLogLine {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     /**
-     * Converts LogLine instances to Events that can be send further down the pipeline.
+     * Converts HttpdLogLine instances to Events that can be send further down the pipeline.
      */
-    public static OldEvent toEvent(LogLine logLine) {
+    public static Event toEvent(HttpdLogLine logLine) {
 
-        OldEventImpl event = new OldEventImpl();
-        event.setTimestamp(logLine.timestamp);
-        event.addProperty(new Property() {
-            @Override
-            public String getName() {
-                return "log-line";
-            }
-
-            @Override
-            public Class getType() {
-                return Long.class;
-            }
-
-            @Override
-            public Object getValue() {
-                return logLine;
-            }
-
-            @Override
-            public MeasureUnit getMeasureUnit() {
-                throw new RuntimeException("getMeasureUnit() NOT YET IMPLEMENTED");
-            }
-        });
-
-        return event;
+        return new ContainerEvent(logLine);
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -78,7 +52,7 @@ public class LogLine {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public LogLine() {
+    public HttpdLogLine() {
 
         this.values = new HashMap<>();
     }

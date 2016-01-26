@@ -16,9 +16,16 @@
 
 package io.novaordis.esa.logs.httpd;
 
+import io.novaordis.esa.core.ClosedException;
 import io.novaordis.esa.core.ProcessingLogic;
+import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.FaultEvent;
+import io.novaordis.esa.core.event.StringEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,22 +36,68 @@ public class HttpdLogParsingLogic implements ProcessingLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    private static final Logger log = LoggerFactory.getLogger(HttpdLogParsingLogic.class);
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private boolean closed;
+    private List<Event> buffer;
+    private HttpdLogParser logParser;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    public HttpdLogParsingLogic() {
+
+        this.buffer = new ArrayList<>();
+
+        // TODO - how do I infer the log format from the log file? I need to externalize it in a friendly way
+        this.logParser = new HttpdLogParser(LogFormat.PERFORMANCE_ANALYSIS);
+    }
 
     // ProcessingLogic implements --------------------------------------------------------------------------------------
 
     @Override
-    public boolean process(Event inputEvent) {
-        throw new RuntimeException("process() NOT YET IMPLEMENTED");
+    public boolean process(Event inputEvent) throws ClosedException {
+
+        if (closed) {
+            throw new ClosedException(this + " is closed");
+        }
+
+        if (inputEvent instanceof EndOfStreamEvent) {
+            closed = true;
+            return false;
+        }
+        else if (!(inputEvent instanceof StringEvent)) {
+
+            throw new IllegalArgumentException(this + " can only handle StringEvents and it got " + inputEvent);
+        }
+
+        //noinspection ConstantConditions
+        String s = ((StringEvent)inputEvent).get();
+
+        try {
+
+            HttpdLogLine logLine = logParser.parse(s);
+            Event event = HttpdLogLine.toEvent(logLine);
+            buffer.add(event);
+        }
+        catch (Exception e) {
+
+            log.error("parsing failed", e);
+            buffer.add(new FaultEvent());
+        }
+
+        return true;
     }
 
     @Override
     public List<Event> getEvents() {
-        throw new RuntimeException("getEvents() NOT YET IMPLEMENTED");
+
+        List<Event> result = new ArrayList<>(buffer);
+        buffer.clear();
+        return result;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

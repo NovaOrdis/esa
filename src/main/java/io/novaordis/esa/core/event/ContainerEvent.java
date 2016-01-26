@@ -14,73 +14,38 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.csv;
-
-import io.novaordis.esa.logs.httpd.LogLine;
-
-import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+package io.novaordis.esa.core.event;
 
 /**
- * An event processor that writes the events in a CSV format at the output stream.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/22/16
+ * @since 1/24/16
  */
-public class CsvWriter {
+public class ContainerEvent implements Event {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final DateFormat DEFAULT_TIMESTAMP_FORMAT = new SimpleDateFormat("HH:mm:ss");
-
     // Static ----------------------------------------------------------------------------------------------------------
-
-    public static String toCsvLine(DateFormat timestampFormat, LogLine event) {
-
-        String s =
-                timestampFormat.format(event.timestamp) + ", " +
-                event.getThreadName() + ", " +
-                event.getFirstRequestLine() + ", " +
-                event.getOriginalRequestStatusCode() + ", " +
-                event.getResponseEntityBodySize() + ", " +
-                event.getRequestProcessingTimeMs();
-
-        return s;
-    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private OutputStream outputStream;
-
-    private DateFormat timestampFormat;
+    private Object o;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public CsvWriter() {
-
-        this.timestampFormat = DEFAULT_TIMESTAMP_FORMAT;
-    }
-
-    public void process(LogLine event) throws Exception {
-
-        String line = toCsvLine(timestampFormat, (LogLine)event);
-        line += "\n";
-        outputStream.write(line.getBytes());
+    public ContainerEvent(Object o) {
+        this.o = o;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public void setOutputStream(OutputStream os) {
-        this.outputStream = os;
+    public Object get() {
+        return o;
     }
 
-    public DateFormat getTimestampFormat() {
-        return timestampFormat;
-    }
+    @Override
+    public String toString() {
 
-    public void setTimestampFormat(DateFormat df) {
-        this.timestampFormat = df;
+        return "ContanerEvent[" + o + "]";
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

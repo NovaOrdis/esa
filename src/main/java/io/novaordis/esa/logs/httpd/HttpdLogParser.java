@@ -21,13 +21,13 @@ import io.novaordis.esa.logs.ParsingException;
 import java.util.List;
 
 /**
- * A log parser instance is configured with a specific log format and is capable of parsing log lines producing LogLine
+ * A log parser instance is configured with a specific log format and is capable of parsing log lines producing HttpdLogLine
  * instances.
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/22/16
  */
-public class LogParser {
+public class HttpdLogParser {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -39,7 +39,7 @@ public class LogParser {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public LogParser(LogFormat logFormat) {
+    public HttpdLogParser(LogFormat logFormat) {
 
         this.logFormat = logFormat;
     }
@@ -50,9 +50,9 @@ public class LogParser {
         return logFormat;
     }
 
-    public LogLine parse(String line) throws ParsingException {
+    public HttpdLogLine parse(String line) throws ParsingException {
 
-        LogLine e = new LogLine();
+        HttpdLogLine e = new HttpdLogLine();
 
         //
         // we don't perform a match against am aggregated format that would match the entire line because

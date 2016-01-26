@@ -224,7 +224,7 @@ public class EventProcessor extends ComponentBase implements Component {
                             //
                             // cleanup
                             //
-                            clearStateInSuperclass();
+                            stopSuperclass();
                         }
                     }
                 }
@@ -276,7 +276,7 @@ public class EventProcessor extends ComponentBase implements Component {
     }
 
     @Override
-    protected void clearStateInSubclass() {
+    protected void stopSubclass() {
 
         log.debug(this + " clearing state");
 

@@ -175,7 +175,7 @@ public abstract class ComponentBase implements Component {
         // state
         //
 
-        clearStateInSuperclass();
+        stopSuperclass();
 
         if (!normalExit) {
 
@@ -248,23 +248,23 @@ public abstract class ComponentBase implements Component {
      *
      * It is idempotent, so it can be invoked multiple times, from different threads.
      *
-     * Also see clearStateInSubclass() which is intended to release the resources at subclass level, and if the component thread
+     * Also see stopSubclass() which is intended to release the resources at subclass level, and if the component thread
      * is still blocked in I/O and cannot be unblocked, put the component in a state that will allow it to quickly exit
      * without any side effects when the component thread finally unblocks (if ever).
      *
-     * @see ComponentBase#clearStateInSubclass()
+     * @see ComponentBase#stopSubclass()
      */
-    protected void clearStateInSuperclass() {
+    protected void stopSuperclass() {
 
         active = false;
         stopped = true;
 
         //
-        // give the subclass instance to clearStateInSubclass itself then we clearStateInSubclass at this level
+        // give the subclass instance to stopSubclass itself then we stopSubclass at this level
         //
 
         try {
-            clearStateInSubclass();
+            stopSubclass();
         }
         catch(Throwable t) {
 
@@ -273,18 +273,6 @@ public abstract class ComponentBase implements Component {
             //
 
             log.warn(this + " clearing state failed", t);
-        }
-
-        if (endOfStreamListeners != null) {
-            clearEndOfStreamListeners();
-            endOfStreamListeners = null;
-        }
-
-        componentThread = null;
-
-        if (stopLatch != null) {
-            stopLatch.countDown();
-            stopLatch = null;
         }
     }
 
@@ -317,9 +305,9 @@ public abstract class ComponentBase implements Component {
      * in I/O and cannot be unblocked, the method should put the component in a state that will allow it to quickly exit
      * without any side effects when the component thread finally unblocks (if ever).
      *
-     * @see ComponentBase#clearStateInSuperclass()
+     * @see ComponentBase#stopSuperclass()
      */
-    protected abstract void clearStateInSubclass();
+    protected abstract void stopSubclass();
 
     // Private ---------------------------------------------------------------------------------------------------------
 

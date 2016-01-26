@@ -30,11 +30,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class LogParserTest {
+public class HttpdLogParserTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(LogParserTest.class);
+    private static final Logger log = LoggerFactory.getLogger(HttpdLogParserTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -48,10 +48,10 @@ public class LogParserTest {
 
         String commonPattern = "[]";
 
-        LogParser factory = new LogParser(
+        HttpdLogParser factory = new HttpdLogParser(
                 new LogFormat(FormatStrings.OPENING_BRACKET, FormatStrings.CLOSING_BRACKET));
 
-        LogLine le = factory.parse(commonPattern);
+        HttpdLogLine le = factory.parse(commonPattern);
         assertNotNull(le);
         assertNull(le.timestamp);
     }
@@ -61,10 +61,10 @@ public class LogParserTest {
 
         String commonPattern = "\"  \"";
 
-        LogParser factory = new LogParser(
+        HttpdLogParser factory = new HttpdLogParser(
                 new LogFormat(FormatStrings.DOUBLE_QUOTES, FormatStrings.DOUBLE_QUOTES));
 
-        LogLine le = factory.parse(commonPattern);
+        HttpdLogLine le = factory.parse(commonPattern);
         assertNotNull(le);
         assertNull(le.timestamp);
     }
@@ -74,9 +74,9 @@ public class LogParserTest {
 
         String commonPattern = "127.0.0.1 - bob [10/Oct/2016:13:55:36 -0700] \"GET /test.gif HTTP/1.1\" 200 1024";
 
-        LogParser factory = new LogParser(LogFormat.COMMON);
+        HttpdLogParser factory = new HttpdLogParser(LogFormat.COMMON);
 
-        LogLine le = factory.parse(commonPattern);
+        HttpdLogLine le = factory.parse(commonPattern);
         assertEquals("127.0.0.1", le.getRemoteHost());
         assertNull(le.getRemoteLogname());
         assertEquals("bob", le.getRemoteUser());
@@ -91,9 +91,9 @@ public class LogParserTest {
 
         String line = "172.20.2.41 - - [09/Jan/2016:20:06:07 -0800] \"OPTIONS * HTTP/1.0\" 200 -";
 
-        LogParser factory = new LogParser(LogFormat.COMMON);
+        HttpdLogParser factory = new HttpdLogParser(LogFormat.COMMON);
 
-        LogLine le = factory.parse(line);
+        HttpdLogLine le = factory.parse(line);
         assertEquals("172.20.2.41", le.getRemoteHost());
         assertNull(le.getRemoteLogname());
         assertNull(le.getRemoteUser());
@@ -120,9 +120,9 @@ public class LogParserTest {
                 FormatStrings.STATUS_CODE,
                 FormatStrings.RESPONSE_ENTITY_BODY_SIZE);
 
-        LogParser factory = new LogParser(format);
+        HttpdLogParser factory = new HttpdLogParser(format);
 
-        LogLine le = factory.parse(commonPattern);
+        HttpdLogLine le = factory.parse(commonPattern);
         assertEquals("127.0.0.1", le.getRemoteHost());
         assertNull(le.getRemoteLogname());
         assertEquals("bob", le.getRemoteUser());
@@ -138,9 +138,9 @@ public class LogParserTest {
 
         String line = "\"default task-1\" 127.0.0.1 - [21/Jan/2016:09:32:56 -0800] \"GET /something HTTP/1.1\" 404 74 27";
 
-        LogParser factory = new LogParser(LogFormat.PERFORMANCE_ANALYSIS);
+        HttpdLogParser factory = new HttpdLogParser(LogFormat.PERFORMANCE_ANALYSIS);
 
-        LogLine le = factory.parse(line);
+        HttpdLogLine le = factory.parse(line);
         assertEquals("default task-1", le.getThreadName());
         assertEquals("127.0.0.1", le.getRemoteHost());
         assertNull(le.getRemoteUser());
@@ -164,9 +164,9 @@ public class LogParserTest {
 
         LogFormat format = new LogFormat(FormatStrings.THREAD_NAME, FormatStrings.REMOTE_HOST);
 
-        LogParser factory = new LogParser(format);
+        HttpdLogParser factory = new HttpdLogParser(format);
 
-        LogLine le = factory.parse(line);
+        HttpdLogLine le = factory.parse(line);
         assertEquals("default", le.getThreadName());
         assertEquals("task-1", le.getRemoteHost());
     }
@@ -177,7 +177,7 @@ public class LogParserTest {
         String line = "127.0.0.1 - - 20/Jan/2016:03:42:11 -0800 \"GET /something HTTP/1.1\" 1024";
 
         LogFormat format = LogFormat.COMMON;
-        LogParser factory = new LogParser(format);
+        HttpdLogParser factory = new HttpdLogParser(format);
 
         try {
             factory.parse(line);
@@ -195,9 +195,9 @@ public class LogParserTest {
 //        String line = "127.0.0.1 bob 200 2326";
 //
 //        LogFormat format = new LogFormat(FormatStrings.REMOTE_HOST);
-//        LogParser factory = new LogParser(format);
+//        HttpdLogParser factory = new HttpdLogParser(format);
 //
-//        LogLine le = factory.parse(line);
+//        HttpdLogLine le = factory.parse(line);
 //
 //        assertEquals(1, le.getPropertyCount());
 //        assertEquals("127.0.0.1", le.getRemoteHost());
@@ -210,12 +210,12 @@ public class LogParserTest {
 
         String line = "'GET /test.gif HTTP/1.1'";
 
-        LogParser factory = new LogParser(new LogFormat(
+        HttpdLogParser factory = new HttpdLogParser(new LogFormat(
                 FormatStrings.SINGLE_QUOTE,
                 FormatStrings.FIRST_REQUEST_LINE,
                 FormatStrings.SINGLE_QUOTE));
 
-        LogLine le = factory.parse(line);
+        HttpdLogLine le = factory.parse(line);
         assertEquals("GET /test.gif HTTP/1.1", le.getFirstRequestLine());
     }
 

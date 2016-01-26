@@ -227,7 +227,7 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
                             //
                             // cleanup
                             //
-                            clearStateInSuperclass();
+                            stopSuperclass();
                         }
                     }
                 }
@@ -272,10 +272,10 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
     }
 
     /**
-     * @see ComponentBase#clearStateInSubclass()
+     * @see ComponentBase#stopSubclass()
      */
     @Override
-    protected void clearStateInSubclass() {
+    protected void stopSubclass() {
 
         //
         // this puts the component in an unoperable state even if the read unblocks after shutdown

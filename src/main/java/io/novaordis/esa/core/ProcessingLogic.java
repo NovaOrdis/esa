@@ -61,7 +61,7 @@ public interface ProcessingLogic {
      *
      * @see ProcessingLogic#getEvents()
      */
-    boolean process(Event e);
+    boolean process(Event e) throws ClosedException;;
 
     /**
      * Retrieves and at the same time removes from the instance any available Events.

@@ -28,11 +28,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class LogLineTest {
+public class HttpdLogLineTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(LogLineTest.class);
+    private static final Logger log = LoggerFactory.getLogger(HttpdLogLineTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ public class LogLineTest {
     @Test
     public void noSuchFormatElement() throws Exception {
 
-        LogLine e = new LogLine();
+        HttpdLogLine e = new HttpdLogLine();
 
         //noinspection Convert2Lambda
         Object value = e.getLogValue(new MockFormatString("no-such-format-element"));
@@ -56,7 +56,7 @@ public class LogLineTest {
     @Test
     public void setValue_CorrectType() throws Exception {
 
-        LogLine e = new LogLine();
+        HttpdLogLine e = new HttpdLogLine();
 
         MockFormatString formatElement = new MockFormatString("LONG_MOCK", Long.class);
 
@@ -74,7 +74,7 @@ public class LogLineTest {
     @Test
     public void setValue_null() throws Exception {
 
-        LogLine e = new LogLine();
+        HttpdLogLine e = new HttpdLogLine();
 
         MockFormatString formatElement = new MockFormatString("LONG_MOCK", Long.class);
 
@@ -95,7 +95,7 @@ public class LogLineTest {
     @Test
     public void setValue_IncorrectType() throws Exception {
 
-        LogLine e = new LogLine();
+        HttpdLogLine e = new HttpdLogLine();
 
         MockFormatString formatElement = new MockFormatString("LONG_MOCK", Long.class);
 
@@ -111,7 +111,7 @@ public class LogLineTest {
 //    @Test
 //    public void getValueCount() throws Exception {
 //
-//        LogLine e = new LogLine();
+//        HttpdLogLine e = new HttpdLogLine();
 //
 //        assertNull(e.timestamp);
 //        assertEquals(0, e.getPropertyCount());
@@ -128,7 +128,7 @@ public class LogLineTest {
 //    @Test
 //    public void setAndGetTimestamp() throws Exception {
 //
-//        LogLine e = new LogLine();
+//        HttpdLogLine e = new HttpdLogLine();
 //
 //        assertNull(e.timestamp);
 //

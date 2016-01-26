@@ -22,11 +22,12 @@ import io.novaordis.esa.core.EventProcessor;
 import io.novaordis.esa.core.OutputStreamTerminator;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.StringEventProducer;
-import io.novaordis.esa.csv.EventToCsvConverter;
+import io.novaordis.esa.csv.EventToCSV;
 import io.novaordis.esa.logs.httpd.HttpdLogParsingLogic;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -42,22 +43,12 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-//        EventProcessor inputStreamReader = new EventProcessor("Input Stream Reader");
-//        inputStreamReader.setInput(System.in);
-//        inputStreamReader.setByteLogic(new InputStreamConverter());
-//        inputStreamReader.setOutput(new ArrayBlockingQueue<>(QUEUE_SIZE));
-
         InputStreamInitiator initiator = new InputStreamInitiator("Input Stream Reader");
         initiator.setInputStream(System.in);
         initiator.setConversionLogic(new StringEventProducer());
         initiator.setOutputQueue(new ArrayBlockingQueue<>(QUEUE_SIZE));
 
         BlockingQueue<Event> streamReaderToParserQueue = initiator.getOutputQueue();
-
-//        EventProcessor two = new EventProcessor("httpd log parser");
-//        two.setInput(inputStreamReader.getOutputQueue());
-//        two.setEventLogic(new HttpdLogParser());
-//        two.setOutput(new ArrayBlockingQueue<>(QUEUE_SIZE));
 
         EventProcessor httpdLogParser = new EventProcessor("HTTP Log Parser");
         httpdLogParser.setInputQueue(streamReaderToParserQueue);
@@ -66,26 +57,17 @@ public class Main {
 
         BlockingQueue<Event> parserToCsvWriterQueue = httpdLogParser.getOutputQueue();
 
-//        OldEventProcessor three = new OldEventProcessor("csv writer");
-//        three.setInput(two.getOutputQueue());
-//        three.setEventLogic(new EventCSVWriter());
-//        three.setOutput(System.out);
-
         OutputStreamTerminator terminator = new OutputStreamTerminator("CSV Writer");
         terminator.setInputQueue(parserToCsvWriterQueue);
-        terminator.setConversionLogic(new EventToCsvConverter());
+        terminator.setConversionLogic(new EventToCSV());
         terminator.setOutputStream(System.out);
 
-
+        final CountDownLatch endOfStream = new CountDownLatch(1);
+;
         EndOfStreamListener eos = new EndOfStreamListener() {
             @Override
             public void eventStreamEnded() {
-
-                //
-                // document synchronization primitives
-                //
-
-                throw new RuntimeException(this + ".eventStreamEnded() NOT YET IMPLEMENTED");
+                endOfStream.countDown();
             }
         };
 
@@ -96,10 +78,9 @@ public class Main {
         terminator.start();
 
         //
-        // document synchronization primitives
+        // wait for the end of stream to propagate through the pipeline
         //
-
-        Thread.currentThread().sleep(3600 * 1000L);
+        endOfStream.await();
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------

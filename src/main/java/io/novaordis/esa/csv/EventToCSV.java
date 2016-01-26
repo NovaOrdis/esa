@@ -16,33 +16,83 @@
 
 package io.novaordis.esa.csv;
 
+import io.novaordis.esa.core.ClosedException;
 import io.novaordis.esa.core.OutputStreamConversionLogic;
+import io.novaordis.esa.core.event.ContainerEvent;
+import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.logs.httpd.HttpdLogLine;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class EventToCsvConverter implements OutputStreamConversionLogic {
+public class EventToCSV implements OutputStreamConversionLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    public static final DateFormat DEFAULT_TIMESTAMP_FORMAT = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
+
+    public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private StringBuilder sb;
+    private volatile boolean closed;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    public EventToCSV() {
+        sb = new StringBuilder();
+    }
 
     // OutputStreamConversionLogic implementation ----------------------------------------------------------------------
 
     @Override
-    public boolean process(Event inputEvent) {
-        throw new RuntimeException("process() NOT YET IMPLEMENTED");
+    public boolean process(Event inputEvent) throws ClosedException {
+
+        if (closed) {
+            throw new ClosedException(this + " closed");
+        }
+
+        if (inputEvent instanceof EndOfStreamEvent) {
+            closed = true;
+            return false;
+        }
+
+        if (!(inputEvent instanceof ContainerEvent)) {
+            throw new IllegalArgumentException("invalid event type " + inputEvent.getClass());
+        }
+
+        ContainerEvent ce = (ContainerEvent)inputEvent;
+        HttpdLogLine l = (HttpdLogLine)ce.get();
+        String s =
+                DEFAULT_TIMESTAMP_FORMAT.format(l.timestamp) + ", " +
+                        l.getThreadName() + ", " +
+                        l.getFirstRequestLine() + ", " +
+                        l.getOriginalRequestStatusCode() + ", " +
+                        l.getResponseEntityBodySize() + ", " +
+                        l.getRequestProcessingTimeMs() + "\n";
+
+        sb.append(s);
+        return true;
     }
 
     @Override
     public byte[] getBytes() {
-        throw new RuntimeException("getBytes() NOT YET IMPLEMENTED");
+
+        if (sb.length() == 0) {
+            return EMPTY_BYTE_ARRAY;
+        }
+
+        byte[] result = sb.toString().getBytes();
+        sb.setLength(0);
+        return result;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -54,5 +104,9 @@ public class EventToCsvConverter implements OutputStreamConversionLogic {
     // Private ---------------------------------------------------------------------------------------------------------
 
     // Inner classes ---------------------------------------------------------------------------------------------------
+
+    // Constants -------------------------------------------------------------------------------------------------------
+
+
 
 }

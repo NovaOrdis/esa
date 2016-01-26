@@ -53,7 +53,7 @@ public interface OutputStreamConversionLogic extends ConversionLogic {
      *
      * @see OutputStreamConversionLogic#getBytes()
      */
-    boolean process(Event inputEvent);
+    boolean process(Event inputEvent) throws ClosedException;
 
     /**
      * Retrieves and at the same time removes from the instance any available bytes.

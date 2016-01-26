@@ -146,9 +146,10 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
             @Override
             public void run() {
 
+                boolean eos = false;
+
                 try {
 
-                    boolean eos = false;
                     boolean shutdown = false;
 
                     for(; !subStopped; ) {
@@ -228,13 +229,35 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
                             }
 
                             //
+                            // it's also end of stream
+                            //
+                            eos = true;
+
+                            //
                             // cleanup
                             //
-                            clearStateInSuperclass();
+                            stopSuperclass();
                         }
                     }
                 }
                 finally {
+
+                    if (eos) {
+
+                        // call EnoOfStreamListeners
+
+                        for(EndOfStreamListener eosl: getEndOfStreamListeners()) {
+
+                            try {
+
+                                log.debug(this + " invoking " + eosl);
+                                eosl.eventStreamEnded();
+                            }
+                            catch(Exception e) {
+                                log.error("end of stream listener invocation failed");
+                            }
+                        }
+                    }
 
                     //
                     // no matter how we exit the processing loop, release the stop latch
@@ -275,7 +298,7 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
     }
 
     @Override
-    protected void clearStateInSubclass() {
+    protected void stopSubclass() {
 
         log.debug(this + " clearing state");
 

@@ -174,12 +174,6 @@ public abstract class ComponentTest {
         assertFalse(c.isActive());
 
         assertTrue(c.isStopped());
-
-        //
-        // normal stop clears resources (listeners, etc.)
-        //
-
-        assertTrue(c.getEndOfStreamListeners().isEmpty());
     }
 
     @Test
