@@ -45,6 +45,8 @@ public interface Component {
      * Starts the internal thread (or threads) so the components begins to read from its input, process and write to
      * its output.
      *
+     * The implementation is synchronous, the component is fully started when the method exits.
+     *
      * The implementation is idempotent: once started, subsequent start() calls are noops.
      *
      * @exception IllegalStateException if the component is not properly configured: it needs an input queue (or stream)

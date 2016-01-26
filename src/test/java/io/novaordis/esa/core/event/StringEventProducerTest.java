@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -42,7 +43,7 @@ public class StringEventProducerTest extends InputStreamConversionLogicTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
-    public void happyPath() throws Exception {
+    public void oneLine() throws Exception {
 
         StringEventProducer sep = getConversionLogicToTest();
 
@@ -73,89 +74,111 @@ public class StringEventProducerTest extends InputStreamConversionLogicTest {
         assertTrue(sep.getEvents().isEmpty());
     }
 
-//    @Test
-//    public void oneLine() throws Exception {
-//
-//        InputStreamConverter istec = getByteLogicToTest();
-//        assertTrue(istec.process('h').isEmpty());
-//        assertTrue(istec.process('e').isEmpty());
-//        assertTrue(istec.process('l').isEmpty());
-//        assertTrue(istec.process('l').isEmpty());
-//        assertTrue(istec.process('o').isEmpty());
-//
-//        List<OldEvent> events = istec.process('\n');
-//        assertEquals(1, events.size());
-//        StringOldEvent se = (StringOldEvent)events.get(0);
-//        String s = se.get();
-//        assertEquals("hello", s);
-//    }
-//
-//    @Test
-//    public void emptyLine() throws Exception {
-//
-//        InputStreamConverter istec = getByteLogicToTest();
-//
-//        List<OldEvent> events = istec.process('\n');
-//        assertEquals(1, events.size());
-//
-//        StringOldEvent se = (StringOldEvent)events.get(0);
-//        assertEquals("", se.get());
-//
-//        events = istec.process('\n');
-//        assertEquals(1, events.size());
-//        assertEquals("", ((StringOldEvent)events.get(0)).get());
-//    }
-//
-//    @Test
-//    public void endOfStreamAfterSomeCharacters() throws Exception {
-//
-//        InputStreamConverter istec = getByteLogicToTest();
-//
-//        assertTrue(istec.process('h').isEmpty());
-//
-//        List<OldEvent> events = istec.process(-1);
-//        assertEquals(2, events.size());
-//        StringOldEvent se = (StringOldEvent)events.get(0);
-//        assertEquals("h", se.get());
-//        assertTrue(events.get(1) instanceof EndOfStreamOldEvent);
-//    }
-//
-//    @Test
-//    public void endOfStreamAfterNewLine() throws Exception {
-//
-//        InputStreamConverter istec = getByteLogicToTest();
-//
-//        assertTrue(istec.process('h').isEmpty());
-//        List<OldEvent> events = istec.process('\n');
-//        assertEquals(1, events.size());
-//        assertEquals("h", ((StringOldEvent)events.get(0)).get());
-//
-//        events = istec.process(-1);
-//        assertEquals(1, events.size());
-//        assertTrue(events.get(0) instanceof EndOfStreamOldEvent);
-//    }
-//
-//
-//    @Test
-//    public void endOfStreamRightAtTheBeginning() throws Exception {
-//
-//        InputStreamConverter istec = getByteLogicToTest();
-//
-//        List<OldEvent> events = istec.process(-1);
-//        assertEquals(1, events.size());
-//        assertTrue(events.get(0) instanceof EndOfStreamOldEvent);
-//    }
-//
-////    @Test
-////    public void cRAndLfAndCombinations() throws Exception {
-////        fail("return here");
-////    }
-////
-////    @Test
-////    public void windows() throws Exception {
-////        fail("return here");
-////    }
+    @Test
+    public void emptyLine() throws Exception {
 
+        StringEventProducer sep = getConversionLogicToTest();
+
+        assertTrue(sep.getEvents().isEmpty());
+
+        assertTrue(sep.process('\n'));
+        List<Event> result = sep.getEvents();
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        StringEvent se = (StringEvent)result.get(0);
+        assertEquals("", se.get());
+
+        assertTrue(sep.getEvents().isEmpty());
+
+        assertTrue(sep.process('\n'));
+
+        result = sep.getEvents();
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        se = (StringEvent)result.get(0);
+        assertEquals("", se.get());
+
+        assertTrue(sep.getEvents().isEmpty());
+    }
+
+    @Test
+    public void endOfStreamAfterSomeCharacters() throws Exception {
+
+        StringEventProducer sep = getConversionLogicToTest();
+
+        assertTrue(sep.getEvents().isEmpty());
+
+        assertFalse(sep.process('h'));
+
+        List<Event> result = sep.getEvents();
+        assertTrue(result.isEmpty());
+
+        assertTrue(sep.process(-1));
+
+        result = sep.getEvents();
+        assertEquals(2, result.size());
+        StringEvent se = (StringEvent)result.get(0);
+        assertEquals("h", se.get());
+        EndOfStreamEvent eos = (EndOfStreamEvent)result.get(1);
+        assertNotNull(eos);
+    }
+
+    @Test
+    public void endOfStreamAfterAfterNewLine() throws Exception {
+
+        StringEventProducer sep = getConversionLogicToTest();
+
+        assertTrue(sep.getEvents().isEmpty());
+
+        assertFalse(sep.process('h'));
+
+        List<Event> result = sep.getEvents();
+        assertTrue(result.isEmpty());
+
+        assertTrue(sep.process('\n'));
+
+        result = sep.getEvents();
+        assertEquals(1, result.size());
+        StringEvent se = (StringEvent)result.get(0);
+        assertEquals("h", se.get());
+
+        result = sep.getEvents();
+        assertTrue(result.isEmpty());
+
+        assertTrue(sep.process(-1));
+
+        result = sep.getEvents();
+        assertEquals(1, result.size());
+        EndOfStreamEvent eos = (EndOfStreamEvent)result.get(0);
+        assertNotNull(eos);
+    }
+
+    @Test
+    public void endOfStreamRightAtTheBeginning() throws Exception {
+
+        StringEventProducer sep = getConversionLogicToTest();
+
+        assertTrue(sep.getEvents().isEmpty());
+
+        assertTrue(sep.process(-1));
+        List<Event> result = sep.getEvents();
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        EndOfStreamEvent eos = (EndOfStreamEvent)result.get(0);
+        assertNotNull(eos);
+
+        assertTrue(sep.getEvents().isEmpty());
+    }
+
+//    @Test
+//    public void cRAndLfAndCombinations() throws Exception {
+//        fail("return here");
+//    }
+//
+//    @Test
+//    public void windows() throws Exception {
+//        fail("return here");
+//    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

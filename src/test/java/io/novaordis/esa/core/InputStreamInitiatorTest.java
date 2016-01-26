@@ -559,7 +559,12 @@ public class InputStreamInitiatorTest extends InitiatorTest {
 
         InputStreamInitiator inputStreamInitiator = (InputStreamInitiator)c;
 
-        inputStreamInitiator.setInputStream(new ByteArrayInputStream(new byte[] { 1, 2, 3, 4 }));
+        //
+        // we provide an input stream that blocks forever to avoid start() tests race conditions
+        //
+
+        InputStream blockingInputStream = new PipedInputStream(new PipedOutputStream());
+        inputStreamInitiator.setInputStream(blockingInputStream);
         inputStreamInitiator.setConversionLogic(new MockInputStreamConversionLogic());
         inputStreamInitiator.setOutputQueue(new ArrayBlockingQueue<>(1));
     }
@@ -567,7 +572,7 @@ public class InputStreamInitiatorTest extends InitiatorTest {
     @Override
     protected boolean willTimeoutOnStop() {
 
-        return false;
+        return true;
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

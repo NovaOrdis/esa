@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -124,7 +125,6 @@ public abstract class ComponentTest {
 
         c.addEndOfStreamListener(new MockEndOfStreamListener());
 
-
         configureForStart(c);
 
         c.start();
@@ -139,6 +139,13 @@ public abstract class ComponentTest {
         c.start();
 
         assertTrue(c.isActive());
+
+        //
+        // if it timeouts on stop, make the timeout smaller to not hold the test too much
+        //
+        if (willTimeoutOnStop()) {
+            c.setStopTimeoutMs(100L);
+        }
 
         boolean success = c.stop();
 

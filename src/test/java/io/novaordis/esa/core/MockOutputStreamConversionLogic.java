@@ -26,6 +26,8 @@ public class MockOutputStreamConversionLogic extends MockConversionLogic impleme
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    private static final byte[] EMPTY_ARRAY = new byte[0];
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -36,12 +38,17 @@ public class MockOutputStreamConversionLogic extends MockConversionLogic impleme
 
     @Override
     public boolean process(Event inputEvent) {
-        throw new RuntimeException("process() NOT YET IMPLEMENTED");
+
+        //
+        // drop everything on the floor
+        //
+        return false;
     }
 
     @Override
     public byte[] getBytes() {
-        throw new RuntimeException("getBytes() NOT YET IMPLEMENTED");
+
+        return EMPTY_ARRAY;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
