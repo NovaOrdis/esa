@@ -142,9 +142,10 @@ public class EventProcessor extends ComponentBase implements Component {
             @Override
             public void run() {
 
+                boolean eos = false;
+
                 try {
 
-                    boolean eos = false;
                     boolean shutdown = false;
                     boolean processingLogicIssuedEoSEvent = false;
 
@@ -238,6 +239,23 @@ public class EventProcessor extends ComponentBase implements Component {
                     }
                 }
                 finally {
+
+                    if (eos) {
+
+                        // call EnoOfStreamListeners
+
+                        for(EndOfStreamListener eosl: getEndOfStreamListeners()) {
+
+                            try {
+
+                                log.debug(this + " invoking " + eosl);
+                                eosl.eventStreamEnded();
+                            }
+                            catch(Exception e) {
+                                log.error("end of stream listener invocation failed");
+                            }
+                        }
+                    }
 
                     //
                     // no matter how we exit the processing loop, release the stop latch

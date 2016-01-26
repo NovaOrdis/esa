@@ -18,9 +18,11 @@ package io.novaordis.esa;
 
 import io.novaordis.esa.core.InputStreamInitiator;
 import io.novaordis.esa.core.EventProcessor;
+import io.novaordis.esa.core.NoopProcessingLogic;
 import io.novaordis.esa.core.OutputStreamTerminator;
 import io.novaordis.esa.core.event.StringEventConverter;
 import io.novaordis.esa.csv.EventToCSV;
+import io.novaordis.esa.experimental.ExperimentalLogic;
 import io.novaordis.esa.logs.httpd.HttpdLogParsingLogic;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -52,18 +54,25 @@ public class Main {
                 new HttpdLogParsingLogic(),
                 new ArrayBlockingQueue<>(QUEUE_SIZE));
 
+        EventProcessor sampler = new EventProcessor(
+                "Sampler",
+                httpdLogParser.getOutputQueue(),
+                new ExperimentalLogic(),
+                new ArrayBlockingQueue<>(QUEUE_SIZE));
+
         OutputStreamTerminator terminator = new OutputStreamTerminator(
                 "CSV Writer",
-                httpdLogParser.getOutputQueue(),
+                sampler.getOutputQueue(),
                 new EventToCSV(),
                 System.out);
 
         final CountDownLatch endOfStream = new CountDownLatch(1);
-        terminator.addEndOfStreamListener(endOfStream::countDown);
+        sampler.addEndOfStreamListener(endOfStream::countDown);
 
         initiator.start();
         httpdLogParser.start();
-        terminator.start();
+        sampler.start();
+        //terminator.start();
 
         //
         // wait for the end of stream to propagate through the pipeline
