@@ -23,6 +23,7 @@ import io.novaordis.esa.core.OutputStreamTerminator;
 import io.novaordis.esa.core.event.StringEventConverter;
 import io.novaordis.esa.csv.EventToCSV;
 import io.novaordis.esa.experimental.ExperimentalLogic;
+import io.novaordis.esa.experimental.SampleToCSV;
 import io.novaordis.esa.logs.httpd.HttpdLogParsingLogic;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -63,16 +64,16 @@ public class Main {
         OutputStreamTerminator terminator = new OutputStreamTerminator(
                 "CSV Writer",
                 sampler.getOutputQueue(),
-                new EventToCSV(),
+                new SampleToCSV(),
                 System.out);
 
         final CountDownLatch endOfStream = new CountDownLatch(1);
-        sampler.addEndOfStreamListener(endOfStream::countDown);
+        terminator.addEndOfStreamListener(endOfStream::countDown);
 
         initiator.start();
         httpdLogParser.start();
         sampler.start();
-        //terminator.start();
+        terminator.start();
 
         //
         // wait for the end of stream to propagate through the pipeline

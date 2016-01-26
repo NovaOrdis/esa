@@ -103,23 +103,100 @@ public class ExperimentalLogic implements ProcessingLogic {
 
     // Private ---------------------------------------------------------------------------------------------------------
 
-    private long last = -1L;
-    private long counter = 0;
+    // in milliseconds
+    long sampleSize = 5000L;
+
+    // beginning of the current sample, bounded to second
+    long beginning = -1;
+
+    // beginning of the current sample, bounded to second
+    long end = -1;
+
+    long currentRequestCounter = 0;
+    long currentAggregatedTime = 0;
+    double lastAverageTime = -1;
 
     private void interpolate(HttpdLogLine line) throws Exception {
 
         long time = line.timestamp.getTime();
 
-        System.out.println(counter ++);
+        Long rt = line.getRequestProcessingTimeMs();
 
-
-
-        if (last > time) {
-
-            throw new Exception("time fault");
+        if (rt == null) {
+            throw new Exception("request with no time");
         }
 
-        last = time;
+        if (beginning == -1) {
+            // first sample, initialize
+
+            beginning = (time / 1000) * 1000;
+            end = beginning + sampleSize;
+            currentRequestCounter ++;
+            currentAggregatedTime += rt;
+        }
+        else if (beginning <= time && time < end) {
+            // within the same sample
+            currentRequestCounter ++;
+            currentAggregatedTime += rt;
+        }
+        else {
+
+            //
+            // we need to start a new sample, so send the current sample down the pipeline
+            //
+
+            SampleEvent e = new SampleEvent(beginning);
+            e.setCount(currentRequestCounter);
+            if (currentRequestCounter > 0) {
+                e.setAverageTime(((double) currentAggregatedTime) / currentRequestCounter);
+            }
+            buffer.add(e);
+            //
+            // save the average time in case we need it for extrapolation
+            //
+            lastAverageTime = e.getAverageTime();
+
+            currentRequestCounter = 0;
+            currentAggregatedTime = 0;
+
+            //
+            // start a new sample
+            //
+
+            if (time - end <  sampleSize) {
+                // the very next sample
+                beginning = (time / 1000) * 1000;
+                end = beginning + sampleSize;
+                currentRequestCounter ++;
+                currentAggregatedTime += rt;
+            }
+            else {
+
+                // there are samples in between there are no requests for
+
+                // figure out how many samples we skipped
+
+                long skipped = (time - end) / (sampleSize);
+
+                //
+                // generate the missing "empty" samples
+                //
+
+                for(int i = 0; i < skipped; i ++) {
+                    SampleEvent se = new SampleEvent(end + i * sampleSize);
+                    se.setCount(0);
+                    se.setAverageTime(lastAverageTime);
+                    buffer.add(se);
+                }
+
+                beginning = (time / 1000) * 1000;
+                end = beginning + sampleSize ;
+                currentRequestCounter ++;
+                currentAggregatedTime += rt;
+            }
+
+        }
+
     }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
