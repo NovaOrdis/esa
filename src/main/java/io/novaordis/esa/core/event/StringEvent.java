@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa;
-
-import io.novaordis.esa.processor.OldEventProcessor;
+package io.novaordis.esa.core.event;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 1/24/16
  */
-public abstract class EventProcessorTest {
+public class StringEvent implements Event {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,15 +28,29 @@ public abstract class EventProcessorTest {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private String s;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    public StringEvent(String s) {
+        this.s = s;
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public String get() {
+        return s;
+    }
+
+    @Override
+    public String toString() {
+
+        return s;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
-
-    protected abstract OldEventProcessor getEventProcessorToTest() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

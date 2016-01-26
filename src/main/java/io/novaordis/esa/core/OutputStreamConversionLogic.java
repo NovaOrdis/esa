@@ -58,7 +58,9 @@ public interface OutputStreamConversionLogic extends ConversionLogic {
     /**
      * Retrieves and at the same time removes from the instance any available bytes.
      *
-     * If no bytes are available, the method will return an empty array, but never null.
+     * If no bytes are available, the method will return an empty array.
+     *
+     * If the conversion logic wants to close the output stream, return null.
      */
     byte[] getBytes();
 

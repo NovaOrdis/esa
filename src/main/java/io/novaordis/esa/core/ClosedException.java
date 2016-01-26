@@ -14,26 +14,13 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.processor;
-
-import io.novaordis.esa.event.OldEvent;
-import io.novaordis.esa.event.special.EndOfStreamOldEvent;
-import io.novaordis.esa.event.special.StringOldEvent;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+package io.novaordis.esa.core;
 
 /**
- * This logic reads bytes coming from an input byte stream, identifies lines and generates a new StringEvent per line.
- * At the end of stream generates an EndOfStreamEvent.
- *
- * Guaranteed single threaded.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 1/22/16
  */
-public class InputStreamConverter implements ByteOldLogic {
+public class ClosedException extends Exception {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -41,49 +28,22 @@ public class InputStreamConverter implements ByteOldLogic {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private StringBuilder sb;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public InputStreamConverter() {
-
-        this.sb = new StringBuilder();
+    public ClosedException() {
+        super();
     }
 
-    // ByteLogic implementation ----------------------------------------------------------------------------------------
+    public ClosedException(String message) {
+        super(message);
+    }
 
-    @Override
-    public List<OldEvent> process(int b) {
+    public ClosedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-        List<OldEvent> result;
-
-        if (b == -1) {
-
-            //
-            // end of stream
-            //
-
-            if (sb.length() == 0) {
-                result = Collections.singletonList(new EndOfStreamOldEvent());
-            }
-            else
-            {
-                result = Arrays.asList(new StringOldEvent(sb.toString()), new EndOfStreamOldEvent());
-            }
-            sb.setLength(0);
-            return result;
-        }
-        else if (b == '\n') {
-
-            result =  Collections.singletonList(new StringOldEvent(sb.toString()));
-            sb.setLength(0);
-        }
-        else {
-            sb.append((char) b);
-            result = Collections.emptyList();
-        }
-
-        return result;
+    public ClosedException(Throwable cause) {
+        super(cause);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

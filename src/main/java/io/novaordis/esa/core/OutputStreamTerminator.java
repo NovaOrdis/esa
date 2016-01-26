@@ -16,11 +16,16 @@
 
 package io.novaordis.esa.core;
 
+import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.ShutdownEvent;
 import io.novaordis.esa.core.impl.ComponentBase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.OutputStream;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Terminates an stream by converting the events received on the input queue into bytes it writes on its output stream.
@@ -32,6 +37,10 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    public static final int DEFAULT_SHUTDOWN_INITIATION_TIMEOUT_MS = 100;
+
+    private static final Logger log = LoggerFactory.getLogger(EventProcessor.class);
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -41,6 +50,10 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
     private OutputStreamConversionLogic conversionLogic;
 
     private OutputStream outputStream;
+
+    // this is another way of saying "stopped" - we have a "stopped" variable in the super class and we don't want
+    // those to clash
+    private volatile boolean subStopped;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -132,9 +145,103 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
 
             @Override
             public void run() {
-                throw new RuntimeException("run() NOT YET IMPLEMENTED");
-            }
 
+                try {
+
+                    boolean eos = false;
+                    boolean shutdown = false;
+
+                    for(; !subStopped; ) {
+
+                        try {
+
+                            Event ie = inputQueue.take();
+
+                            if (subStopped) {
+
+                                //
+                                // if we have been decommissioned after we entered the blocking read, drop everything
+                                // on the floor and exit
+                                //
+                                return;
+                            }
+
+                            if (ie instanceof EndOfStreamEvent) {
+
+                                log.debug(this + " received EndOfStream event");
+                                eos = true;
+                            }
+
+                            if (ie instanceof ShutdownEvent) {
+
+                                log.debug(this + " received Shutdown event");
+                                shutdown = true;
+                            }
+
+                            conversionLogic.process(ie);
+
+                            byte[] bytes = conversionLogic.getBytes();
+
+                            if (bytes == null) {
+                                // close the output stream
+                                outputStream.close();
+                            }
+                            else {
+                                outputStream.write(bytes);
+                            }
+
+                            if (eos || shutdown) {
+
+                                log.debug(this + (eos ? " reached the end of stream" : " received a shutdown event") + " and it is now stopping ...");
+
+                                outputStream.close();
+
+                                // at this point we voluntarily stop, and since we are not blocked in take()and we don't
+                                // care what comes on the input stream, there's no point in waiting on the stop latch
+                                // after attempting to stop - release it in advance, since the finally block, where we
+                                // normally release the latch, will execute only after stop() invocation
+                                releaseTheStopLatch();
+                                stop();
+                                break;
+                            }
+                        }
+                        catch(Throwable t) {
+
+                            //
+                            // any exception thrown by the conversion logic will be handled as irrecoverable - we
+                            // release the resources, we put the component in a stopped state and exit. The
+                            // recommended method to deal with recoverable processing faults in the processing logic
+                            // is to generate specific fault events, not to throw exceptions.
+                            //
+
+                            log.error(OutputStreamTerminator.this + " failed and it will irrecoverably shut down", t);
+
+                            //
+                            // we let downstream know that no more events will come from us - if we can
+                            //
+                            try {
+                                outputStream.close();
+                            }
+                            catch(Exception e) {
+
+                                log.error(OutputStreamTerminator.this + " attempted to sent and EndOfStream event but the output queue did not accept it");
+                            }
+
+                            //
+                            // cleanup
+                            //
+                            clearStateInSuperclass();
+                        }
+                    }
+                }
+                finally {
+
+                    //
+                    // no matter how we exit the processing loop, release the stop latch
+                    //
+                    releaseTheStopLatch();
+                }
+            }
         };
     }
 
@@ -143,12 +250,45 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
      */
     @Override
     protected boolean initiateShutdown() {
-        throw new RuntimeException("initiateShutdown() NOT YET IMPLEMENTED");
+
+        try {
+
+            log.debug(this + " injecting Shutdown event into the input queue " + inputQueue);
+
+            boolean success = inputQueue.
+                    offer(new ShutdownEvent(), DEFAULT_SHUTDOWN_INITIATION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+
+            if (success) {
+                log.debug(this + " successfully injected Shutdown event into the input queue");
+            }
+            else {
+                log.debug(this + " timed out while attempting to inject Shutdown event into the input queue");
+            }
+
+            return success;
+        }
+        catch (Exception e) {
+
+            log.error(this + " failed to close the input stream");
+            return false;
+        }
     }
 
     @Override
     protected void clearStateInSubclass() {
-        throw new RuntimeException("clearStateInSubclass() NOT YET IMPLEMENTED");
+
+        log.debug(this + " clearing state");
+
+        //
+        // this puts the component in an unoperable state even if the read unblocks after shutdown
+        //
+
+        this.subStopped = true;
+
+        //
+        // do not nullify the input stream, conversion logic and the output queue, external clients may still need those
+        // references even after the component was stopped
+        //
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

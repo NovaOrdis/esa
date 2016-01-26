@@ -140,9 +140,16 @@ public abstract class ComponentTest {
 
         assertTrue(c.isActive());
 
-        boolean timedOut = c.stop();
+        boolean success = c.stop();
 
-        log.info("this component implementation did " + (timedOut ? "" : "NOT ") + "timed out on stop()");
+        log.info("this component implementation did " + (success ? "NOT " : "") + "time out on stop()");
+
+        if (willTimeoutOnStop()) {
+            assertFalse(success);
+        }
+        else {
+            assertTrue(success);
+        }
 
         //
         // stop() may or may not timeout depending on the underlying implementation (some can be shut down gracefully
@@ -187,6 +194,8 @@ public abstract class ComponentTest {
     protected abstract Component getComponentToTest(String name) throws Exception;
 
     protected abstract void configureForStart(Component c) throws Exception;
+
+    protected abstract boolean willTimeoutOnStop();
 
     // Private ---------------------------------------------------------------------------------------------------------
 

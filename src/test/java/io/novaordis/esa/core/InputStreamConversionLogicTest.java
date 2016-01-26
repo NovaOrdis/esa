@@ -16,8 +16,17 @@
 
 package io.novaordis.esa.core;
 
+import io.novaordis.esa.core.event.EndOfStreamEvent;
+import io.novaordis.esa.core.event.Event;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -27,6 +36,8 @@ import static org.junit.Assert.fail;
 public abstract class InputStreamConversionLogicTest extends ConversionLogicTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(InputStreamConversionLogic.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -41,9 +52,23 @@ public abstract class InputStreamConversionLogicTest extends ConversionLogicTest
 
         InputStreamConversionLogic c = getConversionLogicToTest();
 
-        boolean result = c.process(-1);
+        // we do generate EOS
+        assertTrue(c.process(-1));
 
-        fail("return here");
+        List<Event> events = c.getEvents();
+        assertEquals(1, events.size());
+        assertTrue(events.get(0) instanceof EndOfStreamEvent);
+
+        assertTrue(c.getEvents().isEmpty());
+
+        try {
+
+            c.process(1);
+            fail("should throw exception as the conversion logic is supposed to be closed()");
+        }
+        catch(ClosedException e) {
+            log.info(e.getMessage());
+        }
     }
 
     @Test
@@ -51,19 +76,31 @@ public abstract class InputStreamConversionLogicTest extends ConversionLogicTest
 
         InputStreamConversionLogic c = getConversionLogicToTest();
 
-        boolean result = c.process(-1);
+        try {
+            c.process(-10);
+            fail("should throw IllegalArgumentException");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
 
-        fail("return here");
+        assertTrue(c.getEvents().isEmpty());
     }
 
     @Test
-    public void processBehaviorOnIllegalyLargeValue() throws Exception {
+    public void processBehaviorOnIllegallyLargeValue() throws Exception {
 
         InputStreamConversionLogic c = getConversionLogicToTest();
 
-        boolean result = c.process(256);
+        try {
+            c.process(256);
+            fail("should throw IllegalArgumentException");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
 
-        fail("return here");
+        assertTrue(c.getEvents().isEmpty());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

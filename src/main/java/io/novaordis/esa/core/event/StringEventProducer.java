@@ -16,8 +16,11 @@
 
 package io.novaordis.esa.core.event;
 
+import io.novaordis.esa.core.ClosedException;
 import io.novaordis.esa.core.InputStreamConversionLogic;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,18 +35,76 @@ public class StringEventProducer implements InputStreamConversionLogic {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private boolean closed;
+    private StringBuilder sb;
+    private List<Event> buffer;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    public StringEventProducer() {
+
+        this.closed = false;
+        this.sb = new StringBuilder();
+        this.buffer = new ArrayList<>();
+    }
 
     // InputStreamConversionLogic implementation -----------------------------------------------------------------------
 
     @Override
-    public boolean process(int b) {
-        throw new RuntimeException("process() NOT YET IMPLEMENTED");
+    public boolean process(int b) throws ClosedException{
+
+        if (closed) {
+            throw new ClosedException(this + " is closed");
+        }
+
+        if (b < -1) {
+
+            throw new IllegalArgumentException("input: " + b);
+        }
+        else if (b == -1) {
+
+            //
+            // end of stream
+            //
+
+            if (sb.length() == 0) {
+
+                buffer.add(new EndOfStreamEvent());
+            }
+            else
+            {
+                buffer.add(new StringEvent(sb.toString()));
+                buffer.add(new EndOfStreamEvent());
+            }
+
+            sb.setLength(0);
+            closed = true;
+        }
+        else if (b == '\n') {
+
+            buffer.add(new StringEvent(sb.toString()));
+            sb.setLength(0);
+        }
+        else if (b <= 255) {
+            sb.append((char) b);
+        }
+        else {
+            throw new IllegalArgumentException("input: " + b);
+        }
+
+        return !buffer.isEmpty();
     }
 
     @Override
     public List<Event> getEvents() {
-        throw new RuntimeException("getEvents() NOT YET IMPLEMENTED");
+
+        if (buffer.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Event> result = new ArrayList<>(buffer);
+        buffer.clear();
+        return result;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

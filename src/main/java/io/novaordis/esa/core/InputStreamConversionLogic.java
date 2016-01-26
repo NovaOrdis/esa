@@ -62,8 +62,11 @@ public interface InputStreamConversionLogic extends ConversionLogic {
      * generate specific fault events, not to throw exceptions.
      *
      * @see InputStreamConversionLogic#getEvents()
+     *
+     * @throws ClosedException on anything that comes after -1 (end of stream)
+      * @throws IllegalArgumentException on values that are not bytes of -1 (end of stream)
      */
-    boolean process(int b);
+    boolean process(int b) throws ClosedException;
 
     /**
      * Retrieves and at the same time removes from the instance any available Events.

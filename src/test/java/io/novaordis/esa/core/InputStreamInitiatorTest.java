@@ -559,9 +559,15 @@ public class InputStreamInitiatorTest extends InitiatorTest {
 
         InputStreamInitiator inputStreamInitiator = (InputStreamInitiator)c;
 
-        inputStreamInitiator.setInputStream(new ByteArrayInputStream(new byte[0]));
+        inputStreamInitiator.setInputStream(new ByteArrayInputStream(new byte[] { 1, 2, 3, 4 }));
         inputStreamInitiator.setConversionLogic(new MockInputStreamConversionLogic());
         inputStreamInitiator.setOutputQueue(new ArrayBlockingQueue<>(1));
+    }
+
+    @Override
+    protected boolean willTimeoutOnStop() {
+
+        return false;
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
-
-import io.novaordis.esa.core.ProcessingLogic;
-import io.novaordis.esa.core.event.Event;
-
-import java.util.List;
+package io.novaordis.esa.core.event;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class HttpdLogParsingLogic implements ProcessingLogic {
+public class ShutdownEvent implements Event {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -35,19 +30,13 @@ public class HttpdLogParsingLogic implements ProcessingLogic {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    // ProcessingLogic implements --------------------------------------------------------------------------------------
-
-    @Override
-    public boolean process(Event inputEvent) {
-        throw new RuntimeException("process() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public List<Event> getEvents() {
-        throw new RuntimeException("getEvents() NOT YET IMPLEMENTED");
-    }
-
     // Public ----------------------------------------------------------------------------------------------------------
+
+    @Override
+    public String toString() {
+
+        return "SHUTDOWN";
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

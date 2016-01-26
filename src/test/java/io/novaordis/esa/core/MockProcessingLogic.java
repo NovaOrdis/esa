@@ -17,7 +17,10 @@
 package io.novaordis.esa.core;
 
 import io.novaordis.esa.core.event.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -28,6 +31,8 @@ public class MockProcessingLogic implements ProcessingLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    private static final Logger log = LoggerFactory.getLogger(MockProcessingLogic.class);
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -37,11 +42,24 @@ public class MockProcessingLogic implements ProcessingLogic {
     // ProcessingLogic implementation ----------------------------------------------------------------------------------
 
     @Override
-    public List<Event> process(Event inputEvent) {
-        throw new RuntimeException("process() NOT YET IMPLEMENTED");
+    public boolean process(Event inputEvent) {
+
+        log.info(this + " ignoring " + inputEvent);
+        return false;
+    }
+
+    @Override
+    public List<Event> getEvents() {
+
+        return Collections.emptyList();
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    @Override
+    public String toString() {
+        return "MockProcessingLogic[" + Integer.toHexString(System.identityHashCode(this)) + "]";
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

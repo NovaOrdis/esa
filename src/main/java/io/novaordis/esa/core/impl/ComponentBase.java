@@ -164,9 +164,9 @@ public abstract class ComponentBase implements Component {
         // the component thread is either blocked in I/O, waiting on the input queue or doing processing
         //
 
-        initiateShutdown();
+        boolean success = initiateShutdown();
 
-        log.debug(componentThread + " shutdown initiated");
+        log.debug(componentThread + " shutdown " + (success ? "successfully initiated" : " initiation failed"));
 
         boolean normalExit = waitForTheComponentThreadToExit();
 
@@ -264,7 +264,6 @@ public abstract class ComponentBase implements Component {
         //
 
         try {
-
             clearStateInSubclass();
         }
         catch(Throwable t) {
@@ -273,7 +272,7 @@ public abstract class ComponentBase implements Component {
             // log warning but don't prevent the shutdown to complete
             //
 
-            log.warn(this + " decommissioning failed", t);
+            log.warn(this + " clearing state failed", t);
         }
 
         if (endOfStreamListeners != null) {

@@ -15,6 +15,7 @@
         <slf4j-version>1.7.12</slf4j-version>
         <junit-version>4.12</junit-version>
         <novaordis-clad-version>1-SNAPSHOT</novaordis-clad-version>
+        <log4j-version>2.5</log4j-version>
     </properties>
 
     <build>
@@ -58,6 +59,18 @@
                 <version>${slf4j-version}</version>
                 <scope>provided</scope>
             </dependency>
+            <!--
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            -->
             <dependency>
                 <groupId>io.novaordis.clad</groupId>
                 <artifactId>novaordis-clad</artifactId>

@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -167,7 +168,12 @@ public class EventProcessorTest extends ComponentTest {
 
         eventProcessor.setInputQueue(new ArrayBlockingQueue<>(1));
         eventProcessor.setProcessingLogic(new MockProcessingLogic());
-        eventProcessor.setOutputQueue(new ArrayBlockingQueue<>(1));
+        eventProcessor.setOutputQueue(new LinkedBlockingQueue<>(1));
+    }
+
+    @Override
+    protected boolean willTimeoutOnStop() {
+        return false;
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

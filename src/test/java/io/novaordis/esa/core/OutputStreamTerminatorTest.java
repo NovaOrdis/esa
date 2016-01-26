@@ -165,6 +165,11 @@ public class OutputStreamTerminatorTest extends TerminatorTest {
         outputStreamTerminator.setOutputStream(new ByteArrayOutputStream());
     }
 
+    @Override
+    protected boolean willTimeoutOnStop() {
+        return false;
+    }
+
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
