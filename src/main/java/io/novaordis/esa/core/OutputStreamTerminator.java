@@ -58,11 +58,20 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public OutputStreamTerminator() {
-        this(null);
+        this(null, null, null, null);
     }
 
     public OutputStreamTerminator(String name) {
+        this(name, null, null, null);
+    }
+
+    public OutputStreamTerminator(String name, BlockingQueue<Event> inputQueue,
+                                  OutputStreamConversionLogic conversionLogic,  OutputStream outputStream) {
+
         super(name);
+        setInputQueue(inputQueue);
+        setConversionLogic(conversionLogic);
+        setOutputStream(outputStream);
     }
 
     // Terminator implementation ---------------------------------------------------------------------------------------
@@ -85,7 +94,7 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
     @Override
     public void setConversionLogic(ConversionLogic conversionLogic) {
 
-        if (!(conversionLogic instanceof OutputStreamConversionLogic)) {
+        if (conversionLogic != null && !(conversionLogic instanceof OutputStreamConversionLogic)) {
 
             throw new IllegalArgumentException(this + " only accepts OutputStreamConversionLogic instances");
         }

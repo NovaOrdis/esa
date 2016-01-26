@@ -38,7 +38,6 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
     // Constants -------------------------------------------------------------------------------------------------------
 
     private static final Logger log = LoggerFactory.getLogger(InputStreamInitiator.class);
-    //private static final boolean debug = log.isDebugEnabled();
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -57,12 +56,21 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public InputStreamInitiator() {
-        this(null);
+        this(null, null, null, null);
     }
 
     public InputStreamInitiator(String name) {
+        this(name, null, null, null);
+    }
+
+    public InputStreamInitiator(
+            String name, InputStream inputStream, ConversionLogic conversionLogic, BlockingQueue<Event> outputQueue) {
+
         super(name);
         this.subStopped = false;
+        setInputStream(inputStream);
+        setConversionLogic(conversionLogic);
+        setOutputQueue(outputQueue);
     }
 
     // Initiator implementation ----------------------------------------------------------------------------------------
@@ -85,7 +93,7 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
     @Override
     public void setConversionLogic(ConversionLogic conversionLogic) {
 
-        if (!(conversionLogic instanceof InputStreamConversionLogic)) {
+        if (conversionLogic != null && !(conversionLogic instanceof InputStreamConversionLogic)) {
 
             throw new IllegalArgumentException(this + " only accepts InputStreamConversionLogic instances");
         }

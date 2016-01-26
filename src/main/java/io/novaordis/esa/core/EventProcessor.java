@@ -59,11 +59,20 @@ public class EventProcessor extends ComponentBase implements Component {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public EventProcessor() {
-        this(null);
+        this(null, null, null, null);
     }
 
     public EventProcessor(String name) {
+        this(name, null, null, null);
+    }
+
+    public EventProcessor(String name, BlockingQueue<Event> inputQueue,
+                          ProcessingLogic processingLogic, BlockingQueue<Event> outputQueue) {
+
         super(name);
+        this.inputQueue = inputQueue;
+        this.logic = processingLogic;
+        this.outputQueue = outputQueue;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

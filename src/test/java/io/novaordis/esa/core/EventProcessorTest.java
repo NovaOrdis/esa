@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.junit.Assert.assertEquals;
@@ -46,6 +47,21 @@ public class EventProcessorTest extends ComponentTest {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void constructor() throws Exception {
+
+        BlockingQueue<Event> inputQueue = new ArrayBlockingQueue<>(1);
+        ProcessingLogic mpl = new MockProcessingLogic();
+        BlockingQueue<Event> outputQueue = new ArrayBlockingQueue<>(1);
+
+        EventProcessor eventProcessor = new EventProcessor("test", inputQueue, mpl, outputQueue);
+
+        assertEquals("test", eventProcessor.getName());
+        assertEquals(inputQueue, eventProcessor.getInputQueue());
+        assertEquals(mpl, eventProcessor.getProcessingLogic());
+        assertEquals(outputQueue, eventProcessor.getOutputQueue());
+    }
 
     @Test
     public void toStringWithNoName() {

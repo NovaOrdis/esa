@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class StringEventProducerTest extends InputStreamConversionLogicTest {
+public class StringEventConverterTest extends InputStreamConversionLogicTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ public class StringEventProducerTest extends InputStreamConversionLogicTest {
     @Test
     public void oneLine() throws Exception {
 
-        StringEventProducer sep = getConversionLogicToTest();
+        StringEventConverter sep = getConversionLogicToTest();
 
         assertTrue(sep.getEvents().isEmpty());
 
@@ -77,7 +77,7 @@ public class StringEventProducerTest extends InputStreamConversionLogicTest {
     @Test
     public void emptyLine() throws Exception {
 
-        StringEventProducer sep = getConversionLogicToTest();
+        StringEventConverter sep = getConversionLogicToTest();
 
         assertTrue(sep.getEvents().isEmpty());
 
@@ -104,7 +104,7 @@ public class StringEventProducerTest extends InputStreamConversionLogicTest {
     @Test
     public void endOfStreamAfterSomeCharacters() throws Exception {
 
-        StringEventProducer sep = getConversionLogicToTest();
+        StringEventConverter sep = getConversionLogicToTest();
 
         assertTrue(sep.getEvents().isEmpty());
 
@@ -126,7 +126,7 @@ public class StringEventProducerTest extends InputStreamConversionLogicTest {
     @Test
     public void endOfStreamAfterAfterNewLine() throws Exception {
 
-        StringEventProducer sep = getConversionLogicToTest();
+        StringEventConverter sep = getConversionLogicToTest();
 
         assertTrue(sep.getEvents().isEmpty());
 
@@ -156,7 +156,7 @@ public class StringEventProducerTest extends InputStreamConversionLogicTest {
     @Test
     public void endOfStreamRightAtTheBeginning() throws Exception {
 
-        StringEventProducer sep = getConversionLogicToTest();
+        StringEventConverter sep = getConversionLogicToTest();
 
         assertTrue(sep.getEvents().isEmpty());
 
@@ -185,9 +185,9 @@ public class StringEventProducerTest extends InputStreamConversionLogicTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected StringEventProducer getConversionLogicToTest() throws Exception {
+    protected StringEventConverter getConversionLogicToTest() throws Exception {
 
-        return new StringEventProducer();
+        return new StringEventConverter();
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

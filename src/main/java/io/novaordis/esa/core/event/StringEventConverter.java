@@ -27,7 +27,7 @@ import java.util.List;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class StringEventProducer implements InputStreamConversionLogic {
+public class StringEventConverter implements InputStreamConversionLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ public class StringEventProducer implements InputStreamConversionLogic {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public StringEventProducer() {
+    public StringEventConverter() {
 
         this.closed = false;
         this.sb = new StringBuilder();

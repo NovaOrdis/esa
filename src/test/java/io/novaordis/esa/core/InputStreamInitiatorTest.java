@@ -96,6 +96,20 @@ public class InputStreamInitiatorTest extends InitiatorTest {
     }
 
     @Test
+    public void constructor() throws Exception {
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(new byte[0]);
+        ConversionLogic cl = new MockInputStreamConversionLogic();
+        BlockingQueue<Event> outputQueue = new ArrayBlockingQueue<>(1);
+
+        InputStreamInitiator inputStreamInitiator = new InputStreamInitiator("test", bais, cl, outputQueue);
+
+        assertEquals("test", inputStreamInitiator.getName());
+        assertEquals(bais, inputStreamInitiator.getInputStream());
+        assertEquals(cl, inputStreamInitiator.getConversionLogic());
+    }
+
+    @Test
     public void toStringWithNoName() {
 
         InputStreamInitiator initiator = new InputStreamInitiator();

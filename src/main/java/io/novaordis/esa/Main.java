@@ -16,17 +16,14 @@
 
 package io.novaordis.esa;
 
-import io.novaordis.esa.core.EndOfStreamListener;
 import io.novaordis.esa.core.InputStreamInitiator;
 import io.novaordis.esa.core.EventProcessor;
 import io.novaordis.esa.core.OutputStreamTerminator;
-import io.novaordis.esa.core.event.Event;
-import io.novaordis.esa.core.event.StringEventProducer;
+import io.novaordis.esa.core.event.StringEventConverter;
 import io.novaordis.esa.csv.EventToCSV;
 import io.novaordis.esa.logs.httpd.HttpdLogParsingLogic;
 
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -37,41 +34,32 @@ public class Main {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final int QUEUE_SIZE = 10;
+    public static final int QUEUE_SIZE = 1000000;
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     public static void main(String[] args) throws Exception {
 
-        InputStreamInitiator initiator = new InputStreamInitiator("Input Stream Reader");
-        initiator.setInputStream(System.in);
-        initiator.setConversionLogic(new StringEventProducer());
-        initiator.setOutputQueue(new ArrayBlockingQueue<>(QUEUE_SIZE));
+        InputStreamInitiator initiator = new InputStreamInitiator(
+                "Input Stream Reader",
+                System.in,
+                new StringEventConverter(),
+                new ArrayBlockingQueue<>(QUEUE_SIZE));
 
-        BlockingQueue<Event> streamReaderToParserQueue = initiator.getOutputQueue();
+        EventProcessor httpdLogParser = new EventProcessor(
+                "HTTP Log Parser",
+                initiator.getOutputQueue(),
+                new HttpdLogParsingLogic(),
+                new ArrayBlockingQueue<>(QUEUE_SIZE));
 
-        EventProcessor httpdLogParser = new EventProcessor("HTTP Log Parser");
-        httpdLogParser.setInputQueue(streamReaderToParserQueue);
-        httpdLogParser.setProcessingLogic(new HttpdLogParsingLogic());
-        httpdLogParser.setOutputQueue(new ArrayBlockingQueue<>(QUEUE_SIZE));
-
-        BlockingQueue<Event> parserToCsvWriterQueue = httpdLogParser.getOutputQueue();
-
-        OutputStreamTerminator terminator = new OutputStreamTerminator("CSV Writer");
-        terminator.setInputQueue(parserToCsvWriterQueue);
-        terminator.setConversionLogic(new EventToCSV());
-        terminator.setOutputStream(System.out);
+        OutputStreamTerminator terminator = new OutputStreamTerminator(
+                "CSV Writer",
+                httpdLogParser.getOutputQueue(),
+                new EventToCSV(),
+                System.out);
 
         final CountDownLatch endOfStream = new CountDownLatch(1);
-;
-        EndOfStreamListener eos = new EndOfStreamListener() {
-            @Override
-            public void eventStreamEnded() {
-                endOfStream.countDown();
-            }
-        };
-
-        terminator.addEndOfStreamListener(eos);
+        terminator.addEndOfStreamListener(endOfStream::countDown);
 
         initiator.start();
         httpdLogParser.start();

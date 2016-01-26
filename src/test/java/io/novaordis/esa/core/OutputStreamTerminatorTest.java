@@ -16,6 +16,7 @@
 
 package io.novaordis.esa.core;
 
+import io.novaordis.esa.core.event.Event;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -46,6 +48,21 @@ public class OutputStreamTerminatorTest extends TerminatorTest {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void constructor() throws Exception {
+
+        BlockingQueue<Event> inputQueue = new ArrayBlockingQueue<>(1);
+        OutputStreamConversionLogic mosc = new MockOutputStreamConversionLogic();
+        OutputStream outputStream = new ByteArrayOutputStream();
+
+        OutputStreamTerminator terminator = new OutputStreamTerminator("test", inputQueue, mosc, outputStream);
+
+        assertEquals("test", terminator.getName());
+        assertEquals(inputQueue, terminator.getInputQueue());
+        assertEquals(mosc, terminator.getConversionLogic());
+        assertEquals(outputStream, terminator.getOutputStream());
+    }
 
     @Override
     @Test
