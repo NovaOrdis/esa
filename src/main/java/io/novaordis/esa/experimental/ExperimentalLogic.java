@@ -21,7 +21,6 @@ import io.novaordis.esa.core.ProcessingLogic;
 import io.novaordis.esa.core.event.ContainerEvent;
 import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
-import io.novaordis.esa.core.event.ShutdownEvent;
 import io.novaordis.esa.logs.httpd.HttpdLogLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

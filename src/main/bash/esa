@@ -164,7 +164,7 @@ fi
 java_bin="java"
 [ "${java_home}" != "" ] && java_bin="${java_home}/bin/java"
 
-command="${java_bin} -Xms${memory} -Xmx${memory} -cp ${classpath} ${debug_args} ${output_settings} ${main_class} ${args}"
+command="${java_bin} -Xms${memory} -Xmx${memory} -cp ${classpath} ${debug_args} ${output_settings} -Dapplication.name=events ${main_class} ${args}"
 
 ${verbose} && echo "${command}" 1>&2;
 

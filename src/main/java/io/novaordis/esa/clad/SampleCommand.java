@@ -20,8 +20,12 @@ import io.novaordis.clad.ApplicationRuntime;
 import io.novaordis.clad.Command;
 import io.novaordis.clad.Configuration;
 import io.novaordis.clad.UserErrorException;
+import io.novaordis.esa.core.EventProcessor;
+import io.novaordis.esa.experimental.ExperimentalLogic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -46,7 +50,28 @@ public class SampleCommand implements Command {
 
     @Override
     public void execute(Configuration configuration, ApplicationRuntime applicationRuntime) throws UserErrorException {
-        System.out.println("sampling ...");
+
+        EventsApplicationRuntime eventsApplicationRuntime = (EventsApplicationRuntime)applicationRuntime;
+
+        try {
+
+            EventProcessor sampler = new EventProcessor(
+                    "Sampler",
+                    eventsApplicationRuntime.getOutputQueue(),
+                    new ExperimentalLogic(),
+                    new ArrayBlockingQueue<>(EventsApplicationRuntime.QUEUE_SIZE));
+
+            eventsApplicationRuntime.connectToTerminator(sampler.getOutputQueue());
+
+            eventsApplicationRuntime.start();
+
+            sampler.start();
+
+            eventsApplicationRuntime.waitForEndOfStream();
+        }
+        catch(Exception e) {
+            throw new UserErrorException(e);
+        }
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
