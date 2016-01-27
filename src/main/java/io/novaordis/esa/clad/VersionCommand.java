@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.command;
+package io.novaordis.esa.clad;
 
+import io.novaordis.clad.ApplicationRuntime;
 import io.novaordis.clad.Command;
 import io.novaordis.clad.Configuration;
-import io.novaordis.clad.Option;
 import io.novaordis.clad.UserErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/26/16
  */
-public class SampleCommand implements Command {
+public class VersionCommand implements Command {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(SampleCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(VersionCommand.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -41,23 +39,15 @@ public class SampleCommand implements Command {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public SampleCommand() {
+    public VersionCommand() {
     }
 
     // Command implementation ------------------------------------------------------------------------------------------
 
     @Override
-    public void injectCommandOptions(List<Option> list) throws Exception {
-
-        log.debug("" + list);
-    }
-
-    @Override
-    public void execute(Configuration configuration) throws UserErrorException {
-
+    public void execute(Configuration configuration, ApplicationRuntime applicationRuntime) throws UserErrorException {
         System.out.println("?");
     }
-
 
     // Public ----------------------------------------------------------------------------------------------------------
 
