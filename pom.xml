@@ -8,16 +8,24 @@
     <artifactId>novaordis-esa</artifactId>
     <packaging>jar</packaging>
 
-    <version>1-SNAPSHOT</version>
+    <version>1-SNAPSHOT-2</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.build.timestamp.format>MM/dd/yy</maven.build.timestamp.format>
+        <release_date>${maven.build.timestamp}</release_date>
         <slf4j-version>1.7.12</slf4j-version>
         <junit-version>4.12</junit-version>
-        <novaordis-clad-version>1</novaordis-clad-version>
+        <novaordis-clad-version>2-SNAPSHOT-2</novaordis-clad-version>
     </properties>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <pluginManagement>
             <plugins>
                 <plugin>
