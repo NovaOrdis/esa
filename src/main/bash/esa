@@ -143,7 +143,11 @@ while [ "$1" != "" ]; do
     elif [ "$1" = "status" ]; then
         status && exit 0
     else
-        args="${args} $1"
+        #
+        # if the argument contains spaces, it means double quotes were used, we need to pass those down so the java
+        # command parsing line logic can detect quoted strings
+        #
+        [ "$1" = "${1/ //}" ] && args="${args} $1" || args="${args} \"$1\""
     fi
     shift;
 done
