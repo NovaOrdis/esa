@@ -46,6 +46,11 @@ public class SampleCommand implements Command {
     // Command implementation ------------------------------------------------------------------------------------------
 
     @Override
+    public String getName() {
+        return "sample";
+    }
+
+    @Override
     public void execute(Configuration configuration, ApplicationRuntime applicationRuntime) throws Exception {
 
         EventsApplicationRuntime eventsApplicationRuntime = (EventsApplicationRuntime)applicationRuntime;

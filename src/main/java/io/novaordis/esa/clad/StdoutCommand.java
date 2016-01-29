@@ -37,6 +37,11 @@ public class StdoutCommand implements Command {
     // Command implementation ------------------------------------------------------------------------------------------
 
     @Override
+    public String getName() {
+        return "stdout";
+    }
+
+    @Override
     public void execute(Configuration configuration, ApplicationRuntime ar) throws Exception {
 
         //
