@@ -55,6 +55,12 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
     // ApplicationRuntime implementation -------------------------------------------------------------------------------
 
     @Override
+    public String getDefaultCommandName() {
+
+        return "stdout";
+    }
+
+    @Override
     public void init(Configuration configuration) throws UserErrorException {
 
         initiator = new InputStreamInitiator(

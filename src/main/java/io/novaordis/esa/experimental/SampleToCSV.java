@@ -65,17 +65,24 @@ public class SampleToCSV implements OutputStreamConversionLogic {
             return false;
         }
 
-        if (!(inputEvent instanceof SampleEvent)) {
-            throw new IllegalArgumentException("invalid event type " + inputEvent.getClass());
+        if (inputEvent instanceof SampleEvent) {
+            SampleEvent ce = (SampleEvent) inputEvent;
+            String s =
+                    DEFAULT_TIMESTAMP_FORMAT.format(ce.getTimestamp()) + ", " +
+                            ce.getCount() + ", " +
+                            String.format("%1$.1f", ce.getAverageTime()) + "\n";
+
+            sb.append(s);
+        }
+        else if (inputEvent instanceof ContainerEvent) {
+
+            HttpdLogLine line = (HttpdLogLine)((ContainerEvent) inputEvent).get();
+            sb.append(line.toString()).append("\n");
+        }
+        else {
+            throw new IllegalArgumentException("unknown event type " + inputEvent);
         }
 
-        SampleEvent ce = (SampleEvent)inputEvent;
-        String s =
-                DEFAULT_TIMESTAMP_FORMAT.format(ce.getTimestamp()) + ", " +
-                        ce.getCount() + ", " +
-                        String.format("%1$.1f", ce.getAverageTime()) + "\n";
-
-        sb.append(s);
         return true;
     }
 

@@ -19,23 +19,14 @@ package io.novaordis.esa.clad;
 import io.novaordis.clad.ApplicationRuntime;
 import io.novaordis.clad.Command;
 import io.novaordis.clad.Configuration;
-import io.novaordis.clad.UserErrorException;
-import io.novaordis.esa.core.EventProcessor;
-import io.novaordis.esa.experimental.ExperimentalLogic;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/26/16
+ * @since 1/28/16
  */
-public class SampleCommand implements Command {
+public class StdoutCommand implements Command {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    private static final Logger log = LoggerFactory.getLogger(SampleCommand.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -46,29 +37,17 @@ public class SampleCommand implements Command {
     // Command implementation ------------------------------------------------------------------------------------------
 
     @Override
-    public void execute(Configuration configuration, ApplicationRuntime applicationRuntime) throws Exception {
+    public void execute(Configuration configuration, ApplicationRuntime ar) throws Exception {
 
-        EventsApplicationRuntime eventsApplicationRuntime = (EventsApplicationRuntime)applicationRuntime;
+        //
+        // everything is already in place, just connect the head of the pipeline to the terminator and start the
+        // component
+        //
 
-        try {
-
-            EventProcessor sampler = new EventProcessor(
-                    "Sampler",
-                    eventsApplicationRuntime.getOutputQueue(),
-                    new ExperimentalLogic(),
-                    new ArrayBlockingQueue<>(EventsApplicationRuntime.QUEUE_SIZE));
-
-            eventsApplicationRuntime.connectToTerminator(sampler.getOutputQueue());
-
-            eventsApplicationRuntime.start();
-
-            sampler.start();
-
-            eventsApplicationRuntime.waitForEndOfStream();
-        }
-        catch(Exception e) {
-            throw new UserErrorException(e);
-        }
+        EventsApplicationRuntime runtime = (EventsApplicationRuntime)ar;
+        runtime.connectToTerminator(runtime.getOutputQueue());
+        runtime.start();
+        runtime.waitForEndOfStream();
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
