@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.clad;
+package io.novaordis.esa.clad.command;
 
 import io.novaordis.clad.ApplicationRuntime;
 import io.novaordis.clad.Configuration;
 import io.novaordis.clad.UserErrorException;
 import io.novaordis.clad.command.CommandBase;
+import io.novaordis.esa.clad.EventsApplicationRuntime;
 import io.novaordis.esa.core.EventProcessor;
 import io.novaordis.esa.experimental.ExperimentalLogic;
 import org.slf4j.Logger;

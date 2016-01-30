@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.clad;
+package io.novaordis.esa.clad.command;
 
 import io.novaordis.clad.ApplicationRuntime;
 import io.novaordis.clad.Configuration;
 import io.novaordis.clad.command.CommandBase;
+import io.novaordis.esa.clad.EventsApplicationRuntime;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/28/16
  */
+// will be instantiated via reflection
+@SuppressWarnings("unused")
 public class StdoutCommand extends CommandBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
