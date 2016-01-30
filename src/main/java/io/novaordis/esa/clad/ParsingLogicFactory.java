@@ -14,19 +14,31 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
+package io.novaordis.esa.clad;
 
-import io.novaordis.esa.core.ProcessingLogicTest;
+import io.novaordis.esa.core.ProcessingLogic;
+import io.novaordis.esa.logs.httpd.HttpdLogFormat;
+import io.novaordis.esa.logs.httpd.HttpdLogParsingLogic;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/24/16
+ * @since 1/29/16
  */
-public class HttpdLogParsingLogicTest extends ProcessingLogicTest {
+public class ParsingLogicFactory {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
+
+    public static ProcessingLogic create(String logFormat) throws Exception {
+
+        //
+        // for the time being we're only expecting httpd log formats, we'll change that in the future
+        //
+
+        HttpdLogFormat httpdLogFormat = new HttpdLogFormat(logFormat);
+        return new HttpdLogParsingLogic(httpdLogFormat);
+    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
@@ -37,12 +49,6 @@ public class HttpdLogParsingLogicTest extends ProcessingLogicTest {
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
-
-    @Override
-    protected HttpdLogParsingLogic getProcessingLogicToTest() throws Exception {
-
-        return new HttpdLogParsingLogic(new HttpdLogFormat(HttpdLogFormat.COMMON.toString()));
-    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

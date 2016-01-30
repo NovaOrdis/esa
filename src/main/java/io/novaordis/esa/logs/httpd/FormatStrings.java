@@ -42,7 +42,7 @@ public enum FormatStrings implements FormatString {
     SINGLE_QUOTE("'", Character.class),
 
     OPENING_BRACKET("[", Character.class),
-    CLOSING_BRACKET("]'", Character.class),
+    CLOSING_BRACKET("]", Character.class),
 
     //
     // Remote host name or IP address. Will log the IP address if HostnameLookups is set to Off, which is the default.

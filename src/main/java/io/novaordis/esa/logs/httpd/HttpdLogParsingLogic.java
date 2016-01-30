@@ -48,12 +48,10 @@ public class HttpdLogParsingLogic implements ProcessingLogic {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public HttpdLogParsingLogic() {
+    public HttpdLogParsingLogic(HttpdLogFormat httpdLogFormat) {
 
         this.buffer = new ArrayList<>();
-
-        // TODO - how do I infer the log format from the log file? I need to externalize it in a friendly way
-        this.logParser = new HttpdLogParser(LogFormat.PERFORMANCE_ANALYSIS);
+        this.logParser = new HttpdLogParser(httpdLogFormat);
     }
 
     // ProcessingLogic implements --------------------------------------------------------------------------------------
@@ -101,6 +99,15 @@ public class HttpdLogParsingLogic implements ProcessingLogic {
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public HttpdLogFormat getHttpdLogFormat() {
+
+        if (logParser == null) {
+            return null;
+        }
+
+        return logParser.getLogFormat();
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

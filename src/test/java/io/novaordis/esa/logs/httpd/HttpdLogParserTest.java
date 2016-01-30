@@ -49,7 +49,7 @@ public class HttpdLogParserTest {
         String commonPattern = "[]";
 
         HttpdLogParser factory = new HttpdLogParser(
-                new LogFormat(FormatStrings.OPENING_BRACKET, FormatStrings.CLOSING_BRACKET));
+                new HttpdLogFormat(FormatStrings.OPENING_BRACKET, FormatStrings.CLOSING_BRACKET));
 
         HttpdLogLine le = factory.parse(commonPattern);
         assertNotNull(le);
@@ -62,7 +62,7 @@ public class HttpdLogParserTest {
         String commonPattern = "\"  \"";
 
         HttpdLogParser factory = new HttpdLogParser(
-                new LogFormat(FormatStrings.DOUBLE_QUOTES, FormatStrings.DOUBLE_QUOTES));
+                new HttpdLogFormat(FormatStrings.DOUBLE_QUOTES, FormatStrings.DOUBLE_QUOTES));
 
         HttpdLogLine le = factory.parse(commonPattern);
         assertNotNull(le);
@@ -74,7 +74,7 @@ public class HttpdLogParserTest {
 
         String commonPattern = "127.0.0.1 - bob [10/Oct/2016:13:55:36 -0700] \"GET /test.gif HTTP/1.1\" 200 1024";
 
-        HttpdLogParser factory = new HttpdLogParser(LogFormat.COMMON);
+        HttpdLogParser factory = new HttpdLogParser(HttpdLogFormat.COMMON);
 
         HttpdLogLine le = factory.parse(commonPattern);
         assertEquals("127.0.0.1", le.getRemoteHost());
@@ -91,7 +91,7 @@ public class HttpdLogParserTest {
 
         String line = "172.20.2.41 - - [09/Jan/2016:20:06:07 -0800] \"OPTIONS * HTTP/1.0\" 200 -";
 
-        HttpdLogParser factory = new HttpdLogParser(LogFormat.COMMON);
+        HttpdLogParser factory = new HttpdLogParser(HttpdLogFormat.COMMON);
 
         HttpdLogLine le = factory.parse(line);
         assertEquals("172.20.2.41", le.getRemoteHost());
@@ -108,7 +108,7 @@ public class HttpdLogParserTest {
 
         String commonPattern = "127.0.0.1 bob [10/Oct/2016:13:55:36 -0700] \"GET /test.gif HTTP/1.1\" 200 2326";
 
-        LogFormat format = new LogFormat(
+        HttpdLogFormat format = new HttpdLogFormat(
                 FormatStrings.REMOTE_HOST,
                 FormatStrings.REMOTE_USER,
                 FormatStrings.OPENING_BRACKET,
@@ -138,7 +138,7 @@ public class HttpdLogParserTest {
 
         String line = "\"default task-1\" 127.0.0.1 - [21/Jan/2016:09:32:56 -0800] \"GET /something HTTP/1.1\" 404 74 27";
 
-        HttpdLogParser factory = new HttpdLogParser(LogFormat.PERFORMANCE_ANALYSIS);
+        HttpdLogParser factory = new HttpdLogParser(HttpdLogFormat.PERFORMANCE_ANALYSIS);
 
         HttpdLogLine le = factory.parse(line);
         assertEquals("default task-1", le.getThreadName());
@@ -162,7 +162,7 @@ public class HttpdLogParserTest {
 
         String line = "default task-1 127.0.0.1";
 
-        LogFormat format = new LogFormat(FormatStrings.THREAD_NAME, FormatStrings.REMOTE_HOST);
+        HttpdLogFormat format = new HttpdLogFormat(FormatStrings.THREAD_NAME, FormatStrings.REMOTE_HOST);
 
         HttpdLogParser factory = new HttpdLogParser(format);
 
@@ -176,7 +176,7 @@ public class HttpdLogParserTest {
 
         String line = "127.0.0.1 - - 20/Jan/2016:03:42:11 -0800 \"GET /something HTTP/1.1\" 1024";
 
-        LogFormat format = LogFormat.COMMON;
+        HttpdLogFormat format = HttpdLogFormat.COMMON;
         HttpdLogParser factory = new HttpdLogParser(format);
 
         try {
@@ -210,7 +210,7 @@ public class HttpdLogParserTest {
 
         String line = "'GET /test.gif HTTP/1.1'";
 
-        HttpdLogParser factory = new HttpdLogParser(new LogFormat(
+        HttpdLogParser factory = new HttpdLogParser(new HttpdLogFormat(
                 FormatStrings.SINGLE_QUOTE,
                 FormatStrings.FIRST_REQUEST_LINE,
                 FormatStrings.SINGLE_QUOTE));

@@ -18,6 +18,10 @@ package io.novaordis.esa.logs.httpd;
 
 import io.novaordis.esa.logs.ParsingException;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 /**
  * An individual httpd log format string, as specified by
  * https://httpd.apache.org/docs/current/en/mod/mod_log_config.html#formats. For example "%h" is a httpd format string
@@ -31,6 +35,31 @@ public interface FormatString {
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
+
+    static List<FormatString> fromString(String s) throws ParsingException {
+
+        List<FormatString> result = new ArrayList<>();
+
+        for(StringTokenizer st = new StringTokenizer(s, " "); st.hasMoreTokens(); ) {
+
+            String tok = st.nextToken();
+
+            token: while(tok.length() > 0) {
+
+                for(FormatString fs: FormatStrings.values()) {
+                    if (tok.startsWith(fs.getLiteral())) {
+                        result.add(fs);
+                        tok = tok.substring(fs.getLiteral().length());
+                        continue token;
+                    }
+                }
+
+                throw new ParsingException("unknown httpd format element '" + tok + "'");
+            }
+        }
+
+        return result;
+    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 

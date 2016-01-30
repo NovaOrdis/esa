@@ -24,6 +24,7 @@ import io.novaordis.clad.option.StringOption;
 import io.novaordis.esa.core.EventProcessor;
 import io.novaordis.esa.core.InputStreamInitiator;
 import io.novaordis.esa.core.OutputStreamTerminator;
+import io.novaordis.esa.core.ProcessingLogic;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.StringEventConverter;
 import io.novaordis.esa.experimental.SampleToCSV;
@@ -66,7 +67,7 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
     }
 
     @Override
-    public void init(Configuration configuration) throws UserErrorException {
+    public void init(Configuration configuration) throws Exception {
 
         initiator = new InputStreamInitiator(
                 "Input Stream Reader",
@@ -75,13 +76,26 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
                 new ArrayBlockingQueue<>(QUEUE_SIZE));
 
 
+        ProcessingLogic parsingLogic = null;
+        String logFormatString;
         Option logFormat = configuration.getGlobalOption(FORMAT_OPTION_SHORT, FORMAT_OPTION_LONG);
+        if (logFormat != null) {
+            if (!(logFormat instanceof StringOption)) {
+                throw new UserErrorException("" +
+                        "input event stream format is supposed to be a String, not \"" + logFormat.getValue() + "\"");
+
+            }
+            logFormatString = ((StringOption)logFormat).getString();
+            parsingLogic = ParsingLogicFactory.create(logFormatString);
+        }
+
+        if (parsingLogic == null) {
+            throw new UserErrorException("input event stream format not specified, use -f|--format=\"...\"");
+        }
 
         httpdLogParser = new EventProcessor(
-                "HTTP Log Parser",
-                initiator.getOutputQueue(),
-                new HttpdLogParsingLogic(),
-                new ArrayBlockingQueue<>(QUEUE_SIZE));
+                "Input Event Stream Parser", initiator.getOutputQueue(),
+                parsingLogic, new ArrayBlockingQueue<>(QUEUE_SIZE));
 
         terminator = new OutputStreamTerminator(
                 "CSV Writer",

@@ -30,11 +30,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class LogFormatTest {
+public class HttpdLogFormatTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(LogFormatTest.class);
+    private static final Logger log = LoggerFactory.getLogger(HttpdLogFormatTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ public class LogFormatTest {
     public void constructor() throws Exception {
 
         // duplicate format elements - this should be acceptable
-        LogFormat f = new LogFormat(FormatStrings.REMOTE_HOST, FormatStrings.REMOTE_HOST);
+        HttpdLogFormat f = new HttpdLogFormat(FormatStrings.REMOTE_HOST, FormatStrings.REMOTE_HOST);
 
         List<FormatString> formatStrings = f.getFormatStrings();
         assertEquals(2, formatStrings.size());
@@ -57,10 +57,55 @@ public class LogFormatTest {
     }
 
     @Test
+    public void constructor_FormatAsString() throws Exception {
+
+        String s = HttpdLogFormat.COMMON.toString();
+        HttpdLogFormat f = new HttpdLogFormat(s);
+
+        List<FormatString> formatStrings = f.getFormatStrings();
+
+        assertEquals(FormatStrings.REMOTE_HOST, formatStrings.get(0));
+        assertEquals(FormatStrings.REMOTE_LOGNAME, formatStrings.get(1));
+        assertEquals(FormatStrings.REMOTE_USER, formatStrings.get(2));
+        assertEquals(FormatStrings.OPENING_BRACKET, formatStrings.get(3));
+        assertEquals(FormatStrings.TIMESTAMP, formatStrings.get(4));
+        assertEquals(FormatStrings.CLOSING_BRACKET, formatStrings.get(5));
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(6));
+        assertEquals(FormatStrings.FIRST_REQUEST_LINE, formatStrings.get(7));
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(8));
+        assertEquals(FormatStrings.STATUS_CODE, formatStrings.get(9));
+        assertEquals(FormatStrings.RESPONSE_ENTITY_BODY_SIZE, formatStrings.get(10));
+    }
+
+    @Test
+    public void constructor_FormatAsString2() throws Exception {
+
+        String s = HttpdLogFormat.PERFORMANCE_ANALYSIS.toString();
+        HttpdLogFormat f = new HttpdLogFormat(s);
+
+        List<FormatString> formatStrings = f.getFormatStrings();
+
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(0));
+        assertEquals(FormatStrings.THREAD_NAME, formatStrings.get(1));
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(2));
+        assertEquals(FormatStrings.REMOTE_HOST, formatStrings.get(3));
+        assertEquals(FormatStrings.REMOTE_USER, formatStrings.get(4));
+        assertEquals(FormatStrings.OPENING_BRACKET, formatStrings.get(5));
+        assertEquals(FormatStrings.TIMESTAMP, formatStrings.get(6));
+        assertEquals(FormatStrings.CLOSING_BRACKET, formatStrings.get(7));
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(8));
+        assertEquals(FormatStrings.FIRST_REQUEST_LINE, formatStrings.get(9));
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(10));
+        assertEquals(FormatStrings.ORIGINAL_REQUEST_STATUS_CODE, formatStrings.get(11));
+        assertEquals(FormatStrings.RESPONSE_ENTITY_BODY_SIZE, formatStrings.get(12));
+        assertEquals(FormatStrings.REQUEST_PROCESSING_TIME_MS, formatStrings.get(13));
+    }
+
+    @Test
     public void unbalancedDoubleQuotes() throws Exception {
 
         try {
-            new LogFormat(FormatStrings.DOUBLE_QUOTES);
+            new HttpdLogFormat(FormatStrings.DOUBLE_QUOTES);
             fail("should have thrown exception");
         }
         catch(IllegalArgumentException e) {
@@ -72,7 +117,7 @@ public class LogFormatTest {
     public void unbalancedDoubleQuotes2() throws Exception {
 
         try {
-            new LogFormat(
+            new HttpdLogFormat(
                     FormatStrings.REMOTE_HOST,
                     FormatStrings.DOUBLE_QUOTES,
                     FormatStrings.TIMESTAMP);
@@ -87,7 +132,7 @@ public class LogFormatTest {
     public void unbalancedSingleQuotes() throws Exception {
 
         try {
-            new LogFormat(FormatStrings.SINGLE_QUOTE);
+            new HttpdLogFormat(FormatStrings.SINGLE_QUOTE);
             fail("should have thrown exception");
         }
         catch(IllegalArgumentException e) {
@@ -101,7 +146,7 @@ public class LogFormatTest {
         FormatString fs = new MockFormatString("A");
         FormatString fs2 = new MockFormatString("b");
 
-        LogFormat logFormat = new LogFormat(fs, fs2);
+        HttpdLogFormat logFormat = new HttpdLogFormat(fs, fs2);
 
         List<FormatString> fes = logFormat.getFormatStrings();
 

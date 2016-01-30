@@ -16,9 +16,11 @@
 
 package io.novaordis.esa.logs.httpd;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Represents the log format specification - is a list of format strings.
@@ -26,11 +28,11 @@ import java.util.List;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class LogFormat {
+public class HttpdLogFormat {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final LogFormat COMMON = new LogFormat(
+    public static final HttpdLogFormat COMMON = new HttpdLogFormat(
             FormatStrings.REMOTE_HOST,
             FormatStrings.REMOTE_LOGNAME,
             FormatStrings.REMOTE_USER,
@@ -51,7 +53,7 @@ public class LogFormat {
     // "&quot;%I&quot; %h %l %u [%t] &quot;%r&quot; %s %b %D"
     //
     // "thread name" remote-host remote-user [timestamp] "first request line" status-code response-body-size request-duration-ms
-    public static final LogFormat PERFORMANCE_ANALYSIS = new LogFormat(
+    public static final HttpdLogFormat PERFORMANCE_ANALYSIS = new HttpdLogFormat(
             FormatStrings.DOUBLE_QUOTES,
             FormatStrings.THREAD_NAME,
             FormatStrings.DOUBLE_QUOTES,
@@ -82,10 +84,15 @@ public class LogFormat {
      *
      * @exception IllegalArgumentException on unbalanced quotes
      */
-    public LogFormat(FormatString... formatStrings) throws IllegalArgumentException {
+    public HttpdLogFormat(FormatString... formatStrings) throws IllegalArgumentException {
 
         checkBalancedQuotes(formatStrings);
         this.formatStrings = Arrays.asList(formatStrings);
+    }
+
+    public HttpdLogFormat(String httpdFormatAsString) throws Exception {
+
+        this.formatStrings = FormatString.fromString(httpdFormatAsString);
     }
 
     /**

@@ -35,18 +35,18 @@ public class HttpdLogParser {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private LogFormat logFormat;
+    private HttpdLogFormat logFormat;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public HttpdLogParser(LogFormat logFormat) {
+    public HttpdLogParser(HttpdLogFormat logFormat) {
 
         this.logFormat = logFormat;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public LogFormat getLogFormat() {
+    public HttpdLogFormat getLogFormat() {
         return logFormat;
     }
 

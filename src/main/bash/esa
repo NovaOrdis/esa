@@ -145,9 +145,17 @@ while [ "$1" != "" ]; do
     else
         #
         # if the argument contains spaces, it means double quotes were used, we need to pass those down so the java
-        # command parsing line logic can detect quoted strings
+        # command parsing line logic can detect quoted strings; more than that, if the double quoted string contains
+        # escaped quotes, we want to pass them as such
         #
-        [ "$1" = "${1/ //}" ] && args="${args} $1" || args="${args} \"$1\""
+        if [ "$1" = "${1/ //}" ]; then
+            # no spaces, pass as is
+            args="${args} $1"
+        else
+            # quoted string that contains spaces, escape inner quotes, in case they exist
+            escaped_inner_quotes=${1//\"/\\\"}
+            args="${args} \"${escaped_inner_quotes}\""
+        fi
     fi
     shift;
 done
