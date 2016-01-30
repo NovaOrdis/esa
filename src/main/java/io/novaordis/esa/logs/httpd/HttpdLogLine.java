@@ -18,6 +18,7 @@ package io.novaordis.esa.logs.httpd;
 
 import io.novaordis.esa.core.event.ContainerEvent;
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.csv.EventToCSV;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -161,6 +162,16 @@ public class HttpdLogLine {
      */
     public Long getRequestProcessingTimeMs() {
         return (Long) getLogValue(FormatStrings.REQUEST_PROCESSING_TIME_MS);
+    }
+
+    @Override
+    public String toString() {
+
+        String s =
+                EventToCSV.DEFAULT_TIMESTAMP_FORMAT.format(timestamp);
+        s += ", " + getFirstRequestLine();
+        s += ", " + getOriginalRequestStatusCode();
+        return s;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
