@@ -19,6 +19,8 @@ package io.novaordis.esa.clad;
 import io.novaordis.clad.ApplicationRuntime;
 import io.novaordis.clad.Configuration;
 import io.novaordis.clad.UserErrorException;
+import io.novaordis.clad.option.Option;
+import io.novaordis.clad.option.StringOption;
 import io.novaordis.esa.core.EventProcessor;
 import io.novaordis.esa.core.InputStreamInitiator;
 import io.novaordis.esa.core.OutputStreamTerminator;
@@ -40,6 +42,9 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
     // Constants -------------------------------------------------------------------------------------------------------
 
     public static final int QUEUE_SIZE = 1000000;
+
+    public static final Character FORMAT_OPTION_SHORT = 'f';
+    public static final String FORMAT_OPTION_LONG = "format";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -68,6 +73,9 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
                 System.in,
                 new StringEventConverter(),
                 new ArrayBlockingQueue<>(QUEUE_SIZE));
+
+
+        Option logFormat = configuration.getGlobalOption(FORMAT_OPTION_SHORT, FORMAT_OPTION_LONG);
 
         httpdLogParser = new EventProcessor(
                 "HTTP Log Parser",
