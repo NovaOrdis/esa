@@ -17,9 +17,9 @@
 package io.novaordis.esa.clad;
 
 import io.novaordis.clad.ApplicationRuntime;
-import io.novaordis.clad.Command;
 import io.novaordis.clad.Configuration;
 import io.novaordis.clad.UserErrorException;
+import io.novaordis.clad.command.CommandBase;
 import io.novaordis.esa.core.EventProcessor;
 import io.novaordis.esa.experimental.ExperimentalLogic;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ import java.util.concurrent.ArrayBlockingQueue;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/26/16
  */
-public class SampleCommand implements Command {
+public class SampleCommand extends CommandBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -44,11 +44,6 @@ public class SampleCommand implements Command {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     // Command implementation ------------------------------------------------------------------------------------------
-
-    @Override
-    public String getName() {
-        return "sample";
-    }
 
     @Override
     public void execute(Configuration configuration, ApplicationRuntime applicationRuntime) throws Exception {

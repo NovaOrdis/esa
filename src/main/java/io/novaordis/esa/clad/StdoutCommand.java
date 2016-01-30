@@ -17,14 +17,14 @@
 package io.novaordis.esa.clad;
 
 import io.novaordis.clad.ApplicationRuntime;
-import io.novaordis.clad.Command;
 import io.novaordis.clad.Configuration;
+import io.novaordis.clad.command.CommandBase;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/28/16
  */
-public class StdoutCommand implements Command {
+public class StdoutCommand extends CommandBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -35,11 +35,6 @@ public class StdoutCommand implements Command {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     // Command implementation ------------------------------------------------------------------------------------------
-
-    @Override
-    public String getName() {
-        return "stdout";
-    }
 
     @Override
     public void execute(Configuration configuration, ApplicationRuntime ar) throws Exception {
