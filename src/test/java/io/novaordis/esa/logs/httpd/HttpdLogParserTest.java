@@ -136,7 +136,7 @@ public class HttpdLogParserTest {
     @Test
     public void performance() throws Exception {
 
-        String line = "\"default task-1\" 127.0.0.1 - [21/Jan/2016:09:32:56 -0800] \"GET /something HTTP/1.1\" 404 74 27";
+        String line = "\"default task-1\" 127.0.0.1 - [21/Jan/2016:09:32:56 -0800] \"GET /something HTTP/1.1\" \"a=b&c=d\" 404 74 27";
 
         HttpdLogParser factory = new HttpdLogParser(HttpdLogFormat.PERFORMANCE_ANALYSIS);
 
@@ -146,6 +146,7 @@ public class HttpdLogParserTest {
         assertNull(le.getRemoteUser());
         assertEquals(TestDate.create("01/21/16 09:32:56 -0800"), le.timestamp);
         assertEquals("GET /something HTTP/1.1", le.getFirstRequestLine());
+        assertEquals("a=b&c=d", le.getQueryString());
         assertEquals(404, le.getOriginalRequestStatusCode().intValue());
         assertNull(le.getStatusCode());
         assertEquals(74, le.getResponseEntityBodySize().longValue());

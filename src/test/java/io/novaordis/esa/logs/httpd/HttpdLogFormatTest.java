@@ -96,9 +96,12 @@ public class HttpdLogFormatTest {
         assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(8));
         assertEquals(FormatStrings.FIRST_REQUEST_LINE, formatStrings.get(9));
         assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(10));
-        assertEquals(FormatStrings.ORIGINAL_REQUEST_STATUS_CODE, formatStrings.get(11));
-        assertEquals(FormatStrings.RESPONSE_ENTITY_BODY_SIZE, formatStrings.get(12));
-        assertEquals(FormatStrings.REQUEST_PROCESSING_TIME_MS, formatStrings.get(13));
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(11));
+        assertEquals(FormatStrings.QUERY_STRING, formatStrings.get(12));
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(13));
+        assertEquals(FormatStrings.ORIGINAL_REQUEST_STATUS_CODE, formatStrings.get(14));
+        assertEquals(FormatStrings.RESPONSE_ENTITY_BODY_SIZE, formatStrings.get(15));
+        assertEquals(FormatStrings.REQUEST_PROCESSING_TIME_MS, formatStrings.get(16));
     }
 
     @Test

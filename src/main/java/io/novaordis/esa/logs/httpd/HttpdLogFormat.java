@@ -50,7 +50,7 @@ public class HttpdLogFormat {
     //
     // "%I" %h %u [%t] "%r" %s %b %D
     //
-    // "&quot;%I&quot; %h %l %u [%t] &quot;%r&quot; %s %b %D"
+    // "&quot;%I&quot; %h %l %u [%t] &quot;%r&quot; &quot;%q&quot; %s %b %D"
     //
     // "thread name" remote-host remote-user [timestamp] "first request line" status-code response-body-size request-duration-ms
     public static final HttpdLogFormat PERFORMANCE_ANALYSIS = new HttpdLogFormat(
@@ -64,6 +64,9 @@ public class HttpdLogFormat {
             FormatStrings.CLOSING_BRACKET,
             FormatStrings.DOUBLE_QUOTES,
             FormatStrings.FIRST_REQUEST_LINE,
+            FormatStrings.DOUBLE_QUOTES,
+            FormatStrings.DOUBLE_QUOTES,
+            FormatStrings.QUERY_STRING,
             FormatStrings.DOUBLE_QUOTES,
             FormatStrings.ORIGINAL_REQUEST_STATUS_CODE,
             FormatStrings.RESPONSE_ENTITY_BODY_SIZE,

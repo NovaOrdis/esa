@@ -129,6 +129,10 @@ public class HttpdLogLine {
         return (String) getLogValue(FormatStrings.FIRST_REQUEST_LINE);
     }
 
+    public String getQueryString() {
+        return (String) getLogValue(FormatStrings.QUERY_STRING);
+    }
+
     /**
      * @return may return null.
      */
