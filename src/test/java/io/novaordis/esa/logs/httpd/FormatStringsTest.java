@@ -154,6 +154,21 @@ public class FormatStringsTest extends FormatStringTest {
     }
 
     @Test
+    public void queryString() throws Exception {
+
+        FormatStrings e = FormatStrings.QUERY_STRING;
+        assertEquals("%q", e.getLiteral());
+        String s = (String)e.parse("attr1=val1&attr2=Val2&attr3=1&attr4=1.1");
+        assertNotNull(s);
+        assertEquals("attr1=val1&attr2=Val2&attr3=1&attr4=1.1", s);
+        assertNull(e.parse("-"));
+
+        assertFalse(e.isLeftEnclosure());
+        assertFalse(e.isRightEnclosure());
+        assertNull(e.getMatchingEnclosure());
+    }
+
+    @Test
     public void originalRequestStatusCode() throws Exception {
 
         FormatStrings e = FormatStrings.ORIGINAL_REQUEST_STATUS_CODE;

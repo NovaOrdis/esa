@@ -66,6 +66,11 @@ public enum FormatStrings implements FormatString {
     TIMESTAMP("%t", Date.class, new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z")),
 
     //
+    // The query string, excluding the '?' character. Usually enclosed in quotes.
+    //
+    QUERY_STRING("%q", String.class),
+
+    //
     // First line of request. Note that the first line is enclosed in quotes, you must explicitly specify the
     // DOUBLE_QUOTES or SINGLE_QUOTE format element.
     //
