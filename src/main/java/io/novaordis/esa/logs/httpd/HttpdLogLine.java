@@ -167,11 +167,12 @@ public class HttpdLogLine {
     @Override
     public String toString() {
 
-        String s =
-                EventToCSV.DEFAULT_TIMESTAMP_FORMAT.format(timestamp);
-        s += ", " + getFirstRequestLine();
-        s += ", " + getOriginalRequestStatusCode();
-        return s;
+        String ts = timestamp == null ? "-" : EventToCSV.DEFAULT_TIMESTAMP_FORMAT.format(timestamp);
+        String rls = getFirstRequestLine();
+        rls = rls == null ? "-" : rls;
+        Integer rsc = getOriginalRequestStatusCode();
+        String rscs = rsc == null ? "-" : Integer.toString(rsc);
+        return ts + ", " + rls + ", " + rscs;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
