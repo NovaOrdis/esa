@@ -16,8 +16,8 @@
 
 package io.novaordis.esa.clad.command;
 
-import io.novaordis.clad.ApplicationRuntime;
-import io.novaordis.clad.Configuration;
+import io.novaordis.clad.application.ApplicationRuntime;
+import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.clad.UserErrorException;
 import io.novaordis.clad.command.CommandBase;
 import io.novaordis.esa.clad.EventsApplicationRuntime;
@@ -32,6 +32,7 @@ import java.util.concurrent.ArrayBlockingQueue;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/26/16
  */
+@SuppressWarnings("unused")
 public class SampleCommand extends CommandBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
@@ -48,6 +49,8 @@ public class SampleCommand extends CommandBase {
 
     @Override
     public void execute(Configuration configuration, ApplicationRuntime applicationRuntime) throws Exception {
+
+        log.debug("executing " + this);
 
         EventsApplicationRuntime eventsApplicationRuntime = (EventsApplicationRuntime)applicationRuntime;
 
