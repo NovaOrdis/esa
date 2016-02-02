@@ -18,11 +18,9 @@ package io.novaordis.esa.clad;
 
 import io.novaordis.esa.core.ClosedException;
 import io.novaordis.esa.core.OutputStreamConversionLogic;
-import io.novaordis.esa.core.event.ContainerEvent;
 import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
-import io.novaordis.esa.experimental.SampleEvent;
-import io.novaordis.esa.logs.httpd.HttpdLogLine;
+import io.novaordis.esa.core.event.TimedEvent;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -66,23 +64,8 @@ public class OutputFormatter implements OutputStreamConversionLogic {
             return false;
         }
 
-        if (inputEvent instanceof SampleEvent) {
-            SampleEvent ce = (SampleEvent) inputEvent;
-            String s =
-                    DEFAULT_TIMESTAMP_FORMAT.format(ce.getTimestamp()) + ", " +
-                            ce.getCount() + ", " +
-                            String.format("%1$.1f", ce.getAverageTime()) + "\n";
-
-            sb.append(s);
-        }
-        else if (inputEvent instanceof ContainerEvent) {
-
-            HttpdLogLine line = (HttpdLogLine)((ContainerEvent) inputEvent).get();
-            sb.append(line.toString()).append("\n");
-        }
-        else {
-            throw new IllegalArgumentException("unknown event type " + inputEvent);
-        }
+        TimedEvent e = (TimedEvent)inputEvent;
+        sb.append(DEFAULT_TIMESTAMP_FORMAT.format(e.getTimestamp())).append("\n");
 
         return true;
     }

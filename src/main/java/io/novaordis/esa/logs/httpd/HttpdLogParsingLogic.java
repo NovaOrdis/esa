@@ -61,6 +61,12 @@ public class HttpdLogParsingLogic extends ProcessingLogicBase {
         return logParser.getLogFormat();
     }
 
+    @Override
+    public String toString() {
+
+        return "HttpdLogParsingLogic[" + logParser + "]";
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
