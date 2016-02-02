@@ -16,11 +16,13 @@
 
 package io.novaordis.esa.event;
 
+import io.novaordis.esa.core.event.MeasureUnit;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/23/16
  */
-public class MockProperty implements Property {
+public class MockProperty implements OldProperty {
 
     // Constants -------------------------------------------------------------------------------------------------------
 

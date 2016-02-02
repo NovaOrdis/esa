@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.event;
+package io.novaordis.esa.core.event;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 2/1/16
  */
 public interface Property {
 
@@ -28,9 +28,10 @@ public interface Property {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    /**
+     * Case sensitive.
+     */
     String getName();
-
-    Class getType();
 
     Object getValue();
 

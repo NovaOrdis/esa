@@ -17,12 +17,13 @@
 package io.novaordis.esa.experimental;
 
 import io.novaordis.esa.core.event.TimedEvent;
+import io.novaordis.esa.core.event.TimedEventBase;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/25/16
  */
-public class SampleEvent implements TimedEvent {
+public class SampleEvent extends TimedEventBase implements TimedEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,22 +31,14 @@ public class SampleEvent implements TimedEvent {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private long timestamp;
     private long count;
     private double averageTime;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public SampleEvent(long timestamp) {
-        this.timestamp = timestamp;
-    }
 
-    // TimedEvent implementation ---------------------------------------------------------------------------------------
-
-    @Override
-    public long getTimestamp() {
-
-        return timestamp;
+        super(timestamp);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

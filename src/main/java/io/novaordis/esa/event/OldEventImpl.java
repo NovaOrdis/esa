@@ -32,7 +32,7 @@ public class OldEventImpl extends OldEventBase {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private List<Property> properties;
+    private List<OldProperty> properties;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -43,14 +43,14 @@ public class OldEventImpl extends OldEventBase {
     // Event implementation --------------------------------------------------------------------------------------------
 
     @Override
-    public List<Property> getProperties() {
+    public List<OldProperty> getProperties() {
         return properties;
     }
 
     @Override
-    public Property getProperty(String name) {
+    public OldProperty getProperty(String name) {
 
-        for(Property p: properties) {
+        for(OldProperty p: properties) {
             if (p.getName().equals(name)) {
                 return p;
             }
@@ -60,7 +60,7 @@ public class OldEventImpl extends OldEventBase {
     }
 
     @Override
-    public Property getProperty(int index) {
+    public OldProperty getProperty(int index) {
 
         if (index < 0 || index >= properties.size()) {
             return null;
@@ -69,13 +69,13 @@ public class OldEventImpl extends OldEventBase {
     }
 
     @Override
-    public Property setProperty(int index, Property property) {
+    public OldProperty setProperty(int index, OldProperty property) {
         throw new RuntimeException("setProperty() NOT YET IMPLEMENTED");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public void addProperty(Property property) {
+    public void addProperty(OldProperty property) {
         properties.add(property);
     }
 

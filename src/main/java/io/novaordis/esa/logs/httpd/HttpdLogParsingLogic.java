@@ -16,23 +16,17 @@
 
 package io.novaordis.esa.logs.httpd;
 
-import io.novaordis.esa.core.ClosedException;
-import io.novaordis.esa.core.ProcessingLogic;
-import io.novaordis.esa.core.event.EndOfStreamEvent;
+import io.novaordis.esa.core.ProcessingLogicBase;
 import io.novaordis.esa.core.event.Event;
-import io.novaordis.esa.core.event.FaultEvent;
 import io.novaordis.esa.core.event.StringEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class HttpdLogParsingLogic implements ProcessingLogic {
+public class HttpdLogParsingLogic extends ProcessingLogicBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -42,60 +36,15 @@ public class HttpdLogParsingLogic implements ProcessingLogic {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private boolean closed;
-    private List<Event> buffer;
     private HttpdLogParser logParser;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public HttpdLogParsingLogic(HttpdLogFormat httpdLogFormat) {
 
-        this.buffer = new ArrayList<>();
+        super();
+
         this.logParser = new HttpdLogParser(httpdLogFormat);
-    }
-
-    // ProcessingLogic implements --------------------------------------------------------------------------------------
-
-    @Override
-    public boolean process(Event inputEvent) throws ClosedException {
-
-        if (closed) {
-            throw new ClosedException(this + " is closed");
-        }
-
-        if (inputEvent instanceof EndOfStreamEvent) {
-            closed = true;
-            return false;
-        }
-        else if (!(inputEvent instanceof StringEvent)) {
-
-            throw new IllegalArgumentException(this + " can only handle StringEvents and it got " + inputEvent);
-        }
-
-        //noinspection ConstantConditions
-        String s = ((StringEvent)inputEvent).get();
-
-        try {
-
-            HttpdLogLine logLine = logParser.parse(s);
-            Event event = HttpdLogLine.toEvent(logLine);
-            buffer.add(event);
-        }
-        catch (Exception e) {
-
-            log.error("parsing failed", e);
-            buffer.add(new FaultEvent());
-        }
-
-        return true;
-    }
-
-    @Override
-    public List<Event> getEvents() {
-
-        List<Event> result = new ArrayList<>(buffer);
-        buffer.clear();
-        return result;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -112,6 +61,29 @@ public class HttpdLogParsingLogic implements ProcessingLogic {
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected Event processInternal(Event inputEvent) {
+
+        if (!(inputEvent instanceof StringEvent)) {
+
+            throw new IllegalArgumentException(this + " can only handle StringEvents and it got " + inputEvent);
+        }
+
+        //noinspection ConstantConditions
+        String s = ((StringEvent)inputEvent).get();
+
+        try {
+
+            HttpdLogLine logLine = logParser.parse(s);
+            return HttpdLogLine.toEvent(logLine);
+        }
+        catch (Exception e) {
+
+            log.error("parsing failed", e);
+            throw new RuntimeException("NOT YET IMPLEMENTED");
+        }
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

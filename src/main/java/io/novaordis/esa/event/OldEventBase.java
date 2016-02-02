@@ -32,7 +32,7 @@ public abstract class OldEventBase implements OldEvent {
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private Date timestamp;
-    private List<Property> properties;
+    private List<OldProperty> properties;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 

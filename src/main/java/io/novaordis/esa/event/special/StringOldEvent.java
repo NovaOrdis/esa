@@ -17,7 +17,7 @@
 package io.novaordis.esa.event.special;
 
 import io.novaordis.esa.event.OldEvent;
-import io.novaordis.esa.event.Property;
+import io.novaordis.esa.event.OldProperty;
 
 import java.util.Date;
 import java.util.List;
@@ -52,22 +52,22 @@ public class StringOldEvent implements OldEvent {
     }
 
     @Override
-    public List<Property> getProperties() {
+    public List<OldProperty> getProperties() {
         throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
     }
 
     @Override
-    public Property getProperty(String name) {
+    public OldProperty getProperty(String name) {
         throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
     }
 
     @Override
-    public Property getProperty(int index) {
+    public OldProperty getProperty(int index) {
         throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
     }
 
     @Override
-    public Property setProperty(int index, Property property) {
+    public OldProperty setProperty(int index, OldProperty property) {
         throw new RuntimeException("setProperty() NOT YET IMPLEMENTED");
     }
 

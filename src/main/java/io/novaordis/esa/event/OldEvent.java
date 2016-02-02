@@ -47,12 +47,12 @@ public interface OldEvent {
      *
      * @return the list of properties for this event in the "preferred" order.
      */
-    List<Property> getProperties();
+    List<OldProperty> getProperties();
 
     /**
      * @return may return null if there is no property with this name.
      */
-    Property getProperty(String name);
+    OldProperty getProperty(String name);
 
     /**
      * The property list is a zero-indexed list. The timestamp is not part of the list.
@@ -60,7 +60,7 @@ public interface OldEvent {
      * @return may return null if the index is out of bounds.
      *
      */
-    Property getProperty(int index);
+    OldProperty getProperty(int index);
 
     /**
      * Any positive index can be used. If an index that goes beyond the current list boundary is used, the list
@@ -70,6 +70,6 @@ public interface OldEvent {
      *
      * @exception IllegalArgumentException on negative index.
      */
-    Property setProperty(int index, Property property);
+    OldProperty setProperty(int index, OldProperty property);
 
 }

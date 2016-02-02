@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.event;
+package io.novaordis.esa.core.event;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>

@@ -137,7 +137,6 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
     public String toString() {
 
         return "Events[" + Integer.toHexString(System.identityHashCode(this)) + "]";
-
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

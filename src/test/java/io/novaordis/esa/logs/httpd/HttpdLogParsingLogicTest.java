@@ -17,6 +17,8 @@
 package io.novaordis.esa.logs.httpd;
 
 import io.novaordis.esa.core.ProcessingLogicTest;
+import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.StringEvent;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -42,6 +44,13 @@ public class HttpdLogParsingLogicTest extends ProcessingLogicTest {
     protected HttpdLogParsingLogic getProcessingLogicToTest() throws Exception {
 
         return new HttpdLogParsingLogic(new HttpdLogFormat(HttpdLogFormat.COMMON.toString()));
+    }
+
+    @Override
+    protected Event getInputEventRelevantToProcessingLogic() throws Exception {
+
+        // common format
+        return new StringEvent("test-host test-remote-logname test-remote-user [31/Jan/2016:06:59:53 -0800] \"GET /test HTTP/1.1\" 200 1024");
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

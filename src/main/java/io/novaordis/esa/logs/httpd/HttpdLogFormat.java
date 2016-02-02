@@ -32,6 +32,8 @@ public class HttpdLogFormat {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    // %r %l %u [%t] "%r" %>s %b
+
     public static final HttpdLogFormat COMMON = new HttpdLogFormat(
             FormatStrings.REMOTE_HOST,
             FormatStrings.REMOTE_LOGNAME,

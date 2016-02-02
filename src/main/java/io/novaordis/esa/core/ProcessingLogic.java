@@ -60,6 +60,8 @@ public interface ProcessingLogic {
      * generate specific fault events, not to throw exceptions.
      *
      * @see ProcessingLogic#getEvents()
+     *
+     * @exception ClosedException thrown by the logic after receiving an EndOfStreamEvent.
      */
     boolean process(Event e) throws ClosedException;;
 

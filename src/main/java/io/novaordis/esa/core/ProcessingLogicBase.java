@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core.event;
+package io.novaordis.esa.core;
+
+import io.novaordis.esa.core.event.EndOfStreamEvent;
+import io.novaordis.esa.core.event.Event;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
+ * Handles EndOfStream events, among other things
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/24/16
+ * @since 2/1/16
  */
-public class StringEvent extends EventBase {
+public abstract class ProcessingLogicBase implements ProcessingLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -28,29 +37,59 @@ public class StringEvent extends EventBase {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String s;
+    private boolean closed;
+    private List<Event> eventBuffer;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public StringEvent(String s) {
-        this.s = s;
+    protected ProcessingLogicBase() {
+
+        this.closed = false;
+        this.eventBuffer = new ArrayList<>();
+    }
+
+    // ProcessingLogic implementation ----------------------------------------------------------------------------------
+
+    @Override
+    public boolean process(Event e) throws ClosedException {
+
+        if (closed) {
+            throw new ClosedException(this + " is closed");
+        }
+
+        if (e instanceof EndOfStreamEvent) {
+            closed = true;
+            return false;
+        }
+
+        Event outputEvent = processInternal(e);
+        eventBuffer.add(outputEvent);
+        return !eventBuffer.isEmpty();
+    }
+
+    @Override
+    public List<Event> getEvents() {
+
+        if (eventBuffer.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Event> events = new ArrayList<>(eventBuffer);
+        eventBuffer.clear();
+        return events;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public String get() {
-        return s;
-    }
-
-    @Override
-    public String toString() {
-
-        return s;
-    }
-
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    /**
+     * All useful implementations so far turn an input event into just one single output event. If we'll ever need
+     * input event -> multiple output events conversion, we'll refactor.
+     */
+    protected abstract Event processInternal(Event e);
 
     // Private ---------------------------------------------------------------------------------------------------------
 

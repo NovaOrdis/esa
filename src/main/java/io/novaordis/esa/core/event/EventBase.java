@@ -16,6 +16,8 @@
 
 package io.novaordis.esa.core.event;
 
+import java.util.Set;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
@@ -29,6 +31,18 @@ public class EventBase implements Event {
     // Attributes ------------------------------------------------------------------------------------------------------
 
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    // Event implementation --------------------------------------------------------------------------------------------
+
+    @Override
+    public Set<Property> getProperties() {
+        throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public Property getProperty(String name) {
+        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
+    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 

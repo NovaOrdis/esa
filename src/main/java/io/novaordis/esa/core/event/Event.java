@@ -16,6 +16,8 @@
 
 package io.novaordis.esa.core.event;
 
+import java.util.Set;
+
 /**
  * A read-only interface. Once an event was created, it is immutable.
  *
@@ -30,6 +32,8 @@ public interface Event {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    Set<Property> getProperties();
 
+    Property getProperty(String name);
 
 }

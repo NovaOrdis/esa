@@ -16,6 +16,19 @@
 
 package io.novaordis.esa.core;
 
+import io.novaordis.esa.core.event.EndOfStreamEvent;
+import io.novaordis.esa.core.event.Event;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
@@ -23,6 +36,8 @@ package io.novaordis.esa.core;
 public abstract class ProcessingLogicTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(ProcessingLogicTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -32,11 +47,57 @@ public abstract class ProcessingLogicTest {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    @Test
+    public void processAndGetEvents() throws Exception {
+
+        ProcessingLogic pl = getProcessingLogicToTest();
+
+        assertTrue(pl.getEvents().isEmpty());
+        assertTrue(pl.getEvents().isEmpty());
+        
+        Event inputEvent = getInputEventRelevantToProcessingLogic();
+
+        assertTrue(pl.process(inputEvent));
+
+        List<Event> outputEvents = pl.getEvents();
+
+        assertEquals(1, outputEvents.size());
+        Event outputEvent = outputEvents.get(0);
+        assertNotNull(outputEvent);
+
+        assertTrue(pl.getEvents().isEmpty());
+    }
+
+    @Test
+    public void processEndOfStreamEvent() throws Exception {
+
+        ProcessingLogic pl = getProcessingLogicToTest();
+
+        pl.process(new EndOfStreamEvent());
+
+        Event inputEvent = getInputEventRelevantToProcessingLogic();
+
+        try {
+            // make sure the processing logic is closed
+            pl.process(inputEvent);
+            fail("should throw exception");
+        }
+        catch(ClosedException e) {
+            log.info(e.getMessage());
+        }
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
     protected abstract ProcessingLogic getProcessingLogicToTest() throws Exception;
+
+    /**
+     * @return an Event that is meaningful to the processing logic instance and that, once processed, produces a
+     * corresponding output Event.
+     */
+    protected abstract Event getInputEventRelevantToProcessingLogic() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

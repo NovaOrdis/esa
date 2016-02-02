@@ -16,6 +16,8 @@
 
 package io.novaordis.esa.core.event;
 
+import java.util.Set;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
@@ -48,6 +50,16 @@ public class MockEvent implements Event {
 
     public Object getPayload() {
         return payload;
+    }
+
+    @Override
+    public Set<Property> getProperties() {
+        throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public Property getProperty(String name) {
+        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
