@@ -28,6 +28,7 @@ import io.novaordis.esa.core.ProcessingLogic;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.StringEventConverter;
 
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -62,6 +63,16 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
     public String getDefaultCommandName() {
 
         return "out";
+    }
+
+    @Override
+    public Set<Option> getRequiredGlobalOptions() {
+        throw new RuntimeException("getRequiredGlobalOptions() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public Set<Option> getOptionalGlobalOptions() {
+        throw new RuntimeException("getOptionalGlobalOptions() NOT YET IMPLEMENTED");
     }
 
     @Override
