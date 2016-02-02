@@ -62,6 +62,11 @@ public class MockEvent implements Event {
         throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
     }
 
+    @Override
+    public Property setProperty(Property property) {
+        throw new RuntimeException("setProperty() NOT YET IMPLEMENTED");
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

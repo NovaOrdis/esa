@@ -16,14 +16,19 @@
 
 package io.novaordis.esa.logs.httpd;
 
+import io.novaordis.esa.core.event.IntegerProperty;
+import io.novaordis.esa.core.event.LongProperty;
+import io.novaordis.esa.core.event.StringProperty;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -71,6 +76,10 @@ public class HttpdLogLineTest {
         assertEquals(1L, old2);
 
         assertEquals(2L, e.getLogValue(formatElement));
+
+        Set<FormatString> formatStrings = e.getFormatStrings();
+        assertEquals(1, formatStrings.size());
+        assertEquals(formatElement, formatStrings.iterator().next());
     }
 
     @Test
@@ -124,9 +133,168 @@ public class HttpdLogLineTest {
         e.setLogValue(FormatStrings.TIMESTAMP, new Date(2L));
 
         assertEquals(2L, e.getTimestamp().longValue());
+
+        Set<FormatString> formatStrings = e.getFormatStrings();
+        assertEquals(1, formatStrings.size());
+        assertEquals(FormatStrings.TIMESTAMP, formatStrings.iterator().next());
     }
 
     // toEvent() -------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void toEvent_NoTimestamp() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+
+        assertNull(e.getTimestamp());
+
+        try {
+
+            e.toEvent();
+            fail("should have thrown exception");
+        }
+        catch(IllegalStateException ise) {
+            log.info(ise.getMessage());
+        }
+    }
+
+    @Test
+    public void toEvent_ValidTimestamp() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+
+        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
+
+        HttpEvent event = e.toEvent();
+
+        assertEquals(1L, event.getTimestamp());
+    }
+
+    @Test
+    public void toEvent() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+
+        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(FormatStrings.FIRST_REQUEST_LINE, "PUT /test/ HTTP/1.1");
+        e.setLogValue(FormatStrings.ORIGINAL_REQUEST_STATUS_CODE, 404);
+        e.setLogValue(FormatStrings.THREAD_NAME, "some thread name XXX-100");
+
+        HttpEvent event = e.toEvent();
+
+        assertEquals(1L, event.getTimestamp());
+        assertEquals(HTTPMethod.PUT.name(), ((StringProperty)event.getProperty(HttpEvent.METHOD)).getString());
+        assertEquals("/test/", ((StringProperty)event.getProperty(HttpEvent.PATH)).getString());
+        assertEquals("HTTP/1.1", ((StringProperty) event.getProperty(HttpEvent.HTTP_VERSION)).getString());
+        assertEquals(404, ((IntegerProperty)event.
+                getProperty(HttpEvent.ORIGINAL_REQUEST_STATUS_CODE)).getInteger().intValue());
+        assertNull(event.getProperty(HttpEvent.STATUS_CODE));
+        assertEquals("some thread name XXX-100", ((StringProperty)event.getProperty(HttpEvent.THREAD_NAME)).getString());
+
+        // "default task-1" 127.0.0.1 - "Module=CentricIdentityProvider&Operation=Login&LoginID=Administrator&Password=centric8" 74 27
+    }
+
+    @Test
+    public void toEvent_StatusCode() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+
+        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(FormatStrings.STATUS_CODE, 200);
+
+        HttpEvent event = e.toEvent();
+
+        assertEquals(200, ((IntegerProperty) event.getProperty(HttpEvent.STATUS_CODE)).getInteger().intValue());
+    }
+
+    @Test
+    public void toEvent_Both_StatusCode_OriginalRequestStatusCode() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+
+        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(FormatStrings.ORIGINAL_REQUEST_STATUS_CODE, 301);
+        e.setLogValue(FormatStrings.STATUS_CODE, 302);
+
+        HttpEvent event = e.toEvent();
+
+        assertEquals(301, ((IntegerProperty)event.
+                getProperty(HttpEvent.ORIGINAL_REQUEST_STATUS_CODE)).getInteger().intValue());
+        assertEquals(302, ((IntegerProperty) event.getProperty(HttpEvent.STATUS_CODE)).getInteger().intValue());
+    }
+
+    // parseFirstRequestLine() -----------------------------------------------------------------------------------------
+
+    @Test
+    public void parseFirstRequestLine_Null() throws Exception {
+
+        try {
+            HttpdLogLine.parseFirstRequestLine(null);
+            fail("should throw exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseFirstRequestLine_TwoElements() throws Exception {
+
+        try {
+            HttpdLogLine.parseFirstRequestLine("GET /a");
+            fail("should throw exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseFirstRequestLine_FourElements() throws Exception {
+
+        try {
+            HttpdLogLine.parseFirstRequestLine("GET /a HTTP/1.1 something");
+            fail("should throw exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseFirstRequestLine_InvalidHttpMethod() throws Exception {
+
+        try {
+            HttpdLogLine.parseFirstRequestLine("nosuchmethod /test HTTP/1.1");
+            fail("should throw exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+            assertTrue(e.getCause() instanceof IllegalArgumentException);
+        }
+    }
+
+    @Test
+    public void parseFirstRequestLine_InvalidHttpVersion() throws Exception {
+
+        try {
+            HttpdLogLine.parseFirstRequestLine("POST /test HTTP/2.2");
+            fail("should throw exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseFirstRequestLine() throws Exception {
+
+        String[] s = HttpdLogLine.parseFirstRequestLine("GET /test/index.html HTTP/1.1");
+        assertEquals(3, s.length);
+        assertEquals(HTTPMethod.GET.name(), s[0]);
+        assertEquals("/test/index.html", s[1]);
+        assertEquals("HTTP/1.1", s[2]);
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

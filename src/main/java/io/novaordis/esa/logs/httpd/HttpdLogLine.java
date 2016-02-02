@@ -16,9 +16,14 @@
 
 package io.novaordis.esa.logs.httpd;
 
+import io.novaordis.esa.core.event.IntegerProperty;
+import io.novaordis.esa.core.event.Property;
+import io.novaordis.esa.core.event.StringProperty;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A httpd log line.
@@ -43,8 +48,7 @@ public class HttpdLogLine {
         this.values = new HashMap<>();
     }
 
-    // Methods related to the fact that these events come from a HTTP log - this is where the httpd log format details
-    // are important ---------------------------------------------------------------------------------------------------
+    // Public ----------------------------------------------------------------------------------------------------------
 
     /**
      * @return the value corresponding to the specified format element or null if there is no corresponding value
@@ -84,7 +88,13 @@ public class HttpdLogLine {
         return values.put(e, value);
     }
 
-    // Public ----------------------------------------------------------------------------------------------------------
+    /**
+     * @return the FormatStrings this httpd log line has values for.
+     */
+    public Set<FormatString> getFormatStrings() {
+
+        return values.keySet();
+    }
 
     public Long getTimestamp() {
         return (Long)getLogValue(FormatStrings.TIMESTAMP);
@@ -155,12 +165,57 @@ public class HttpdLogLine {
         return (Long) getLogValue(FormatStrings.REQUEST_PROCESSING_TIME_MS);
     }
 
-
-    public HttpEvent toEvent() {
+    /**
+     * Converts this httpd log line into a HttpEvent. Since HttpEvents are timed events, it does not make sense to
+     * convert a timestamp-less log line into a HTTP timed event, so in that case the method throws
+     * IllegalStateException.
+     *
+     * @exception IllegalStateException if the timestamp information is missing from the underlying httpd log line.
+     * @exception IllegalStateException if the first request line is invalid (bad HTTP method, bad HTTP version, etc.)
+     */
+    public HttpEvent toEvent() throws IllegalStateException {
 
         Long timestamp = getTimestamp();
-        return new HttpEvent(timestamp);
 
+        if (timestamp == null) {
+            throw new IllegalStateException(
+                    "httpd log line " + this + " does not have timestamp information thus cannot be converted to a HTTP timed event");
+        }
+
+        HttpEvent httpEvent = new HttpEvent(timestamp);
+
+        Set<FormatString> formatStrings = getFormatStrings();
+
+        for(FormatString fs: formatStrings) {
+
+            if (FormatStrings.TIMESTAMP.equals(fs)) {
+                // already handled
+                continue;
+            }
+
+            if (FormatStrings.FIRST_REQUEST_LINE.equals(fs)) {
+
+                String s = (String)getLogValue(FormatStrings.FIRST_REQUEST_LINE);
+                if (s == null) {
+                    continue;
+                }
+
+                String[] methodPathHtmlVersion = parseFirstRequestLine(s);
+                httpEvent.setProperty(new StringProperty(HttpEvent.METHOD, methodPathHtmlVersion[0]));
+                httpEvent.setProperty(new StringProperty(HttpEvent.PATH, methodPathHtmlVersion[1]));
+                httpEvent.setProperty(new StringProperty(HttpEvent.HTTP_VERSION, methodPathHtmlVersion[2]));
+            }
+            else {
+
+                Object value = getLogValue(fs);
+                Property p = fs.toProperty(value);
+                if (p != null) {
+                    httpEvent.setProperty(p);
+                }
+            }
+        }
+
+        return httpEvent;
     }
 
     @Override
@@ -176,6 +231,48 @@ public class HttpdLogLine {
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
+
+    // Static Package protected ----------------------------------------------------------------------------------------
+
+    /**
+     * @return a String[3] array containing <b>valid</b> HTTP Method, the request path and a <b>valid</b> HTTP version
+     * String. The result is guaranteed to contain 3 elements and have valid values.
+     *
+     * @exception IllegalArgumentException if the passed argument cannot produce the valid String[3].
+     */
+    static String[] parseFirstRequestLine(String firstRequestLine) throws IllegalArgumentException {
+
+        if (firstRequestLine == null) {
+            throw new IllegalArgumentException("null first request line");
+        }
+
+        String[] result = firstRequestLine.split(" +");
+
+        if (result.length != 3) {
+            throw new IllegalArgumentException(
+                    "invalid first request line, more than three elements: \"" + firstRequestLine + "\"");
+        }
+
+        // verify method
+
+        try {
+
+            HTTPMethod.valueOf(result[0]);
+        }
+        catch(Exception e) {
+            throw new IllegalArgumentException("invalid first request line, unknown HTTP method: \"" + firstRequestLine + "\"", e);
+        }
+
+        //
+        // TODO maybe some path validation in the future
+        //
+
+        if (!"HTTP/1.0".equals(result[2]) && !"HTTP/1.1".equals(result[2])) {
+            throw new IllegalArgumentException("invalid first request line \"" + firstRequestLine + "\", unknown HTTP version \"" + result[2] + "\"") ;
+        }
+
+        return result;
+    }
 
     // Protected -------------------------------------------------------------------------------------------------------
 

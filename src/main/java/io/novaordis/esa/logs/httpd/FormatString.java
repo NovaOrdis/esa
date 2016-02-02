@@ -16,6 +16,7 @@
 
 package io.novaordis.esa.logs.httpd;
 
+import io.novaordis.esa.core.event.Property;
 import io.novaordis.esa.logs.ParsingException;
 
 import java.text.DateFormat;
@@ -102,5 +103,11 @@ public interface FormatString {
      * we are a single quote. Return null if this element is not an enclosure.
      */
     FormatString getMatchingEnclosure();
+
+    /**
+     * @return may return null if conversion is not possible (the value is null, the FormatString - double quotes -
+     * cannot generate a property, etc.)
+     */
+    Property toProperty(Object value);
 
 }

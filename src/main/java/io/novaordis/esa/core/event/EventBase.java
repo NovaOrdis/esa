@@ -16,6 +16,9 @@
 
 package io.novaordis.esa.core.event;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -30,18 +33,44 @@ public class EventBase implements Event {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private Map<String, Property> properties;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    protected EventBase() {
+
+        this.properties = new HashMap<>();
+    }
 
     // Event implementation --------------------------------------------------------------------------------------------
 
     @Override
     public Set<Property> getProperties() {
-        throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
+
+        HashSet<Property> result = new HashSet<>();
+
+        for(Property p: properties.values()) {
+            if (!result.add(p)) {
+                throw new IllegalStateException(this + " property map contains duplicate values");
+            }
+        }
+
+        return result;
     }
 
     @Override
     public Property getProperty(String name) {
-        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
+
+        return properties.get(name);
+    }
+
+    @Override
+    public Property setProperty(Property property) {
+
+        if (property == null) {
+            throw new IllegalArgumentException("null property");
+        }
+        return properties.put(property.getName(), property);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

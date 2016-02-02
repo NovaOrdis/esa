@@ -16,6 +16,7 @@
 
 package io.novaordis.esa.logs.httpd;
 
+import io.novaordis.esa.core.event.Property;
 import io.novaordis.esa.logs.ParsingException;
 
 /**
@@ -74,6 +75,11 @@ public class MockFormatString implements FormatString {
     @Override
     public FormatString getMatchingEnclosure() {
         throw new RuntimeException("getMatchingEnclosure() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public Property toProperty(Object value) {
+        throw new RuntimeException("toProperty() NOT YET IMPLEMENTED");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

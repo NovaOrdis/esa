@@ -16,33 +16,18 @@
 
 package io.novaordis.esa.core.event;
 
-import java.util.Set;
-
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/24/16
+ * @since 1/23/16
  */
-public interface Event {
+public enum  MemoryMeasureUnit implements MeasureUnit {
+
+    BYTE;
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
-
-    Set<Property> getProperties();
-
-    /**
-     * @return null if there is no such property.
-     */
-    Property getProperty(String name);
-
-    /**
-     * Stores the property, replacing the old one if exists.
-     * @return the old property with the same name, or null.
-     *
-     * @exception IllegalArgumentException on null argument.
-     */
-    Property setProperty(Property property);
 
 }

@@ -14,32 +14,19 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core.event;
+package io.novaordis.esa.logs.httpd;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public interface Property {
+public enum HTTPMethod {
 
-    // Constants -------------------------------------------------------------------------------------------------------
-
-    // Static ----------------------------------------------------------------------------------------------------------
-
-    // Public ----------------------------------------------------------------------------------------------------------
-
-    /**
-     * Case sensitive.
-     */
-    String getName();
-
-    Object getValue();
-
-    Class getType();
-
-    /**
-     * May return null if the property is non-dimensional (a path, for example)
-     */
-    MeasureUnit getMeasureUnit();
+    GET,
+    POST,
+    PUT,
+    DELETE,
+    HEAD,
+    OPTIONS
 
 }

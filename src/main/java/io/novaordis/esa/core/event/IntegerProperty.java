@@ -14,34 +14,15 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
-
-import io.novaordis.esa.core.event.TimedEvent;
-import io.novaordis.esa.core.event.TimedEventBase;
+package io.novaordis.esa.core.event;
 
 /**
- * A HTTP request/response as processed by a web server.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public class HttpEvent extends TimedEventBase implements TimedEvent {
+public class IntegerProperty extends PropertyBase implements Property {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final String METHOD = "method";
-    public static final String PATH = "path";
-    public static final String HTTP_VERSION = "http-version";
-    public static final String ORIGINAL_REQUEST_STATUS_CODE = "original-request-status-code";
-    public static final String STATUS_CODE = "status-code";
-    public static final String THREAD_NAME = "thread-name";
-    public static final String REMOTE_HOST = "remote-host";
-    public static final String REMOTE_LOGNAME = "remote-logname";
-    public static final String REMOTE_USER = "remote-user";
-    public static final String RESPONSE_ENTITY_BODY_SIZE = "response-body-size";
-    public static final String REQUEST_PROCESSING_TIME = "request-processing-time";
-    public static final String QUERY_STRING = "query";
-
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -49,11 +30,23 @@ public class HttpEvent extends TimedEventBase implements TimedEvent {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public HttpEvent(long timestamp) {
-        super(timestamp);
+    public IntegerProperty(String name, Integer value) {
+        super(name, value);
+    }
+
+    // Property implementation -----------------------------------------------------------------------------------------
+
+    @Override
+    public Class getType() {
+        return Integer.class;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public Integer getInteger() {
+
+        return (Integer)getValue();
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
