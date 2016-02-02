@@ -22,8 +22,6 @@ import io.novaordis.esa.core.event.ContainerEvent;
 import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.logs.httpd.HttpdLogLine;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +35,6 @@ import java.util.List;
 public class ExperimentalLogic implements ProcessingLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    private static final Logger log = LoggerFactory.getLogger(ExperimentalLogic.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -117,7 +113,7 @@ public class ExperimentalLogic implements ProcessingLogic {
 
     private void interpolate(HttpdLogLine line) throws Exception {
 
-        long time = line.timestamp.getTime();
+        long time = line.getTimestamp();
 
         Long rt = line.getRequestProcessingTimeMs();
 

@@ -53,7 +53,7 @@ public class HttpdLogParserTest {
 
         HttpdLogLine le = factory.parse(commonPattern);
         assertNotNull(le);
-        assertNull(le.timestamp);
+        assertNull(le.getTimestamp());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class HttpdLogParserTest {
 
         HttpdLogLine le = factory.parse(commonPattern);
         assertNotNull(le);
-        assertNull(le.timestamp);
+        assertNull(le.getTimestamp());
     }
 
     @Test
@@ -80,7 +80,7 @@ public class HttpdLogParserTest {
         assertEquals("127.0.0.1", le.getRemoteHost());
         assertNull(le.getRemoteLogname());
         assertEquals("bob", le.getRemoteUser());
-        assertEquals(TestDate.create("10/10/16 13:55:36 -0700"), le.timestamp);
+        assertEquals(TestDate.create("10/10/16 13:55:36 -0700").getTime(), le.getTimestamp().longValue());
         assertEquals("GET /test.gif HTTP/1.1", le.getFirstRequestLine());
         assertEquals(200, le.getStatusCode().intValue());
         assertEquals(1024, le.getResponseEntityBodySize().longValue());
@@ -97,7 +97,7 @@ public class HttpdLogParserTest {
         assertEquals("172.20.2.41", le.getRemoteHost());
         assertNull(le.getRemoteLogname());
         assertNull(le.getRemoteUser());
-        assertEquals(TestDate.create("01/09/16 20:06:07 -0800"), le.timestamp);
+        assertEquals(TestDate.create("01/09/16 20:06:07 -0800").getTime(), le.getTimestamp().longValue());
         assertEquals("OPTIONS * HTTP/1.0", le.getFirstRequestLine());
         assertEquals(200, le.getStatusCode().intValue());
         assertNull(le.getResponseEntityBodySize());
@@ -126,7 +126,7 @@ public class HttpdLogParserTest {
         assertEquals("127.0.0.1", le.getRemoteHost());
         assertNull(le.getRemoteLogname());
         assertEquals("bob", le.getRemoteUser());
-        assertEquals(TestDate.create("10/10/16 13:55:36 -0700"), le.timestamp);
+        assertEquals(TestDate.create("10/10/16 13:55:36 -0700").getTime(), le.getTimestamp().longValue());
         assertEquals("GET /test.gif HTTP/1.1", le.getFirstRequestLine());
         assertEquals(200, le.getStatusCode().intValue());
         assertNull(le.getOriginalRequestStatusCode());
@@ -144,7 +144,7 @@ public class HttpdLogParserTest {
         assertEquals("default task-1", le.getThreadName());
         assertEquals("127.0.0.1", le.getRemoteHost());
         assertNull(le.getRemoteUser());
-        assertEquals(TestDate.create("01/21/16 09:32:56 -0800"), le.timestamp);
+        assertEquals(TestDate.create("01/21/16 09:32:56 -0800").getTime(), le.getTimestamp().longValue());
         assertEquals("GET /something HTTP/1.1", le.getFirstRequestLine());
         assertEquals("a=b&c=d", le.getQueryString());
         assertEquals(404, le.getOriginalRequestStatusCode().intValue());

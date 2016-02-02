@@ -16,8 +16,6 @@
 
 package io.novaordis.esa.logs.httpd;
 
-import io.novaordis.esa.csv.EventToCSV;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,9 +34,6 @@ public class HttpdLogLine {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    // TODO this will go away
-    public Date timestamp;
-
     private Map<FormatString, Object> values;
 
     // Constructors ----------------------------------------------------------------------------------------------------
@@ -47,8 +42,6 @@ public class HttpdLogLine {
 
         this.values = new HashMap<>();
     }
-
-    // Event implementation --------------------------------------------------------------------------------------------
 
     // Methods related to the fact that these events come from a HTTP log - this is where the httpd log format details
     // are important ---------------------------------------------------------------------------------------------------
@@ -82,16 +75,20 @@ public class HttpdLogLine {
         }
 
         if (FormatStrings.TIMESTAMP.equals(e)) {
-            // the timestamp is stored in superclass
-            Date oldTimestamp = timestamp;
-            timestamp = ((Date)value);
-            return oldTimestamp;
+
+            // we convert timestamp from Date to Long
+            Date timestamp = (Date)value;
+            value = timestamp.getTime();
         }
 
         return values.put(e, value);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public Long getTimestamp() {
+        return (Long)getLogValue(FormatStrings.TIMESTAMP);
+    }
 
     /**
      * @see FormatStrings#REMOTE_HOST
@@ -161,14 +158,16 @@ public class HttpdLogLine {
 
     public HttpEvent toEvent() {
 
-        return new HttpEvent(timestamp.getTime());
+        Long timestamp = getTimestamp();
+        return new HttpEvent(timestamp);
 
     }
 
     @Override
     public String toString() {
 
-        String ts = timestamp == null ? "-" : EventToCSV.DEFAULT_TIMESTAMP_FORMAT.format(timestamp);
+        Long timestamp = getTimestamp();
+        String ts = timestamp == null ? "-" : FormatString.TIMESTAMP_FORMAT.format(timestamp);
         String rls = getFirstRequestLine();
         rls = rls == null ? "-" : rls;
         Integer rsc = getOriginalRequestStatusCode();

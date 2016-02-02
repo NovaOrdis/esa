@@ -18,6 +18,8 @@ package io.novaordis.esa.logs.httpd;
 
 import io.novaordis.esa.logs.ParsingException;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -33,6 +35,9 @@ import java.util.StringTokenizer;
 public interface FormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    String TIMESTAMP_FORMAT_STRING = "dd/MMM/yyyy:HH:mm:ss Z";
+    DateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(TIMESTAMP_FORMAT_STRING);
 
     // Static ----------------------------------------------------------------------------------------------------------
 

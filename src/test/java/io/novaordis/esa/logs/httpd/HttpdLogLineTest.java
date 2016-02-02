@@ -20,6 +20,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -108,37 +110,23 @@ public class HttpdLogLineTest {
         }
     }
 
-//    @Test
-//    public void getValueCount() throws Exception {
-//
-//        HttpdLogLine e = new HttpdLogLine();
-//
-//        assertNull(e.timestamp);
-//        assertEquals(0, e.getPropertyCount());
-//
-//        e.timestamp = new Date(1);
-//        assertEquals(1, e.getPropertyCount());
-//
-//        MockFormatString mfe = new MockFormatString("LONG_MOCK", Long.class);
-//        e.setLogValue(mfe, 1L);
-//
-//        assertEquals(2, e.getPropertyCount());
-//    }
-//
-//    @Test
-//    public void setAndGetTimestamp() throws Exception {
-//
-//        HttpdLogLine e = new HttpdLogLine();
-//
-//        assertNull(e.timestamp);
-//
-//        assertNull(e.timestamp = new Date(1L));
-//
-//        assertEquals(new Date(1L), e.timestamp);
-//
-//        assertEquals(new Date(1L), e.setTimestamp(new Date(2L)));
-//        assertEquals(new Date(2L), e.getTimestamp());
-//    }
+    @Test
+    public void setAndGetTimestamp() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+
+        assertNull(e.getTimestamp());
+
+        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
+
+        assertEquals(1L, e.getTimestamp().longValue());
+
+        e.setLogValue(FormatStrings.TIMESTAMP, new Date(2L));
+
+        assertEquals(2L, e.getTimestamp().longValue());
+    }
+
+    // toEvent() -------------------------------------------------------------------------------------------------------
 
     // Package protected -----------------------------------------------------------------------------------------------
 

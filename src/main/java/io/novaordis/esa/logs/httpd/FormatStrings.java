@@ -18,6 +18,7 @@ package io.novaordis.esa.logs.httpd;
 
 import io.novaordis.esa.logs.ParsingException;
 
+import java.text.DateFormat;
 import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -63,7 +64,7 @@ public enum FormatStrings implements FormatString {
     // Time the request was received, in the format [18/Sep/2011:19:18:28 -0400]. The last number indicates the timezone
     // offset from GMT
     //
-    TIMESTAMP("%t", Date.class, new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z")),
+    TIMESTAMP("%t", Date.class, TIMESTAMP_FORMAT),
 
     //
     // The query string, excluding the '?' character. Usually enclosed in quotes.
