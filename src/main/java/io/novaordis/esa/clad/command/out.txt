@@ -1,0 +1,15 @@
+
+Turns the event stream into human-readable text lines that are sent it to the default output queue.
+Each event is converted into a separate line.
+
+Usage:
+
+    esa [out] -o|--output-format="<output-format>"
+
+where <output-format> can be assembled using event property names. If the event does not contain
+a specified property, or if it does not have a value for it, the output is the empty string.
+
+Example:
+
+   esa out -o "timestamp, request-path, request-query, status-code, response-time"
+

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.experimental;
+package io.novaordis.esa.clad;
 
 import io.novaordis.esa.core.ClosedException;
 import io.novaordis.esa.core.OutputStreamConversionLogic;
 import io.novaordis.esa.core.event.ContainerEvent;
 import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.experimental.SampleEvent;
 import io.novaordis.esa.logs.httpd.HttpdLogLine;
 
 import java.text.DateFormat;
@@ -30,7 +31,7 @@ import java.text.SimpleDateFormat;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class SampleToCSV implements OutputStreamConversionLogic {
+public class OutputFormatter implements OutputStreamConversionLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -47,7 +48,7 @@ public class SampleToCSV implements OutputStreamConversionLogic {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public SampleToCSV() {
+    public OutputFormatter() {
         sb = new StringBuilder();
     }
 

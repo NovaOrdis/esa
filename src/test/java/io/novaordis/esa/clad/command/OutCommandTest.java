@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public class CsvCommandTest {
+public class OutCommandTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -37,10 +37,10 @@ public class CsvCommandTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
-    public void happyPath() throws Exception {
+    public void needsRuntime() throws Exception {
 
-        CsvCommand csvCommand = new CsvCommand();
-        assertTrue(csvCommand.needsRuntime());
+        OutCommand outCommand = new OutCommand();
+        assertTrue(outCommand.needsRuntime());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

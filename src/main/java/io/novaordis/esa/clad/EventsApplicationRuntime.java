@@ -27,8 +27,6 @@ import io.novaordis.esa.core.OutputStreamTerminator;
 import io.novaordis.esa.core.ProcessingLogic;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.StringEventConverter;
-import io.novaordis.esa.experimental.SampleToCSV;
-import io.novaordis.esa.logs.httpd.HttpdLogParsingLogic;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -63,7 +61,7 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
     @Override
     public String getDefaultCommandName() {
 
-        return "stdout";
+        return "out";
     }
 
     @Override
@@ -94,13 +92,15 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
         }
 
         httpdLogParser = new EventProcessor(
-                "Input Event Stream Parser", initiator.getOutputQueue(),
-                parsingLogic, new ArrayBlockingQueue<>(QUEUE_SIZE));
+                "Input Event Stream Parser",
+                initiator.getOutputQueue(),
+                parsingLogic,
+                new ArrayBlockingQueue<>(QUEUE_SIZE));
 
         terminator = new OutputStreamTerminator(
-                "CSV Writer",
+                "Output Writer",
                 null,
-                new SampleToCSV(),
+                new OutputFormatter(),
                 System.out);
 
         endOfStream = new CountDownLatch(1);
@@ -131,6 +131,13 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
         // wait for the end of stream to propagate through the pipeline
         //
         endOfStream.await();
+    }
+
+    @Override
+    public String toString() {
+
+        return "Events[" + Integer.toHexString(System.identityHashCode(this)) + "]";
+
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

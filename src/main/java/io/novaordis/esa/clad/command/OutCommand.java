@@ -17,19 +17,23 @@
 package io.novaordis.esa.clad.command;
 
 import io.novaordis.clad.application.ApplicationRuntime;
-import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.clad.command.CommandBase;
+import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.esa.clad.EventsApplicationRuntime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * The command simply connects the runtime's output queue to the terminator and starts the pipeline.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/28/16
+ * @since 2/1/16
  */
-// will be instantiated via reflection
-@SuppressWarnings("unused")
-public class StdoutCommand extends CommandBase {
+public class OutCommand extends CommandBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(OutCommand.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -40,14 +44,18 @@ public class StdoutCommand extends CommandBase {
     // Command implementation ------------------------------------------------------------------------------------------
 
     @Override
-    public void execute(Configuration configuration, ApplicationRuntime ar) throws Exception {
+    public void execute(Configuration configuration, ApplicationRuntime r) throws Exception {
+
+        log.debug("executing " + this);
+
+        EventsApplicationRuntime runtime = (EventsApplicationRuntime)r;
 
         //
-        // everything is already in place, just connect the head of the pipeline to the terminator and start the
-        // component
+        // mostly everything is already in place, set up by the application's runtime. We just need to connect the head
+        // of the pipeline to the terminator, set up the output format, start the pipeline and wait for the end of
+        // stream.
         //
 
-        EventsApplicationRuntime runtime = (EventsApplicationRuntime)ar;
         runtime.connectToTerminator(runtime.getOutputQueue());
         runtime.start();
         runtime.waitForEndOfStream();
