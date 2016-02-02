@@ -20,10 +20,14 @@ import io.novaordis.esa.core.ClosedException;
 import io.novaordis.esa.core.OutputStreamConversionLogic;
 import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.Property;
 import io.novaordis.esa.core.event.TimedEvent;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -65,8 +69,28 @@ public class OutputFormatter implements OutputStreamConversionLogic {
         }
 
         TimedEvent e = (TimedEvent)inputEvent;
-        sb.append(DEFAULT_TIMESTAMP_FORMAT.format(e.getTimestamp())).append("\n");
 
+        sb.append(DEFAULT_TIMESTAMP_FORMAT.format(e.getTimestamp()));
+
+        Set<Property> properties = e.getProperties();
+
+        if (!properties.isEmpty()) {
+            sb.append(", ");
+        }
+
+        for(Iterator<Property> i = properties.iterator(); i.hasNext(); ) {
+            Property p = i.next();
+            Object value = p.getValue();
+            if (value instanceof Map) {
+                value = "query string";
+            }
+            sb.append(value);
+            if (i.hasNext()) {
+                sb.append(", ");
+            }
+        }
+
+        sb.append("\n");
         return true;
     }
 
