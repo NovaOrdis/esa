@@ -14,22 +14,37 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core.event;
+package io.novaordis.esa.http;
+
+import io.novaordis.esa.core.event.TimedEventTest;
 
 /**
- * A read-only interface. Once an event was created, it is immutable.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/24/16
+ * @since 2/1/16
  */
-public interface TimedEvent extends Event {
+public class HttpEventTest extends TimedEventTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
+    // Attributes ------------------------------------------------------------------------------------------------------
+
+    // Constructors ----------------------------------------------------------------------------------------------------
+
     // Public ----------------------------------------------------------------------------------------------------------
 
-    long getTimestamp();
+    // Package protected -----------------------------------------------------------------------------------------------
+
+    // Protected -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected HttpEvent getEventToTest(long timestamp) throws Exception {
+        return new HttpEvent(timestamp);
+    }
+
+    // Private ---------------------------------------------------------------------------------------------------------
+
+    // Inner classes ---------------------------------------------------------------------------------------------------
 
 }

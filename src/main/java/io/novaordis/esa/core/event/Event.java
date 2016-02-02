@@ -17,6 +17,8 @@
 package io.novaordis.esa.core.event;
 
 /**
+ * A read-only interface. Once an event was created, it is immutable.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
@@ -27,5 +29,7 @@ public interface Event {
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+
 
 }
