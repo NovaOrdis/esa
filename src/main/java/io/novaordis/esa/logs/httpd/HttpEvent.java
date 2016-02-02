@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.http;
+package io.novaordis.esa.logs.httpd;
 
-import io.novaordis.esa.core.event.TimedEventTest;
+import io.novaordis.esa.core.event.TimedEvent;
+import io.novaordis.esa.core.event.TimedEventBase;
 
 /**
+ * A HTTP request/response as processed by a web server.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public class HttpEventTest extends TimedEventTest {
+public class HttpEvent extends TimedEventBase implements TimedEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -32,16 +35,15 @@ public class HttpEventTest extends TimedEventTest {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    public HttpEvent(long timestamp) {
+        super(timestamp);
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
-
-    @Override
-    protected HttpEvent getEventToTest(long timestamp) throws Exception {
-        return new HttpEvent(timestamp);
-    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

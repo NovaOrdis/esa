@@ -18,6 +18,7 @@ package io.novaordis.esa.logs.httpd;
 
 import io.novaordis.esa.core.ProcessingLogicBase;
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.FaultEvent;
 import io.novaordis.esa.core.event.StringEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,8 @@ public class HttpdLogParsingLogic extends ProcessingLogicBase {
         super();
 
         this.logParser = new HttpdLogParser(httpdLogFormat);
+
+        log.debug(this + " constructed");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -67,21 +70,21 @@ public class HttpdLogParsingLogic extends ProcessingLogicBase {
 
         if (!(inputEvent instanceof StringEvent)) {
 
-            throw new IllegalArgumentException(this + " can only handle StringEvents and it got " + inputEvent);
+            return new FaultEvent(this + " can only handle StringEvents and it got " + inputEvent);
         }
 
-        //noinspection ConstantConditions
         String s = ((StringEvent)inputEvent).get();
 
         try {
 
             HttpdLogLine logLine = logParser.parse(s);
-            return HttpdLogLine.toEvent(logLine);
+            //noinspection UnnecessaryLocalVariable
+            HttpEvent event = logLine.toEvent();
+            return event;
         }
         catch (Exception e) {
 
-            log.error("parsing failed", e);
-            throw new RuntimeException("NOT YET IMPLEMENTED");
+            return new FaultEvent("httpd log line parsing failed: " + e.getMessage());
         }
     }
 

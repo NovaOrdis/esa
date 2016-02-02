@@ -16,11 +16,9 @@
 
 package io.novaordis.esa.logs.httpd;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 
 /**
  * Represents the log format specification - is a list of format strings.

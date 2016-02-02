@@ -28,14 +28,25 @@ public class FaultEvent extends EventBase {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private String message;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    public FaultEvent(String message) {
+
+        this.message = message;
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public String getMessage() {
+        return message;
+    }
 
     @Override
     public String toString() {
 
-        return "FAULT";
+        return "FAULT EVENT: " + getMessage();
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

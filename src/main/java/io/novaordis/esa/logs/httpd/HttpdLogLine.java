@@ -16,8 +16,6 @@
 
 package io.novaordis.esa.logs.httpd;
 
-import io.novaordis.esa.core.event.ContainerEvent;
-import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.csv.EventToCSV;
 
 import java.util.Date;
@@ -35,14 +33,6 @@ public class HttpdLogLine {
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
-
-    /**
-     * Converts HttpdLogLine instances to Events that can be send further down the pipeline.
-     */
-    public static Event toEvent(HttpdLogLine logLine) {
-
-        return new ContainerEvent(logLine);
-    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
@@ -166,6 +156,13 @@ public class HttpdLogLine {
      */
     public Long getRequestProcessingTimeMs() {
         return (Long) getLogValue(FormatStrings.REQUEST_PROCESSING_TIME_MS);
+    }
+
+
+    public HttpEvent toEvent() {
+
+        return new HttpEvent(timestamp.getTime());
+
     }
 
     @Override
