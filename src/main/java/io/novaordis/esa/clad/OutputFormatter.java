@@ -20,12 +20,16 @@ import io.novaordis.esa.core.ClosedException;
 import io.novaordis.esa.core.OutputStreamConversionLogic;
 import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.MapProperty;
 import io.novaordis.esa.core.event.Property;
 import io.novaordis.esa.core.event.TimedEvent;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,28 +49,110 @@ public class OutputFormatter implements OutputStreamConversionLogic {
 
     public static String toLine(TimedEvent event, String format) {
 
-        return "...";
+        String line = "?";
 
-//        sb.append(DEFAULT_TIMESTAMP_FORMAT.format(e.getTimestamp()));
-//
-//        Set<Property> properties = e.getProperties();
-//
-//        if (!properties.isEmpty()) {
-//            sb.append(", ");
-//        }
-//
-//        for(Iterator<Property> i = properties.iterator(); i.hasNext(); ) {
-//            Property p = i.next();
-//            Object value = p.getValue();
-//            if (value instanceof Map) {
-//                value = "query string";
-//            }
-//            sb.append(value);
-//            if (i.hasNext()) {
-//                sb.append(", ");
-//            }
-//        }
+        if ("def".equals(format)) {
 
+            //
+            // dump the structure of the request (property names)
+            //
+
+            line = "timestamp";
+
+            Set<Property> properties = event.getProperties();
+            List<String> propertyNames = new ArrayList<>();
+
+            for(Property p: properties) {
+
+                if (p.getType().equals(Map.class)) {
+
+                    Map map = (Map)p.getValue();
+                    for(Object key: map.keySet()) {
+                        propertyNames.add(p.getName() + "." + key);
+                    }
+                }
+                else {
+                    propertyNames.add(p.getName());
+                }
+            }
+
+            if (!propertyNames.isEmpty()) {
+
+                line += ", ";
+
+                Collections.sort(propertyNames);
+
+                for(Iterator<String> i = propertyNames.iterator(); i.hasNext(); ) {
+
+                    String propertyName = i.next();
+                    line += propertyName;
+                    if (i.hasNext()) {
+                        line += ", ";
+                    }
+                }
+            }
+        }
+        else {
+            //
+            // interpreted as event property names
+            //
+            String[] propertyNames = format.split(", *");
+
+            for(int i = 0; i < propertyNames.length; i ++) {
+
+                String propertyName = propertyNames[i];
+
+                if ("timestamp".equals(propertyName)) {
+
+                    line = DEFAULT_TIMESTAMP_FORMAT.format(event.getTimestamp());
+                }
+                else {
+
+                    //
+                    // if the property has a dot in it, it's a map
+                    //
+                    int dot = propertyName.indexOf('.');
+                    if (dot != -1) {
+
+                        // map
+
+                        String mapPropertyName = propertyName.substring(0, dot);
+                        MapProperty mp = (MapProperty)event.getProperty(mapPropertyName);
+                        if (mp != null) {
+
+                            String key = propertyName.substring(dot + 1);
+                            Object value = mp.getMap().get(key);
+
+                            if (value != null) {
+                                line += value;
+                            }
+                        }
+                    }
+                    else {
+
+                        Property p = event.getProperty(propertyName);
+
+                        if (p != null) {
+
+                            Object o = p.getValue();
+
+                            if (o instanceof Map) {
+
+                                line += "<>";
+                            } else {
+                                line += o;
+                            }
+                        }
+                    }
+                }
+
+                if (i < propertyNames.length - 1) {
+                    line += ", ";
+                }
+            }
+        }
+
+        return line;
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------
