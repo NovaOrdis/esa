@@ -19,9 +19,16 @@ package io.novaordis.esa.clad.command;
 import io.novaordis.clad.application.ApplicationRuntime;
 import io.novaordis.clad.command.CommandBase;
 import io.novaordis.clad.configuration.Configuration;
+import io.novaordis.clad.option.Option;
+import io.novaordis.clad.option.StringOption;
 import io.novaordis.esa.clad.EventsApplicationRuntime;
+import io.novaordis.esa.clad.OutputFormatter;
+import io.novaordis.esa.core.OutputStreamTerminator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * The command simply connects the runtime's output queue to the terminator and starts the pipeline.
@@ -35,6 +42,8 @@ public class OutCommand extends CommandBase {
 
     private static final Logger log = LoggerFactory.getLogger(OutCommand.class);
 
+    public static final StringOption OUTPUT_FORMAT_OPTION = new StringOption('o', "output-format");
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -42,6 +51,11 @@ public class OutCommand extends CommandBase {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     // Command implementation ------------------------------------------------------------------------------------------
+
+    @Override
+    public Set<Option> requiredOptions() {
+        return Collections.singleton(OUTPUT_FORMAT_OPTION);
+    }
 
     @Override
     public void execute(Configuration configuration, ApplicationRuntime r) throws Exception {
@@ -56,7 +70,11 @@ public class OutCommand extends CommandBase {
         // stream.
         //
 
-        runtime.connectToTerminator(runtime.getOutputQueue());
+        OutputStreamTerminator terminator = runtime.getTerminator();
+        terminator.setInputQueue(runtime.getOutputQueue());
+        ((OutputFormatter)terminator.getConversionLogic()).
+                setFormat(((StringOption)getOption(OUTPUT_FORMAT_OPTION)).getString());
+
         runtime.start();
         runtime.waitForEndOfStream();
     }

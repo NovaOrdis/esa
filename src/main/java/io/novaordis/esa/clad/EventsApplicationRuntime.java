@@ -89,7 +89,6 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
                 new StringEventConverter(),
                 new ArrayBlockingQueue<>(QUEUE_SIZE));
 
-
         ProcessingLogic parsingLogic = initializeInputParsingLogic(configuration);
 
         httpdLogParser = new EventProcessor(
@@ -115,8 +114,8 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
         return httpdLogParser.getOutputQueue();
     }
 
-    public void connectToTerminator(BlockingQueue<Event> queue) {
-        terminator.setInputQueue(queue);
+    public OutputStreamTerminator getTerminator() {
+        return terminator;
     }
 
     public void start() throws Exception {

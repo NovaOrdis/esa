@@ -43,10 +43,37 @@ public class OutputFormatter implements OutputStreamConversionLogic {
 
     // Static ----------------------------------------------------------------------------------------------------------
 
+    public static String toLine(TimedEvent event, String format) {
+
+        return "...";
+
+//        sb.append(DEFAULT_TIMESTAMP_FORMAT.format(e.getTimestamp()));
+//
+//        Set<Property> properties = e.getProperties();
+//
+//        if (!properties.isEmpty()) {
+//            sb.append(", ");
+//        }
+//
+//        for(Iterator<Property> i = properties.iterator(); i.hasNext(); ) {
+//            Property p = i.next();
+//            Object value = p.getValue();
+//            if (value instanceof Map) {
+//                value = "query string";
+//            }
+//            sb.append(value);
+//            if (i.hasNext()) {
+//                sb.append(", ");
+//            }
+//        }
+
+    }
+
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private StringBuilder sb;
     private volatile boolean closed;
+    private String format;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -69,28 +96,7 @@ public class OutputFormatter implements OutputStreamConversionLogic {
         }
 
         TimedEvent e = (TimedEvent)inputEvent;
-
-        sb.append(DEFAULT_TIMESTAMP_FORMAT.format(e.getTimestamp()));
-
-        Set<Property> properties = e.getProperties();
-
-        if (!properties.isEmpty()) {
-            sb.append(", ");
-        }
-
-        for(Iterator<Property> i = properties.iterator(); i.hasNext(); ) {
-            Property p = i.next();
-            Object value = p.getValue();
-            if (value instanceof Map) {
-                value = "query string";
-            }
-            sb.append(value);
-            if (i.hasNext()) {
-                sb.append(", ");
-            }
-        }
-
-        sb.append("\n");
+        sb.append(toLine(e, format)).append("\n");
         return true;
     }
 
@@ -107,6 +113,10 @@ public class OutputFormatter implements OutputStreamConversionLogic {
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
