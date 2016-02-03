@@ -27,6 +27,7 @@ import io.novaordis.esa.core.OutputStreamTerminator;
 import io.novaordis.esa.core.ProcessingLogic;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.StringEventConverter;
+import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Set;
@@ -42,10 +43,11 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    private static final Logger log = Logger.getLogger(EventsApplicationRuntime.class);
+
     public static final int QUEUE_SIZE = 1000000;
 
-    public static final Character FORMAT_OPTION_SHORT = 'f';
-    public static final String FORMAT_OPTION_LONG = "format";
+    public static final StringOption INPUT_FORMAT_OPTION = new StringOption('i', "input-format");
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -67,8 +69,8 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
 
     @Override
     public Set<Option> requiredGlobalOptions() {
-        
-        return Collections.singleton(new StringOption('f', "format"));
+
+        return Collections.singleton(INPUT_FORMAT_OPTION);
     }
 
     @Override
@@ -79,6 +81,8 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
     @Override
     public void init(Configuration configuration) throws Exception {
 
+        log.debug(this + ".init(" + configuration + ")");
+
         initiator = new InputStreamInitiator(
                 "Input Stream Reader",
                 System.in,
@@ -86,22 +90,7 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
                 new ArrayBlockingQueue<>(QUEUE_SIZE));
 
 
-        ProcessingLogic parsingLogic = null;
-        String logFormatString;
-        Option logFormat = configuration.getGlobalOption(FORMAT_OPTION_SHORT, FORMAT_OPTION_LONG);
-        if (logFormat != null) {
-            if (!(logFormat instanceof StringOption)) {
-                throw new UserErrorException("" +
-                        "input event stream format is supposed to be a String, not \"" + logFormat.getValue() + "\"");
-
-            }
-            logFormatString = ((StringOption)logFormat).getString();
-            parsingLogic = ParsingLogicFactory.create(logFormatString);
-        }
-
-        if (parsingLogic == null) {
-            throw new UserErrorException("input event stream format not specified, use -f|--format=\"...\"");
-        }
+        ProcessingLogic parsingLogic = initializeInputParsingLogic(configuration);
 
         httpdLogParser = new EventProcessor(
                 "Input Event Stream Parser",
@@ -156,6 +145,18 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
+
+    private ProcessingLogic initializeInputParsingLogic(Configuration configuration) throws Exception {
+
+        StringOption inputFormat = (StringOption)configuration.getGlobalOption(INPUT_FORMAT_OPTION);
+
+        if (inputFormat == null) {
+            throw new UserErrorException("input format not specified, use " + INPUT_FORMAT_OPTION.getLabel());
+        }
+
+        String logFormatString = inputFormat.getString();
+        return ParsingLogicFactory.create(logFormatString);
+    }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 

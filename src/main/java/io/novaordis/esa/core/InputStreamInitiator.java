@@ -71,6 +71,8 @@ public class InputStreamInitiator extends ComponentBase implements Initiator {
         setInputStream(inputStream);
         setConversionLogic(conversionLogic);
         setOutputQueue(outputQueue);
+
+        log.debug(this + " constructed");
     }
 
     // Initiator implementation ----------------------------------------------------------------------------------------
