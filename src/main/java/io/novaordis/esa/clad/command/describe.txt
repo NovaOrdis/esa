@@ -1,7 +1,7 @@
 
-Displays the structure (properties) of the events flowing through the event stream. The property
-names shown in the results of this command can then be used to assemble the output format string
-of the "output" command, specified with the -o|--output-format "output" command option.
+Displays the structure (properties) of the events flowing through the event stream pipeline. The
+property names shown in the results of this command can then be used to assemble the output format
+string of the "output" command, specified with the -o|--output-format command option.
 
 Usage:
 
