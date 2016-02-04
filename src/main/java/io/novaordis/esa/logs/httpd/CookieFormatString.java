@@ -82,6 +82,12 @@ public class CookieFormatString extends ParameterizedFormatStringBase implements
         return cookie;
     }
 
+    @Override
+    public String toString() {
+
+        return getLiteral();
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

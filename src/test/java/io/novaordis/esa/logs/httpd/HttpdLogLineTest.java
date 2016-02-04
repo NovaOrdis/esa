@@ -219,7 +219,7 @@ public class HttpdLogLineTest {
 
         HttpEvent event = e.toEvent();
 
-        assertEquals(301, ((IntegerProperty)event.
+        assertEquals(301, ((IntegerProperty) event.
                 getProperty(HttpEvent.ORIGINAL_REQUEST_STATUS_CODE)).getInteger().intValue());
         assertEquals(302, ((IntegerProperty) event.getProperty(HttpEvent.STATUS_CODE)).getInteger().intValue());
     }
@@ -262,6 +262,46 @@ public class HttpdLogLineTest {
         assertEquals(2, map.size());
         assertEquals("header value", map.get("Test-Header"));
         assertEquals("header value 2", map.get("Another-Test-Header"));
+    }
+
+    @Test
+    public void toEvent_OneCookie() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+
+        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(new CookieFormatString("%{c,TestCookie}"), "test-cookie-value");
+
+        HttpEvent event = e.toEvent();
+
+        MapProperty cookies = (MapProperty)event.getProperty(HttpEvent.COOKIES);
+        assertEquals(HttpEvent.COOKIES, cookies.getName());
+        assertEquals(Map.class, cookies.getType());
+        Map map = cookies.getMap();
+
+        assertEquals(1, map.size());
+        assertEquals("test-cookie-value", map.get("TestCookie"));
+    }
+
+    @Test
+    public void toEvent_TwoCookies() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+
+        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(new CookieFormatString("%{c,TestCookie}"), "test-cookie-value");
+        e.setLogValue(new CookieFormatString("%{c,AnotherTestCookie}"), "another-test-cookie-value");
+
+        HttpEvent event = e.toEvent();
+
+        MapProperty cookies = (MapProperty)event.getProperty(HttpEvent.COOKIES);
+        assertEquals(HttpEvent.COOKIES, cookies.getName());
+        assertEquals(Map.class, cookies.getType());
+        Map map = cookies.getMap();
+
+        assertEquals(2, map.size());
+        assertEquals("test-cookie-value", map.get("TestCookie"));
+        assertEquals("another-test-cookie-value", map.get("AnotherTestCookie"));
     }
 
     // parseFirstRequestLine() -----------------------------------------------------------------------------------------
