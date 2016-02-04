@@ -22,6 +22,7 @@ import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.MapProperty;
 import io.novaordis.esa.core.event.Property;
+import io.novaordis.esa.core.event.StringEvent;
 import io.novaordis.esa.core.event.TimedEvent;
 
 import java.text.DateFormat;
@@ -179,6 +180,12 @@ public class OutputFormatter implements OutputStreamConversionLogic {
         if (inputEvent instanceof EndOfStreamEvent) {
             closed = true;
             return false;
+        }
+        else if (inputEvent instanceof StringEvent) {
+
+            String s = ((StringEvent)inputEvent).get();
+            sb.append(s).append("\n");
+            return true;
         }
 
         TimedEvent e = (TimedEvent)inputEvent;

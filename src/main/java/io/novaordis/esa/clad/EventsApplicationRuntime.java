@@ -21,6 +21,7 @@ import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.clad.UserErrorException;
 import io.novaordis.clad.option.Option;
 import io.novaordis.clad.option.StringOption;
+import io.novaordis.esa.clad.command.OutputCommand;
 import io.novaordis.esa.core.EventProcessor;
 import io.novaordis.esa.core.InputStreamInitiator;
 import io.novaordis.esa.core.OutputStreamTerminator;
@@ -64,7 +65,7 @@ public class EventsApplicationRuntime implements ApplicationRuntime {
 
     @Override
     public String getDefaultCommandName() {
-        return "out";
+        return new OutputCommand().getName();
     }
 
     @Override

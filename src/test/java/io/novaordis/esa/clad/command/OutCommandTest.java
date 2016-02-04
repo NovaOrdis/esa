@@ -39,7 +39,7 @@ public class OutCommandTest {
     @Test
     public void needsRuntime() throws Exception {
 
-        OutCommand outCommand = new OutCommand();
+        OutputCommand outCommand = new OutputCommand();
         assertTrue(outCommand.needsRuntime());
     }
 

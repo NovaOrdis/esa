@@ -20,7 +20,7 @@ package io.novaordis.esa.core.event;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public abstract class PropertyBase implements Property {
+public abstract class PropertyBase implements Property, Comparable<Property> {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -37,6 +37,17 @@ public abstract class PropertyBase implements Property {
     protected PropertyBase(String name, Object value) {
         this.name = name;
         this.value = value;
+    }
+
+    // Comparable implementation ---------------------------------------------------------------------------------------
+
+    public int compareTo(Property o) {
+
+        if (o == null) {
+            throw new NullPointerException("null property");
+        }
+
+        return name.compareTo(o.getName());
     }
 
     // Property implementation -----------------------------------------------------------------------------------------

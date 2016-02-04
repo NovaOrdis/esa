@@ -20,7 +20,7 @@ package io.novaordis.esa.core.event;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public interface Property {
+public interface Property extends Comparable<Property> {
 
     // Constants -------------------------------------------------------------------------------------------------------
 

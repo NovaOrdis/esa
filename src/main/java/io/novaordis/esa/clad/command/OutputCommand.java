@@ -36,11 +36,11 @@ import java.util.Set;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public class OutCommand extends CommandBase {
+public class OutputCommand extends CommandBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(OutCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(OutputCommand.class);
 
     public static final StringOption OUTPUT_FORMAT_OPTION = new StringOption('o', "output-format");
 
