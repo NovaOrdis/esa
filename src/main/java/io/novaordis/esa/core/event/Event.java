@@ -39,6 +39,9 @@ public interface Event {
 
     /**
      * Stores the property, replacing the old one if exists.
+     *
+     * If it is a map and the map already exists, the contents will be merged.
+     *
      * @return the old property with the same name, or null.
      *
      * @exception IllegalArgumentException on null argument.

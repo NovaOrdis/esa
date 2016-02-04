@@ -21,6 +21,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -89,11 +90,21 @@ public abstract class FormatStringTest {
         assertEquals(FormatStrings.REQUEST_PROCESSING_TIME_MS, formats.get(13));
     }
 
+    // parse() ---------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void parse_Dash() throws Exception {
+
+        FormatString fs = getFormatStringToTest();
+
+        assertNull(fs.parse("-"));
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    protected abstract FormatString getFormatElementToTest();
+    protected abstract FormatString getFormatStringToTest();
 
     // Private ---------------------------------------------------------------------------------------------------------
 

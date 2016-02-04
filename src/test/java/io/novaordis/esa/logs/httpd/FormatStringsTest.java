@@ -292,7 +292,7 @@ public class FormatStringsTest extends FormatStringTest {
         assertEquals(HttpEvent.QUERY_STRING, property.getName());
 
         //noinspection unchecked
-        Map<String, String> queryAttributes = (Map<String, String>)property.getMap();
+        Map<String, Object> queryAttributes = property.getMap();
 
         assertEquals(4, queryAttributes.size());
         assertEquals("val1", queryAttributes.get("attr1"));
@@ -307,7 +307,7 @@ public class FormatStringsTest extends FormatStringTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected FormatStrings getFormatElementToTest()  {
+    protected FormatStrings getFormatStringToTest()  {
 
         return FormatStrings.REMOTE_HOST;
     }

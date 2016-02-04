@@ -42,11 +42,15 @@ public interface FormatString {
 
     // Static ----------------------------------------------------------------------------------------------------------
 
+    /**
+     * @param s a multi-token format string - may contain multiple individual format strings
+     * @throws ParsingException
+     */
     static List<FormatString> fromString(String s) throws ParsingException {
 
         List<FormatString> result = new ArrayList<>();
 
-        for(StringTokenizer st = new StringTokenizer(s, " "); st.hasMoreTokens(); ) {
+        upper: for(StringTokenizer st = new StringTokenizer(s, " "); st.hasMoreTokens(); ) {
 
             String tok = st.nextToken();
 
@@ -60,6 +64,13 @@ public interface FormatString {
                     }
                 }
 
+                // try known parameterized format strings
+                ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString(tok);
+                if (pfs != null) {
+                    result.add(pfs);
+                    continue upper;
+                }
+
                 throw new ParsingException("unknown httpd format element '" + tok + "'");
             }
         }
@@ -69,6 +80,9 @@ public interface FormatString {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    /**
+     * @return the literal, as it appears in the format specification. Example: %h.
+     */
     String getLiteral();
 
     /**

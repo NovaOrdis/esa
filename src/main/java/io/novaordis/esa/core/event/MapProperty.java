@@ -16,6 +16,7 @@
 
 package io.novaordis.esa.core.event;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -32,7 +33,14 @@ public class MapProperty extends PropertyBase implements Property {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public MapProperty(String name, Map value) {
+    /**
+     * Creates a new inner map.
+     */
+    public MapProperty(String name) {
+        this(name, new HashMap<>());
+    }
+
+    public MapProperty(String name, Map<String, Object> value) {
         super(name, value);
     }
 
@@ -45,9 +53,10 @@ public class MapProperty extends PropertyBase implements Property {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public Map getMap() {
+    public Map<String, Object> getMap() {
 
-        return (Map)getValue();
+        //noinspection unchecked
+        return (Map<String, Object>)getValue();
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

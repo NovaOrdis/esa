@@ -16,46 +16,71 @@
 
 package io.novaordis.esa.logs.httpd;
 
-import io.novaordis.esa.core.event.TimedEvent;
-import io.novaordis.esa.core.event.TimedEventBase;
-
 /**
- * A HTTP request/response as processed by a web server.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/1/16
+ * @since 2/4/16
  */
-public class HttpEvent extends TimedEventBase implements TimedEvent {
+public class CookieFormatString extends ParameterizedFormatStringBase implements ParameterizedFormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final String METHOD = "method";
-    public static final String PATH = "path";
-    public static final String HTTP_VERSION = "http-version";
-    public static final String ORIGINAL_REQUEST_STATUS_CODE = "original-request-status-code";
-    public static final String STATUS_CODE = "status-code";
-    public static final String THREAD_NAME = "thread-name";
-    public static final String REMOTE_HOST = "remote-host";
-    public static final String REMOTE_LOGNAME = "remote-logname";
-    public static final String REMOTE_USER = "remote-user";
-    public static final String RESPONSE_ENTITY_BODY_SIZE = "response-body-size";
-    public static final String REQUEST_PROCESSING_TIME = "request-processing-time";
-    public static final String QUERY_STRING = "query";
-    public static final String REQUEST_HEADERS = "request-headers";
-    public static final String RESPONSE_HEADERS = "response-headers";
-    public static final String COOKIES = "cookies";
+    public static final String PREFIX = "%{c,";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private String cookie;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public HttpEvent(long timestamp) {
-        super(timestamp);
+    /**
+     * @param formatStringLiteral as declared in the format specification, example: %{c,Some-Cookie}
+     *
+     * @throws IllegalArgumentException if the literal does not match the expected pattern.
+     */
+    public CookieFormatString(String formatStringLiteral) throws IllegalArgumentException {
+        super(formatStringLiteral);
+    }
+
+    // ParameterizedFormatString implementation ------------------------------------------------------------------------
+
+    @Override
+    public String getLiteral() {
+
+        return PREFIX + cookie + "}";
+    }
+
+    @Override
+    public String getParameter() {
+
+        return cookie;
+    }
+
+    @Override
+    public void setParameter(String parameter) {
+
+        cookie = parameter;
+    }
+
+    // ParameterizedFormatStringBase overrides -------------------------------------------------------------------------
+
+    @Override
+    protected String getPrefix() {
+        return PREFIX;
+    }
+
+    @Override
+    protected String getHttpEventMapName() {
+
+        return HttpEvent.COOKIES;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public String getCookie() {
+        return cookie;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

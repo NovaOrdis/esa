@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -90,6 +91,45 @@ public abstract class EventTest {
         catch(IllegalArgumentException e) {
             log.info(e.getMessage());
         }
+    }
+
+    @Test
+    public void mapProperty_MergeContents() throws Exception {
+
+        Event event = getEventToTest();
+
+        assertNull(event.getProperty("test-map-property"));
+
+        MapProperty mp = new MapProperty("test-map-property");
+        mp.getMap().put("key1", "value1");
+
+        assertNull(event.setProperty(mp));
+
+        MapProperty mp2 = (MapProperty)event.getProperty("test-map-property");
+
+        assertEquals(mp, mp2);
+
+        Map m = mp2.getMap();
+        assertEquals(1, m.size());
+        assertEquals("value1", m.get("key1"));
+
+        //
+        // verify values are merged
+        //
+
+        MapProperty mp3 = new MapProperty("test-map-property");
+        mp3.getMap().put("key2", "value2");
+
+
+        MapProperty mp4 = (MapProperty)event.setProperty(mp3);
+
+        assertEquals(mp2, mp4);
+
+        assertEquals("test-map-property", mp4.getName());
+        Map m2 = mp4.getMap();
+        assertEquals(2, m2.size());
+        assertEquals("value1", m2.get("key1"));
+        assertEquals("value2", m2.get("key2"));
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

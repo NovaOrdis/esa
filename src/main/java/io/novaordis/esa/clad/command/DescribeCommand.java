@@ -22,6 +22,7 @@ import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.esa.clad.EventsApplicationRuntime;
 import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.FaultEvent;
 import io.novaordis.esa.core.event.MapProperty;
 import io.novaordis.esa.core.event.Property;
 import io.novaordis.esa.core.event.StringEvent;
@@ -77,6 +78,10 @@ public class DescribeCommand extends CommandBase {
             Event event = inputQueue.take();
             if (event == null || event instanceof EndOfStreamEvent) {
                 break;
+            }
+
+            if (event instanceof FaultEvent) {
+                terminatorQueue.put(event);
             }
 
             analyze(event);

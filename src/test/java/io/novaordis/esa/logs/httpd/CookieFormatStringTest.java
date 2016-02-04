@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core.event;
+package io.novaordis.esa.logs.httpd;
 
 import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/1/16
+ * @since 2/4/16
  */
-public class MapPropertyTest extends PropertyTest {
+public class CookieFormatStringTest extends ParameterizedFormatStringTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -40,22 +37,11 @@ public class MapPropertyTest extends PropertyTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
-    public void value() throws Exception {
+    public void getLiteral() throws Exception {
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("test-key", "test-value");
+        CookieFormatString i = new CookieFormatString("%{c,something}");
 
-        MapProperty sp = new MapProperty("test-name", map);
-
-        assertEquals("test-name", sp.getName());
-
-        Map map2 = (Map)sp.getValue();
-        Map map3 = sp.getMap();
-        assertEquals(map2, map3);
-        assertEquals(1, map3.size());
-        assertEquals("test-value", map3.get("test-key"));
-
-        assertEquals(Map.class, sp.getType());
+        assertEquals("%{c,something}", i.getLiteral());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -63,11 +49,13 @@ public class MapPropertyTest extends PropertyTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected MapProperty getPropertyToTest(String name) {
+    protected CookieFormatString getFormatStringToTest(String s) {
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("test-key", "test-value");
-        return new MapProperty(name, map);
+        if (s == null) {
+            s = "%{c,something}";
+        }
+
+        return new CookieFormatString(s);
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

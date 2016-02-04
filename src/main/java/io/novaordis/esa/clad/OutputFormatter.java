@@ -20,6 +20,7 @@ import io.novaordis.esa.core.ClosedException;
 import io.novaordis.esa.core.OutputStreamConversionLogic;
 import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.FaultEvent;
 import io.novaordis.esa.core.event.MapProperty;
 import io.novaordis.esa.core.event.Property;
 import io.novaordis.esa.core.event.StringEvent;
@@ -185,6 +186,11 @@ public class OutputFormatter implements OutputStreamConversionLogic {
 
             String s = ((StringEvent)inputEvent).get();
             sb.append(s).append("\n");
+            return true;
+        }
+        else if (inputEvent instanceof FaultEvent) {
+
+            sb.append(inputEvent.toString()).append("\n");
             return true;
         }
 

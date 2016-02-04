@@ -16,46 +16,72 @@
 
 package io.novaordis.esa.logs.httpd;
 
-import io.novaordis.esa.core.event.TimedEvent;
-import io.novaordis.esa.core.event.TimedEventBase;
-
 /**
- * A HTTP request/response as processed by a web server.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/1/16
+ * @since 2/4/16
  */
-public class HttpEvent extends TimedEventBase implements TimedEvent {
+public class IncomingHeaderFormatString extends ParameterizedFormatStringBase implements ParameterizedFormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final String METHOD = "method";
-    public static final String PATH = "path";
-    public static final String HTTP_VERSION = "http-version";
-    public static final String ORIGINAL_REQUEST_STATUS_CODE = "original-request-status-code";
-    public static final String STATUS_CODE = "status-code";
-    public static final String THREAD_NAME = "thread-name";
-    public static final String REMOTE_HOST = "remote-host";
-    public static final String REMOTE_LOGNAME = "remote-logname";
-    public static final String REMOTE_USER = "remote-user";
-    public static final String RESPONSE_ENTITY_BODY_SIZE = "response-body-size";
-    public static final String REQUEST_PROCESSING_TIME = "request-processing-time";
-    public static final String QUERY_STRING = "query";
-    public static final String REQUEST_HEADERS = "request-headers";
-    public static final String RESPONSE_HEADERS = "response-headers";
-    public static final String COOKIES = "cookies";
+    public static final String PREFIX = "%{i,";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private String incomingHeaderName;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public HttpEvent(long timestamp) {
-        super(timestamp);
+    /**
+     * @param formatStringLiteral as declared in the format specification, example: %{i,Some-Header} or
+     *                            %{o,Some-Header}
+     *
+     * @throws IllegalArgumentException if the literal does not match the expected pattern.
+     */
+    public IncomingHeaderFormatString(String formatStringLiteral) throws IllegalArgumentException {
+        super(formatStringLiteral);
+    }
+
+    // ParameterizedFormatString implementation ------------------------------------------------------------------------
+
+    @Override
+    public String getLiteral() {
+
+        return PREFIX + incomingHeaderName + "}";
+    }
+
+    @Override
+    public void setParameter(String parameter) {
+
+        incomingHeaderName = parameter;
+    }
+
+    @Override
+    public String getParameter() {
+
+        return incomingHeaderName;
+    }
+
+    // ParameterizedFormatStringBase overrides -------------------------------------------------------------------------
+
+    @Override
+    protected String getPrefix() {
+        return PREFIX;
+    }
+
+    @Override
+    protected String getHttpEventMapName() {
+
+        return HttpEvent.REQUEST_HEADERS;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public String getIncomingHeaderName() {
+        return incomingHeaderName;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

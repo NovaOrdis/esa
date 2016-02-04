@@ -70,7 +70,34 @@ public class EventBase implements Event {
         if (property == null) {
             throw new IllegalArgumentException("null property");
         }
-        return properties.put(property.getName(), property);
+
+        String propertyName = property.getName();
+
+        //
+        // if it is a MapProperty, merge contents
+        //
+
+        if (property instanceof MapProperty) {
+
+            Property existent = properties.get(propertyName);
+
+            if (existent instanceof MapProperty) {
+
+                //
+                // merge instead of replacing
+                //
+
+                MapProperty existentMapProperty = (MapProperty) existent;
+                existentMapProperty.getMap().putAll(((MapProperty) property).getMap());
+                return existentMapProperty;
+            }
+        }
+
+        //
+        // replace
+        //
+
+        return properties.put(propertyName, property);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

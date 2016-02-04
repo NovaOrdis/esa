@@ -17,13 +17,14 @@
 package io.novaordis.esa.logs.httpd;
 
 import io.novaordis.esa.core.event.IntegerProperty;
-import io.novaordis.esa.core.event.LongProperty;
+import io.novaordis.esa.core.event.MapProperty;
 import io.novaordis.esa.core.event.StringProperty;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -221,6 +222,46 @@ public class HttpdLogLineTest {
         assertEquals(301, ((IntegerProperty)event.
                 getProperty(HttpEvent.ORIGINAL_REQUEST_STATUS_CODE)).getInteger().intValue());
         assertEquals(302, ((IntegerProperty) event.getProperty(HttpEvent.STATUS_CODE)).getInteger().intValue());
+    }
+
+    @Test
+    public void toEvent_OneRequestHeader() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+
+        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(new IncomingHeaderFormatString("%{i,Test-Header}"), "header value");
+
+        HttpEvent event = e.toEvent();
+
+        MapProperty headers = (MapProperty)event.getProperty(HttpEvent.REQUEST_HEADERS);
+        assertEquals(HttpEvent.REQUEST_HEADERS, headers.getName());
+        assertEquals(Map.class, headers.getType());
+        Map map = headers.getMap();
+
+        assertEquals(1, map.size());
+        assertEquals("header value", map.get("Test-Header"));
+    }
+
+    @Test
+    public void toEvent_TwoRequestHeaders() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+
+        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(new IncomingHeaderFormatString("%{i,Test-Header}"), "header value");
+        e.setLogValue(new IncomingHeaderFormatString("%{i,Another-Test-Header}"), "header value 2");
+
+        HttpEvent event = e.toEvent();
+
+        MapProperty headers = (MapProperty)event.getProperty(HttpEvent.REQUEST_HEADERS);
+        assertEquals(HttpEvent.REQUEST_HEADERS, headers.getName());
+        assertEquals(Map.class, headers.getType());
+        Map map = headers.getMap();
+
+        assertEquals(2, map.size());
+        assertEquals("header value", map.get("Test-Header"));
+        assertEquals("header value 2", map.get("Another-Test-Header"));
     }
 
     // parseFirstRequestLine() -----------------------------------------------------------------------------------------
