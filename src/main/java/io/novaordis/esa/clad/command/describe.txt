@@ -9,5 +9,5 @@ Usage:
 
 Also see:
 
-    output command.
+    output command
 
