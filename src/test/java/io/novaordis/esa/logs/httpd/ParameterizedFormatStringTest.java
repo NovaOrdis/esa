@@ -59,12 +59,12 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
     }
 
     @Test
-    public void parameterizedFormatFromString_IncomingHeader() throws Exception {
+    public void parameterizedFormatFromString_RequestHeader() throws Exception {
 
         ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{i,Test-Header}");
         assertNotNull(pfs);
-        IncomingHeaderFormatString i = (IncomingHeaderFormatString)pfs;
-        assertEquals("Test-Header", i.getIncomingHeaderName());
+        RequestHeaderFormatString i = (RequestHeaderFormatString)pfs;
+        assertEquals("Test-Header", i.getHeaderName());
     }
 
     @Test

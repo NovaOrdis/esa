@@ -230,7 +230,7 @@ public class HttpdLogLineTest {
         HttpdLogLine e = new HttpdLogLine();
 
         e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
-        e.setLogValue(new IncomingHeaderFormatString("%{i,Test-Header}"), "header value");
+        e.setLogValue(new RequestHeaderFormatString("%{i,Test-Header}"), "header value");
 
         HttpEvent event = e.toEvent();
 
@@ -249,8 +249,8 @@ public class HttpdLogLineTest {
         HttpdLogLine e = new HttpdLogLine();
 
         e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
-        e.setLogValue(new IncomingHeaderFormatString("%{i,Test-Header}"), "header value");
-        e.setLogValue(new IncomingHeaderFormatString("%{i,Another-Test-Header}"), "header value 2");
+        e.setLogValue(new RequestHeaderFormatString("%{i,Test-Header}"), "header value");
+        e.setLogValue(new RequestHeaderFormatString("%{i,Another-Test-Header}"), "header value 2");
 
         HttpEvent event = e.toEvent();
 

@@ -17,8 +17,8 @@
 package io.novaordis.esa.logs.httpd;
 
 /**
- * A httpd log format string that supports a configurable parameter: %{i,xxx} (incoming headers), %{o,xxx} (outgoing
- * headers), %(c,xxx} (cookies).
+ * A httpd log format string that supports a configurable parameter: %{i,xxx} (incoming/request headers), %{o,xxx}
+ * (outgoing/response headers), %(c,xxx} (cookies).
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/3/16
@@ -40,9 +40,9 @@ public interface ParameterizedFormatString extends FormatString {
             throw new IllegalArgumentException("'" + individualToken + "' contains spaces and it should not");
         }
 
-        if (individualToken.startsWith(IncomingHeaderFormatString.PREFIX)) {
+        if (individualToken.startsWith(RequestHeaderFormatString.PREFIX)) {
 
-            return new IncomingHeaderFormatString(individualToken);
+            return new RequestHeaderFormatString(individualToken);
         }
         else if (individualToken.startsWith(OutgoingHeaderFormatString.PREFIX)) {
 
