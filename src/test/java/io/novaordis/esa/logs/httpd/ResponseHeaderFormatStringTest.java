@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
  */
-public class OutgoingHeaderFormatStringTest extends ParameterizedFormatStringTest {
+public class ResponseHeaderFormatStringTest extends ParameterizedFormatStringTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -39,9 +39,9 @@ public class OutgoingHeaderFormatStringTest extends ParameterizedFormatStringTes
     @Test
     public void getLiteral() throws Exception {
 
-        OutgoingHeaderFormatString i = new OutgoingHeaderFormatString("%{o,Test-Outgoing-Header}");
+        ResponseHeaderFormatString i = new ResponseHeaderFormatString("%{o,Test-Response-Header}");
 
-        assertEquals("%{o,Test-Outgoing-Header}", i.getLiteral());
+        assertEquals("%{o,Test-Response-Header}", i.getLiteral());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -49,13 +49,13 @@ public class OutgoingHeaderFormatStringTest extends ParameterizedFormatStringTes
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected OutgoingHeaderFormatString getFormatStringToTest(String s) {
+    protected ResponseHeaderFormatString getFormatStringToTest(String s) {
 
         if (s == null) {
-            s = "%{o,Test-Outgoing-Header}";
+            s = "%{o,Test-Response-Header}";
         }
 
-        return new OutgoingHeaderFormatString(s);
+        return new ResponseHeaderFormatString(s);
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

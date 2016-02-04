@@ -20,7 +20,7 @@ package io.novaordis.esa.logs.httpd;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
  */
-public class OutgoingHeaderFormatString extends ParameterizedFormatStringBase implements ParameterizedFormatString {
+public class ResponseHeaderFormatString extends ParameterizedFormatStringBase implements ParameterizedFormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ public class OutgoingHeaderFormatString extends ParameterizedFormatStringBase im
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String outgoingHeaderName;
+    private String responseHeaderName;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ public class OutgoingHeaderFormatString extends ParameterizedFormatStringBase im
      *
      * @throws IllegalArgumentException if the literal does not match the expected pattern.
      */
-    public OutgoingHeaderFormatString(String formatStringLiteral) throws IllegalArgumentException {
+    public ResponseHeaderFormatString(String formatStringLiteral) throws IllegalArgumentException {
         super(formatStringLiteral);
     }
 
@@ -49,19 +49,19 @@ public class OutgoingHeaderFormatString extends ParameterizedFormatStringBase im
     @Override
     public String getLiteral() {
 
-        return PREFIX + outgoingHeaderName + "}";
+        return PREFIX + responseHeaderName + "}";
     }
 
     @Override
     public String getParameter() {
 
-        return outgoingHeaderName;
+        return responseHeaderName;
     }
 
     @Override
     public void setParameter(String parameter) {
 
-        outgoingHeaderName = parameter;
+        responseHeaderName = parameter;
     }
 
     // ParameterizedFormatStringBase overrides -------------------------------------------------------------------------
@@ -79,8 +79,8 @@ public class OutgoingHeaderFormatString extends ParameterizedFormatStringBase im
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public String getOutgoingHeaderName() {
-        return outgoingHeaderName;
+    public String getHeaderName() {
+        return responseHeaderName;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

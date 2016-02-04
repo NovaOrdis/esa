@@ -44,9 +44,9 @@ public interface ParameterizedFormatString extends FormatString {
 
             return new RequestHeaderFormatString(individualToken);
         }
-        else if (individualToken.startsWith(OutgoingHeaderFormatString.PREFIX)) {
+        else if (individualToken.startsWith(ResponseHeaderFormatString.PREFIX)) {
 
-            return new OutgoingHeaderFormatString(individualToken);
+            return new ResponseHeaderFormatString(individualToken);
         }
         else if (individualToken.startsWith(CookieFormatString.PREFIX)) {
 
