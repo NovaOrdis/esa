@@ -51,106 +51,63 @@ public class OutputFormatter implements OutputStreamConversionLogic {
 
     public static String toLine(TimedEvent event, String format) {
 
-        String line = "?";
+        String line = "";
 
-        if ("def".equals(format)) {
+        //
+        // interpreted as event property names
+        //
+        String[] propertyNames = format.split(", *");
 
-            //
-            // dump the structure of the request (property names)
-            //
+        for(int i = 0; i < propertyNames.length; i ++) {
 
-            line = "timestamp";
+            String propertyName = propertyNames[i];
 
-            Set<Property> properties = event.getProperties();
-            List<String> propertyNames = new ArrayList<>();
+            if ("timestamp".equals(propertyName)) {
 
-            for(Property p: properties) {
+                line = DEFAULT_TIMESTAMP_FORMAT.format(event.getTimestamp());
+            }
+            else {
 
-                if (p.getType().equals(Map.class)) {
+                //
+                // if the property has a dot in it, it's a map
+                //
+                int dot = propertyName.indexOf('.');
+                if (dot != -1) {
 
-                    Map map = (Map)p.getValue();
-                    for(Object key: map.keySet()) {
-                        propertyNames.add(p.getName() + "." + key);
+                    // map
+
+                    String mapPropertyName = propertyName.substring(0, dot);
+                    MapProperty mp = (MapProperty)event.getProperty(mapPropertyName);
+                    if (mp != null) {
+
+                        String key = propertyName.substring(dot + 1);
+                        Object value = mp.getMap().get(key);
+
+                        if (value != null) {
+                            line += value;
+                        }
                     }
                 }
                 else {
-                    propertyNames.add(p.getName());
+
+                    Property p = event.getProperty(propertyName);
+
+                    if (p != null) {
+
+                        Object o = p.getValue();
+
+                        if (o instanceof Map) {
+
+                            line += "<>";
+                        } else {
+                            line += o;
+                        }
+                    }
                 }
             }
 
-            if (!propertyNames.isEmpty()) {
-
+            if (i < propertyNames.length - 1) {
                 line += ", ";
-
-                Collections.sort(propertyNames);
-
-                for(Iterator<String> i = propertyNames.iterator(); i.hasNext(); ) {
-
-                    String propertyName = i.next();
-                    line += propertyName;
-                    if (i.hasNext()) {
-                        line += ", ";
-                    }
-                }
-            }
-        }
-        else {
-            //
-            // interpreted as event property names
-            //
-            String[] propertyNames = format.split(", *");
-
-            for(int i = 0; i < propertyNames.length; i ++) {
-
-                String propertyName = propertyNames[i];
-
-                if ("timestamp".equals(propertyName)) {
-
-                    line = DEFAULT_TIMESTAMP_FORMAT.format(event.getTimestamp());
-                }
-                else {
-
-                    //
-                    // if the property has a dot in it, it's a map
-                    //
-                    int dot = propertyName.indexOf('.');
-                    if (dot != -1) {
-
-                        // map
-
-                        String mapPropertyName = propertyName.substring(0, dot);
-                        MapProperty mp = (MapProperty)event.getProperty(mapPropertyName);
-                        if (mp != null) {
-
-                            String key = propertyName.substring(dot + 1);
-                            Object value = mp.getMap().get(key);
-
-                            if (value != null) {
-                                line += value;
-                            }
-                        }
-                    }
-                    else {
-
-                        Property p = event.getProperty(propertyName);
-
-                        if (p != null) {
-
-                            Object o = p.getValue();
-
-                            if (o instanceof Map) {
-
-                                line += "<>";
-                            } else {
-                                line += o;
-                            }
-                        }
-                    }
-                }
-
-                if (i < propertyNames.length - 1) {
-                    line += ", ";
-                }
             }
         }
 

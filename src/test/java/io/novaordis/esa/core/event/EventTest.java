@@ -132,6 +132,99 @@ public abstract class EventTest {
         assertEquals("value2", m2.get("key2"));
     }
 
+    @Test
+    public void getMapProperty_NoSuchProperty() throws Exception {
+
+        Event event = getEventToTest();
+        assertNull(event.getMapProperty("no-such-map-property"));
+    }
+
+    @Test
+    public void getMapProperty_PropertyExistsButNotAMap() throws Exception {
+
+        Event event = getEventToTest();
+
+        StringProperty sp = new StringProperty("test-property", "test-value");
+        event.setProperty(sp);
+
+        assertNull(event.getMapProperty("test-property"));
+        assertEquals(sp, event.getProperty("test-property"));
+    }
+
+    @Test
+    public void getMapProperty() throws Exception {
+
+        Event event = getEventToTest();
+
+        MapProperty mp = new MapProperty("test-property");
+
+        event.setProperty(mp);
+        assertEquals(mp, event.getMapProperty("test-property"));
+        assertEquals(mp, event.getProperty("test-property"));
+    }
+
+    @Test
+    public void getLongProperty_NoSuchProperty() throws Exception {
+
+        Event event = getEventToTest();
+        assertNull(event.getLongProperty("no-such-map-property"));
+    }
+
+    @Test
+    public void getLongProperty_PropertyExistsButNotALong() throws Exception {
+
+        Event event = getEventToTest();
+
+        StringProperty sp = new StringProperty("test-property", "test-value");
+        event.setProperty(sp);
+
+        assertNull(event.getLongProperty("test-property"));
+        assertEquals(sp, event.getProperty("test-property"));
+    }
+
+    @Test
+    public void getLongProperty() throws Exception {
+
+        Event event = getEventToTest();
+
+        LongProperty lp = new LongProperty("test-property", 1L);
+
+        event.setProperty(lp);
+        assertEquals(lp, event.getLongProperty("test-property"));
+        assertEquals(lp, event.getProperty("test-property"));
+    }
+
+    @Test
+    public void getIntegerProperty_NoSuchProperty() throws Exception {
+
+        Event event = getEventToTest();
+        assertNull(event.getIntegerProperty("no-such-map-property"));
+    }
+
+    @Test
+    public void getIntegerProperty_PropertyExistsButNotAnInteger() throws Exception {
+
+        Event event = getEventToTest();
+
+        StringProperty sp = new StringProperty("test-property", "test-value");
+        event.setProperty(sp);
+
+        assertNull(event.getIntegerProperty("test-property"));
+        assertEquals(sp, event.getProperty("test-property"));
+    }
+
+    @Test
+    public void getIntegerProperty() throws Exception {
+
+        Event event = getEventToTest();
+
+        IntegerProperty ip = new IntegerProperty("test-property", 1);
+
+        event.setProperty(ip);
+        assertEquals(ip, event.getIntegerProperty("test-property"));
+        assertEquals(ip, event.getProperty("test-property"));
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

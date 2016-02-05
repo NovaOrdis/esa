@@ -65,6 +65,42 @@ public class EventBase implements Event {
     }
 
     @Override
+    public LongProperty getLongProperty(String name) {
+
+        Property p = properties.get(name);
+
+        if (p != null && p instanceof LongProperty) {
+            return (LongProperty)p;
+        }
+
+        return null;
+    }
+
+    @Override
+    public IntegerProperty getIntegerProperty(String name) {
+
+        Property p = properties.get(name);
+
+        if (p != null && p instanceof IntegerProperty) {
+            return (IntegerProperty)p;
+        }
+
+        return null;
+    }
+
+    @Override
+    public MapProperty getMapProperty(String name) {
+
+        Property p = properties.get(name);
+
+        if (p != null && p instanceof MapProperty) {
+            return (MapProperty)p;
+        }
+
+        return null;
+    }
+
+    @Override
     public Property setProperty(Property property) {
 
         if (property == null) {

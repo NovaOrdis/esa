@@ -14,73 +14,32 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core.event;
+package io.novaordis.esa.experimental;
 
-import java.util.Set;
+import io.novaordis.esa.core.event.TimedEventBase;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/24/16
+ * @since 2/4/16
  */
-public class MockEvent implements Event {
+public class BusinessScenarioEvent extends TimedEventBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    public static final String TOTAL_PROCESSING_TIME = "total-processing-time";
+    public static final String REQUEST_COUNT = "request-count";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private Object payload;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public MockEvent() {
-        this(null);
-    }
-
-    public MockEvent(Object payload) {
-        this.payload = payload;
+    protected BusinessScenarioEvent(long timestamp) {
+        super(timestamp);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
-
-    public void setPayload(Object o) {
-        this.payload = o;
-    }
-
-    public Object getPayload() {
-        return payload;
-    }
-
-    @Override
-    public Set<Property> getProperties() {
-        throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public Property getProperty(String name) {
-        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public MapProperty getMapProperty(String mapPropertyName) {
-        throw new RuntimeException("getMapProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public LongProperty getLongProperty(String longPropertyName) {
-        throw new RuntimeException("getLongProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public IntegerProperty getIntegerProperty(String integerPropertyName) {
-        throw new RuntimeException("getIntegerProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public Property setProperty(Property property) {
-        throw new RuntimeException("setProperty() NOT YET IMPLEMENTED");
-    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

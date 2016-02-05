@@ -38,6 +38,24 @@ public interface Event {
     Property getProperty(String name);
 
     /**
+     * @return the corresponding MapProperty or null if there is no such MapProperty. Note that the method will
+     * return null if a property with the given name exists, but it is not a MapProperty.
+     */
+    MapProperty getMapProperty(String mapPropertyName);
+
+    /**
+     * @return the corresponding LongProperty or null if there is no such LongProperty. Note that the method will
+     * return null if a property with the given name exists, but it is not a LongProperty.
+     */
+    LongProperty getLongProperty(String longPropertyName);
+
+    /**
+     * @return the corresponding IntegerProperty or null if there is no such IntegerProperty. Note that the method will
+     * return null if a property with the given name exists, but it is not a IntegerProperty.
+     */
+    IntegerProperty getIntegerProperty(String integerPropertyName);
+
+    /**
      * Stores the property, replacing the old one if exists.
      *
      * If it is a map and the map already exists, the contents will be merged.

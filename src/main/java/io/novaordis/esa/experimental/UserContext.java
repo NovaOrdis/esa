@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core.event;
+package io.novaordis.esa.experimental;
 
-import java.util.Set;
+import io.novaordis.esa.logs.httpd.HttpEvent;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/24/16
+ * @since 2/4/16
  */
-public class MockEvent implements Event {
+public class UserContext {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,56 +30,32 @@ public class MockEvent implements Event {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private Object payload;
+    private BusinessScenario currentBusinessScenario;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public MockEvent() {
-        this(null);
-    }
-
-    public MockEvent(Object payload) {
-        this.payload = payload;
-    }
-
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public void setPayload(Object o) {
-        this.payload = o;
+    /**
+     * May return null
+     */
+    public BusinessScenario getCurrentBusinessScenario() {
+
+        return currentBusinessScenario;
     }
 
-    public Object getPayload() {
-        return payload;
+    public void clear() {
+        currentBusinessScenario = null;
     }
 
-    @Override
-    public Set<Property> getProperties() {
-        throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
-    }
+    public void startNewBusinessScenario(HttpEvent event) {
 
-    @Override
-    public Property getProperty(String name) {
-        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
-    }
+        if (currentBusinessScenario != null) {
+            throw new IllegalStateException(
+                    "cannot start a new business scenario while there is one active: " + currentBusinessScenario);
+        }
 
-    @Override
-    public MapProperty getMapProperty(String mapPropertyName) {
-        throw new RuntimeException("getMapProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public LongProperty getLongProperty(String longPropertyName) {
-        throw new RuntimeException("getLongProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public IntegerProperty getIntegerProperty(String integerPropertyName) {
-        throw new RuntimeException("getIntegerProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public Property setProperty(Property property) {
-        throw new RuntimeException("setProperty() NOT YET IMPLEMENTED");
+        currentBusinessScenario = new BusinessScenario(event);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

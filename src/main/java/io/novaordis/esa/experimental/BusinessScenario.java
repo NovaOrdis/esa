@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core.event;
+package io.novaordis.esa.experimental;
 
-import java.util.Set;
+import io.novaordis.esa.core.event.IntegerProperty;
+import io.novaordis.esa.core.event.LongProperty;
+import io.novaordis.esa.logs.httpd.HttpEvent;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/24/16
+ * @since 2/4/16
  */
-public class MockEvent implements Event {
+public class BusinessScenario {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,59 +32,68 @@ public class MockEvent implements Event {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private Object payload;
+    //
+    // the timestamp of the first request of the scenario
+    //
+    private long timestamp;
+    private long totalProcessingTime;
+
+    // the number of requests comprising this scenario
+    private int requestCount;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public MockEvent() {
-        this(null);
-    }
+    public BusinessScenario(HttpEvent firstEvent) {
 
-    public MockEvent(Object payload) {
-        this.payload = payload;
+        timestamp = firstEvent.getTimestamp();
+        totalProcessingTime = 0L;
+        requestCount = 1;
+        updateProcessingTime(firstEvent);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public void setPayload(Object o) {
-        this.payload = o;
+    /**
+     * Update the current business scenario's statistics with this request's information.
+     */
+    public void update(HttpEvent event) {
+
+        requestCount++;
+        updateProcessingTime(event);
     }
 
-    public Object getPayload() {
-        return payload;
+    public BusinessScenarioEvent toEvent() {
+
+        BusinessScenarioEvent bse = new BusinessScenarioEvent(timestamp);
+        bse.setProperty(new LongProperty(BusinessScenarioEvent.TOTAL_PROCESSING_TIME, totalProcessingTime));
+        bse.setProperty(new IntegerProperty(BusinessScenarioEvent.REQUEST_COUNT, requestCount));
+        return bse;
     }
 
-    @Override
-    public Set<Property> getProperties() {
-        throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
+    public long getTimestamp() {
+        return timestamp;
     }
 
-    @Override
-    public Property getProperty(String name) {
-        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
+    public long getTotalProcessingTime() {
+        return totalProcessingTime;
     }
 
-    @Override
-    public MapProperty getMapProperty(String mapPropertyName) {
-        throw new RuntimeException("getMapProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public LongProperty getLongProperty(String longPropertyName) {
-        throw new RuntimeException("getLongProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public IntegerProperty getIntegerProperty(String integerPropertyName) {
-        throw new RuntimeException("getIntegerProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public Property setProperty(Property property) {
-        throw new RuntimeException("setProperty() NOT YET IMPLEMENTED");
+    public int getRequestCount() {
+        return requestCount;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
+
+    void updateProcessingTime(HttpEvent event) {
+
+        LongProperty p = event.getLongProperty(HttpEvent.REQUEST_PROCESSING_TIME);
+
+        if (p == null) {
+            throw new IllegalArgumentException("current request does not have request processing time information");
+        }
+
+        totalProcessingTime += p.getLong();
+    }
 
     // Protected -------------------------------------------------------------------------------------------------------
 
