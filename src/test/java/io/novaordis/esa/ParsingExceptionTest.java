@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs;
+package io.novaordis.esa;
 
 import org.junit.Test;
 

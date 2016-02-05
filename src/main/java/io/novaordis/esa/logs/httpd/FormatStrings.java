@@ -21,7 +21,7 @@ import io.novaordis.esa.core.event.MemoryMeasureUnit;
 import io.novaordis.esa.core.event.Property;
 import io.novaordis.esa.core.event.PropertyFactory;
 import io.novaordis.esa.core.event.TimeMeasureUnit;
-import io.novaordis.esa.logs.ParsingException;
+import io.novaordis.esa.ParsingException;
 
 import java.text.Format;
 import java.text.ParseException;

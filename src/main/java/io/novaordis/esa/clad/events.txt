@@ -1,0 +1,15 @@
+
+events ${version}
+
+Reads, parses and processes timed events. Usage:
+
+    events < input-file.log -i|--input-format="..." <command> <command-options>
+
+The input format is required and it must be specified either on command line or in the associated
+configuration file. Common input formats are httpd log formats, CSV header definitions or garbage
+collection log formats. Examples:
+
+  httpd log format:  "%h %u [%t] \"%r\" \"%q\" %{c,JSESSIONID} %{i,Some-Request-Header} %s %b %D"
+  CSV format:        "timestamp, count, status-code"
+
+'events' will try to apply heuristics and figure out what type of format was specified.

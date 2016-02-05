@@ -23,7 +23,7 @@ import io.novaordis.esa.core.event.MeasureUnit;
 import io.novaordis.esa.core.event.MemoryMeasureUnit;
 import io.novaordis.esa.core.event.StringProperty;
 import io.novaordis.esa.core.event.TimeMeasureUnit;
-import io.novaordis.esa.logs.ParsingException;
+import io.novaordis.esa.ParsingException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

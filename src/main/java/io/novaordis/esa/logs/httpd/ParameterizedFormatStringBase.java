@@ -17,7 +17,7 @@
 package io.novaordis.esa.logs.httpd;
 
 import io.novaordis.esa.core.event.MapProperty;
-import io.novaordis.esa.logs.ParsingException;
+import io.novaordis.esa.ParsingException;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>

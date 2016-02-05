@@ -16,7 +16,7 @@
 
 package io.novaordis.esa.logs.httpd;
 
-import io.novaordis.esa.logs.ParsingException;
+import io.novaordis.esa.ParsingException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

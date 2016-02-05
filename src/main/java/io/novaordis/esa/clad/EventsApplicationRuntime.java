@@ -16,7 +16,7 @@
 
 package io.novaordis.esa.clad;
 
-import io.novaordis.clad.application.ApplicationRuntime;
+import io.novaordis.clad.application.ApplicationRuntimeBase;
 import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.clad.UserErrorException;
 import io.novaordis.clad.option.Option;
@@ -40,7 +40,7 @@ import java.util.concurrent.CountDownLatch;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/27/16
  */
-public class EventsApplicationRuntime implements ApplicationRuntime {
+public class EventsApplicationRuntime extends ApplicationRuntimeBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
 

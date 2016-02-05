@@ -17,7 +17,7 @@
 package io.novaordis.esa.logs.httpd;
 
 import io.novaordis.esa.core.event.Property;
-import io.novaordis.esa.logs.ParsingException;
+import io.novaordis.esa.ParsingException;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
