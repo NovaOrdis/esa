@@ -14,33 +14,32 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
+package io.novaordis.esa.httpd;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
  */
-public class ResponseHeaderFormatString extends ParameterizedFormatStringBase implements ParameterizedFormatString {
+public class CookieFormatString extends ParameterizedFormatStringBase implements ParameterizedFormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final String PREFIX = "%{o,";
+    public static final String PREFIX = "%{c,";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String responseHeaderName;
+    private String cookie;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
-     * @param formatStringLiteral as declared in the format specification, example: %{i,Some-Header} or
-     *                            %{o,Some-Header}
+     * @param formatStringLiteral as declared in the format specification, example: %{c,Some-Cookie}
      *
      * @throws IllegalArgumentException if the literal does not match the expected pattern.
      */
-    public ResponseHeaderFormatString(String formatStringLiteral) throws IllegalArgumentException {
+    public CookieFormatString(String formatStringLiteral) throws IllegalArgumentException {
         super(formatStringLiteral);
     }
 
@@ -49,19 +48,19 @@ public class ResponseHeaderFormatString extends ParameterizedFormatStringBase im
     @Override
     public String getLiteral() {
 
-        return PREFIX + responseHeaderName + "}";
+        return PREFIX + cookie + "}";
     }
 
     @Override
     public String getParameter() {
 
-        return responseHeaderName;
+        return cookie;
     }
 
     @Override
     public void setParameter(String parameter) {
 
-        responseHeaderName = parameter;
+        cookie = parameter;
     }
 
     // ParameterizedFormatStringBase overrides -------------------------------------------------------------------------
@@ -74,13 +73,19 @@ public class ResponseHeaderFormatString extends ParameterizedFormatStringBase im
     @Override
     protected String getHttpEventMapName() {
 
-        return HttpEvent.RESPONSE_HEADERS;
+        return HttpEvent.COOKIES;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public String getHeaderName() {
-        return responseHeaderName;
+    public String getCookie() {
+        return cookie;
+    }
+
+    @Override
+    public String toString() {
+
+        return getLiteral();
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

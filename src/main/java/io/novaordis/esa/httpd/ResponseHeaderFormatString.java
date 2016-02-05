@@ -14,48 +14,73 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.experimental;
-
-import io.novaordis.esa.httpd.HttpEvent;
+package io.novaordis.esa.httpd;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
  */
-public class UserContext {
+public class ResponseHeaderFormatString extends ParameterizedFormatStringBase implements ParameterizedFormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    public static final String PREFIX = "%{o,";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private BusinessScenario currentBusinessScenario;
+    private String responseHeaderName;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    /**
+     * @param formatStringLiteral as declared in the format specification, example: %{i,Some-Header} or
+     *                            %{o,Some-Header}
+     *
+     * @throws IllegalArgumentException if the literal does not match the expected pattern.
+     */
+    public ResponseHeaderFormatString(String formatStringLiteral) throws IllegalArgumentException {
+        super(formatStringLiteral);
+    }
+
+    // ParameterizedFormatString implementation ------------------------------------------------------------------------
+
+    @Override
+    public String getLiteral() {
+
+        return PREFIX + responseHeaderName + "}";
+    }
+
+    @Override
+    public String getParameter() {
+
+        return responseHeaderName;
+    }
+
+    @Override
+    public void setParameter(String parameter) {
+
+        responseHeaderName = parameter;
+    }
+
+    // ParameterizedFormatStringBase overrides -------------------------------------------------------------------------
+
+    @Override
+    protected String getPrefix() {
+        return PREFIX;
+    }
+
+    @Override
+    protected String getHttpEventMapName() {
+
+        return HttpEvent.RESPONSE_HEADERS;
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
-    /**
-     * May return null
-     */
-    public BusinessScenario getCurrentBusinessScenario() {
-
-        return currentBusinessScenario;
-    }
-
-    public void clear() {
-        currentBusinessScenario = null;
-    }
-
-    public void startNewBusinessScenario(HttpEvent event) {
-
-        if (currentBusinessScenario != null) {
-            throw new IllegalStateException(
-                    "cannot start a new business scenario while there is one active: " + currentBusinessScenario);
-        }
-
-        currentBusinessScenario = new BusinessScenario(event);
+    public String getHeaderName() {
+        return responseHeaderName;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

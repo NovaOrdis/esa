@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
+package io.novaordis.esa.httpd;
 
 import org.junit.Test;
 
@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
  */
-public class CookieFormatStringTest extends ParameterizedFormatStringTest {
+public class ResponseHeaderFormatStringTest extends ParameterizedFormatStringTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -39,9 +39,9 @@ public class CookieFormatStringTest extends ParameterizedFormatStringTest {
     @Test
     public void getLiteral() throws Exception {
 
-        CookieFormatString i = new CookieFormatString("%{c,something}");
+        ResponseHeaderFormatString i = new ResponseHeaderFormatString("%{o,Test-Response-Header}");
 
-        assertEquals("%{c,something}", i.getLiteral());
+        assertEquals("%{o,Test-Response-Header}", i.getLiteral());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -49,13 +49,13 @@ public class CookieFormatStringTest extends ParameterizedFormatStringTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected CookieFormatString getFormatStringToTest(String s) {
+    protected ResponseHeaderFormatString getFormatStringToTest(String s) {
 
         if (s == null) {
-            s = "%{c,something}";
+            s = "%{o,Test-Response-Header}";
         }
 
-        return new CookieFormatString(s);
+        return new ResponseHeaderFormatString(s);
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

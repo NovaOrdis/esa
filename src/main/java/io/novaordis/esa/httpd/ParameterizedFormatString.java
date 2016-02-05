@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
+package io.novaordis.esa.httpd;
 
 /**
  * A httpd log format string that supports a configurable parameter: %{i,xxx} (incoming/request headers), %{o,xxx}

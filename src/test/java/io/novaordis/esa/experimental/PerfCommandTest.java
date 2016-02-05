@@ -20,7 +20,7 @@ import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.LongProperty;
 import io.novaordis.esa.core.event.MapProperty;
 import io.novaordis.esa.core.event.StringProperty;
-import io.novaordis.esa.logs.httpd.HttpEvent;
+import io.novaordis.esa.httpd.HttpEvent;
 import org.junit.Test;
 
 import java.util.concurrent.BlockingQueue;

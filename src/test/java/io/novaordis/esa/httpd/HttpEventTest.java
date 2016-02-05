@@ -14,78 +14,35 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
+package io.novaordis.esa.httpd;
+
+import io.novaordis.esa.core.event.TimedEventTest;
+import io.novaordis.esa.httpd.HttpEvent;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/4/16
+ * @since 2/1/16
  */
-public class RequestHeaderFormatString extends ParameterizedFormatStringBase implements ParameterizedFormatString {
+public class HttpEventTest extends TimedEventTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final String PREFIX = "%{i,";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String requestHeaderName;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    /**
-     * @param formatStringLiteral as declared in the format specification, example: %{i,Some-Header} or
-     *                            %{o,Some-Header}
-     *
-     * @throws IllegalArgumentException if the literal does not match the expected pattern.
-     */
-    public RequestHeaderFormatString(String formatStringLiteral) throws IllegalArgumentException {
-        super(formatStringLiteral);
-    }
-
-    // ParameterizedFormatString implementation ------------------------------------------------------------------------
-
-    @Override
-    public String getLiteral() {
-
-        return PREFIX + requestHeaderName + "}";
-    }
-
-    @Override
-    public void setParameter(String parameter) {
-
-        requestHeaderName = parameter;
-    }
-
-    @Override
-    public String getParameter() {
-
-        return requestHeaderName;
-    }
-
-    // ParameterizedFormatStringBase overrides -------------------------------------------------------------------------
-
-    @Override
-    protected String getPrefix() {
-        return PREFIX;
-    }
-
-    @Override
-    protected String getHttpEventMapName() {
-
-        return HttpEvent.REQUEST_HEADERS;
-    }
-
     // Public ----------------------------------------------------------------------------------------------------------
-
-    public String getHeaderName() {
-        return requestHeaderName;
-    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected HttpEvent getEventToTest(long timestamp) throws Exception {
+        return new HttpEvent(timestamp);
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

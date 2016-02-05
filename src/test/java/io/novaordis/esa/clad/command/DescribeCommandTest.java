@@ -19,7 +19,7 @@ package io.novaordis.esa.clad.command;
 import io.novaordis.esa.core.event.IntegerProperty;
 import io.novaordis.esa.core.event.MapProperty;
 import io.novaordis.esa.core.event.StringProperty;
-import io.novaordis.esa.logs.httpd.HttpEvent;
+import io.novaordis.esa.httpd.HttpEvent;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

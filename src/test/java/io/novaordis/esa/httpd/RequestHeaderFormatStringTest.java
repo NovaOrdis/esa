@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
+package io.novaordis.esa.httpd;
 
-import io.novaordis.esa.core.event.TimedEventTest;
-import io.novaordis.esa.logs.httpd.HttpEvent;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/1/16
+ * @since 2/4/16
  */
-public class HttpEventTest extends TimedEventTest {
+public class RequestHeaderFormatStringTest extends ParameterizedFormatStringTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -35,13 +36,26 @@ public class HttpEventTest extends TimedEventTest {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    @Test
+    public void getLiteral() throws Exception {
+
+        RequestHeaderFormatString i = new RequestHeaderFormatString("%{i,Test-Request-Header}");
+
+        assertEquals("%{i,Test-Request-Header}", i.getLiteral());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected HttpEvent getEventToTest(long timestamp) throws Exception {
-        return new HttpEvent(timestamp);
+    protected RequestHeaderFormatString getFormatStringToTest(String s) {
+
+        if (s == null) {
+            s = "%{i,Test-Request-Header}";
+        }
+
+        return new RequestHeaderFormatString(s);
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

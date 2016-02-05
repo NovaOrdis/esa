@@ -14,45 +14,34 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
+package io.novaordis.esa.httpd;
 
-import io.novaordis.esa.core.event.TimedEvent;
-import io.novaordis.esa.core.event.TimedEventBase;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
- * A HTTP request/response as processed by a web server.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/1/16
+ * @since 1/21/16
  */
-public class HttpEvent extends TimedEventBase implements TimedEvent {
+public class TestDate {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final String METHOD = "method";
-    public static final String PATH = "path";
-    public static final String HTTP_VERSION = "http-version";
-    public static final String ORIGINAL_REQUEST_STATUS_CODE = "original-request-status-code";
-    public static final String STATUS_CODE = "status-code";
-    public static final String THREAD_NAME = "thread-name";
-    public static final String REMOTE_HOST = "remote-host";
-    public static final String REMOTE_LOGNAME = "remote-logname";
-    public static final String REMOTE_USER = "remote-user";
-    public static final String RESPONSE_ENTITY_BODY_SIZE = "response-body-size";
-    public static final String REQUEST_PROCESSING_TIME = "request-processing-time";
-    public static final String QUERY_STRING = "query";
-    public static final String REQUEST_HEADERS = "request-headers";
-    public static final String RESPONSE_HEADERS = "response-headers";
-    public static final String COOKIES = "cookies";
+    public static final DateFormat REFERENCE_DATE_FORMAT = new SimpleDateFormat("MM/dd/yy HH:mm:ss Z");
 
     // Static ----------------------------------------------------------------------------------------------------------
+
+    public static Date create(String s) throws Exception {
+
+        return (Date)REFERENCE_DATE_FORMAT.parseObject(s);
+    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public HttpEvent(long timestamp) {
-        super(timestamp);
+    private TestDate() {
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

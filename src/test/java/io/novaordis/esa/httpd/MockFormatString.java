@@ -14,79 +14,75 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
+package io.novaordis.esa.httpd;
+
+import io.novaordis.esa.core.event.Property;
+import io.novaordis.esa.ParsingException;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/4/16
+ * @since 1/22/16
  */
-public class CookieFormatString extends ParameterizedFormatStringBase implements ParameterizedFormatString {
+public class MockFormatString implements FormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final String PREFIX = "%{c,";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String cookie;
+    private String literal;
+    private Class type;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    /**
-     * @param formatStringLiteral as declared in the format specification, example: %{c,Some-Cookie}
-     *
-     * @throws IllegalArgumentException if the literal does not match the expected pattern.
-     */
-    public CookieFormatString(String formatStringLiteral) throws IllegalArgumentException {
-        super(formatStringLiteral);
+    public MockFormatString(String literal) {
+        this(literal, null);
     }
 
-    // ParameterizedFormatString implementation ------------------------------------------------------------------------
+    public MockFormatString(String literal, Class type) {
+        this.literal = literal;
+        this.type = type;
+    }
+
+    // FormatStrings implementation ------------------------------------------------------------------------------------
 
     @Override
     public String getLiteral() {
-
-        return PREFIX + cookie + "}";
+        return literal;
     }
 
     @Override
-    public String getParameter() {
-
-        return cookie;
+    public Object parse(String logStringRepresentation) throws ParsingException {
+        throw new RuntimeException("parse() NOT YET IMPLEMENTED");
     }
 
     @Override
-    public void setParameter(String parameter) {
-
-        cookie = parameter;
-    }
-
-    // ParameterizedFormatStringBase overrides -------------------------------------------------------------------------
-
-    @Override
-    protected String getPrefix() {
-        return PREFIX;
+    public Class getType() {
+        return type;
     }
 
     @Override
-    protected String getHttpEventMapName() {
+    public boolean isLeftEnclosure() {
+        throw new RuntimeException("isLeftEnclosure() NOT YET IMPLEMENTED");
+    }
 
-        return HttpEvent.COOKIES;
+    @Override
+    public boolean isRightEnclosure() {
+        throw new RuntimeException("isRightEnclosure() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public FormatString getMatchingEnclosure() {
+        throw new RuntimeException("getMatchingEnclosure() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public Property toProperty(Object value) {
+        throw new RuntimeException("toProperty() NOT YET IMPLEMENTED");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
-
-    public String getCookie() {
-        return cookie;
-    }
-
-    @Override
-    public String toString() {
-
-        return getLiteral();
-    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

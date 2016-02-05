@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
+package io.novaordis.esa.httpd;
 
-import io.novaordis.esa.core.event.IntegerProperty;
 import io.novaordis.esa.core.event.Property;
 import io.novaordis.esa.core.event.StringProperty;
 

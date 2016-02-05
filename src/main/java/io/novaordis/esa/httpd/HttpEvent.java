@@ -14,19 +14,36 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
+package io.novaordis.esa.httpd;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import io.novaordis.esa.core.event.TimedEvent;
+import io.novaordis.esa.core.event.TimedEventBase;
 
 /**
+ * A HTTP request/response as processed by a web server.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/4/16
+ * @since 2/1/16
  */
-public class ResponseHeaderFormatStringTest extends ParameterizedFormatStringTest {
+public class HttpEvent extends TimedEventBase implements TimedEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    public static final String METHOD = "method";
+    public static final String PATH = "path";
+    public static final String HTTP_VERSION = "http-version";
+    public static final String ORIGINAL_REQUEST_STATUS_CODE = "original-request-status-code";
+    public static final String STATUS_CODE = "status-code";
+    public static final String THREAD_NAME = "thread-name";
+    public static final String REMOTE_HOST = "remote-host";
+    public static final String REMOTE_LOGNAME = "remote-logname";
+    public static final String REMOTE_USER = "remote-user";
+    public static final String RESPONSE_ENTITY_BODY_SIZE = "response-body-size";
+    public static final String REQUEST_PROCESSING_TIME = "request-processing-time";
+    public static final String QUERY_STRING = "query";
+    public static final String REQUEST_HEADERS = "request-headers";
+    public static final String RESPONSE_HEADERS = "response-headers";
+    public static final String COOKIES = "cookies";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -34,29 +51,15 @@ public class ResponseHeaderFormatStringTest extends ParameterizedFormatStringTes
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    // Public ----------------------------------------------------------------------------------------------------------
-
-    @Test
-    public void getLiteral() throws Exception {
-
-        ResponseHeaderFormatString i = new ResponseHeaderFormatString("%{o,Test-Response-Header}");
-
-        assertEquals("%{o,Test-Response-Header}", i.getLiteral());
+    public HttpEvent(long timestamp) {
+        super(timestamp);
     }
+
+    // Public ----------------------------------------------------------------------------------------------------------
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
-
-    @Override
-    protected ResponseHeaderFormatString getFormatStringToTest(String s) {
-
-        if (s == null) {
-            s = "%{o,Test-Response-Header}";
-        }
-
-        return new ResponseHeaderFormatString(s);
-    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

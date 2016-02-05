@@ -14,41 +14,49 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
+package io.novaordis.esa.httpd;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 2/4/16
  */
-public class TestDate {
+public class CookieFormatStringTest extends ParameterizedFormatStringTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final DateFormat REFERENCE_DATE_FORMAT = new SimpleDateFormat("MM/dd/yy HH:mm:ss Z");
-
     // Static ----------------------------------------------------------------------------------------------------------
-
-    public static Date create(String s) throws Exception {
-
-        return (Date)REFERENCE_DATE_FORMAT.parseObject(s);
-    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    private TestDate() {
-    }
-
     // Public ----------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void getLiteral() throws Exception {
+
+        CookieFormatString i = new CookieFormatString("%{c,something}");
+
+        assertEquals("%{c,something}", i.getLiteral());
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected CookieFormatString getFormatStringToTest(String s) {
+
+        if (s == null) {
+            s = "%{c,something}";
+        }
+
+        return new CookieFormatString(s);
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

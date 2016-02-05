@@ -17,8 +17,8 @@
 package io.novaordis.esa.clad;
 
 import io.novaordis.esa.core.ProcessingLogic;
-import io.novaordis.esa.logs.httpd.HttpdLogFormat;
-import io.novaordis.esa.logs.httpd.HttpdLogParsingLogic;
+import io.novaordis.esa.httpd.HttpdLogFormat;
+import io.novaordis.esa.httpd.HttpdLogParsingLogic;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;

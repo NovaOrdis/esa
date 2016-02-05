@@ -14,34 +14,57 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
+package io.novaordis.esa.httpd;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import io.novaordis.esa.core.ProcessingLogicBase;
+import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.FaultEvent;
+import io.novaordis.esa.core.event.StringEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/4/16
+ * @since 1/24/16
  */
-public class RequestHeaderFormatStringTest extends ParameterizedFormatStringTest {
+public class HttpdLogParsingLogic extends ProcessingLogicBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(HttpdLogParsingLogic.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private HttpdLogParser logParser;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    public HttpdLogParsingLogic(HttpdLogFormat httpdLogFormat) {
+
+        super();
+
+        this.logParser = new HttpdLogParser(httpdLogFormat);
+
+        log.debug(this + " constructed");
+    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    @Test
-    public void getLiteral() throws Exception {
+    public HttpdLogFormat getHttpdLogFormat() {
 
-        RequestHeaderFormatString i = new RequestHeaderFormatString("%{i,Test-Request-Header}");
+        if (logParser == null) {
+            return null;
+        }
 
-        assertEquals("%{i,Test-Request-Header}", i.getLiteral());
+        return logParser.getLogFormat();
+    }
+
+    @Override
+    public String toString() {
+
+        return "HttpdLogParsingLogic[" + logParser + "]";
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -49,13 +72,26 @@ public class RequestHeaderFormatStringTest extends ParameterizedFormatStringTest
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected RequestHeaderFormatString getFormatStringToTest(String s) {
+    protected Event processInternal(Event inputEvent) {
 
-        if (s == null) {
-            s = "%{i,Test-Request-Header}";
+        if (!(inputEvent instanceof StringEvent)) {
+
+            return new FaultEvent(this + " can only handle StringEvents and it got " + inputEvent);
         }
 
-        return new RequestHeaderFormatString(s);
+        String s = ((StringEvent)inputEvent).get();
+
+        try {
+
+            HttpdLogLine logLine = logParser.parse(s);
+            //noinspection UnnecessaryLocalVariable
+            HttpEvent event = logLine.toEvent();
+            return event;
+        }
+        catch (Exception e) {
+
+            return new FaultEvent("httpd log line parsing failed: " + e.getMessage());
+        }
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

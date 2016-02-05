@@ -18,7 +18,7 @@ package io.novaordis.esa.experimental;
 
 import io.novaordis.esa.core.event.IntegerProperty;
 import io.novaordis.esa.core.event.LongProperty;
-import io.novaordis.esa.logs.httpd.HttpEvent;
+import io.novaordis.esa.httpd.HttpEvent;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>

@@ -14,75 +14,74 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.logs.httpd;
-
-import io.novaordis.esa.core.event.Property;
-import io.novaordis.esa.ParsingException;
+package io.novaordis.esa.httpd;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/22/16
+ * @since 2/4/16
  */
-public class MockFormatString implements FormatString {
+public class RequestHeaderFormatString extends ParameterizedFormatStringBase implements ParameterizedFormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    public static final String PREFIX = "%{i,";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String literal;
-    private Class type;
+    private String requestHeaderName;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public MockFormatString(String literal) {
-        this(literal, null);
+    /**
+     * @param formatStringLiteral as declared in the format specification, example: %{i,Some-Header} or
+     *                            %{o,Some-Header}
+     *
+     * @throws IllegalArgumentException if the literal does not match the expected pattern.
+     */
+    public RequestHeaderFormatString(String formatStringLiteral) throws IllegalArgumentException {
+        super(formatStringLiteral);
     }
 
-    public MockFormatString(String literal, Class type) {
-        this.literal = literal;
-        this.type = type;
-    }
-
-    // FormatStrings implementation ------------------------------------------------------------------------------------
+    // ParameterizedFormatString implementation ------------------------------------------------------------------------
 
     @Override
     public String getLiteral() {
-        return literal;
+
+        return PREFIX + requestHeaderName + "}";
     }
 
     @Override
-    public Object parse(String logStringRepresentation) throws ParsingException {
-        throw new RuntimeException("parse() NOT YET IMPLEMENTED");
+    public void setParameter(String parameter) {
+
+        requestHeaderName = parameter;
     }
 
     @Override
-    public Class getType() {
-        return type;
+    public String getParameter() {
+
+        return requestHeaderName;
+    }
+
+    // ParameterizedFormatStringBase overrides -------------------------------------------------------------------------
+
+    @Override
+    protected String getPrefix() {
+        return PREFIX;
     }
 
     @Override
-    public boolean isLeftEnclosure() {
-        throw new RuntimeException("isLeftEnclosure() NOT YET IMPLEMENTED");
-    }
+    protected String getHttpEventMapName() {
 
-    @Override
-    public boolean isRightEnclosure() {
-        throw new RuntimeException("isRightEnclosure() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public FormatString getMatchingEnclosure() {
-        throw new RuntimeException("getMatchingEnclosure() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public Property toProperty(Object value) {
-        throw new RuntimeException("toProperty() NOT YET IMPLEMENTED");
+        return HttpEvent.REQUEST_HEADERS;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public String getHeaderName() {
+        return requestHeaderName;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

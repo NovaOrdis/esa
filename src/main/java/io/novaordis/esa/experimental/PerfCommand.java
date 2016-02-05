@@ -25,7 +25,7 @@ import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.FaultEvent;
 import io.novaordis.esa.core.event.MapProperty;
-import io.novaordis.esa.logs.httpd.HttpEvent;
+import io.novaordis.esa.httpd.HttpEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
