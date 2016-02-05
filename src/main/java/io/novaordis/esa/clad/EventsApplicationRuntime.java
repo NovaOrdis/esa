@@ -55,7 +55,7 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private InputStreamInitiator initiator;
-    private EventProcessor httpdLogParser;
+    private EventProcessor parser;
     private OutputStreamTerminator terminator;
     private CountDownLatch endOfStream;
 
@@ -92,7 +92,7 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
 
         ProcessingLogic parsingLogic = initializeInputParsingLogic(configuration);
 
-        httpdLogParser = new EventProcessor(
+        parser = new EventProcessor(
                 "Input Event Stream Parser",
                 initiator.getOutputQueue(),
                 parsingLogic,
@@ -112,7 +112,7 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
 
     public BlockingQueue<Event> getOutputQueue() {
 
-        return httpdLogParser.getOutputQueue();
+        return parser.getOutputQueue();
     }
 
     public OutputStreamTerminator getTerminator() {
@@ -122,7 +122,7 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
     public void start() throws Exception {
 
         initiator.start();
-        httpdLogParser.start();
+        parser.start();
         terminator.start();
     }
 
