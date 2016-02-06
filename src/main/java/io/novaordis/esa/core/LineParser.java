@@ -16,6 +16,7 @@
 
 package io.novaordis.esa.core;
 
+import io.novaordis.esa.ParsingException;
 import io.novaordis.esa.core.event.Event;
 
 /**
@@ -32,6 +33,6 @@ public interface LineParser {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    Event parseLine(String line) throws Exception;
+    Event parseLine(String line) throws ParsingException;
 
 }

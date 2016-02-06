@@ -81,13 +81,17 @@ public abstract class ProcessingLogicBase implements ProcessingLogic {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    public boolean isClosed() {
+        return closed;
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
     /**
      * All useful implementations so far turn an input event into just one single output event. If we'll ever need
-     * input event -> multiple output events conversion, we'll refactor.
+     * input event -> multiple output events conversion, we'll refactor. Guaranteed to never receive EndOfStreamEvent.
      */
     protected abstract Event processInternal(Event e);
 

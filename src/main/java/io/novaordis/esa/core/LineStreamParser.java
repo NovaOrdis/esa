@@ -17,19 +17,19 @@
 package io.novaordis.esa.core;
 
 import io.novaordis.esa.core.event.Event;
-
-import java.util.List;
+import io.novaordis.esa.core.event.FaultEvent;
+import io.novaordis.esa.core.event.StringEvent;
 
 /**
- * Logic wired into event processors that receive lines from their queue (in the form of StringEvents) and parse them
- * into more semantically rich Events.
+ * Logic wired into event processors that receive lines from their queues (in form of StringEvents) and parse them into
+ * more semantically rich Events.
  *
  * The logic handles EndOfStreamEvents, FaultEvents, etc. as these are meaningless to the delegate LineParsers.
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/5/16
  */
-public class LineStreamParser implements ProcessingLogic {
+public class LineStreamParser extends ProcessingLogicBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -41,19 +41,64 @@ public class LineStreamParser implements ProcessingLogic {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    // ProcessingLogic implementation ----------------------------------------------------------------------------------
+    public LineStreamParser() {
 
-    @Override
-    public boolean process(Event e) throws ClosedException {
-        throw new RuntimeException("process() NOT YET IMPLEMENTED");
+        this(null);
     }
 
+    public LineStreamParser(LineParser lineParser) {
+
+        this.lineParser = lineParser;
+    }
+
+    // ProcessingLogicBase implementation ------------------------------------------------------------------------------
+
     @Override
-    public List<Event> getEvents() {
-        throw new RuntimeException("getEvents() NOT YET IMPLEMENTED");
+    protected Event processInternal(Event e) {
+
+        //
+        // we relay FaultEvents
+        //
+
+        if (e instanceof FaultEvent) {
+            return e;
+        }
+
+        //
+        // we generate FaultEvents if we get an unknown event
+        //
+
+        if (!(e instanceof StringEvent)) {
+            return new FaultEvent(this + " does not know how to handle " + e);
+        }
+
+        String line = ((StringEvent)e).get();
+
+        if (lineParser == null) {
+            //
+            // not a Fault, but an invalid state, the pipeline was not assembled correctly
+            //
+            throw new IllegalStateException(this + " has a null line parser");
+        }
+
+        try {
+            return lineParser.parseLine(line);
+        }
+        catch(Exception ex) {
+            // parsing failure, propagate as FaultEvent
+            return new FaultEvent(ex);
+        }
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public void setLineParser(LineParser lineParser) {
+        this.lineParser = lineParser;
+    }
+
+    public LineParser getLineParser() {
+        return lineParser;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

@@ -29,24 +29,75 @@ public class FaultEvent extends EventBase {
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private String message;
+    private Throwable cause;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    public FaultEvent() {
+
+        this(null, null);
+    }
+
     public FaultEvent(String message) {
 
+        this(message, null);
+    }
+
+    public FaultEvent(Throwable cause) {
+
+        this(null, cause);
+    }
+
+    public FaultEvent(String message, Throwable cause) {
+
         this.message = message;
+        this.cause = cause;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    /**
+     * May return null.
+     */
     public String getMessage() {
         return message;
+    }
+
+    /**
+     * May return null.
+     */
+    public Throwable getCause() {
+        return cause;
     }
 
     @Override
     public String toString() {
 
-        return "FAULT EVENT: " + getMessage();
+        String s = "FAULT EVENT";
+
+        String msg = getMessage();
+        Throwable cause = getCause();
+
+        if (msg == null && cause == null) {
+            return s + "[" + Integer.toHexString(System.identityHashCode(this)) + "]";
+        }
+
+        if (msg != null) {
+            s += ": " + msg;
+        }
+
+        if (cause != null) {
+            if (msg != null) {
+                s += ", ";
+            }
+            else {
+                s += ": ";
+            }
+
+            s += cause.getClass().getSimpleName() + ": " + cause.getMessage();
+        }
+
+        return s;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
