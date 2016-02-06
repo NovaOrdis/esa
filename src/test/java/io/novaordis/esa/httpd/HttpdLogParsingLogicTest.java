@@ -34,6 +34,7 @@ import static org.junit.Assert.assertTrue;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
+@Deprecated
 public class HttpdLogParsingLogicTest extends ProcessingLogicTest {
 
     // Constants -------------------------------------------------------------------------------------------------------

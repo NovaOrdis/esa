@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.event;
+package io.novaordis.esa.core;
 
-import io.novaordis.esa.core.event.MeasureUnit;
+import io.novaordis.esa.core.event.Event;
+
+import java.util.List;
 
 /**
+ * Logic wired into event processors that receive lines from their queue (in the form of StringEvents) and parse them
+ * into more semantically rich Events.
+ *
+ * The logic handles EndOfStreamEvents, FaultEvents, etc. as these are meaningless to the delegate LineParsers.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 2/5/16
  */
-public class MockProperty implements OldProperty {
+public class LineStreamParser implements ProcessingLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,35 +37,20 @@ public class MockProperty implements OldProperty {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String name;
+    private LineParser lineParser;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public MockProperty(String name) {
-        this.name = name;
-    }
-
-    // Property implementation -----------------------------------------------------------------------------------------
+    // ProcessingLogic implementation ----------------------------------------------------------------------------------
 
     @Override
-    public String getName() {
-
-        return name;
+    public boolean process(Event e) throws ClosedException {
+        throw new RuntimeException("process() NOT YET IMPLEMENTED");
     }
 
     @Override
-    public Class getType() {
-        throw new RuntimeException("getType() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public Object getValue() {
-        throw new RuntimeException("getValue() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public MeasureUnit getMeasureUnit() {
-        throw new RuntimeException("getMeasureUnit() NOT YET IMPLEMENTED");
+    public List<Event> getEvents() {
+        throw new RuntimeException("getEvents() NOT YET IMPLEMENTED");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.event;
-
-import java.util.ArrayList;
-import java.util.List;
+package io.novaordis.esa.core;
 
 /**
- * A generic event
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/21/16
+ * @since 2/5/16
  */
-public class OldEventImpl extends OldEventBase {
+public abstract class LineParserTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -32,56 +28,15 @@ public class OldEventImpl extends OldEventBase {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private List<OldProperty> properties;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public OldEventImpl() {
-        this.properties = new ArrayList<>();
-    }
-
-    // Event implementation --------------------------------------------------------------------------------------------
-
-    @Override
-    public List<OldProperty> getProperties() {
-        return properties;
-    }
-
-    @Override
-    public OldProperty getProperty(String name) {
-
-        for(OldProperty p: properties) {
-            if (p.getName().equals(name)) {
-                return p;
-            }
-        }
-
-        return null;
-    }
-
-    @Override
-    public OldProperty getProperty(int index) {
-
-        if (index < 0 || index >= properties.size()) {
-            return null;
-        }
-        return properties.get(index);
-    }
-
-    @Override
-    public OldProperty setProperty(int index, OldProperty property) {
-        throw new RuntimeException("setProperty() NOT YET IMPLEMENTED");
-    }
-
     // Public ----------------------------------------------------------------------------------------------------------
-
-    public void addProperty(OldProperty property) {
-        properties.add(property);
-    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    protected abstract LineParser getLineParserToTest() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

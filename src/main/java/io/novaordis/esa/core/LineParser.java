@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.event;
+package io.novaordis.esa.core;
 
-import io.novaordis.esa.core.event.MeasureUnit;
+import io.novaordis.esa.core.event.Event;
 
 /**
+ * A line parser gets a line (as String) and turns it into an Event.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 2/5/16
  */
-public interface OldProperty {
+public interface LineParser {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,12 +32,6 @@ public interface OldProperty {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    String getName();
-
-    Class getType();
-
-    Object getValue();
-
-    MeasureUnit getMeasureUnit();
+    Event parseLine(String line) throws Exception;
 
 }

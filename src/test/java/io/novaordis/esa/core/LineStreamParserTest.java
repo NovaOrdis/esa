@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.event.special;
+package io.novaordis.esa.core;
 
-import io.novaordis.esa.event.OldEvent;
-import io.novaordis.esa.event.OldProperty;
-
-import java.util.Date;
-import java.util.List;
+import io.novaordis.esa.core.event.Event;
 
 /**
- * An event wrapper for lines. The wrapped String will never contain CR or LF.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 2/5/16
  */
-public class StringOldEvent implements OldEvent {
+public class LineStreamParserTest /*extends ProcessingLogicTest*/ {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -36,54 +30,24 @@ public class StringOldEvent implements OldEvent {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String s;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public StringOldEvent(String s) {
-        this.s = s;
-    }
-
-    // Event implementation --------------------------------------------------------------------------------------------
-
-    @Override
-    public Date getTimestamp() {
-        throw new RuntimeException("getTimestamp() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public List<OldProperty> getProperties() {
-        throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public OldProperty getProperty(String name) {
-        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public OldProperty getProperty(int index) {
-        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public OldProperty setProperty(int index, OldProperty property) {
-        throw new RuntimeException("setProperty() NOT YET IMPLEMENTED");
-    }
-
     // Public ----------------------------------------------------------------------------------------------------------
-
-    /**
-     * @return the wrapped string. May return an empty string but never null.
-     */
-    public String get() {
-
-        return s;
-    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+//    @Override
+//    protected ProcessingLogic getProcessingLogicToTest() throws Exception {
+//
+//        return new LineStreamParser();
+//    }
+//
+//    @Override
+//    protected Event getInputEventRelevantToProcessingLogic() throws Exception {
+//        throw new RuntimeException("getInputEventRelevantToProcessingLogic() NOT YET IMPLEMENTED");
+//    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 
