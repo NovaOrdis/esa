@@ -49,7 +49,7 @@ public class OutputFormatter implements OutputStreamConversionLogic {
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    public static String toLine(TimedEvent event, String format) {
+    public static String toLine(Event event, String format) {
 
         String line = "";
 
@@ -64,7 +64,7 @@ public class OutputFormatter implements OutputStreamConversionLogic {
 
             if ("timestamp".equals(propertyName)) {
 
-                line = DEFAULT_TIMESTAMP_FORMAT.format(event.getTimestamp());
+                line = DEFAULT_TIMESTAMP_FORMAT.format(((TimedEvent)event).getTimestamp());
             }
             else {
 
@@ -151,8 +151,7 @@ public class OutputFormatter implements OutputStreamConversionLogic {
             return true;
         }
 
-        TimedEvent e = (TimedEvent)inputEvent;
-        sb.append(toLine(e, format)).append("\n");
+        sb.append(toLine(inputEvent, format)).append("\n");
         return true;
     }
 
