@@ -50,7 +50,7 @@ public interface FormatString {
 
         List<FormatString> result = new ArrayList<>();
 
-        upper: for(StringTokenizer st = new StringTokenizer(s, " "); st.hasMoreTokens(); ) {
+        for(StringTokenizer st = new StringTokenizer(s, " "); st.hasMoreTokens(); ) {
 
             String tok = st.nextToken();
 
@@ -68,7 +68,8 @@ public interface FormatString {
                 ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString(tok);
                 if (pfs != null) {
                     result.add(pfs);
-                    continue upper;
+                    tok = tok.substring(pfs.getLiteral().length());
+                    continue;
                 }
 
                 throw new ParsingException("unknown httpd format element '" + tok + "'");

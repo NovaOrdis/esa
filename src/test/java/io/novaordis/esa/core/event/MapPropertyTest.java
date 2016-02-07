@@ -58,6 +58,14 @@ public class MapPropertyTest extends PropertyTest {
         assertEquals(Map.class, sp.getType());
     }
 
+    @Test
+    public void fromString() throws Exception {
+
+        //
+        // noop - fromString() currently not implemented for MapProperty
+        //
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
@@ -68,6 +76,15 @@ public class MapPropertyTest extends PropertyTest {
         Map<String, Object> map = new HashMap<>();
         map.put("test-key", "test-value");
         return new MapProperty(name, map);
+    }
+
+    @Override
+    protected Map getAppropriateValueForPropertyToTest() {
+
+        Map m = new HashMap<>();
+        //noinspection unchecked
+        m.put("test-key", "test-value");
+        return m;
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

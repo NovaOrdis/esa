@@ -82,7 +82,16 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
         ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{c,something}");
         assertNotNull(pfs);
         CookieFormatString o = (CookieFormatString)pfs;
-        assertEquals("something", o.getCookie());
+        assertEquals("something", o.getCookieName());
+    }
+
+    @Test
+    public void parameterizedFormatFromString_ParameterizedFormatStringFollowedByQuote() throws Exception {
+
+        ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{c,something}\"");
+        assertNotNull(pfs);
+        CookieFormatString o = (CookieFormatString)pfs;
+        assertEquals("something", o.getCookieName());
     }
 
     // constructor -----------------------------------------------------------------------------------------------------

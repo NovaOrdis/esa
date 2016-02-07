@@ -51,6 +51,15 @@ public class MapProperty extends PropertyBase implements Property {
         return Map.class;
     }
 
+    @Override
+    public Property fromString(String s) throws IllegalArgumentException {
+
+        //
+        // if I ever need this, I should use the YAML notation
+        //
+        throw new RuntimeException("fromString() NOT YET IMPLEMENTED");
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     public Map<String, Object> getMap() {

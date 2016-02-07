@@ -14,36 +14,72 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.clad;
+package io.novaordis.esa;
 
-import io.novaordis.esa.core.ProcessingLogic;
-import io.novaordis.esa.httpd.HttpdLogFormat;
-import io.novaordis.esa.httpd.HttpdLogParsingLogic;
+import io.novaordis.esa.core.LineParser;
+import io.novaordis.esa.csv.CsvLineParser;
+import io.novaordis.esa.httpd.HttpdLineParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/29/16
+ * @since 2/6/16
  */
-@Deprecated
-public class ParsingLogicFactory {
+public class LineParserFactory {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    private static final Logger log = LoggerFactory.getLogger(LineParserFactory.class);
+
     // Static ----------------------------------------------------------------------------------------------------------
 
-    public static ProcessingLogic create(String logFormat) throws Exception {
+    /**
+     * Gets a line format and applies heuristics to figure out what kind of LineParser would accept such format, by
+     * querying the known line parsers.
+     *
+     * @return null if no known parser exists.
+     */
+    public static LineParser getInstance(String lineFormat) {
+
+        if (lineFormat == null) {
+            throw new IllegalArgumentException("null line format");
+        }
 
         //
-        // for the time being we're only expecting httpd log formats, we'll change that in the future
+        // visit known LineParsers and asks them if they accept the format
         //
 
-        HttpdLogFormat httpdLogFormat = new HttpdLogFormat(logFormat);
-        return new HttpdLogParsingLogic(httpdLogFormat);
+        try {
+            return new HttpdLineParser(lineFormat);
+        }
+        catch(Exception e) {
+            //
+            // this is fine, the HttpdLineParser does not recognize the format, go to the next one
+            //
+        }
+
+        try {
+            return new CsvLineParser(lineFormat);
+        }
+        catch(Exception e) {
+            //
+            // this is fine, the HttpdLineParser does not recognize the format, go to the next one
+            //
+        }
+
+        log.debug(LineParserFactory.class.getSimpleName() + "" +
+                " could not find a suitable line parser for line format \"" + lineFormat + "\"");
+
+        return null;
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    private LineParserFactory() {
+    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 

@@ -42,4 +42,11 @@ public interface Property extends Comparable<Property> {
      */
     MeasureUnit getMeasureUnit();
 
+    /**
+     * Builds a property matching this from the given string.
+     *
+     * @exception IllegalArgumentException if the string cannot be converted into a property of the same kind.
+     */
+    Property fromString(String s) throws IllegalArgumentException;
+
 }

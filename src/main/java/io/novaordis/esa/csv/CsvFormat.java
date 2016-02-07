@@ -14,67 +14,87 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core;
+package io.novaordis.esa.csv;
 
-import io.novaordis.esa.ParsingException;
-import io.novaordis.esa.core.event.Event;
-import io.novaordis.esa.core.event.MockEvent;
+import io.novaordis.esa.core.LineFormat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/6/16
  */
-public class MockLineParser implements LineParser {
+public class CsvFormat implements LineFormat {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final String VALID_LINE = "MockLineParser valid line";
-    public static final String INVALID_LINE = "MockLineParser invalid line";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private List<String> fields;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    // LineParser implementation ---------------------------------------------------------------------------------------
+    /**
+     * @throws IllegalArgumentException if the given format specification cannot be used to build a CSV format.
+     */
+    public CsvFormat(String formatSpecification) throws IllegalArgumentException {
 
-    @Override
-    public LineFormat getLineFormat() {
-        throw new RuntimeException("getLineFormat() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public Event parseLine(String line) throws ParsingException {
-
-        if (VALID_LINE.equals(line)) {
-
-            return new MockEvent();
-
+        if (formatSpecification == null) {
+            throw new IllegalArgumentException("null format specification");
         }
-        else if (INVALID_LINE.equals(line)) {
 
-            throw new ParsingException("invalid line: " + line);
+        int lastComma = formatSpecification.lastIndexOf(',');
+
+        if (lastComma == -1) {
+            throw new IllegalArgumentException(
+                    "\"" + formatSpecification + "\" cannot be a CSV format specification, it does not contain commas");
         }
-        else {
-            throw new RuntimeException("we don't know how to parse \"" + line + "\"");
+
+        fields = new ArrayList<>();
+
+        for(int i = 0, j = formatSpecification.indexOf(','); i < formatSpecification.length(); ) {
+
+            String field = formatSpecification.substring(i, j).trim();
+
+            if (i >= lastComma && field.length() == 0 && !fields.isEmpty()) {
+                // does not count
+                break;
+            }
+
+            fields.add(field);
+
+            i = j + 1;
+            j = formatSpecification.indexOf(',', i);
+            j = j == -1 ? j = formatSpecification.length() : j;
         }
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
-     * @return a line that would be parsed correctly and generate a MockEvent
+     * @return the actual underlying storage so handle with care.
      */
-    public String getValidLine() {
-        return VALID_LINE;
+    public List<String> getFields() {
+        return fields;
     }
 
-    /**
-     * @return a line that would cause a parsing failure
-     */
-    public String getInvalidLine() {
-        return INVALID_LINE;
+    @Override
+    public String toString() {
+
+        String s = "";
+        for(int i = 0; i < fields.size(); i ++) {
+
+            s += fields.get(i);
+
+            if (i < fields.size()) {
+                s += ", ";
+            }
+        }
+        return s;
+
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

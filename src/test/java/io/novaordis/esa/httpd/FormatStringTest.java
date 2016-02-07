@@ -90,6 +90,17 @@ public abstract class FormatStringTest {
         assertEquals(FormatStrings.REQUEST_PROCESSING_TIME_MS, formats.get(13));
     }
 
+    @Test
+    public void fromString_QuotedParameterizedFormatString() throws Exception {
+
+        List<FormatString> formatStrings = FormatString.fromString("\"%{c,Some-Cookie}\"");
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(0));
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(2));
+
+        CookieFormatString cfs = (CookieFormatString)formatStrings.get(1);
+        assertEquals("Some-Cookie", cfs.getCookieName());
+    }
+
     // parse() ---------------------------------------------------------------------------------------------------------
 
     @Test

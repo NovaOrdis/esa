@@ -289,7 +289,7 @@ public class FormatStringsTest extends FormatStringTest {
         assertNull(e.getMatchingEnclosure());
 
         MapProperty property = (MapProperty)e.toProperty("attr1=val1&attr2=Val2&attr3=1&attr4=1.1");
-        assertEquals(HttpEvent.QUERY_STRING, property.getName());
+        assertEquals(HttpEvent.QUERY, property.getName());
 
         //noinspection unchecked
         Map<String, Object> queryAttributes = property.getMap();

@@ -30,6 +30,9 @@ public interface TimedEvent extends Event {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    long getTimestamp();
+    /**
+     * May return null.
+     */
+    Long getTimestamp();
 
 }

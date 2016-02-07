@@ -21,11 +21,13 @@ import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.clad.UserErrorException;
 import io.novaordis.clad.option.Option;
 import io.novaordis.clad.option.StringOption;
+import io.novaordis.esa.LineParserFactory;
 import io.novaordis.esa.clad.command.OutputCommand;
 import io.novaordis.esa.core.EventProcessor;
 import io.novaordis.esa.core.InputStreamInitiator;
+import io.novaordis.esa.core.LineParser;
+import io.novaordis.esa.core.LineStreamParser;
 import io.novaordis.esa.core.OutputStreamTerminator;
-import io.novaordis.esa.core.ProcessingLogic;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.StringEventConverter;
 import org.apache.log4j.Logger;
@@ -84,18 +86,26 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
 
         log.debug(this + ".init(" + configuration + ")");
 
+        //
+        // figure out what kind of format we are going to be parsing
+        //
+
+        LineParser lineParser = figureOutParserTypeBasedOnInputFormatString(configuration);
+
+        //
+        // assemble the processing pipeline
+        //
+
         initiator = new InputStreamInitiator(
                 "Input Stream Reader",
                 System.in,
                 new StringEventConverter(),
                 new ArrayBlockingQueue<>(QUEUE_SIZE));
 
-        ProcessingLogic parsingLogic = initializeInputParsingLogic(configuration);
-
         parser = new EventProcessor(
                 "Input Event Stream Parser",
                 initiator.getOutputQueue(),
-                parsingLogic,
+                new LineStreamParser(lineParser),
                 new ArrayBlockingQueue<>(QUEUE_SIZE));
 
         terminator = new OutputStreamTerminator(
@@ -146,7 +156,14 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
 
     // Private ---------------------------------------------------------------------------------------------------------
 
-    private ProcessingLogic initializeInputParsingLogic(Configuration configuration) throws Exception {
+    /**
+     * @return guaranteed not null instance.
+     *
+     * @throws UserErrorException if we cannot figure out what line parser to use.
+     */
+    private LineParser figureOutParserTypeBasedOnInputFormatString(Configuration configuration)
+            throws UserErrorException {
+
 
         StringOption inputFormat = (StringOption)configuration.getGlobalOption(INPUT_FORMAT_OPTION);
 
@@ -154,8 +171,15 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
             throw new UserErrorException("input format not specified, use " + INPUT_FORMAT_OPTION.getLabel());
         }
 
-        String logFormatString = inputFormat.getString();
-        return ParsingLogicFactory.create(logFormatString);
+        String format = inputFormat.getString();
+
+        LineParser lineParser = LineParserFactory.getInstance(format);
+
+        if (lineParser == null) {
+            throw new UserErrorException("no known parser knows how to interpret the format string \"" + format + "\"");
+        }
+
+        return lineParser;
     }
 
     // Inner classes ---------------------------------------------------------------------------------------------------

@@ -176,10 +176,11 @@ public class HttpdLogLine {
 
         Long timestamp = getTimestamp();
 
-        if (timestamp == null) {
-            throw new IllegalStateException(
-                    "httpd log line " + this + " does not have timestamp information thus cannot be converted to a HTTP timed event");
-        }
+        // we allow for non-timestamps events
+//        if (timestamp == null) {
+//            throw new IllegalStateException(
+//                    "httpd log line " + this + " does not have timestamp information thus cannot be converted to a HTTP timed event");
+//        }
 
         HttpEvent httpEvent = new HttpEvent(timestamp);
 

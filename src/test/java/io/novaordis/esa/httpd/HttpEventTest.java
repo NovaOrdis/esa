@@ -17,7 +17,6 @@
 package io.novaordis.esa.httpd;
 
 import io.novaordis.esa.core.event.TimedEventTest;
-import io.novaordis.esa.httpd.HttpEvent;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -40,7 +39,7 @@ public class HttpEventTest extends TimedEventTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected HttpEvent getEventToTest(long timestamp) throws Exception {
+    protected HttpEvent getEventToTest(Long timestamp) throws Exception {
         return new HttpEvent(timestamp);
     }
 

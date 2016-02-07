@@ -17,8 +17,11 @@
 package io.novaordis.esa.core.event;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -27,6 +30,8 @@ import static org.junit.Assert.assertEquals;
 public class IntegerPropertyTest extends PropertyTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(IntegerPropertyTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -47,6 +52,20 @@ public class IntegerPropertyTest extends PropertyTest {
         assertEquals(Integer.class, sp.getType());
     }
 
+    @Test
+    public void fromString_InvalidValue() throws Exception {
+
+        IntegerProperty ip = new IntegerProperty("test");
+
+        try {
+            ip.fromString("not an integer");
+            fail("should have thrown Exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
@@ -54,6 +73,12 @@ public class IntegerPropertyTest extends PropertyTest {
     @Override
     protected IntegerProperty getPropertyToTest(String name) {
         return new IntegerProperty(name, 1);
+    }
+
+    @Override
+    protected Integer getAppropriateValueForPropertyToTest() {
+
+        return 1;
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

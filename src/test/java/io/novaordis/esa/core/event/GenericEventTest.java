@@ -16,13 +16,18 @@
 
 package io.novaordis.esa.core.event;
 
-import java.util.Set;
+import org.junit.Test;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/24/16
+ * @since 2/6/16
  */
-public class MockEvent implements Event {
+public class GenericEventTest extends EventTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,66 +35,42 @@ public class MockEvent implements Event {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private Object payload;
-
     // Constructors ----------------------------------------------------------------------------------------------------
-
-    public MockEvent() {
-        this(null);
-    }
-
-    public MockEvent(Object payload) {
-        this.payload = payload;
-    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public void setPayload(Object o) {
-        this.payload = o;
-    }
+    @Test
+    public void verifySetPropertyRemembersOrder() throws Exception {
 
-    public Object getPayload() {
-        return payload;
-    }
+        GenericEvent ge = getEventToTest();
 
-    @Override
-    public Set<Property> getProperties() {
-        throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
-    }
+        List<Property> props = ge.getPropertyList();
 
-    @Override
-    public Property getProperty(String name) {
-        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
-    }
+        assertEquals(0, props.size());
 
-    @Override
-    public StringProperty getStringProperty(String stringPropertyName) {
-        throw new RuntimeException("getStringProperty() NOT YET IMPLEMENTED");
-    }
+        assertNull(ge.setProperty(new StringProperty("X", "val1")));
+        assertNull(ge.setProperty(new StringProperty("I", "val2")));
+        assertNull(ge.setProperty(new StringProperty("A", "val3")));
 
-    @Override
-    public MapProperty getMapProperty(String mapPropertyName) {
-        throw new RuntimeException("getMapProperty() NOT YET IMPLEMENTED");
-    }
+        props = ge.getPropertyList();
 
-    @Override
-    public LongProperty getLongProperty(String longPropertyName) {
-        throw new RuntimeException("getLongProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public IntegerProperty getIntegerProperty(String integerPropertyName) {
-        throw new RuntimeException("getIntegerProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public Property setProperty(Property property) {
-        throw new RuntimeException("setProperty() NOT YET IMPLEMENTED");
+        assertEquals(3, props.size());
+        assertEquals("X", props.get(0).getName());
+        assertEquals("val1", props.get(0).getValue());
+        assertEquals("I", props.get(1).getName());
+        assertEquals("val2", props.get(1).getValue());
+        assertEquals("A", props.get(2).getName());
+        assertEquals("val3", props.get(2).getValue());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected GenericEvent getEventToTest() throws Exception {
+        return new GenericEvent();
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

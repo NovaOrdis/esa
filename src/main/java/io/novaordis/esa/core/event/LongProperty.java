@@ -30,6 +30,10 @@ public class LongProperty extends PropertyBase implements Property {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    public LongProperty(String name) {
+        this(name, null);
+    }
+
     public LongProperty(String name, Long value) {
         super(name, value);
     }
@@ -40,6 +44,19 @@ public class LongProperty extends PropertyBase implements Property {
     public Class getType() {
         return Long.class;
     }
+
+    @Override
+    public Property fromString(String s) throws IllegalArgumentException {
+
+        try {
+            long l = Long.valueOf(s);
+            return new LongProperty(getName(), l);
+        }
+        catch(Exception e) {
+            throw new IllegalArgumentException("\"" + s + "\" cannot be converted to an LongProperty value");
+        }
+    }
+
 
     // Public ----------------------------------------------------------------------------------------------------------
 

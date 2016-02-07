@@ -27,6 +27,7 @@ import static org.junit.Assert.assertNotNull;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/29/16
  */
+@Deprecated
 public class ParsingLogicFactoryTest {
 
     // Constants -------------------------------------------------------------------------------------------------------

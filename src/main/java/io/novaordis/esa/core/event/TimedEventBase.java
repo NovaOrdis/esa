@@ -20,7 +20,7 @@ package io.novaordis.esa.core.event;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public class TimedEventBase extends EventBase implements TimedEvent {
+public class TimedEventBase extends GenericEvent implements TimedEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -28,18 +28,18 @@ public class TimedEventBase extends EventBase implements TimedEvent {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private long timestamp;
+    private Long timestamp;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    protected TimedEventBase(long timestamp) {
+    protected TimedEventBase(Long timestamp) {
         this.timestamp = timestamp;
     }
 
     // TimedEvent implementation ---------------------------------------------------------------------------------------
 
     @Override
-    public long getTimestamp() {
+    public Long getTimestamp() {
 
         return timestamp;
     }

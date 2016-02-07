@@ -30,27 +30,29 @@ public interface ParameterizedFormatString extends FormatString {
     // Static ----------------------------------------------------------------------------------------------------------
 
     /**
-     * @param individualToken - we expect an individual token here, must not include spaces.
+     * @param tokens - we expect a parameterized format string to start the given string, but it is possible that other
+     *               format strings follow, without any intermediary space. The "tokens" string must not include spaces.
      *
-     * @return null if no known parameterized format string matches
+     * @return null if no known parameterized format string matches, or a valid ParameterizedFormatString instance if
+     * the literal representation of that parameterized format string was found <b>at the beginning</b> of the argument.
      */
-    static ParameterizedFormatString parameterizedFormatFromString(String individualToken) {
+    static ParameterizedFormatString parameterizedFormatFromString(String tokens) {
 
-        if (individualToken.contains(" ")) {
-            throw new IllegalArgumentException("'" + individualToken + "' contains spaces and it should not");
+        if (tokens.contains(" ")) {
+            throw new IllegalArgumentException("'" + tokens + "' contains spaces and it should not");
         }
 
-        if (individualToken.startsWith(RequestHeaderFormatString.PREFIX)) {
+        if (tokens.startsWith(RequestHeaderFormatString.PREFIX)) {
 
-            return new RequestHeaderFormatString(individualToken);
+            return new RequestHeaderFormatString(tokens);
         }
-        else if (individualToken.startsWith(ResponseHeaderFormatString.PREFIX)) {
+        else if (tokens.startsWith(ResponseHeaderFormatString.PREFIX)) {
 
-            return new ResponseHeaderFormatString(individualToken);
+            return new ResponseHeaderFormatString(tokens);
         }
-        else if (individualToken.startsWith(CookieFormatString.PREFIX)) {
+        else if (tokens.startsWith(CookieFormatString.PREFIX)) {
 
-            return new CookieFormatString(individualToken);
+            return new CookieFormatString(tokens);
         }
 
         return null;

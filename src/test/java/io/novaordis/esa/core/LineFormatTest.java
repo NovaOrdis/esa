@@ -14,82 +14,51 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core.event;
+package io.novaordis.esa.core;
 
-import java.util.Set;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/24/16
+ * @since 2/6/16
  */
-public class MockEvent implements Event {
+public abstract class LineFormatTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(LineFormatTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private Object payload;
-
     // Constructors ----------------------------------------------------------------------------------------------------
-
-    public MockEvent() {
-        this(null);
-    }
-
-    public MockEvent(Object payload) {
-        this.payload = payload;
-    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public void setPayload(Object o) {
-        this.payload = o;
-    }
+    @Test
+    public void nullFormatSpecification() throws Exception {
 
-    public Object getPayload() {
-        return payload;
-    }
-
-    @Override
-    public Set<Property> getProperties() {
-        throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public Property getProperty(String name) {
-        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public StringProperty getStringProperty(String stringPropertyName) {
-        throw new RuntimeException("getStringProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public MapProperty getMapProperty(String mapPropertyName) {
-        throw new RuntimeException("getMapProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public LongProperty getLongProperty(String longPropertyName) {
-        throw new RuntimeException("getLongProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public IntegerProperty getIntegerProperty(String integerPropertyName) {
-        throw new RuntimeException("getIntegerProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public Property setProperty(Property property) {
-        throw new RuntimeException("setProperty() NOT YET IMPLEMENTED");
+        try {
+            getLineFormatToTest(null);
+            fail("should have thrown IllegalArgumentException");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    protected abstract LineFormat getLineFormatToTest(String formatSpecification) throws Exception;
+
+    protected abstract String getFormatSpecificationForLineFormatToTest() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

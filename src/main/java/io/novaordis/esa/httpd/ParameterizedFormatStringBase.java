@@ -34,8 +34,9 @@ abstract class ParameterizedFormatStringBase implements ParameterizedFormatStrin
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
-     * @param formatStringLiteral as declared in the format specification, example: %{i,Some-Header} or
-     *                            %{o,Some-Header}
+     * @param formatStringLiteral - we expect a parameterized format string specification (%{i,Some-Header} or
+     *                            %{o,Some-Header}) to start the given string, but it is acceptable that other format
+     *                            strings follow, without any intermediary space. They will be ignored.
      *
      * @throws IllegalArgumentException if the literal does not match the expected pattern.
      */
@@ -118,11 +119,13 @@ abstract class ParameterizedFormatStringBase implements ParameterizedFormatStrin
 
         formatStringLiteral = formatStringLiteral.substring(prefix.length());
 
-        if (!formatStringLiteral.endsWith("}")) {
+        int i = formatStringLiteral.indexOf('}');
+
+        if (i == -1) {
             throw new IllegalArgumentException("'" + formatStringLiteral + "' does not end with '}'");
         }
 
-        String parameter = formatStringLiteral.substring(0, formatStringLiteral.length() - 1);
+        String parameter = formatStringLiteral.substring(0, i);
         setParameter(parameter);
     }
 

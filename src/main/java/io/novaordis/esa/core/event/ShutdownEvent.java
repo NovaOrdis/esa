@@ -20,7 +20,7 @@ package io.novaordis.esa.core.event;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class ShutdownEvent extends EventBase {
+public class ShutdownEvent extends GenericEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 

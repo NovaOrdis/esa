@@ -17,17 +17,17 @@
 package io.novaordis.esa.httpd;
 
 import io.novaordis.esa.ParsingException;
+import io.novaordis.esa.core.LineFormat;
+import io.novaordis.esa.core.LineParser;
+import io.novaordis.esa.core.event.Event;
 
 import java.util.List;
 
 /**
- * A log parser instance is configured with a specific log format and is capable of parsing log lines producing HttpdLogLine
- * instances.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/22/16
+ * @since 2/6/16
  */
-public class HttpdLogParser {
+public class HttpdLineParser implements LineParser {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -35,32 +35,61 @@ public class HttpdLogParser {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private HttpdLogFormat logFormat;
+    private HttpdLogFormat lineFormat;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public HttpdLogParser(HttpdLogFormat logFormat) {
+    /**
+     * @throws IllegalArgumentException if the given format is not a valid httpd log file format.
+     */
+    public HttpdLineParser(String format) throws IllegalArgumentException {
 
-        this.logFormat = logFormat;
+        //
+        // We attempt to build a list of HttpdFormatStrings from the given format string. If we succeed, it means
+        // the format is valid. If not, it means the format is not valid.
+        //
+
+        try {
+            lineFormat = new HttpdLogFormat(format);
+        }
+        catch (Exception e) {
+            //
+            // invalid httpd format
+            //
+            throw new IllegalArgumentException("invalid httpd log format \"" + format + "\"", e);
+        }
     }
 
-    // Public ----------------------------------------------------------------------------------------------------------
+    public HttpdLineParser(HttpdLogFormat format) throws IllegalArgumentException {
 
-    public HttpdLogFormat getLogFormat() {
-        return logFormat;
+        this.lineFormat = format;
     }
 
-    public HttpdLogLine parse(String line) throws ParsingException {
+    public HttpdLineParser(FormatString... formatStrings) throws IllegalArgumentException {
+
+        this.lineFormat = new HttpdLogFormat(formatStrings);
+    }
+
+    // LineParser implementation ---------------------------------------------------------------------------------------
+
+    @Override
+    public LineFormat getLineFormat() {
+
+        return lineFormat;
+    }
+
+    @Override
+    public Event parseLine(String line) throws ParsingException {
 
         HttpdLogLine e = new HttpdLogLine();
 
         //
-        // we don't perform a match against am aggregated format that would match the entire line because
-        // we also want to handle incomplete lines. In the future, we will see if this is useful, and if not
-        // replace the current parsing code with matching against the aggregated pattern (TODO: evaluate this later)
+        // we don't perform a match against an aggregated format that would match the entire line because we also want
+        // to handle incomplete lines. In the future, we will see if this is useful, and if not replace the current
+        // parsing code with matching against the aggregated pattern (TODO: evaluate this later)
         //
 
-        List<FormatString> fes = logFormat.getFormatStrings();
+        List<FormatString> fes = lineFormat.getFormatStrings();
 
         char c;
         int cursor = 0;
@@ -124,13 +153,19 @@ public class HttpdLogParser {
             cursor = i;
         }
 
-        return e;
+        return e.toEvent();
+    }
+
+    // Public ----------------------------------------------------------------------------------------------------------
+
+    public HttpdLogFormat getHttpdLogFormat() {
+        return lineFormat;
     }
 
     @Override
     public String toString() {
 
-        return "format: " + getLogFormat();
+        return "HttpdLineParser[format: " + lineFormat + "]";
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

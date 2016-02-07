@@ -16,16 +16,24 @@
 
 package io.novaordis.esa.core.event;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
+ * A generic event, contains an arbitrary number of properties.
+ *
+ * It can be used as such, or it can be subclassed by more specialized events.
+ *
+ * It also maintains the relative orders of its properties, hence getPropertyList()
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public class EventBase implements Event {
+public class GenericEvent implements Event {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -34,12 +42,14 @@ public class EventBase implements Event {
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private Map<String, Property> properties;
+    private List<String> orderedPropertyNames;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    protected EventBase() {
+    public GenericEvent() {
 
         this.properties = new HashMap<>();
+        this.orderedPropertyNames = new ArrayList<>();
     }
 
     // Event implementation --------------------------------------------------------------------------------------------
@@ -63,6 +73,19 @@ public class EventBase implements Event {
 
         return properties.get(name);
     }
+
+    @Override
+    public StringProperty getStringProperty(String name) {
+
+        Property p = properties.get(name);
+
+        if (p != null && p instanceof StringProperty) {
+            return (StringProperty)p;
+        }
+
+        return null;
+    }
+
 
     @Override
     public LongProperty getLongProperty(String name) {
@@ -129,6 +152,8 @@ public class EventBase implements Event {
             }
         }
 
+        orderedPropertyNames.add(propertyName);
+
         //
         // replace
         //
@@ -137,6 +162,16 @@ public class EventBase implements Event {
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public List<Property> getPropertyList() {
+
+        List<Property> result = new ArrayList<>();
+        for(String name: orderedPropertyNames) {
+            result.add(properties.get(name));
+        }
+
+        return result;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

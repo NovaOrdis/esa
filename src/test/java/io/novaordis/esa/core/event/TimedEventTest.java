@@ -19,6 +19,7 @@ package io.novaordis.esa.core.event;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -37,11 +38,19 @@ public abstract class TimedEventTest extends EventTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
+    public void timestamp_NullTimestamp() throws Exception {
+
+        TimedEvent te = getEventToTest(null);
+        assertNull(te.getTimestamp());
+    }
+
+    @Test
     public void timestamp() throws Exception {
 
         TimedEvent te = getEventToTest(1L);
-        assertEquals(1L, te.getTimestamp());
+        assertEquals(1L, te.getTimestamp().longValue());
     }
+
 
     // Package protected -----------------------------------------------------------------------------------------------
 
@@ -52,7 +61,7 @@ public abstract class TimedEventTest extends EventTest {
         return getEventToTest(0L);
     }
 
-    protected abstract TimedEvent getEventToTest(long timestamp) throws Exception;
+    protected abstract TimedEvent getEventToTest(Long timestamp) throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

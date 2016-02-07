@@ -62,6 +62,11 @@ public class StringPropertyTest extends PropertyTest {
         return new StringProperty(name, "test-value");
     }
 
+    @Override
+    protected String getAppropriateValueForPropertyToTest() {
+        return "test";
+    }
+
     // Private ---------------------------------------------------------------------------------------------------------
 
     // Inner classes ---------------------------------------------------------------------------------------------------

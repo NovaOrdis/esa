@@ -35,8 +35,9 @@ public class RequestHeaderFormatString extends ParameterizedFormatStringBase imp
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
-     * @param formatStringLiteral as declared in the format specification, example: %{i,Some-Header} or
-     *                            %{o,Some-Header}
+     * @param formatStringLiteral - we expect a cookie format specification (%{i,Some-Header}) to start the given
+     *                            string, but it is acceptable that other format strings follow, without any
+     *                            intermediary space. They will be ignored.
      *
      * @throws IllegalArgumentException if the literal does not match the expected pattern.
      */

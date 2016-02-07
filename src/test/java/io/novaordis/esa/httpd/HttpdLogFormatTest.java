@@ -16,6 +16,8 @@
 
 package io.novaordis.esa.httpd;
 
+import io.novaordis.esa.core.LineFormat;
+import io.novaordis.esa.core.LineFormatTest;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +32,7 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class HttpdLogFormatTest {
+public class HttpdLogFormatTest extends LineFormatTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -170,6 +172,18 @@ public class HttpdLogFormatTest {
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected LineFormat getLineFormatToTest(String formatSpecification) throws Exception {
+
+        return new HttpdLogFormat(formatSpecification);
+    }
+
+    @Override
+    protected String getFormatSpecificationForLineFormatToTest() throws Exception {
+
+        return "[%t] %h";
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

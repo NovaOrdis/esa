@@ -20,7 +20,7 @@ package io.novaordis.esa.core.event;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class EndOfStreamEvent extends EventBase {
+public class EndOfStreamEvent extends GenericEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 

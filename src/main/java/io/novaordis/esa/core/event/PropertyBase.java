@@ -76,6 +76,11 @@ public abstract class PropertyBase implements Property, Comparable<Property> {
 
     @Override
     public String toString() {
+
+        if (value == null) {
+            return name;
+        }
+
         return name + "=" + value;
     }
 

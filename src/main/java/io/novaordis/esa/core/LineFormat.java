@@ -16,25 +16,16 @@
 
 package io.novaordis.esa.core;
 
-import io.novaordis.esa.ParsingException;
-import io.novaordis.esa.core.event.Event;
-
 /**
- * A line parser gets a line (as String) and turns it into an Event.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/5/16
+ * @since 2/6/16
  */
-public interface LineParser {
+public interface LineFormat {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
-
-    Event parseLine(String line) throws ParsingException;
-
-    LineFormat getLineFormat();
 
 }

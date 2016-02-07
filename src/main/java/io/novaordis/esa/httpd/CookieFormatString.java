@@ -30,12 +30,14 @@ public class CookieFormatString extends ParameterizedFormatStringBase implements
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String cookie;
+    private String cookieName;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
-     * @param formatStringLiteral as declared in the format specification, example: %{c,Some-Cookie}
+     * @param formatStringLiteral - we expect a cookie format specification (%{c,Some-Cookie}) to start the given
+     *                            string, but it is acceptable that other format strings follow, without any
+     *                            intermediary space. They will be ignored.
      *
      * @throws IllegalArgumentException if the literal does not match the expected pattern.
      */
@@ -48,19 +50,19 @@ public class CookieFormatString extends ParameterizedFormatStringBase implements
     @Override
     public String getLiteral() {
 
-        return PREFIX + cookie + "}";
+        return PREFIX + cookieName + "}";
     }
 
     @Override
     public String getParameter() {
 
-        return cookie;
+        return cookieName;
     }
 
     @Override
     public void setParameter(String parameter) {
 
-        cookie = parameter;
+        cookieName = parameter;
     }
 
     // ParameterizedFormatStringBase overrides -------------------------------------------------------------------------
@@ -78,8 +80,8 @@ public class CookieFormatString extends ParameterizedFormatStringBase implements
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public String getCookie() {
-        return cookie;
+    public String getCookieName() {
+        return cookieName;
     }
 
     @Override

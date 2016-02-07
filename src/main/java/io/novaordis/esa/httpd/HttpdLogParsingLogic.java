@@ -24,9 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Deprecated by LineStreamParser mechanism. Get rid of it.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
+@Deprecated
 public class HttpdLogParsingLogic extends ProcessingLogicBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
@@ -37,15 +40,15 @@ public class HttpdLogParsingLogic extends ProcessingLogicBase {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private HttpdLogParser logParser;
+//    private HttpdLogParser logParser;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public HttpdLogParsingLogic(HttpdLogFormat httpdLogFormat) {
 
         super();
-
-        this.logParser = new HttpdLogParser(httpdLogFormat);
+//
+//        this.logParser = new HttpdLogParser(httpdLogFormat);
 
         log.debug(this + " constructed");
     }
@@ -54,17 +57,13 @@ public class HttpdLogParsingLogic extends ProcessingLogicBase {
 
     public HttpdLogFormat getHttpdLogFormat() {
 
-        if (logParser == null) {
-            return null;
-        }
+//        if (logParser == null) {
+//            return null;
+//        }
+//
+//        return logParser.getLogFormat();
 
-        return logParser.getLogFormat();
-    }
-
-    @Override
-    public String toString() {
-
-        return "HttpdLogParsingLogic[" + logParser + "]";
+        throw new RuntimeException("NYE");
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -74,24 +73,25 @@ public class HttpdLogParsingLogic extends ProcessingLogicBase {
     @Override
     protected Event processInternal(Event inputEvent) {
 
-        if (!(inputEvent instanceof StringEvent)) {
-
-            return new FaultEvent(this + " can only handle StringEvents and it got " + inputEvent);
-        }
-
-        String s = ((StringEvent)inputEvent).get();
-
-        try {
-
-            HttpdLogLine logLine = logParser.parse(s);
-            //noinspection UnnecessaryLocalVariable
-            HttpEvent event = logLine.toEvent();
-            return event;
-        }
-        catch (Exception e) {
-
-            return new FaultEvent("httpd log line parsing failed: " + e.getMessage());
-        }
+        throw new RuntimeException("NYE");
+//        if (!(inputEvent instanceof StringEvent)) {
+//
+//            return new FaultEvent(this + " can only handle StringEvents and it got " + inputEvent);
+//        }
+//
+//        String s = ((StringEvent)inputEvent).get();
+//
+//        try {
+//
+//            HttpdLogLine logLine = logParser.parse(s);
+//            //noinspection UnnecessaryLocalVariable
+//            HttpEvent event = logLine.toEvent();
+//            return event;
+//        }
+//        catch (Exception e) {
+//
+//            return new FaultEvent("httpd log line parsing failed: " + e.getMessage());
+//        }
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

@@ -16,8 +16,18 @@
 
 package io.novaordis.esa.httpd;
 
+import io.novaordis.esa.core.event.IntegerProperty;
+import io.novaordis.esa.core.event.LongProperty;
+import io.novaordis.esa.core.event.MapProperty;
+import io.novaordis.esa.core.event.StringProperty;
 import io.novaordis.esa.core.event.TimedEvent;
 import io.novaordis.esa.core.event.TimedEventBase;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A HTTP request/response as processed by a web server.
@@ -40,7 +50,7 @@ public class HttpEvent extends TimedEventBase implements TimedEvent {
     public static final String REMOTE_USER = "remote-user";
     public static final String RESPONSE_ENTITY_BODY_SIZE = "response-body-size";
     public static final String REQUEST_PROCESSING_TIME = "request-processing-time";
-    public static final String QUERY_STRING = "query";
+    public static final String QUERY = "query";
     public static final String REQUEST_HEADERS = "request-headers";
     public static final String RESPONSE_HEADERS = "response-headers";
     public static final String COOKIES = "cookies";
@@ -51,17 +61,128 @@ public class HttpEvent extends TimedEventBase implements TimedEvent {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public HttpEvent(long timestamp) {
+    public HttpEvent(Long timestamp) {
         super(timestamp);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public String getRemoteHost() {
+        return getString(REMOTE_HOST);
+    }
+
+    public String getRemoteLogname() {
+        return getString(REMOTE_LOGNAME);
+    }
+
+    public String getRemoteUser() {
+        return getString(REMOTE_USER);
+    }
+
+    public String getMethod() {
+        return getString(METHOD);
+    }
+
+    public String getPath() {
+        return getString(PATH);
+    }
+
+    public String getHttpVersion() {
+        return getString(HTTP_VERSION);
+    }
+
+    public String getFirstRequestLine() {
+
+        String method = getMethod();
+        String path = getPath();
+        String version = getHttpVersion();
+
+        if (method == null || path == null || version == null) {
+            return null;
+        }
+
+        return method + " " + path + " " + version;
+    }
+
+    public Integer getStatusCode() {
+        return getInteger(STATUS_CODE);
+    }
+
+    public Integer getOriginalRequestStatusCode() {
+        return getInteger(ORIGINAL_REQUEST_STATUS_CODE);
+    }
+
+    public Long getResponseEntityBodySize() {
+        return getLong(RESPONSE_ENTITY_BODY_SIZE);
+    }
+
+    public String getThreadName() {
+        return getString(THREAD_NAME);
+    }
+
+    public String getQueryString() {
+
+        MapProperty p = getMapProperty(QUERY);
+
+        if (p == null) {
+            return null;
+        }
+
+        String s = "";
+
+        Map<String, Object> m = p.getMap();
+        List<String> keys = new ArrayList<>(m.keySet());
+        Collections.sort(keys);
+
+        for(Iterator<String> ki = keys.iterator(); ki.hasNext(); ) {
+            String key = ki.next();
+            s += key + "=" + m.get(key);
+            if (ki.hasNext()) {
+                s += "&";
+            }
+        }
+
+        return s;
+    }
+
+    public Long getRequestProcessingTimeMs() {
+        return getLong(REQUEST_PROCESSING_TIME);
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
+
+    private String getString(String propertyName) {
+
+        StringProperty p = getStringProperty(propertyName);
+
+        if (p == null) {
+            return null;
+        }
+
+        return p.getString();
+    }
+
+    private Integer getInteger(String propertyName) {
+
+        IntegerProperty p = getIntegerProperty(propertyName);
+        if (p == null) {
+            return null;
+        }
+        return p.getInteger();
+    }
+
+    private Long getLong(String propertyName) {
+
+        LongProperty p = getLongProperty(propertyName);
+        if (p == null) {
+            return null;
+        }
+        return p.getLong();
+    }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 

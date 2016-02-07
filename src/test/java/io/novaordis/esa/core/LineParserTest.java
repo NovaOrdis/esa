@@ -16,6 +16,12 @@
 
 package io.novaordis.esa.core;
 
+import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.FaultEvent;
+import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/5/16
@@ -32,11 +38,27 @@ public abstract class LineParserTest {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    @Test
+    public void happyPath() throws Exception {
+
+        String format = getValidFormatForLineParserToTest();
+        LineParser lp = getLineParserToTest(format);
+        String line = getValidLineForLineParserToTest();
+
+        Event e = lp.parseLine(line);
+
+        assertFalse(e instanceof FaultEvent);
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    protected abstract LineParser getLineParserToTest() throws Exception;
+    protected abstract LineParser getLineParserToTest(String format) throws Exception;
+
+    protected abstract String getValidFormatForLineParserToTest() throws Exception;
+
+    protected abstract String getValidLineForLineParserToTest() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

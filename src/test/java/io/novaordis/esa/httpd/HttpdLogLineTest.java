@@ -145,18 +145,10 @@ public class HttpdLogLineTest {
     @Test
     public void toEvent_NoTimestamp() throws Exception {
 
-        HttpdLogLine e = new HttpdLogLine();
-
-        assertNull(e.getTimestamp());
-
-        try {
-
-            e.toEvent();
-            fail("should have thrown exception");
-        }
-        catch(IllegalStateException ise) {
-            log.info(ise.getMessage());
-        }
+        HttpdLogLine logLine = new HttpdLogLine();
+        assertNull(logLine.getTimestamp());
+        HttpEvent event = logLine.toEvent();
+        assertNull(event.getTimestamp());
     }
 
     @Test
@@ -168,7 +160,7 @@ public class HttpdLogLineTest {
 
         HttpEvent event = e.toEvent();
 
-        assertEquals(1L, event.getTimestamp());
+        assertEquals(1L, event.getTimestamp().longValue());
     }
 
     @Test
@@ -183,7 +175,7 @@ public class HttpdLogLineTest {
 
         HttpEvent event = e.toEvent();
 
-        assertEquals(1L, event.getTimestamp());
+        assertEquals(1L, event.getTimestamp().longValue());
         assertEquals(HTTPMethod.PUT.name(), ((StringProperty)event.getProperty(HttpEvent.METHOD)).getString());
         assertEquals("/test/", ((StringProperty)event.getProperty(HttpEvent.PATH)).getString());
         assertEquals("HTTP/1.1", ((StringProperty) event.getProperty(HttpEvent.HTTP_VERSION)).getString());

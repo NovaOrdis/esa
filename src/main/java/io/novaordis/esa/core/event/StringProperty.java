@@ -30,6 +30,10 @@ public class StringProperty extends PropertyBase implements Property {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    public StringProperty(String name) {
+        this(name, null);
+    }
+
     public StringProperty(String name, String value) {
         super(name, value);
     }
@@ -39,6 +43,11 @@ public class StringProperty extends PropertyBase implements Property {
     @Override
     public Class getType() {
         return String.class;
+    }
+
+    @Override
+    public StringProperty fromString(String s) {
+        return new StringProperty(getName(), s);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -52,7 +61,12 @@ public class StringProperty extends PropertyBase implements Property {
     public String toString() {
 
         String value = getString();
-        return getName() + "=" + (value == null ? null : "\"" + value + "\"");
+
+        if (value == null) {
+            return getName();
+        }
+
+        return getName() + "=" + "\"" + value + "\"";
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

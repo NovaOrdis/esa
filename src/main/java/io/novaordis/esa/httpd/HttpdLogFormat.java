@@ -16,6 +16,8 @@
 
 package io.novaordis.esa.httpd;
 
+import io.novaordis.esa.core.LineFormat;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -26,7 +28,7 @@ import java.util.List;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class HttpdLogFormat {
+public class HttpdLogFormat implements LineFormat {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -93,9 +95,13 @@ public class HttpdLogFormat {
         this.formatStrings = Arrays.asList(formatStrings);
     }
 
-    public HttpdLogFormat(String httpdFormatAsString) throws Exception {
+    public HttpdLogFormat(String formatSpecification) throws Exception {
 
-        this.formatStrings = FormatString.fromString(httpdFormatAsString);
+        if (formatSpecification == null) {
+            throw new IllegalArgumentException("null format specification");
+        }
+
+        this.formatStrings = FormatString.fromString(formatSpecification);
     }
 
     /**

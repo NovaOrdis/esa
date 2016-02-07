@@ -19,6 +19,7 @@ package io.novaordis.esa.core.event;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -43,11 +44,30 @@ public abstract class PropertyTest {
         assertEquals("test", p.getName());
     }
 
+    @Test
+    public void fromString() throws Exception {
+
+        Property p = getPropertyToTest("test");
+        Object value = getAppropriateValueForPropertyToTest();
+        String valueAsString = value.toString();
+
+        Property p2 = p.fromString(valueAsString);
+
+        assertNotEquals(p2, p);
+
+        assertEquals(value, p2.getValue());
+        assertEquals(p.getName(), p2.getName());
+        assertEquals(p.getType(), p2.getType());
+        assertEquals(p.getMeasureUnit(), p2.getMeasureUnit());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
     protected abstract Property getPropertyToTest(String name);
+
+    protected abstract Object getAppropriateValueForPropertyToTest();
 
     // Private ---------------------------------------------------------------------------------------------------------
 

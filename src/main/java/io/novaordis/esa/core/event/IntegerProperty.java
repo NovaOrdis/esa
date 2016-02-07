@@ -30,6 +30,10 @@ public class IntegerProperty extends PropertyBase implements Property {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    public IntegerProperty(String name) {
+        this(name, null);
+    }
+
     public IntegerProperty(String name, Integer value) {
         super(name, value);
     }
@@ -39,6 +43,18 @@ public class IntegerProperty extends PropertyBase implements Property {
     @Override
     public Class getType() {
         return Integer.class;
+    }
+
+    @Override
+    public Property fromString(String s) throws IllegalArgumentException {
+
+        try {
+            int i = Integer.valueOf(s);
+            return new IntegerProperty(getName(), i);
+        }
+        catch(Exception e) {
+            throw new IllegalArgumentException("\"" + s + "\" cannot be converted to an IntegerProperty value");
+        }
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

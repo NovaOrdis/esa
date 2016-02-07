@@ -17,8 +17,11 @@
 package io.novaordis.esa.core.event;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -27,6 +30,8 @@ import static org.junit.Assert.assertEquals;
 public class LongPropertyTest extends PropertyTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(LongPropertyTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -47,6 +52,20 @@ public class LongPropertyTest extends PropertyTest {
         assertEquals(Long.class, sp.getType());
     }
 
+    @Test
+    public void fromString_InvalidValue() throws Exception {
+
+        LongProperty lp = new LongProperty("test");
+
+        try {
+            lp.fromString("not a long");
+            fail("should have thrown Exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
@@ -54,6 +73,12 @@ public class LongPropertyTest extends PropertyTest {
     @Override
     protected LongProperty getPropertyToTest(String name) {
         return new LongProperty(name, 1L);
+    }
+
+    @Override
+    protected Long getAppropriateValueForPropertyToTest() {
+
+        return 1L;
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

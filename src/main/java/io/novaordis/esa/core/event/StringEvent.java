@@ -20,7 +20,7 @@ package io.novaordis.esa.core.event;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class StringEvent extends EventBase {
+public class StringEvent extends GenericEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 

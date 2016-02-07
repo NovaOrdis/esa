@@ -38,10 +38,10 @@ public interface Event {
     Property getProperty(String name);
 
     /**
-     * @return the corresponding MapProperty or null if there is no such MapProperty. Note that the method will
-     * return null if a property with the given name exists, but it is not a MapProperty.
+     * @return the corresponding StringProperty or null if there is no such StringProperty. Note that the method will
+     * return null if a property with the given name exists, but it is not a StringProperty.
      */
-    MapProperty getMapProperty(String mapPropertyName);
+    StringProperty getStringProperty(String stringPropertyName);
 
     /**
      * @return the corresponding LongProperty or null if there is no such LongProperty. Note that the method will
@@ -56,9 +56,18 @@ public interface Event {
     IntegerProperty getIntegerProperty(String integerPropertyName);
 
     /**
+     * @return the corresponding MapProperty or null if there is no such MapProperty. Note that the method will
+     * return null if a property with the given name exists, but it is not a MapProperty.
+     */
+    MapProperty getMapProperty(String mapPropertyName);
+
+    /**
      * Stores the property, replacing the old one if exists.
      *
      * If it is a map and the map already exists, the contents will be merged.
+     *
+     * If the implementation supports it, the order in which the properties are set is remembered, so methods
+     * like getPropertyList() make sense for those.
      *
      * @return the old property with the same name, or null.
      *

@@ -74,7 +74,7 @@ public enum FormatStrings implements FormatString {
     //
     // The query string, excluding the '?' character. Usually enclosed in quotes.
     //
-    QUERY_STRING("%q", String.class, HttpEvent.QUERY_STRING, Map.class),
+    QUERY_STRING("%q", String.class, HttpEvent.QUERY, Map.class),
 
     //
     // First line of request. Note that the first line is enclosed in quotes, you must explicitly specify the
