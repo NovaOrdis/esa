@@ -27,6 +27,7 @@ import io.novaordis.esa.core.EventProcessor;
 import io.novaordis.esa.core.InputStreamInitiator;
 import io.novaordis.esa.core.LineParser;
 import io.novaordis.esa.core.LineStreamParser;
+import io.novaordis.esa.core.OutputFormatter;
 import io.novaordis.esa.core.OutputStreamTerminator;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.StringEventConverter;

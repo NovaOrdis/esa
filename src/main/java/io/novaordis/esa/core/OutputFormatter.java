@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.clad;
+package io.novaordis.esa.core;
 
 import io.novaordis.esa.core.ClosedException;
 import io.novaordis.esa.core.OutputStreamConversionLogic;

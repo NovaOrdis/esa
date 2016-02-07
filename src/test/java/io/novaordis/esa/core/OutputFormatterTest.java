@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.clad;
+package io.novaordis.esa.core;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>

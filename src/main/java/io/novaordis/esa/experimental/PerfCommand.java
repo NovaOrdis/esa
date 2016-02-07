@@ -20,7 +20,7 @@ import io.novaordis.clad.application.ApplicationRuntime;
 import io.novaordis.clad.command.CommandBase;
 import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.esa.clad.EventsApplicationRuntime;
-import io.novaordis.esa.clad.OutputFormatter;
+import io.novaordis.esa.core.OutputFormatter;
 import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.FaultEvent;

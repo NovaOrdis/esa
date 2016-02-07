@@ -22,7 +22,7 @@ import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.clad.option.Option;
 import io.novaordis.clad.option.StringOption;
 import io.novaordis.esa.clad.EventsApplicationRuntime;
-import io.novaordis.esa.clad.OutputFormatter;
+import io.novaordis.esa.core.OutputFormatter;
 import io.novaordis.esa.core.OutputStreamTerminator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
