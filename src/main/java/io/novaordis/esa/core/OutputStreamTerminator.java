@@ -55,6 +55,8 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
     // those to clash
     private volatile boolean subStopped;
 
+    private volatile boolean disabled;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public OutputStreamTerminator() {
@@ -108,6 +110,26 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
         return conversionLogic;
     }
 
+    @Override
+    public void disable() {
+
+        disabled = true;
+    }
+
+    /**
+     * Handle disable.
+     */
+    @Override
+    public void start() throws Exception {
+
+        if (disabled) {
+            stop();
+            return;
+        }
+
+        super.start();
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     public OutputStream getOutputStream() {
@@ -128,6 +150,13 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
 
     @Override
     protected void insureReadyForStart() throws IllegalStateException {
+
+        if (disabled) {
+            //
+            // won't ever start
+            //
+            return;
+        }
 
         //
         // we need the input queue, the conversion logic and the output stream in place

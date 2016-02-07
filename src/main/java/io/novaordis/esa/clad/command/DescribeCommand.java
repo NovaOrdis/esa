@@ -52,14 +52,12 @@ public class DescribeCommand extends CommandBase {
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private Set<String> signatures;
-    private BlockingQueue<Event> terminatorQueue;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public DescribeCommand() {
 
         signatures = new HashSet<>();
-        terminatorQueue = new ArrayBlockingQueue<Event>(100);
     }
 
     // CommandBase override --------------------------------------------------------------------------------------------
@@ -68,7 +66,7 @@ public class DescribeCommand extends CommandBase {
     public void execute(Configuration configuration, ApplicationRuntime r) throws Exception {
 
         EventsApplicationRuntime runtime = (EventsApplicationRuntime)r;
-        runtime.getTerminator().setInputQueue(terminatorQueue);
+        runtime.getTerminator().disable();
         runtime.start();
 
         BlockingQueue<Event> inputQueue = runtime.getOutputQueue();
@@ -78,10 +76,6 @@ public class DescribeCommand extends CommandBase {
             Event event = inputQueue.take();
             if (event == null || event instanceof EndOfStreamEvent) {
                 break;
-            }
-
-            if (event instanceof FaultEvent) {
-                terminatorQueue.put(event);
             }
 
             analyze(event);
@@ -106,7 +100,8 @@ public class DescribeCommand extends CommandBase {
         if (!signatures.contains(signature)) {
 
             signatures.add(signature);
-            terminatorQueue.put(new StringEvent(getSignature(event, YAML)));
+            System.out.println(getSignature(event, YAML));
+            //terminatorQueue.put(new StringEvent(getSignature(event, YAML)));
         }
     }
 
