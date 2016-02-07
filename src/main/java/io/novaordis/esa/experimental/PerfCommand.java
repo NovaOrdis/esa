@@ -95,7 +95,7 @@ public class PerfCommand extends CommandBase {
 
         EventsApplicationRuntime runtime = (EventsApplicationRuntime)r;
         runtime.getTerminator().setInputQueue(terminatorQueue);
-        ((OutputFormatter)runtime.getTerminator().getConversionLogic()).setFormat("timestamp, request-count, total-processing-time");
+        ((OutputFormatter)runtime.getTerminator().getConversionLogic()).setOutputFormat("timestamp, request-count, total-processing-time");
         runtime.start();
 
         BlockingQueue<Event> inputQueue = runtime.getOutputQueue();

@@ -22,12 +22,16 @@ import io.novaordis.esa.core.event.MockEvent;
 import io.novaordis.esa.core.event.MockProperty;
 import io.novaordis.esa.core.event.MockTimedEvent;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -36,6 +40,8 @@ import static org.junit.Assert.assertTrue;
 public class OutputFormatterTest extends OutputStreamConversionLogicTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(OutputFormatterTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -66,7 +72,7 @@ public class OutputFormatterTest extends OutputStreamConversionLogicTest {
     }
 
     @Test
-    public void process_RegularUntimedEvent() throws Exception {
+    public void process_RegularUntimedEvent_NoConfiguredOutputFormat() throws Exception {
 
         OutputFormatter c = getConversionLogicToTest();
 
@@ -86,7 +92,7 @@ public class OutputFormatterTest extends OutputStreamConversionLogicTest {
     }
 
     @Test
-    public void process_RegularTimedEvent() throws Exception {
+    public void process_RegularTimedEvent_NoConfiguredOutputFormat() throws Exception {
 
         OutputFormatter c = getConversionLogicToTest();
 
@@ -106,6 +112,85 @@ public class OutputFormatterTest extends OutputStreamConversionLogicTest {
 
         String expected = OutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(d) + ", C value, B value, A value\n";
         assertEquals(expected, s);
+    }
+
+    @Test
+    public void process_RegularUntimedEvent_WithConfiguredOutputFormat() throws Exception {
+
+        OutputFormatter c = getConversionLogicToTest();
+
+        c.setOutputFormat("B, no-such-property, C");
+
+        MockEvent me = new MockEvent();
+
+        // priority inverse to the name order
+        me.setProperty(new MockProperty("A", "A value", 3));
+        me.setProperty(new MockProperty("B", "B value", 2));
+        me.setProperty(new MockProperty("C", "C value", 1));
+
+        assertTrue(c.process(me));
+
+        byte[] content = c.getBytes();
+        String s = new String(content);
+
+        assertEquals("B value, , C value\n", s);
+    }
+
+    @Test
+    public void process_RegularTimedEvent_WithConfiguredOutputFormat() throws Exception {
+
+        OutputFormatter c = getConversionLogicToTest();
+
+        c.setOutputFormat("B, no-such-property, timestamp, C");
+
+        Date d = new SimpleDateFormat("MM/yy/dd HH:mm:ss").parse("01/16/01 01:01:01");
+
+        MockTimedEvent me = new MockTimedEvent(d.getTime());
+
+        // priority inverse to the name order
+        me.setProperty(new MockProperty("A", "A value", 3));
+        me.setProperty(new MockProperty("B", "B value", 2));
+        me.setProperty(new MockProperty("C", "C value", 1));
+
+        assertTrue(c.process(me));
+
+        byte[] content = c.getBytes();
+        String s = new String(content);
+
+        String expected = "B value, , " + OutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(d) + ", C value\n";
+        assertEquals(expected, s);
+    }
+
+    // setOutputFormat() -----------------------------------------------------------------------------------------------
+
+    @Test
+    public void setOutputFormat_Null() throws Exception {
+
+        OutputFormatter o = getConversionLogicToTest();
+        o.setOutputFormat(null);
+        assertNull(o.getOutputFormat());
+    }
+
+    @Test
+    public void setOutputFormat_OneField() throws Exception {
+
+        OutputFormatter o = getConversionLogicToTest();
+
+        o.setOutputFormat("a");
+
+        String s = o.getOutputFormat();
+        assertEquals("a", s);
+    }
+
+    @Test
+    public void setOutputFormat_TwoFields() throws Exception {
+
+        OutputFormatter o = getConversionLogicToTest();
+
+        o.setOutputFormat("a,b");
+
+        String s = o.getOutputFormat();
+        assertEquals("a, b", s);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

@@ -27,8 +27,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -50,12 +52,13 @@ public class OutputFormatter implements OutputStreamConversionLogic {
 
     private StringBuilder sb;
     private volatile boolean closed;
-    private String commandLineRequestedOutputFormat;
+    private List<String> outputFormat;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public OutputFormatter() {
         sb = new StringBuilder();
+        outputFormat = null;
     }
 
     // OutputStreamConversionLogic implementation ----------------------------------------------------------------------
@@ -112,12 +115,42 @@ public class OutputFormatter implements OutputStreamConversionLogic {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public void setFormat(String format) {
-        this.commandLineRequestedOutputFormat = format;
+    /**
+     * We interpret the given format as comma separated property names (plus "timestamp")
+     */
+    public void setOutputFormat(String format) {
+
+        if (format == null) {
+            this.outputFormat = null;
+            return;
+        }
+
+        outputFormat = new ArrayList<>();
+
+        for(StringTokenizer st = new StringTokenizer(format, ","); st.hasMoreTokens(); ) {
+
+            outputFormat.add(st.nextToken().trim());
+        }
     }
 
-    public String getFormat() {
-        return commandLineRequestedOutputFormat;
+    public String getOutputFormat() {
+
+        if (outputFormat == null) {
+            return null;
+        }
+
+        String s = "";
+
+        for(Iterator<String> is = outputFormat.iterator(); is.hasNext(); ) {
+
+            s += is.next();
+
+            if (is.hasNext()) {
+                s += ", ";
+            }
+        }
+
+        return s;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -140,6 +173,63 @@ public class OutputFormatter implements OutputStreamConversionLogic {
             sb.append(event.toString()).append("\n");
             return true;
         }
+
+        if (outputFormat != null) {
+            return externalizeEventInOutputFormat(outputFormat, event);
+        }
+        else {
+            return externalizeEventViaIntrospection(event);
+        }
+    }
+
+    /**
+     * @return true if there are bytes to be collected.
+     */
+    private boolean externalizeEventInOutputFormat(List<String> outputFormat, Event event) {
+
+        if (outputFormat == null) {
+            throw new IllegalArgumentException("null output format");
+        }
+
+        for(Iterator<String> fni = outputFormat.iterator(); fni.hasNext(); ) {
+
+            String fieldName = fni.next();
+
+            if ("timestamp".equals(fieldName)) {
+                Long timestamp = null;
+                if (event instanceof TimedEvent) {
+                    timestamp = ((TimedEvent)event).getTimestamp();
+                }
+                externalizeTimestamp(timestamp);
+            }
+            else {
+
+                Object externalizedValue = null;
+                Property p = event.getProperty(fieldName);
+                if (p != null) {
+                    externalizedValue = p.externalizeValue();
+                }
+                if (externalizedValue == null) {
+                    sb.append(NULL_EXTERNALIZATION);
+                }
+                else {
+                    sb.append(externalizedValue);
+                }
+            }
+
+            if (fni.hasNext()) {
+                sb.append(", ");
+            }
+        }
+
+        sb.append("\n");
+        return true;
+    }
+
+    /**
+     * @return true if there are bytes to be collected.
+     */
+    private boolean externalizeEventViaIntrospection(Event event) {
 
         Set<Property> properties = event.getProperties();
         List <Property> orderedProperties = new ArrayList<>(properties);
@@ -222,6 +312,15 @@ public class OutputFormatter implements OutputStreamConversionLogic {
         sb.append("\n");
 
         return true;
+    }
+
+    private void externalizeTimestamp(Long timestamp) {
+        if (timestamp == null) {
+            sb.append(NULL_EXTERNALIZATION);
+        }
+        else {
+            sb.append(DEFAULT_TIMESTAMP_FORMAT.format(timestamp));
+        }
     }
 
     // Inner classes ---------------------------------------------------------------------------------------------------

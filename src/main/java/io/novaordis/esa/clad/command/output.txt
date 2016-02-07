@@ -10,8 +10,11 @@ Note that -o|--output-format is not required, the stream processor is capable of
 the events and inferring output fields (usually timestamp and properties). However, <output-format>
 can be used to enforce a specific output format. It is usually assembled using event property
 names. If the event does not contain a specified property, or if it does not have a value for it,
-the output for that property will be the empty string. If the property is a Map, the following
-notation can be used:
+the output for that property will be the empty string.
+
+The event's timestamp can be specified as "timestamp".
+
+If the property is a Map, the following notation can be used:
 
     map-property-name.key-name
 

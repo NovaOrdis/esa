@@ -75,7 +75,7 @@ public class OutputCommand extends CommandBase {
 
         StringOption outputFormatOption = (StringOption)getOption(OUTPUT_FORMAT_OPTION);
         if (outputFormatOption != null) {
-            ((OutputFormatter) terminator.getConversionLogic()).setFormat(outputFormatOption.getString());
+            ((OutputFormatter) terminator.getConversionLogic()).setOutputFormat(outputFormatOption.getString());
         }
 
         runtime.start();
