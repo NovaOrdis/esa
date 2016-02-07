@@ -53,7 +53,7 @@ public class OutputCommand extends CommandBase {
     // Command implementation ------------------------------------------------------------------------------------------
 
     @Override
-    public Set<Option> requiredOptions() {
+    public Set<Option> optionalOptions() {
         return Collections.singleton(OUTPUT_FORMAT_OPTION);
     }
 
@@ -72,8 +72,11 @@ public class OutputCommand extends CommandBase {
 
         OutputStreamTerminator terminator = runtime.getTerminator();
         terminator.setInputQueue(runtime.getOutputQueue());
-        ((OutputFormatter)terminator.getConversionLogic()).
-                setFormat(((StringOption)getOption(OUTPUT_FORMAT_OPTION)).getString());
+
+        StringOption outputFormatOption = (StringOption)getOption(OUTPUT_FORMAT_OPTION);
+        if (outputFormatOption != null) {
+            ((OutputFormatter) terminator.getConversionLogic()).setFormat(outputFormatOption.getString());
+        }
 
         runtime.start();
         runtime.waitForEndOfStream();

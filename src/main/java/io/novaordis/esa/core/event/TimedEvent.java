@@ -35,4 +35,7 @@ public interface TimedEvent extends Event {
      */
     Long getTimestamp();
 
+    void setTimestamp(Long timestamp);
+
+
 }

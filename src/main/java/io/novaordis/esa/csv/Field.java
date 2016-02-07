@@ -111,6 +111,20 @@ public class Field {
         return type;
     }
 
+    public void setValue(Object value) {
+
+        if (value == null) {
+            this.value = null;
+        }
+        else {
+            if (!value.getClass().equals(getType())) {
+                throw new IllegalArgumentException(
+                        "the value type (" + value.getClass() + ") does not match the field's type " + getType());
+            }
+            this.value = value;
+        }
+    }
+
     public Object getValue() {
         return value;
     }

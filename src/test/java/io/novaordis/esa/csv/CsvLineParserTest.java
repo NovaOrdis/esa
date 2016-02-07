@@ -19,12 +19,16 @@ package io.novaordis.esa.csv;
 import io.novaordis.esa.core.LineParser;
 import io.novaordis.esa.core.LineParserTest;
 import io.novaordis.esa.core.event.GenericEvent;
+import io.novaordis.esa.core.event.GenericTimedEvent;
+import io.novaordis.esa.core.event.IntegerProperty;
 import io.novaordis.esa.core.event.Property;
 import io.novaordis.esa.core.event.StringProperty;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -49,28 +53,6 @@ public class CsvLineParserTest extends LineParserTest {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
-
-    // buildHeader() ---------------------------------------------------------------------------------------------------
-
-    @Test
-    public void buildHeader() throws Exception {
-
-        CsvFormat format = new CsvFormat("a, b, c");
-        List<Field> header = CsvLineParser.buildHeaders(format);
-        assertEquals(3, header.size());
-
-        Field h = header.get(0);
-        assertEquals("a", h.getName());
-        assertTrue(String.class.equals(h.getType()));
-
-        Field h2 = header.get(1);
-        assertEquals("b", h2.getName());
-        assertTrue(String.class.equals(h2.getType()));
-
-        Field h3 = header.get(2);
-        assertEquals("c", h3.getName());
-        assertTrue(String.class.equals(h3.getType()));
-    }
 
     // constructors ----------------------------------------------------------------------------------------------------
 
@@ -150,6 +132,53 @@ public class CsvLineParserTest extends LineParserTest {
         }
     }
 
+    @Test
+    public void constructor_Headers_NoTimestamp() throws Exception {
+
+        CsvLineParser p = new CsvLineParser("a, b, c");
+
+        List<Field> headers = p.getHeaders();
+        assertEquals(3, headers.size());
+
+        Field h = headers.get(0);
+        assertEquals("a", h.getName());
+        assertTrue(String.class.equals(h.getType()));
+
+        Field h2 = headers.get(1);
+        assertEquals("b", h2.getName());
+        assertTrue(String.class.equals(h2.getType()));
+
+        Field h3 = headers.get(2);
+        assertEquals("c", h3.getName());
+        assertTrue(String.class.equals(h3.getType()));
+
+        assertEquals(-1, p.getTimestampFieldIndex());
+    }
+
+    @Test
+    public void constructor_Headers_Timestamp() throws Exception {
+
+        CsvLineParser p = new CsvLineParser("T(time:yyyy), b, c");
+
+        List<Field> headers = p.getHeaders();
+        assertEquals(3, headers.size());
+
+        Field h = headers.get(0);
+        assertEquals("T", h.getName());
+        assertTrue(Date.class.equals(h.getType()));
+        assertTrue(h.getFormat() instanceof SimpleDateFormat);
+
+        Field h2 = headers.get(1);
+        assertEquals("b", h2.getName());
+        assertTrue(String.class.equals(h2.getType()));
+
+        Field h3 = headers.get(2);
+        assertEquals("c", h3.getName());
+        assertTrue(String.class.equals(h3.getType()));
+
+        assertEquals(0, p.getTimestampFieldIndex());
+    }
+
     // parse() ---------------------------------------------------------------------------------------------------------
 
     @Test
@@ -221,6 +250,79 @@ public class CsvLineParserTest extends LineParserTest {
         StringProperty p2 = (StringProperty)properties.get(1);
         assertEquals("b", p2.getName());
         assertEquals("B", p2.getValue());
+    }
+
+
+    @Test
+    public void parse_UntimedEvent() throws Exception {
+
+        CsvLineParser parser = new CsvLineParser("brand(string), count(int)");
+
+        GenericEvent event = (GenericEvent)parser.parseLine("Audi, 5");
+
+        assertNotNull(event);
+
+        List<Property> properties = event.getPropertyList();
+
+        assertEquals(2, properties.size());
+
+        StringProperty p = (StringProperty)properties.get(0);
+        assertEquals("brand", p.getName());
+        assertEquals("Audi", p.getValue());
+
+        IntegerProperty p2 = (IntegerProperty)properties.get(1);
+        assertEquals("count", p2.getName());
+        assertEquals(5, p2.getValue());
+    }
+
+    @Test
+    public void parse_TimedEvent_TimestampFirstInLine() throws Exception {
+
+        CsvLineParser parser = new CsvLineParser("T(time:MMM-dd yyyy HH:mm:ss), brand(string), count(int)");
+
+        GenericTimedEvent event = (GenericTimedEvent)parser.parseLine("Jan-01 2016 12:01:01, BMW, 7");
+        assertNotNull(event);
+
+        Long timestamp = event.getTimestamp();
+        assertEquals(timestamp.longValue(),
+                new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse("16/01/01 12:01:01").getTime());
+
+        List<Property> properties = event.getPropertyList();
+
+        assertEquals(2, properties.size());
+
+        StringProperty p = (StringProperty)properties.get(0);
+        assertEquals("brand", p.getName());
+        assertEquals("BMW", p.getValue());
+
+        IntegerProperty p2 = (IntegerProperty)properties.get(1);
+        assertEquals("count", p2.getName());
+        assertEquals(7, p2.getValue());
+    }
+
+    @Test
+    public void parse_TimedEvent_TimestampNotFirstInLine() throws Exception {
+
+        CsvLineParser parser = new CsvLineParser("brand(string), T(time:MMM-dd yyyy HH:mm:ss), count(int)");
+
+        GenericTimedEvent event = (GenericTimedEvent)parser.parseLine("BMW, Jan-01 2016 12:01:01, 7");
+        assertNotNull(event);
+
+        Long timestamp = event.getTimestamp();
+        assertEquals(timestamp.longValue(),
+                new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse("16/01/01 12:01:01").getTime());
+
+        List<Property> properties = event.getPropertyList();
+
+        assertEquals(2, properties.size());
+
+        StringProperty p = (StringProperty)properties.get(0);
+        assertEquals("brand", p.getName());
+        assertEquals("BMW", p.getValue());
+
+        IntegerProperty p2 = (IntegerProperty)properties.get(1);
+        assertEquals("count", p2.getName());
+        assertEquals(7, p2.getValue());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

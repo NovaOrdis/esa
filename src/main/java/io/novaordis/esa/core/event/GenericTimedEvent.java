@@ -32,7 +32,11 @@ public class GenericTimedEvent extends GenericEvent implements TimedEvent {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    protected GenericTimedEvent(Long timestamp) {
+    public GenericTimedEvent() {
+        this(null);
+    }
+
+    public GenericTimedEvent(Long timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -42,6 +46,12 @@ public class GenericTimedEvent extends GenericEvent implements TimedEvent {
     public Long getTimestamp() {
 
         return timestamp;
+    }
+
+    @Override
+    public void setTimestamp(Long timestamp) {
+
+        this.timestamp = timestamp;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

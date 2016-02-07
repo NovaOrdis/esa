@@ -21,9 +21,12 @@ import io.novaordis.esa.core.LineFormat;
 import io.novaordis.esa.core.LineParser;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.GenericEvent;
+import io.novaordis.esa.core.event.GenericTimedEvent;
 import io.novaordis.esa.core.event.Property;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -39,15 +42,6 @@ public class CsvLineParser implements LineParser {
 
     // Package Protected Static ----------------------------------------------------------------------------------------
 
-    static List<Field> buildHeaders(CsvFormat format) {
-
-        List<Field> headers = new ArrayList<>();
-        for(Field f: format.getFields()) {
-            headers.add(f);
-        }
-        return headers;
-    }
-
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private CsvFormat lineFormat;
@@ -57,6 +51,8 @@ public class CsvLineParser implements LineParser {
     // CSV file dynamically, even without the presence of a line format specification
     //
     private List<Field> headers;
+
+    private int timestampFieldIndex;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -68,7 +64,24 @@ public class CsvLineParser implements LineParser {
     public CsvLineParser(String formatSpecification) throws IllegalArgumentException, InvalidFieldException {
 
         lineFormat = new CsvFormat(formatSpecification);
-        headers = buildHeaders(lineFormat);
+
+        int i = 0;
+        timestampFieldIndex = -1;
+        headers = new ArrayList<>();
+        for(Field f: lineFormat.getFields()) {
+
+            headers.add(f);
+
+            //
+            // the first "Date" fields will be used as timestamp
+            //
+            if (Date.class.equals(f.getType()) && timestampFieldIndex == -1) {
+                // this is our timestamp
+                timestampFieldIndex = i;
+            }
+
+            i++;
+        }
     }
 
     // LineParser implementation ---------------------------------------------------------------------------------------
@@ -82,7 +95,14 @@ public class CsvLineParser implements LineParser {
     @Override
     public Event parseLine(String line) throws ParsingException {
 
-        GenericEvent event = new GenericEvent();
+        Event event;
+        if (timestampFieldIndex >= 0) {
+            event = new GenericTimedEvent();
+        }
+        else {
+            event = new GenericEvent();
+        }
+
         int headerIndex = 0;
 
         for(StringTokenizer st = new StringTokenizer(line, ",");
@@ -91,8 +111,30 @@ public class CsvLineParser implements LineParser {
 
             String tok = st.nextToken().trim();
             Field header = headers.get(headerIndex);
-            Property p = header.toProperty(tok);
-            event.setProperty(p);
+
+            if (headerIndex == timestampFieldIndex) {
+
+                //
+                // this is our timestamp, set the timed event timestamp, and not a regular property
+                //
+                DateFormat dateFormat = (DateFormat)header.getFormat();
+
+                Date d;
+
+                try {
+                    d = dateFormat.parse(tok);
+                }
+                catch(Exception e) {
+                    throw new ParsingException(
+                            "invalid timestamp value \"" + tok + "\", does not match the required timestamp format", e);
+                }
+
+                ((GenericTimedEvent)event).setTimestamp(d.getTime());
+            }
+            else {
+                Property p = header.toProperty(tok);
+                event.setProperty(p);
+            }
         }
 
         return event;
@@ -107,6 +149,14 @@ public class CsvLineParser implements LineParser {
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
+
+    List<Field> getHeaders() {
+        return headers;
+    }
+
+    int getTimestampFieldIndex() {
+        return timestampFieldIndex;
+    }
 
     // Protected -------------------------------------------------------------------------------------------------------
 

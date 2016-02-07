@@ -314,6 +314,37 @@ public class FieldTest {
         }
     }
 
+    // setValue() ------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void setValue_Null() throws Exception {
+
+        Field field = new Field("test", Integer.class);
+        field.setValue(null);
+        assertNull(field.getValue());
+    }
+
+    @Test
+    public void setValue() throws Exception {
+
+        Field field = new Field("test", Integer.class);
+        field.setValue(1);
+        assertEquals(1, field.getValue());
+    }
+
+    @Test
+    public void setValue_IllegalType() throws Exception {
+
+        Field field = new Field("test", Integer.class);
+        try {
+            field.setValue("blah");
+            fail("should throw exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

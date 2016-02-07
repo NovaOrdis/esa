@@ -1,13 +1,17 @@
 
-Turns the event stream into human-readable text. Each event produces its own separate text line.
+Turns the event stream into human-readable, comma separated value text. Each event produces its
+own separate text line.
 
 Usage:
 
-    esa [output] -o|--output-format="<output-format>"
+    esa [output] [-o|--output-format="<output-format>"]
 
-where <output-format> can be assembled using event property names. If the event does not contain
-a specified property, or if it does not have a value for it, the output is the empty string. If
-the property is a Map, the following notation can be used:
+Note that -o|--output-format is not required, the stream processor is capable of introspecting
+the events and inferring output fields (usually timestamp and properties). However, <output-format>
+can be used to enforce a specific output format. It is usually assembled using event property
+names. If the event does not contain a specified property, or if it does not have a value for it,
+the output for that property will be the empty string. If the property is a Map, the following
+notation can be used:
 
     map-property-name.key-name
 
