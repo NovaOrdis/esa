@@ -22,7 +22,6 @@ import io.novaordis.esa.core.LineParser;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.GenericEvent;
 import io.novaordis.esa.core.event.Property;
-import io.novaordis.esa.core.event.StringProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,15 +39,14 @@ public class CsvLineParser implements LineParser {
 
     // Package Protected Static ----------------------------------------------------------------------------------------
 
-    static List<Property> buildHeaders(CsvFormat format) {
+    static List<Field> buildHeaders(CsvFormat format) {
 
-        List<Property> headers = new ArrayList<>();
-        for(String f: format.getFields()) {
-            headers.add(new StringProperty(f));
+        List<Field> headers = new ArrayList<>();
+        for(Field f: format.getFields()) {
+            headers.add(f);
         }
         return headers;
     }
-
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
@@ -58,14 +56,16 @@ public class CsvLineParser implements LineParser {
     // we maintain a header different from the line format because this allows us to discover the structure of a
     // CSV file dynamically, even without the presence of a line format specification
     //
-    private List<Property> headers;
+    private List<Field> headers;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
-     * @throws IllegalArgumentException if the given format is not a valid CSV format specification.
+     * @throws IllegalArgumentException if the given format specification cannot be used to build a CSV format.
+     * @throws InvalidFieldException we determined that the format specification <b>can</b> be used to build a CSV
+     * format but we find an incorrectly specified field (example: invalid type, etc.)
      */
-    public CsvLineParser(String formatSpecification) throws IllegalArgumentException {
+    public CsvLineParser(String formatSpecification) throws IllegalArgumentException, InvalidFieldException {
 
         lineFormat = new CsvFormat(formatSpecification);
         headers = buildHeaders(lineFormat);
@@ -90,8 +90,8 @@ public class CsvLineParser implements LineParser {
             headerIndex ++) {
 
             String tok = st.nextToken().trim();
-            Property header = headers.get(headerIndex);
-            Property p = header.fromString(tok);
+            Field header = headers.get(headerIndex);
+            Property p = header.toProperty(tok);
             event.setProperty(p);
         }
 

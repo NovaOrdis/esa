@@ -21,9 +21,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -65,58 +68,143 @@ public class CsvFormatTest extends LineFormatTest {
     public void constructor1() throws Exception {
 
         CsvFormat csvFormat = new CsvFormat(",");
-        List<String> fields = csvFormat.getFields();
+        List<Field> fields = csvFormat.getFields();
         assertEquals(1, fields.size());
-        assertEquals("", fields.get(0));
+        Field f = fields.get(0);
+        assertNotNull(f);
+        assertEquals(String.class, f.getType());
+        assertNull(f.getValue());
+        assertEquals("CSVField01", f.getName());
     }
 
     @Test
     public void constructor2() throws Exception {
 
         CsvFormat csvFormat = new CsvFormat("   ,");
-        List<String> fields = csvFormat.getFields();
+        List<Field> fields = csvFormat.getFields();
         assertEquals(1, fields.size());
-        assertEquals("", fields.get(0));
+        Field f = fields.get(0);
+        assertNotNull(f);
+        assertEquals(String.class, f.getType());
+        assertNull(f.getValue());
+        assertEquals("CSVField01", f.getName());
     }
 
     @Test
     public void constructor3() throws Exception {
 
         CsvFormat csvFormat = new CsvFormat("  \t \t  ,");
-        List<String> fields = csvFormat.getFields();
+        List<Field> fields = csvFormat.getFields();
         assertEquals(1, fields.size());
-        assertEquals("", fields.get(0));
+        Field f = fields.get(0);
+        assertNotNull(f);
+        assertEquals(String.class, f.getType());
+        assertNull(f.getValue());
+        assertEquals("CSVField01", f.getName());
     }
 
     @Test
     public void constructor4() throws Exception {
 
         CsvFormat csvFormat = new CsvFormat("field1, field2, field3,");
-        List<String> fields = csvFormat.getFields();
+
+        List<Field> fields = csvFormat.getFields();
+
         assertEquals(3, fields.size());
-        assertEquals("field1", fields.get(0));
-        assertEquals("field2", fields.get(1));
-        assertEquals("field3", fields.get(2));
+
+        Field f = fields.get(0);
+        assertEquals(String.class, f.getType());
+        assertNull(f.getValue());
+        assertEquals("field1", f.getName());
+
+        Field f2 = fields.get(1);
+        assertEquals(String.class, f2.getType());
+        assertNull(f2.getValue());
+        assertEquals("field2", f2.getName());
+
+        Field f3 = fields.get(2);
+        assertEquals(String.class, f3.getType());
+        assertNull(f3.getValue());
+        assertEquals("field3", f3.getName());
     }
 
     @Test
     public void constructor5() throws Exception {
 
         CsvFormat csvFormat = new CsvFormat("field1,  ");
-        List<String> fields = csvFormat.getFields();
+        List<Field> fields = csvFormat.getFields();
         assertEquals(1, fields.size());
-        assertEquals("field1", fields.get(0));
+        Field f = fields.get(0);
+        assertEquals(String.class, f.getType());
+        assertNull(f.getValue());
+        assertEquals("field1", f.getName());
     }
 
     @Test
     public void constructor6() throws Exception {
 
         CsvFormat csvFormat = new CsvFormat("a, b, c");
-        List<String> fields = csvFormat.getFields();
+
+        List<Field> fields = csvFormat.getFields();
+
         assertEquals(3, fields.size());
-        assertEquals("a", fields.get(0));
-        assertEquals("b", fields.get(1));
-        assertEquals("c", fields.get(2));
+
+        Field f = fields.get(0);
+        assertEquals(String.class, f.getType());
+        assertNull(f.getValue());
+        assertEquals("a", f.getName());
+
+        Field f2 = fields.get(1);
+        assertEquals(String.class, f2.getType());
+        assertNull(f2.getValue());
+        assertEquals("b", f2.getName());
+
+        Field f3 = fields.get(2);
+        assertEquals(String.class, f3.getType());
+        assertNull(f3.getValue());
+        assertEquals("c", f3.getName());
+    }
+
+    @Test
+    public void constructor_typed() throws Exception {
+
+        CsvFormat csvFormat = new CsvFormat("timestamp(time:yy/MM/dd HH:mm:ss), count(int), duration(long), path");
+
+        List<Field> fields = csvFormat.getFields();
+
+        assertEquals(4, fields.size());
+
+        Field f = fields.get(0);
+        assertEquals(Date.class, f.getType());
+        assertNull(f.getValue());
+        assertEquals("timestamp", f.getName());
+
+        Field f2 = fields.get(1);
+        assertEquals(Integer.class, f2.getType());
+        assertNull(f2.getValue());
+        assertEquals("count", f2.getName());
+
+        Field f3 = fields.get(2);
+        assertEquals(Long.class, f3.getType());
+        assertNull(f3.getValue());
+        assertEquals("duration", f3.getName());
+
+        Field f4 = fields.get(3);
+        assertEquals(String.class, f4.getType());
+        assertNull(f4.getValue());
+        assertEquals("path", f4.getName());
+    }
+
+    @Test
+    public void constructor_invalidType() throws Exception {
+
+        try {
+            new CsvFormat("duration(ms)");
+            fail("should have thrown exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

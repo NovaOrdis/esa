@@ -56,18 +56,18 @@ public class CsvLineParserTest extends LineParserTest {
     public void buildHeader() throws Exception {
 
         CsvFormat format = new CsvFormat("a, b, c");
-        List<Property> header = CsvLineParser.buildHeaders(format);
+        List<Field> header = CsvLineParser.buildHeaders(format);
         assertEquals(3, header.size());
 
-        Property h = header.get(0);
+        Field h = header.get(0);
         assertEquals("a", h.getName());
         assertTrue(String.class.equals(h.getType()));
 
-        Property h2 = header.get(1);
+        Field h2 = header.get(1);
         assertEquals("b", h2.getName());
         assertTrue(String.class.equals(h2.getType()));
 
-        Property h3 = header.get(2);
+        Field h3 = header.get(2);
         assertEquals("c", h3.getName());
         assertTrue(String.class.equals(h3.getType()));
     }
@@ -81,9 +81,9 @@ public class CsvLineParserTest extends LineParserTest {
 
         CsvFormat format = (CsvFormat)p.getLineFormat();
 
-        List<String> fields = format.getFields();
+        List<Field> fields = format.getFields();
         assertEquals(1, fields.size());
-        assertEquals("a", fields.get(0));
+        assertEquals("a", fields.get(0).getName());
     }
 
     @Test
@@ -93,11 +93,11 @@ public class CsvLineParserTest extends LineParserTest {
 
         CsvFormat format = (CsvFormat)p.getLineFormat();
 
-        List<String> fields = format.getFields();
+        List<Field> fields = format.getFields();
         assertEquals(3, fields.size());
-        assertEquals("a", fields.get(0));
-        assertEquals("something", fields.get(1));
-        assertEquals("something-else", fields.get(2));
+        assertEquals("a", fields.get(0).getName());
+        assertEquals("something", fields.get(1).getName());
+        assertEquals("something-else", fields.get(2).getName());
     }
 
     @Test
@@ -107,9 +107,9 @@ public class CsvLineParserTest extends LineParserTest {
 
         CsvFormat format = (CsvFormat)p.getLineFormat();
 
-        List<String> fields = format.getFields();
+        List<Field> fields = format.getFields();
         assertEquals(1, fields.size());
-        assertEquals("", fields.get(0));
+        assertEquals("CSVField01", fields.get(0).getName());
     }
 
     @Test
@@ -119,10 +119,10 @@ public class CsvLineParserTest extends LineParserTest {
 
         CsvFormat format = (CsvFormat)p.getLineFormat();
 
-        List<String> fields = format.getFields();
+        List<Field> fields = format.getFields();
         assertEquals(2, fields.size());
-        assertEquals("", fields.get(0));
-        assertEquals("", fields.get(1));
+        assertEquals("CSVField01", fields.get(0).getName());
+        assertEquals("CSVField02", fields.get(1).getName());
     }
 
     @Test
@@ -131,11 +131,11 @@ public class CsvLineParserTest extends LineParserTest {
         CsvLineParser p = new CsvLineParser("a, b, c");
         CsvFormat format = (CsvFormat)p.getLineFormat();
 
-        List<String> fields = format.getFields();
+        List<Field> fields = format.getFields();
         assertEquals(3, fields.size());
-        assertEquals("a", fields.get(0));
-        assertEquals("b", fields.get(1));
-        assertEquals("c", fields.get(2));
+        assertEquals("a", fields.get(0).getName());
+        assertEquals("b", fields.get(1).getName());
+        assertEquals("c", fields.get(2).getName());
     }
 
     @Test

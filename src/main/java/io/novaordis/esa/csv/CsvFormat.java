@@ -33,14 +33,17 @@ public class CsvFormat implements LineFormat {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private List<String> fields;
+    private int unnamedFieldCounter = 0;
+    private List<Field> fields;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
      * @throws IllegalArgumentException if the given format specification cannot be used to build a CSV format.
+     * @throws InvalidFieldException we determined that the format specification <b>can</b> be used to build a CSV
+     * format but we find an incorrectly specified field (example: invalid type, etc.)
      */
-    public CsvFormat(String formatSpecification) throws IllegalArgumentException {
+    public CsvFormat(String formatSpecification) throws IllegalArgumentException, InvalidFieldException {
 
         if (formatSpecification == null) {
             throw new IllegalArgumentException("null format specification");
@@ -57,18 +60,22 @@ public class CsvFormat implements LineFormat {
 
         for(int i = 0, j = formatSpecification.indexOf(','); i < formatSpecification.length(); ) {
 
-            String field = formatSpecification.substring(i, j).trim();
+            String fieldSpec = formatSpecification.substring(i, j).trim();
 
-            if (i >= lastComma && field.length() == 0 && !fields.isEmpty()) {
+            if (i >= lastComma && fieldSpec.length() == 0 && !fields.isEmpty()) {
                 // does not count
                 break;
             }
 
+            Field field = new Field(fieldSpec);
+            if (field.getName().length() == 0) {
+                field.setName(nextUnnamedFieldName());
+            }
             fields.add(field);
 
             i = j + 1;
             j = formatSpecification.indexOf(',', i);
-            j = j == -1 ? j = formatSpecification.length() : j;
+            j = j == -1 ? formatSpecification.length() : j;
         }
     }
 
@@ -77,7 +84,7 @@ public class CsvFormat implements LineFormat {
     /**
      * @return the actual underlying storage so handle with care.
      */
-    public List<String> getFields() {
+    public List<Field> getFields() {
         return fields;
     }
 
@@ -102,6 +109,12 @@ public class CsvFormat implements LineFormat {
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
+
+    private String nextUnnamedFieldName() {
+
+        int i = ++unnamedFieldCounter;
+        return "CSVField" + (i < 10 ? "0" : "") + i;
+    }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 

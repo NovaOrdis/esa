@@ -20,6 +20,7 @@ import io.novaordis.esa.core.LineFormat;
 import io.novaordis.esa.core.LineParser;
 import io.novaordis.esa.csv.CsvFormat;
 import io.novaordis.esa.csv.CsvLineParser;
+import io.novaordis.esa.csv.Field;
 import io.novaordis.esa.httpd.FormatString;
 import io.novaordis.esa.httpd.FormatStrings;
 import io.novaordis.esa.httpd.HttpdLineParser;
@@ -95,9 +96,12 @@ public class LineParserFactoryTest {
         CsvLineParser csvLineParser = (CsvLineParser)parser;
         LineFormat f = csvLineParser.getLineFormat();
         CsvFormat csvFormat = (CsvFormat)f;
-        List<String> fields = csvFormat.getFields();
+        List<Field> fields = csvFormat.getFields();
         assertEquals(1, fields.size());
-        assertEquals("something", fields.get(0));
+        Field field = fields.get(0);
+        assertEquals("something", field.getName());
+        assertEquals(String.class, field.getType());
+        assertNull(field.getValue());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

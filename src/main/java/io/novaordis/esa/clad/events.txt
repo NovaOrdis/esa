@@ -12,4 +12,61 @@ collection log formats. Examples:
   httpd log format:  "%h %u [%t] \"%r\" \"%q\" %{c,JSESSIONID} %{i,Some-Request-Header} %s %b %D"
   CSV format:        "timestamp, count, status-code"
 
-'events' will try to apply heuristics and figure out what type of format was specified.
+'events' will try to apply heuristics and figure out what type of format was specified.  For more
+ details about input formats, see "Input Formats" section below.
+
+Commands:
+
+@COMMANDS@
+Input Formats
+
+httpd Input Format
+
+  Quotes need to be escaped: \"%r\".
+
+  %t - Time the request was received, in the format [18/Sep/2011:19:18:28 -0400]. The last number
+       indicates the timezone offset from GMT. Usually declared between brackets.
+  %h - Remote host name or IP address. Will log the IP address if HostnameLookups is set to Off,
+       which is the default.
+  %l - Remote logname from identd (if supplied).
+  %u - Remote user if the request was authenticated. May be irrelevant if return status (%s) is
+       401 (unauthorized).
+  %q - The query string, excluding the '?' character. Usually enclosed in quotes.
+  %r - First line of request. Note that the first line is enclosed in quotes, you must explicitly
+       specify the \" (double quotes) or ' (single quote) format elements.
+  %s - The status code of the original request (whether was internally redirected or not). Stored
+       as integer.
+  %>s - The status code of the final request (whether was internally redirected or not). Stored as
+       integer.
+  %b - Response entity body size. Stored as long.
+  %I - The name of the thread processing the request. Note that this is actually the WildFly
+       convention, not Apache httpd convention (Apache httpd logs "bytes received, including
+       request and headers" for %I)
+  %D - The time taken to serve the request. WildFly logs the time in milliseconds for %D, while
+       Apache httpd logs the time in microseconds for the same %D.
+
+CSV Input Format
+
+The CSV input format consists in comma separated header names, with optional type and format
+information. If not type or format information are specified, the input fields are handled as
+strings. The general syntax is:
+
+  <field-name>(<type>[:format])
+
+Examples:
+
+  path - the content of the field be read verbatim and handled as string.
+
+  timestamp(time:yy/MM/dd HH:mm:ss,SSS) - the content of the field will be parsed as time
+  information according to the format specified between (time:...). The format follows Java
+  SimpleDateFormat conventions. If the content cannot be converted into a time stamp, a FaultEvent
+  will be generated and sent down the pipeline. For more details see:
+  http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
+
+  status-code(int) - the content of the field will be interpreted as integer and parsed
+  accordingly. If the content cannot be converted to an integer, a FaultEvent will be generated
+  and sent down the pipeline.
+
+  body-size(long) - the content of the field will be interpreted as long and parsed accordingly.
+  If the content cannot be converted to a long, a FaultEvent will be generated and sent down the
+  pipeline.
