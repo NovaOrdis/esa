@@ -16,60 +16,38 @@
 
 package io.novaordis.esa.core.event;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/1/16
+ * @since 1/24/16
  */
-public class DateProperty extends PropertyBase implements Property {
+public class MockEvent extends GenericEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private Object payload;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public DateProperty(String name) {
-        this(name, null);
+    public MockEvent() {
+        this(null);
     }
 
-    public DateProperty(String name, Date value) {
-
-        super(name, value);
-        setFormat(DEFAULT_DATE_FORMAT);
-    }
-
-    // Property implementation -----------------------------------------------------------------------------------------
-
-    @Override
-    public Class getType() {
-        return Date.class;
-    }
-
-    @Override
-    public Property fromString(String s) throws IllegalArgumentException {
-
-        try {
-            Date d = ((DateFormat)getFormat()).parse(s);
-            return new DateProperty(getName(), d);
-        }
-        catch(Exception e) {
-            throw new IllegalArgumentException("\"" + s + "\" cannot be converted to a DateProperty value");
-        }
+    public MockEvent(Object payload) {
+        this.payload = payload;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public Date getDate() {
+    public void setPayload(Object o) {
+        this.payload = o;
+    }
 
-        return (Date)getValue();
+    public Object getPayload() {
+        return payload;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

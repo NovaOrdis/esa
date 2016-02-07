@@ -32,6 +32,11 @@ public class MockConversionLogic implements ConversionLogic {
 
     // ConversionLogic implementation ----------------------------------------------------------------------------------
 
+    @Override
+    public boolean isClosed() {
+        throw new RuntimeException("isClosed() NOT YET IMPLEMENTED");
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     // Package protected -----------------------------------------------------------------------------------------------

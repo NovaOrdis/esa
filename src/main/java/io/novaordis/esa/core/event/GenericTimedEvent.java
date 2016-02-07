@@ -16,61 +16,35 @@
 
 package io.novaordis.esa.core.event;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public class DateProperty extends PropertyBase implements Property {
+public class GenericTimedEvent extends GenericEvent implements TimedEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private Long timestamp;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public DateProperty(String name) {
-        this(name, null);
+    protected GenericTimedEvent(Long timestamp) {
+        this.timestamp = timestamp;
     }
 
-    public DateProperty(String name, Date value) {
-
-        super(name, value);
-        setFormat(DEFAULT_DATE_FORMAT);
-    }
-
-    // Property implementation -----------------------------------------------------------------------------------------
+    // TimedEvent implementation ---------------------------------------------------------------------------------------
 
     @Override
-    public Class getType() {
-        return Date.class;
-    }
+    public Long getTimestamp() {
 
-    @Override
-    public Property fromString(String s) throws IllegalArgumentException {
-
-        try {
-            Date d = ((DateFormat)getFormat()).parse(s);
-            return new DateProperty(getName(), d);
-        }
-        catch(Exception e) {
-            throw new IllegalArgumentException("\"" + s + "\" cannot be converted to a DateProperty value");
-        }
+        return timestamp;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
-
-    public Date getDate() {
-
-        return (Date)getValue();
-    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

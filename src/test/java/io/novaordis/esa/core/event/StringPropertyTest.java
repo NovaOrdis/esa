@@ -53,6 +53,20 @@ public class StringPropertyTest extends PropertyTest {
         log.debug(".");
     }
 
+    @Test
+    public void externalizeValue_StringProperty() throws Exception {
+
+        StringProperty sp = new StringProperty("test-name", "test-value");
+        assertEquals("test-value", sp.externalizeValue());
+    }
+
+    @Test
+    public void externalizeType_StringProperty() throws Exception {
+
+        StringProperty sp = new StringProperty("test-name", "test-value");
+        assertEquals("test-name", sp.externalizeType());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

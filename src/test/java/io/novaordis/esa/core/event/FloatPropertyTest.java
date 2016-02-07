@@ -66,6 +66,20 @@ public class FloatPropertyTest extends PropertyTest {
         }
     }
 
+    @Test
+    public void externalizeValue_FloatProperty() throws Exception {
+
+        FloatProperty fp = new FloatProperty("test-name", 1.1f);
+        assertEquals("1.1", fp.externalizeValue());
+    }
+
+    @Test
+    public void externalizeType_FloatProperty() throws Exception {
+
+        FloatProperty fp = new FloatProperty("test-name", 1.1f);
+        assertEquals("test-name", fp.externalizeType());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

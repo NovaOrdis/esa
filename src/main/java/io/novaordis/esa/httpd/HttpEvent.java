@@ -21,7 +21,7 @@ import io.novaordis.esa.core.event.LongProperty;
 import io.novaordis.esa.core.event.MapProperty;
 import io.novaordis.esa.core.event.StringProperty;
 import io.novaordis.esa.core.event.TimedEvent;
-import io.novaordis.esa.core.event.TimedEventBase;
+import io.novaordis.esa.core.event.GenericTimedEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +35,7 @@ import java.util.Map;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public class HttpEvent extends TimedEventBase implements TimedEvent {
+public class HttpEvent extends GenericTimedEvent implements TimedEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 

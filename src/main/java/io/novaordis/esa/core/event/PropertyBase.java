@@ -44,7 +44,7 @@ public abstract class PropertyBase implements Property, Comparable<Property> {
 
     // Comparable implementation ---------------------------------------------------------------------------------------
 
-    public int compareTo(Property o) {
+    public int compareTo(@SuppressWarnings("NullableProblems") Property o) {
 
         if (o == null) {
             throw new NullPointerException("null property");
@@ -67,6 +67,17 @@ public abstract class PropertyBase implements Property, Comparable<Property> {
     }
 
     @Override
+    public void setValue(Object value) {
+
+        if (value == null) {
+            this.value = null;
+        }
+        else {
+            throw new RuntimeException("setValue() NOT YET IMPLEMENTED for non-null values");
+        }
+    }
+
+    @Override
     public MeasureUnit getMeasureUnit() {
         return measureUnit;
     }
@@ -74,6 +85,22 @@ public abstract class PropertyBase implements Property, Comparable<Property> {
     @Override
     public Format getFormat() {
         return format;
+    }
+
+    @Override
+    public String externalizeValue() {
+
+        if (value == null) {
+            return null;
+        }
+
+        Format format = getFormat();
+        return format == null ? value.toString() : format.format(value);
+    }
+
+    @Override
+    public String externalizeType() {
+        return getName();
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

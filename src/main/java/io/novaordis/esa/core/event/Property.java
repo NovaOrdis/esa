@@ -37,6 +37,11 @@ public interface Property extends Comparable<Property> {
 
     Object getValue();
 
+    /**
+     * Null is acceptable.
+     */
+    void setValue(Object value);
+
     Class getType();
 
     /**
@@ -55,5 +60,13 @@ public interface Property extends Comparable<Property> {
      * @exception IllegalArgumentException if the string cannot be converted into a property of the same kind.
      */
     Property fromString(String s) throws IllegalArgumentException;
+
+    /**
+     * @return the externalized value of the property (how it would appear in a text file) or null if the value is
+     * null.
+     */
+    String externalizeValue();
+
+    String externalizeType();
 
 }

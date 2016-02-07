@@ -66,6 +66,20 @@ public class MapPropertyTest extends PropertyTest {
         //
     }
 
+//    @Test
+//    public void externalizeValue_MapProperty() throws Exception {
+//
+//        MapProperty mp = new MapProperty("test-name", 1.1f);
+//        //assertEquals("1.1", fp.externalizeValue());
+//    }
+//
+//    @Test
+//    public void externalizeType_MapProperty() throws Exception {
+//
+//        MapProperty mp = new MapProperty("test-name", 1.1f);
+//        assertEquals("test-name", mp.externalizeValue());
+//    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

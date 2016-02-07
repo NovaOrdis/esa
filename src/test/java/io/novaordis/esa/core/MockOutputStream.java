@@ -14,62 +14,47 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core.event;
+package io.novaordis.esa.core;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/1/16
+ * @since 2/7/16
  */
-public class DateProperty extends PropertyBase implements Property {
+public class MockOutputStream extends OutputStream {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final DateFormat DEFAULT_DATE_FORMAT = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private boolean closed;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public DateProperty(String name) {
-        this(name, null);
+    public MockOutputStream() {
+        this.closed = false;
     }
 
-    public DateProperty(String name, Date value) {
-
-        super(name, value);
-        setFormat(DEFAULT_DATE_FORMAT);
-    }
-
-    // Property implementation -----------------------------------------------------------------------------------------
+    // OutputStream overrides ------------------------------------------------------------------------------------------
 
     @Override
-    public Class getType() {
-        return Date.class;
+    public void write(int b) throws IOException {
+        throw new RuntimeException("write() NOT YET IMPLEMENTED");
     }
 
     @Override
-    public Property fromString(String s) throws IllegalArgumentException {
-
-        try {
-            Date d = ((DateFormat)getFormat()).parse(s);
-            return new DateProperty(getName(), d);
-        }
-        catch(Exception e) {
-            throw new IllegalArgumentException("\"" + s + "\" cannot be converted to a DateProperty value");
-        }
+    public void close() throws IOException {
+        closed = true;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public Date getDate() {
-
-        return (Date)getValue();
+    public boolean isClosed() {
+        return closed;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

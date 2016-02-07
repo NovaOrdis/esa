@@ -16,7 +16,9 @@
 
 package io.novaordis.esa.core;
 
+import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.MockEvent;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +27,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -159,6 +165,53 @@ public class OutputStreamTerminatorTest extends TerminatorTest {
         terminator.insureReadyForStart();
 
         log.info("ok");
+    }
+
+    /**
+     * This test insures that the OutputStreamTerminator closes the stream on EndOfStreamEvent even if the
+     * OutputStreamConversionLogic does not return null on getBytes().
+     */
+    @Test
+    public void insureTerminatorClosesTheStreamNonetheless() throws Exception {
+
+        OutputStreamTerminator terminator = getComponentToTest("test");
+
+        //
+        // MockOutputStreamConversionLogic always sens an empty array, never null - insure that
+        //
+        MockOutputStreamConversionLogic mosc = new MockOutputStreamConversionLogic();
+        mosc.process(new EndOfStreamEvent());
+        assertTrue(mosc.isClosed());
+        assertNotNull(mosc.getBytes());
+
+        MockOutputStreamConversionLogic mosc2 = new MockOutputStreamConversionLogic();
+
+        terminator.setConversionLogic(mosc2);
+
+        BlockingQueue<Event> inputQueue = new LinkedBlockingQueue<>();
+        inputQueue.put(new MockEvent());
+        inputQueue.put(new EndOfStreamEvent());
+
+        terminator.setInputQueue(inputQueue);
+
+        MockOutputStream mos = new MockOutputStream();
+        terminator.setOutputStream(mos);
+
+        assertFalse(mos.isClosed());
+
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        terminator.addEndOfStreamListener(latch::countDown);
+
+        terminator.start();
+
+        latch.await();
+
+        //
+        // we want to make sure the OutputStream is closed even if the conversion logic did not send null
+        //
+
+        assertTrue(mos.isClosed());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

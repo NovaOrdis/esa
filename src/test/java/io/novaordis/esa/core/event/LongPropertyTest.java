@@ -66,6 +66,20 @@ public class LongPropertyTest extends PropertyTest {
         }
     }
 
+    @Test
+    public void externalizeValue_LongProperty() throws Exception {
+
+        LongProperty lp = new LongProperty("test-name", 1L);
+        assertEquals("1", lp.externalizeValue());
+    }
+
+    @Test
+    public void externalizeType_LongProperty() throws Exception {
+
+        LongProperty lp = new LongProperty("test-name", 1L);
+        assertEquals("test-name", lp.externalizeType());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

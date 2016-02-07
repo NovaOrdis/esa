@@ -16,23 +16,18 @@
 
 package io.novaordis.esa.core;
 
-import io.novaordis.esa.core.ClosedException;
-import io.novaordis.esa.core.OutputStreamConversionLogic;
 import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.FaultEvent;
-import io.novaordis.esa.core.event.MapProperty;
 import io.novaordis.esa.core.event.Property;
-import io.novaordis.esa.core.event.StringEvent;
+import io.novaordis.esa.core.event.ShutdownEvent;
 import io.novaordis.esa.core.event.TimedEvent;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -43,82 +38,19 @@ public class OutputFormatter implements OutputStreamConversionLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final DateFormat DEFAULT_TIMESTAMP_FORMAT = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
+    public static final DateFormat DEFAULT_TIMESTAMP_FORMAT = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
 
     public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
+    public static final String NULL_EXTERNALIZATION = "";
+
     // Static ----------------------------------------------------------------------------------------------------------
-
-    public static String toLine(Event event, String format) {
-
-        String line = "";
-
-        //
-        // interpreted as event property names
-        //
-        String[] propertyNames = format.split(", *");
-
-        for(int i = 0; i < propertyNames.length; i ++) {
-
-            String propertyName = propertyNames[i];
-
-            if ("timestamp".equals(propertyName)) {
-
-                line = DEFAULT_TIMESTAMP_FORMAT.format(((TimedEvent)event).getTimestamp());
-            }
-            else {
-
-                //
-                // if the property has a dot in it, it's a map
-                //
-                int dot = propertyName.indexOf('.');
-                if (dot != -1) {
-
-                    // map
-
-                    String mapPropertyName = propertyName.substring(0, dot);
-                    MapProperty mp = (MapProperty)event.getProperty(mapPropertyName);
-                    if (mp != null) {
-
-                        String key = propertyName.substring(dot + 1);
-                        Object value = mp.getMap().get(key);
-
-                        if (value != null) {
-                            line += value;
-                        }
-                    }
-                }
-                else {
-
-                    Property p = event.getProperty(propertyName);
-
-                    if (p != null) {
-
-                        Object o = p.getValue();
-
-                        if (o instanceof Map) {
-
-                            line += "<>";
-                        } else {
-                            line += o;
-                        }
-                    }
-                }
-            }
-
-            if (i < propertyNames.length - 1) {
-                line += ", ";
-            }
-        }
-
-        return line;
-    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private StringBuilder sb;
     private volatile boolean closed;
-    private String format;
+    private String commandLineRequestedOutputFormat;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -137,26 +69,32 @@ public class OutputFormatter implements OutputStreamConversionLogic {
 
         if (inputEvent instanceof EndOfStreamEvent) {
             closed = true;
-            return false;
-        }
-        else if (inputEvent instanceof StringEvent) {
-
-            String s = ((StringEvent)inputEvent).get();
-            sb.append(s).append("\n");
-            return true;
-        }
-        else if (inputEvent instanceof FaultEvent) {
-
-            sb.append(inputEvent.toString()).append("\n");
-            return true;
+            return true; // need to collect the output stream close() information
         }
 
-        sb.append(toLine(inputEvent, format)).append("\n");
-        return true;
+        if (inputEvent instanceof ShutdownEvent) {
+            throw new RuntimeException("ShutdownEvent SUPPORT NOT YET IMPLEMENTED");
+        }
+
+        return externalizeEvent(inputEvent);
     }
 
     @Override
     public byte[] getBytes() {
+
+        if (closed) {
+
+            if (sb.length() != 0) {
+
+                // there are previously uncollected bytes
+                byte[] result = sb.toString().getBytes();
+                sb.setLength(0);
+                return result;
+            }
+            else {
+                return null;
+            }
+        }
 
         if (sb.length() == 0) {
             return EMPTY_BYTE_ARRAY;
@@ -167,10 +105,19 @@ public class OutputFormatter implements OutputStreamConversionLogic {
         return result;
     }
 
+    @Override
+    public boolean isClosed() {
+        return closed;
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     public void setFormat(String format) {
-        this.format = format;
+        this.commandLineRequestedOutputFormat = format;
+    }
+
+    public String getFormat() {
+        return commandLineRequestedOutputFormat;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -178,6 +125,104 @@ public class OutputFormatter implements OutputStreamConversionLogic {
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
+
+    /**
+     * @return true if there are bytes to be collected.
+     */
+    private boolean externalizeEvent(Event event) {
+
+        if (event instanceof FaultEvent) {
+
+            //
+            // TODO we may want to consider to send the fault events to stderr so we don't interfere with stdout
+            //
+
+            sb.append(event.toString()).append("\n");
+            return true;
+        }
+
+        Set<Property> properties = event.getProperties();
+        List <Property> orderedProperties = new ArrayList<>(properties);
+        Collections.sort(orderedProperties);
+
+        if (event instanceof TimedEvent) {
+
+            //
+            // if it's a timed event, always start with the timestamp
+            //
+
+            Long timestamp = ((TimedEvent)event).getTimestamp();
+
+            if (timestamp == null) {
+                sb.append(NULL_EXTERNALIZATION);
+            }
+            else {
+                sb.append(DEFAULT_TIMESTAMP_FORMAT.format(timestamp));
+            }
+
+            if (!properties.isEmpty()) {
+                sb.append(", ");
+            }
+        }
+
+        for(int i = 0; i < orderedProperties.size(); i++) {
+
+            Property p = orderedProperties.get(i);
+            String s = p.externalizeValue();
+
+            if (s == null) {
+                s = NULL_EXTERNALIZATION;
+            }
+            sb.append(s);
+
+            if (i < orderedProperties.size() - 1) {
+                sb.append(", ");
+            }
+
+            //
+            // TODO Map Handling
+            //
+//                    int dot = propertyName.indexOf('.');
+//                    if (dot != -1) {
+//
+//                        // map
+//
+//                        String mapPropertyName = propertyName.substring(0, dot);
+//                        MapProperty mp = (MapProperty)event.getProperty(mapPropertyName);
+//                        if (mp != null) {
+//
+//                            String key = propertyName.substring(dot + 1);
+//                            Object value = mp.getMap().get(key);
+//
+//                            if (value != null) {
+//                                line += value;
+//                            }
+//                        }
+//                    }
+//                    else {
+//
+//                        Property p = event.getProperty(propertyName);
+//
+//                        if (p != null) {
+//
+//                            Object o = p.getValue();
+//
+//                            if (o instanceof Map) {
+//
+//                                line += "<>";
+//                            } else {
+//                                line += o;
+//                            }
+//                        }
+//                    }
+//                }
+
+        }
+
+        sb.append("\n");
+
+        return true;
+    }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 

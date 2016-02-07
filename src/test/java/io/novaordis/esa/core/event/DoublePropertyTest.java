@@ -66,6 +66,20 @@ public class DoublePropertyTest extends PropertyTest {
         }
     }
 
+    @Test
+    public void externalizeValue_DoubleProperty() throws Exception {
+
+        DoubleProperty dp = new DoubleProperty("test-name", 1.1d);
+        assertEquals("1.1", dp.externalizeValue());
+    }
+
+    @Test
+    public void externalizeType_DoubleProperty() throws Exception {
+
+        DoubleProperty sp = new DoubleProperty("test-name", 1.1d);
+        assertEquals("test-name", sp.externalizeType());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

@@ -107,6 +107,11 @@ public class StringEventConverter implements InputStreamConversionLogic {
         return result;
     }
 
+    @Override
+    public boolean isClosed() {
+        return closed;
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     // Package protected -----------------------------------------------------------------------------------------------

@@ -61,6 +61,13 @@ public interface OutputStreamConversionLogic extends ConversionLogic {
      * If no bytes are available, the method will return an empty array.
      *
      * If the conversion logic wants to close the output stream, return null.
+     *
+     * Multiple regular events whose converted bytes are uncollected followed by an EndOfStreamEvent will return
+     * all uncollected bytes, and not null.  This is fine because the owner Terminator knows we got EndOfStreamEvent,
+     * so it'll close the stream nonetheless.
+     *
+     * @return uncollected bytes, empty array if there are no uncollected bytes or null if the end of stream was
+     * received.
      */
     byte[] getBytes();
 

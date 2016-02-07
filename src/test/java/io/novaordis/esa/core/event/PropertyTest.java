@@ -22,6 +22,9 @@ import java.text.Format;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -73,6 +76,29 @@ public abstract class PropertyTest {
 
         Object p2Value = p2.getValue();
         assertEquals(value, p2Value);
+    }
+
+    // externalizeValue() ----------------------------------------------------------------------------------------------
+
+    @Test
+    public void externalizeValue() throws Exception {
+
+        Property p = getPropertyToTest("test");
+        p.setValue(null);
+        assertNull(p.getValue());
+        String s = p.externalizeValue();
+        assertNull(s);
+    }
+
+    // externalizeType() -----------------------------------------------------------------------------------------------
+
+    @Test
+    public void externalizeType() throws Exception {
+
+        Property p = getPropertyToTest("hj46hHT3");
+        String s = p.externalizeType();
+        assertNotNull(s);
+        assertTrue(s.contains("hj46hHT3"));
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

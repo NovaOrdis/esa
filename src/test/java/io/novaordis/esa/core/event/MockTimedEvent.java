@@ -16,13 +16,11 @@
 
 package io.novaordis.esa.core.event;
 
-import java.util.Set;
-
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class MockEvent implements Event {
+public class MockTimedEvent extends GenericTimedEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,62 +28,13 @@ public class MockEvent implements Event {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private Object payload;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public MockEvent() {
-        this(null);
-    }
-
-    public MockEvent(Object payload) {
-        this.payload = payload;
+    public MockTimedEvent(Long timestamp) {
+        super(timestamp);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
-
-    public void setPayload(Object o) {
-        this.payload = o;
-    }
-
-    public Object getPayload() {
-        return payload;
-    }
-
-    @Override
-    public Set<Property> getProperties() {
-        throw new RuntimeException("getProperties() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public Property getProperty(String name) {
-        throw new RuntimeException("getProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public StringProperty getStringProperty(String stringPropertyName) {
-        throw new RuntimeException("getStringProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public MapProperty getMapProperty(String mapPropertyName) {
-        throw new RuntimeException("getMapProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public LongProperty getLongProperty(String longPropertyName) {
-        throw new RuntimeException("getLongProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public IntegerProperty getIntegerProperty(String integerPropertyName) {
-        throw new RuntimeException("getIntegerProperty() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public Property setProperty(Property property) {
-        throw new RuntimeException("setProperty() NOT YET IMPLEMENTED");
-    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

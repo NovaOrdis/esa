@@ -414,6 +414,11 @@ public class InputStreamInitiatorTest extends InitiatorTest {
                     return Collections.singletonList(e2);
                 }
             }
+
+            @Override
+            public boolean isClosed() {
+                throw new RuntimeException("isClosed() NOT YET IMPLEMENTED");
+            }
         });
         inputStreamInitiator.setOutputQueue(new LinkedBlockingQueue<>());
 
@@ -476,6 +481,11 @@ public class InputStreamInitiatorTest extends InitiatorTest {
                 events.clear();
                 return result;
             }
+
+            @Override
+            public boolean isClosed() {
+                throw new RuntimeException("isClosed() NOT YET IMPLEMENTED");
+            }
         });
         isi.setOutputQueue(new LinkedBlockingQueue<>());
 
@@ -532,6 +542,11 @@ public class InputStreamInitiatorTest extends InitiatorTest {
                 List<Event> result = new ArrayList<Event>(events);
                 events.clear();
                 return result;
+            }
+
+            @Override
+            public boolean isClosed() {
+                throw new RuntimeException("isClosed() NOT YET IMPLEMENTED");
             }
         });
         isi.setOutputQueue(new LinkedBlockingQueue<>());

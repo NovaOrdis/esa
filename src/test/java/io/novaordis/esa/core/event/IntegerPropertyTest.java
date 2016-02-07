@@ -66,6 +66,20 @@ public class IntegerPropertyTest extends PropertyTest {
         }
     }
 
+    @Test
+    public void externalizeValue_IntegerProperty() throws Exception {
+
+        IntegerProperty ip = new IntegerProperty("test-name", 1);
+        assertEquals("1", ip.externalizeValue());
+    }
+
+    @Test
+    public void externalizeType_IntegerProperty() throws Exception {
+
+        IntegerProperty ip = new IntegerProperty("test-name", 1);
+        assertEquals("test-name", ip.externalizeType());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

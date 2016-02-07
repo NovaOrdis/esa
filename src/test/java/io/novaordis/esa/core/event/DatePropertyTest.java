@@ -20,11 +20,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.Format;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 
 /**
@@ -68,6 +66,27 @@ public class DatePropertyTest extends PropertyTest {
         catch(IllegalArgumentException e) {
             log.info(e.getMessage());
         }
+    }
+
+    @Test
+    public void externalizeValue_DateProperty() throws Exception {
+
+        long value = 1010101L;
+        DateProperty dp = new DateProperty("test-name", new Date(value));
+
+        String expected = DateProperty.DEFAULT_DATE_FORMAT.format(value);
+        String externalized = dp.externalizeValue();
+
+        assertEquals(expected, externalized);
+    }
+
+    @Test
+    public void externalizeType_DateProperty() throws Exception {
+
+        long value = 1010101L;
+        DateProperty dp = new DateProperty("test-name", new Date(value));
+
+        assertEquals("test-name", dp.externalizeType());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

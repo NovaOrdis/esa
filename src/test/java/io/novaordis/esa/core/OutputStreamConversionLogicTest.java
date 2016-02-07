@@ -18,13 +18,15 @@ package io.novaordis.esa.core;
 
 import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.FaultEvent;
+import io.novaordis.esa.core.event.MockEvent;
+import io.novaordis.esa.core.event.MockProperty;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -32,7 +34,7 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public abstract class InputStreamConversionLogicTest extends ConversionLogicTest {
+public abstract class OutputStreamConversionLogicTest extends ConversionLogicTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -49,59 +51,80 @@ public abstract class InputStreamConversionLogicTest extends ConversionLogicTest
     // process() -------------------------------------------------------------------------------------------------------
 
     @Test
-    public void process_EndOfStream() throws Exception {
+    public void process_EndOfStreamEvent() throws Exception {
 
-        InputStreamConversionLogic c = getConversionLogicToTest();
+        OutputStreamConversionLogic c = getConversionLogicToTest();
 
-        // we do generate EOS
-        assertTrue(c.process(-1));
+        Event event = new EndOfStreamEvent();
+        assertTrue(c.process(event));
 
-        List<Event> events = c.getEvents();
-        assertEquals(1, events.size());
-        assertTrue(events.get(0) instanceof EndOfStreamEvent);
-
-        assertTrue(c.getEvents().isEmpty());
+        // null means we want the enclosing component to close the output stream.
+        assertNull(c.getBytes());
 
         try {
 
-            c.process(1);
+            event = new MockEvent();
+            c.process(event);
             fail("should throw exception as the conversion logic is supposed to be closed()");
         }
         catch(ClosedException e) {
             log.info(e.getMessage());
         }
+
+        assertNull(c.getBytes());
     }
 
     @Test
-    public void process_NegativeValue() throws Exception {
+    public void process_MultipleUncollectedEventsFollowedByEndOfStream() throws Exception {
 
-        InputStreamConversionLogic c = getConversionLogicToTest();
+        OutputStreamConversionLogic c = getConversionLogicToTest();
+
+        Event event = new MockEvent();
+        event.setProperty(new MockProperty("mock-property"));
+        assertTrue(c.process(event));
+
+        //
+        // we do not collect the bytes so we do have uncollected bytes when EndOfStreamEvent arrives
+        //
+
+        event = new EndOfStreamEvent();
+        assertTrue(c.process(event));
+
+        byte[] bytes = c.getBytes();
+
+        //
+        // we don't get null (we can't, we need to push the leftover bytes on the output stream), but that is
+        // fine because the owner Terminator knows we got EndOfStreamEvent, so it'll close the stream.
+        //
+
+        assertNotNull(bytes);
+        assertTrue(bytes.length > 0);
+
 
         try {
-            c.process(-10);
-            fail("should throw IllegalArgumentException");
+
+            event = new MockEvent();
+            c.process(event);
+            fail("should throw exception as the conversion logic is supposed to be closed()");
         }
-        catch(IllegalArgumentException e) {
+        catch(ClosedException e) {
             log.info(e.getMessage());
         }
 
-        assertTrue(c.getEvents().isEmpty());
+        assertNull(c.getBytes());
     }
 
     @Test
-    public void process_IllegallyLargeValue() throws Exception {
+    public void process_FaultEvent() throws Exception {
 
-        InputStreamConversionLogic c = getConversionLogicToTest();
+        OutputStreamConversionLogic c = getConversionLogicToTest();
 
-        try {
-            c.process(256);
-            fail("should throw IllegalArgumentException");
-        }
-        catch(IllegalArgumentException e) {
-            log.info(e.getMessage());
-        }
+        Event event = new FaultEvent("test message", new RuntimeException("SYNTHETIC"));
+        assertTrue(c.process(event));
 
-        assertTrue(c.getEvents().isEmpty());
+        byte[] content = c.getBytes();
+        assertNotNull(content);
+        assertTrue(content.length > 0);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -109,7 +132,7 @@ public abstract class InputStreamConversionLogicTest extends ConversionLogicTest
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected abstract InputStreamConversionLogic getConversionLogicToTest() throws Exception;
+    protected abstract OutputStreamConversionLogic getConversionLogicToTest() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

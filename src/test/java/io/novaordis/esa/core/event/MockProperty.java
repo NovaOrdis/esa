@@ -18,9 +18,9 @@ package io.novaordis.esa.core.event;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/1/16
+ * @since 2/7/16
  */
-public class TimedEventBase extends GenericEvent implements TimedEvent {
+public class MockProperty extends PropertyBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -28,20 +28,44 @@ public class TimedEventBase extends GenericEvent implements TimedEvent {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private Long timestamp;
+    private Integer priority;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    protected TimedEventBase(Long timestamp) {
-        this.timestamp = timestamp;
+    public MockProperty(String name) {
+        this(name, null, 0);
     }
 
-    // TimedEvent implementation ---------------------------------------------------------------------------------------
+    public MockProperty(String name, Object value) {
+        this(name, value, 0);
+    }
+
+    public MockProperty(String name, Object value, int priority) {
+        super(name, value);
+        this.priority = priority;
+    }
+
+    // Comparable implementation ---------------------------------------------------------------------------------------
+
+    public int compareTo(Property o) {
+
+        if (!(o instanceof MockProperty)) {
+            return super.compareTo(o);
+        }
+
+        return priority.compareTo(((MockProperty)o).priority);
+    }
+
+    // Property implementation -----------------------------------------------------------------------------------------
 
     @Override
-    public Long getTimestamp() {
+    public Class getType() {
+        throw new RuntimeException("getType() NOT YET IMPLEMENTED");
+    }
 
-        return timestamp;
+    @Override
+    public Property fromString(String s) throws IllegalArgumentException {
+        throw new RuntimeException("fromString() NOT YET IMPLEMENTED");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

@@ -17,13 +17,13 @@
 package io.novaordis.esa.experimental;
 
 import io.novaordis.esa.core.event.TimedEvent;
-import io.novaordis.esa.core.event.TimedEventBase;
+import io.novaordis.esa.core.event.GenericTimedEvent;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/25/16
  */
-public class SampleEvent extends TimedEventBase implements TimedEvent {
+public class SampleEvent extends GenericTimedEvent implements TimedEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 

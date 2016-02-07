@@ -16,6 +16,7 @@
 
 package io.novaordis.esa.core;
 
+import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
 
 /**
@@ -32,15 +33,26 @@ public class MockOutputStreamConversionLogic extends MockConversionLogic impleme
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private boolean closed;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    public MockOutputStreamConversionLogic() {
+
+        closed = false;
+    }
 
     // OutputStreamConversionLogic implementation ----------------------------------------------------------------------
 
     @Override
     public boolean process(Event inputEvent) {
 
+        if (inputEvent instanceof EndOfStreamEvent) {
+            closed = true;
+        }
+
         //
-        // drop everything on the floor
+        // act like we drop everything on the floor
         //
         return false;
     }
@@ -49,6 +61,12 @@ public class MockOutputStreamConversionLogic extends MockConversionLogic impleme
     public byte[] getBytes() {
 
         return EMPTY_ARRAY;
+    }
+
+    @Override
+    public boolean isClosed() {
+
+        return closed;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
