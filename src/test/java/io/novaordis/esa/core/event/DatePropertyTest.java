@@ -17,19 +17,25 @@
 package io.novaordis.esa.core.event;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.Format;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public abstract class PropertyTest {
+public class DatePropertyTest extends PropertyTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(DatePropertyTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -40,48 +46,44 @@ public abstract class PropertyTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
-    public void name() throws Exception {
+    public void value() throws Exception {
 
-        Property p = getPropertyToTest("test");
-        assertEquals("test", p.getName());
+        DateProperty dp = new DateProperty("test-name", new Date(1L));
+
+        assertEquals("test-name", dp.getName());
+        assertEquals(new Date(1L), dp.getValue());
+        assertEquals(1L, dp.getDate().getTime());
+        assertEquals(Date.class, dp.getType());
     }
 
     @Test
-    public void fromString() throws Exception {
+    public void fromString_InvalidValue() throws Exception {
 
-        Property p = getPropertyToTest("test");
-        Object value = getAppropriateValueForPropertyToTest();
+        DateProperty dp = new DateProperty("test");
 
-        String valueAsString;
-
-        Format format = p.getFormat();
-
-        if (format != null) {
-            valueAsString = format.format(value);
+        try {
+            dp.fromString("not a date");
+            fail("should have thrown Exception");
         }
-        else {
-            valueAsString = value.toString();
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
         }
-
-        Property p2 = p.fromString(valueAsString);
-
-        assertNotEquals(p2, p);
-
-        assertEquals(p.getName(), p2.getName());
-        assertEquals(p.getType(), p2.getType());
-        assertEquals(p.getMeasureUnit(), p2.getMeasureUnit());
-
-        Object p2Value = p2.getValue();
-        assertEquals(value, p2Value);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    protected abstract Property getPropertyToTest(String name);
+    @Override
+    protected DateProperty getPropertyToTest(String name) {
+        return new DateProperty(name, new Date(100000L));
+    }
 
-    protected abstract Object getAppropriateValueForPropertyToTest();
+    @Override
+    protected Date getAppropriateValueForPropertyToTest() {
+
+        return new Date(100000L);
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

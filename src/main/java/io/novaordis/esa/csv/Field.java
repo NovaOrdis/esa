@@ -16,6 +16,7 @@
 
 package io.novaordis.esa.csv;
 
+import io.novaordis.esa.core.event.DateProperty;
 import io.novaordis.esa.core.event.DoubleProperty;
 import io.novaordis.esa.core.event.FloatProperty;
 import io.novaordis.esa.core.event.IntegerProperty;
@@ -23,6 +24,7 @@ import io.novaordis.esa.core.event.LongProperty;
 import io.novaordis.esa.core.event.Property;
 import io.novaordis.esa.core.event.StringProperty;
 
+import java.text.DateFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -117,6 +119,10 @@ public class Field {
         return format;
     }
 
+    public void setFormat(Format format) {
+        this.format = format;
+    }
+
     /**
      * @throws IllegalArgumentException if the argument cannot be converted to a property of the right type.
      */
@@ -177,8 +183,21 @@ public class Field {
 
             return new DoubleProperty(getName(), d);
         }
+        else if (Date.class.equals(getType())) {
 
-        throw new RuntimeException("NOT YET IMPLEMENTED: " + getType());
+            Date date;
+
+            try {
+                date = ((DateFormat)getFormat()).parse(s);
+            }
+            catch (Exception e) {
+                throw new IllegalArgumentException("invalid time value \"" + s + "\"", e);
+            }
+
+            return new DateProperty(getName(), date);
+        }
+
+        throw new RuntimeException("toProperty() does not know how to handle " + getType());
     }
 
     @Override

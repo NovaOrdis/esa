@@ -16,6 +16,7 @@
 
 package io.novaordis.esa;
 
+import io.novaordis.clad.UserErrorException;
 import io.novaordis.esa.core.LineFormat;
 import io.novaordis.esa.core.LineParser;
 import io.novaordis.esa.csv.CsvFormat;
@@ -102,6 +103,20 @@ public class LineParserFactoryTest {
         assertEquals("something", field.getName());
         assertEquals(String.class, field.getType());
         assertNull(field.getValue());
+    }
+
+    @Test
+    public void getInstance_CsvLineParser_WeKnowItIsACSVParserButItIsBroken() throws Exception {
+
+        try {
+            LineParserFactory.getInstance("something(blah),");
+            fail("should have thrown exception");
+        }
+        catch(UserErrorException e) {
+            String msg = e.getMessage();
+            log.info(e.getMessage());
+            assertTrue(msg.startsWith("invalid CSV line format:"));
+        }
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

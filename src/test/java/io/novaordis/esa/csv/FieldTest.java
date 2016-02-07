@@ -16,6 +16,7 @@
 
 package io.novaordis.esa.csv;
 
+import io.novaordis.esa.core.event.DateProperty;
 import io.novaordis.esa.core.event.DoubleProperty;
 import io.novaordis.esa.core.event.FloatProperty;
 import io.novaordis.esa.core.event.IntegerProperty;
@@ -276,6 +277,33 @@ public class FieldTest {
     public void toProperty_Double_InvalidValue() throws Exception {
 
         Field f = new Field("test", Double.class);
+
+        try {
+            f.toProperty("blah");
+            fail("Should throw exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
+    }
+
+    @Test
+    public void toProperty_Date() throws Exception {
+
+        Field f = new Field("test", Date.class);
+        f.setFormat(new SimpleDateFormat("yyyy"));
+        DateProperty dp = (DateProperty)f.toProperty("2016");
+        assertEquals("test", dp.getName());
+        long time = dp.getDate().getTime();
+        long reference = new SimpleDateFormat("yyyy").parse("2016").getTime();
+        assertEquals(time, reference);
+    }
+
+    @Test
+    public void toProperty_Date_InvalidValue() throws Exception {
+
+        Field f = new Field("test", Date.class);
+        f.setFormat(new SimpleDateFormat("yyyy"));
 
         try {
             f.toProperty("blah");

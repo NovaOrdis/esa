@@ -16,11 +16,15 @@
 
 package io.novaordis.esa.core.event;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public class DoubleProperty extends PropertyBase implements Property {
+public class DateProperty extends PropertyBase implements Property {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,38 +34,39 @@ public class DoubleProperty extends PropertyBase implements Property {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public DoubleProperty(String name) {
+    public DateProperty(String name) {
         this(name, null);
     }
 
-    public DoubleProperty(String name, Double value) {
+    public DateProperty(String name, Date value) {
         super(name, value);
+        setFormat(new SimpleDateFormat("yy/MM/dd HH:mm:ss"));
     }
 
     // Property implementation -----------------------------------------------------------------------------------------
 
     @Override
     public Class getType() {
-        return Double.class;
+        return Date.class;
     }
 
     @Override
     public Property fromString(String s) throws IllegalArgumentException {
 
         try {
-            double f = Double.valueOf(s);
-            return new DoubleProperty(getName(), f);
+            Date d = ((DateFormat)getFormat()).parse(s);
+            return new DateProperty(getName(), d);
         }
         catch(Exception e) {
-            throw new IllegalArgumentException("\"" + s + "\" cannot be converted to a DoubleProperty value");
+            throw new IllegalArgumentException("\"" + s + "\" cannot be converted to a DateProperty value");
         }
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public Double getDouble() {
+    public Date getDate() {
 
-        return (Double)getValue();
+        return (Date)getValue();
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

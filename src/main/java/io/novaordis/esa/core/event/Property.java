@@ -16,6 +16,8 @@
 
 package io.novaordis.esa.core.event;
 
+import java.text.Format;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
@@ -41,6 +43,11 @@ public interface Property extends Comparable<Property> {
      * May return null if the property is non-dimensional (a path, for example)
      */
     MeasureUnit getMeasureUnit();
+
+    /**
+     * May return null.
+     */
+    Format getFormat();
 
     /**
      * Builds a property matching this from the given string.

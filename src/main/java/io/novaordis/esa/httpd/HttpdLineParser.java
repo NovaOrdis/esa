@@ -40,9 +40,11 @@ public class HttpdLineParser implements LineParser {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
-     * @throws IllegalArgumentException if the given format is not a valid httpd log file format.
+     * @throws IllegalArgumentException if the given format is not a valid httpd log file format
+     * @throws InvalidFormatStringException we determined that the format specification <b>is</b> a httpd log file
+     * format but we find an incorrectly specified format string.
      */
-    public HttpdLineParser(String format) throws IllegalArgumentException {
+    public HttpdLineParser(String format) throws IllegalArgumentException, InvalidFormatStringException {
 
         //
         // We attempt to build a list of HttpdFormatStrings from the given format string. If we succeed, it means

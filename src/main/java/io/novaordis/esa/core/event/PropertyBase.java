@@ -16,6 +16,8 @@
 
 package io.novaordis.esa.core.event;
 
+import java.text.Format;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
@@ -31,6 +33,7 @@ public abstract class PropertyBase implements Property, Comparable<Property> {
     private String name;
     private Object value;
     private MeasureUnit measureUnit;
+    private Format format;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -68,10 +71,19 @@ public abstract class PropertyBase implements Property, Comparable<Property> {
         return measureUnit;
     }
 
+    @Override
+    public Format getFormat() {
+        return format;
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     public void setMeasureUnit(MeasureUnit measureUnit) {
         this.measureUnit = measureUnit;
+    }
+
+    public void setFormat(Format format) {
+        this.format = format;
     }
 
     @Override

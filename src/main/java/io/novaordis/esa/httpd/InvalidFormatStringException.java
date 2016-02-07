@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core.event;
+package io.novaordis.esa.httpd;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/1/16
+ * @since 1/22/16
  */
-public class DoubleProperty extends PropertyBase implements Property {
+public class InvalidFormatStringException extends Exception {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,39 +30,23 @@ public class DoubleProperty extends PropertyBase implements Property {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public DoubleProperty(String name) {
-        this(name, null);
+    public InvalidFormatStringException() {
+        super();
     }
 
-    public DoubleProperty(String name, Double value) {
-        super(name, value);
+    public InvalidFormatStringException(String message) {
+        super(message);
     }
 
-    // Property implementation -----------------------------------------------------------------------------------------
-
-    @Override
-    public Class getType() {
-        return Double.class;
+    public InvalidFormatStringException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    @Override
-    public Property fromString(String s) throws IllegalArgumentException {
-
-        try {
-            double f = Double.valueOf(s);
-            return new DoubleProperty(getName(), f);
-        }
-        catch(Exception e) {
-            throw new IllegalArgumentException("\"" + s + "\" cannot be converted to a DoubleProperty value");
-        }
+    public InvalidFormatStringException(Throwable cause) {
+        super(cause);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
-
-    public Double getDouble() {
-
-        return (Double)getValue();
-    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
