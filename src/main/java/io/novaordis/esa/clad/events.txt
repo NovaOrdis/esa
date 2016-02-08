@@ -1,7 +1,7 @@
 
 events ${version}
 
-Reads, parses and processes timed events. Usage:
+Reads, parses and processes timed event series. Usage:
 
     events < input-file.log -i|--input-format="..." <command> <command-options>
 
@@ -70,3 +70,5 @@ Examples:
   body-size(long) - the content of the field will be interpreted as long and parsed accordingly.
   If the content cannot be converted to a long, a FaultEvent will be generated and sent down the
   pipeline.
+
+
