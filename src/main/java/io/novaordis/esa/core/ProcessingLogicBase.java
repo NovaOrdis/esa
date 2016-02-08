@@ -18,6 +18,7 @@ package io.novaordis.esa.core;
 
 import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.FaultEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,8 +63,30 @@ public abstract class ProcessingLogicBase implements ProcessingLogic {
             return false;
         }
 
-        Event outputEvent = processInternal(e);
-        eventBuffer.add(outputEvent);
+        try {
+
+            Event outputEvent = processInternal(e);
+
+            //
+            // protection agains subclasses returning null here, only add if not null
+            //
+            if (outputEvent != null) {
+                eventBuffer.add(outputEvent);
+            }
+        }
+        catch (IllegalStateException ise) {
+            //
+            // fail fast on illegal state exception, it means the pipeline was iproperly configured and won't be
+            // able to process anything
+            //
+            throw ise;
+        }
+        catch (Throwable t) {
+            //
+            // generate fault event
+            //
+            eventBuffer.add(new FaultEvent(t));
+        }
         return !eventBuffer.isEmpty();
     }
 
@@ -90,10 +113,21 @@ public abstract class ProcessingLogicBase implements ProcessingLogic {
     // Protected -------------------------------------------------------------------------------------------------------
 
     /**
+     * Gives subclasses access to the event buffer.
+     */
+    protected List<Event> getEventBuffer() {
+        return eventBuffer;
+    }
+
+    /**
      * All useful implementations so far turn an input event into just one single output event. If we'll ever need
      * input event -> multiple output events conversion, we'll refactor. Guaranteed to never receive EndOfStreamEvent.
+     *
+     * See TODO n7k4S
+     *
+     * It is also possible that the invocation returns no Event, so this layer should graciously handle null.
      */
-    protected abstract Event processInternal(Event e);
+    protected abstract Event processInternal(Event e) throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 

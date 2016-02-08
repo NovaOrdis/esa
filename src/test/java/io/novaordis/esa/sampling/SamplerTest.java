@@ -14,32 +14,28 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.core;
+package io.novaordis.esa.sampling;
 
-import io.novaordis.esa.core.event.EndOfStreamEvent;
+import io.novaordis.esa.core.ProcessingLogic;
+import io.novaordis.esa.core.ProcessingLogicTest;
 import io.novaordis.esa.core.event.Event;
-import io.novaordis.esa.core.event.FaultEvent;
-import io.novaordis.esa.core.event.MockEvent;
+import io.novaordis.esa.core.event.GenericTimedEvent;
+import io.novaordis.esa.core.event.IntegerProperty;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/24/16
+ * @since 2/7/16
  */
-public abstract class ProcessingLogicTest {
+public class SamplerTest extends ProcessingLogicTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    private static final Logger log = LoggerFactory.getLogger(ProcessingLogicTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -47,59 +43,35 @@ public abstract class ProcessingLogicTest {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    // Public ----------------------------------------------------------------------------------------------------------
+    // Overrides -------------------------------------------------------------------------------------------------------
 
+    @Override
     @Test
     public void processAndGetEvents() throws Exception {
 
-        ProcessingLogic pl = getProcessingLogicToTest();
-
-        assertTrue(pl.getEvents().isEmpty());
-        assertTrue(pl.getEvents().isEmpty());
-        
-        Event inputEvent = getInputEventRelevantToProcessingLogic();
-
-        assertTrue(pl.process(inputEvent));
-
-        List<Event> outputEvents = pl.getEvents();
-
-        assertEquals(1, outputEvents.size());
-        Event outputEvent = outputEvents.get(0);
-        assertNotNull(outputEvent);
-
-        assertTrue(pl.getEvents().isEmpty());
+        //
+        // noop, because a sampler may need multiple input events to produce an output event.
+        //
     }
 
-    @Test
-    public void processEndOfStreamEvent() throws Exception {
-
-        ProcessingLogic pl = getProcessingLogicToTest();
-
-        pl.process(new EndOfStreamEvent());
-
-        Event inputEvent = getInputEventRelevantToProcessingLogic();
-
-        try {
-            // make sure the processing logic is closed
-            pl.process(inputEvent);
-            fail("should throw exception");
-        }
-        catch(ClosedException e) {
-            log.info(e.getMessage());
-        }
-    }
+    // Public ----------------------------------------------------------------------------------------------------------
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    protected abstract ProcessingLogic getProcessingLogicToTest() throws Exception;
+    @Override
+    protected Sampler getProcessingLogicToTest() throws Exception {
+        return new Sampler(1000L, "test");
+    }
 
-    /**
-     * @return an Event that is meaningful to the processing logic instance and that, once processed, produces a
-     * corresponding output Event.
-     */
-    protected abstract Event getInputEventRelevantToProcessingLogic() throws Exception;
+    @Override
+    protected Event getInputEventRelevantToProcessingLogic() throws Exception {
+
+        GenericTimedEvent gte = new GenericTimedEvent(1000L);
+        gte.setProperty(new IntegerProperty("test", 1));
+        return gte;
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

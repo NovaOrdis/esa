@@ -16,30 +16,26 @@
 
 package io.novaordis.esa.core;
 
-import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.FaultEvent;
 import io.novaordis.esa.core.event.MockEvent;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
+ * Test some aspects of base processing.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/24/16
+ * @since 2/7/16
  */
-public abstract class ProcessingLogicTest {
+public class ProcessingLogicBaseTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    private static final Logger log = LoggerFactory.getLogger(ProcessingLogicTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -50,56 +46,69 @@ public abstract class ProcessingLogicTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
-    public void processAndGetEvents() throws Exception {
+    public void process_UnderlyingLogicThrowsExceptions() throws Exception {
 
-        ProcessingLogic pl = getProcessingLogicToTest();
+        MockProcessingLogicBase mplb = new MockProcessingLogicBase();
 
-        assertTrue(pl.getEvents().isEmpty());
-        assertTrue(pl.getEvents().isEmpty());
-        
-        Event inputEvent = getInputEventRelevantToProcessingLogic();
+        assertTrue(mplb.getEvents().isEmpty());
 
-        assertTrue(pl.process(inputEvent));
+        // MockProcessingLogicBase is configured to throw a SYNTHETIC RuntimeException which should turn into
+        // a FaultEvent
 
-        List<Event> outputEvents = pl.getEvents();
+        mplb.setBroken(true);
 
-        assertEquals(1, outputEvents.size());
-        Event outputEvent = outputEvents.get(0);
-        assertNotNull(outputEvent);
+        assertTrue(mplb.process(new MockEvent()));
 
-        assertTrue(pl.getEvents().isEmpty());
+        List<Event> events = mplb.getEvents();
+        assertEquals(1, events.size());
+        FaultEvent fe = (FaultEvent)events.get(0);
+
+        Throwable cause = fe.getCause();
+        assertTrue(cause instanceof RuntimeException);
+        assertEquals("SYNTHETIC", cause.getMessage());
     }
 
     @Test
-    public void processEndOfStreamEvent() throws Exception {
+    public void process_ImplementationProducesNullsFromTimeToTime() throws Exception {
 
-        ProcessingLogic pl = getProcessingLogicToTest();
+        MockProcessingLogicBase mplb = new MockProcessingLogicBase();
 
-        pl.process(new EndOfStreamEvent());
+        assertTrue(mplb.getEvents().isEmpty());
 
-        Event inputEvent = getInputEventRelevantToProcessingLogic();
+        // MockProcessingLogicBase has a configurable output event generation rate - it only generates an output
+        // event for r input events
 
-        try {
-            // make sure the processing logic is closed
-            pl.process(inputEvent);
-            fail("should throw exception");
-        }
-        catch(ClosedException e) {
-            log.info(e.getMessage());
-        }
+        mplb.setRate(3);
+
+        MockEvent me = new MockEvent();
+
+        assertFalse(mplb.process(me));
+        assertTrue(mplb.getEvents().isEmpty());
+
+        MockEvent me2 = new MockEvent();
+
+        assertFalse(mplb.process(me2));
+        assertTrue(mplb.getEvents().isEmpty());
+
+        MockEvent me3 = new MockEvent();
+
+        assertTrue(mplb.process(me3));
+        List<Event> events = mplb.getEvents();
+        assertEquals(1, events.size());
+
+        MockEvent outputMockEvent = (MockEvent)events.get(0);
+
+        //noinspection unchecked
+        List<MockEvent> contributors = (List<MockEvent>)outputMockEvent.getPayload();
+        assertEquals(3, contributors.size());
+        assertTrue(contributors.contains(me));
+        assertTrue(contributors.contains(me2));
+        assertTrue(contributors.contains(me3));
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
-
-    protected abstract ProcessingLogic getProcessingLogicToTest() throws Exception;
-
-    /**
-     * @return an Event that is meaningful to the processing logic instance and that, once processed, produces a
-     * corresponding output Event.
-     */
-    protected abstract Event getInputEventRelevantToProcessingLogic() throws Exception;
 
     // Private ---------------------------------------------------------------------------------------------------------
 
