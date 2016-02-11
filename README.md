@@ -3,7 +3,7 @@ Event Stream Analyzer
 
 # Documentation
 
-https://kb.novaordis.com/index.php/Esa
+https://kb.novaordis.com/index.php/esa
 
 # Maven Tests
 
