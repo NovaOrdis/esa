@@ -1,24 +1,45 @@
 
 events ${version}
 
-Reads, parses and processes timed event series. Usage:
+Reads, parses and processes timed event series.
 
-    events < input-file.log -i|--input-format="..." <command> <command-options>
+Syntax:
 
-The input format is required and it must be specified either on command line or in the associated
-configuration file. Common input formats are httpd log formats, CSV header definitions or garbage
-collection log formats. Examples:
+    events < input-file.log <input-format-spec> <command> <command-options>
+
+The input format  must be  specified either on command line,  in  an auxiliary file  or  in the
+configuration file. For more details, see the "Input Format" section. More details about commands
+and their options are available in the "Commands" section.
+
+
+Commands:
+
+@COMMANDS@
+To get more details on a specific command, run:
+
+    events --help <command-name>
+
+
+Input Formats:
+
+The input stream format is required. It can be specified either on command line with:
+
+    -i|--input-format="..."
+
+where the input format is specified in-line, or with:
+
+    --input-format-file=<file-name-that-contains-input-format>
+
+where the input format is defined in the file name referred by the command line option.
+
+Common input formats are  httpd log,  CSV header definitions or  garbage collection log formats.
+Examples:
 
   httpd log format:  "%h %u [%t] \"%r\" \"%q\" %{c,JSESSIONID} %{i,Some-Request-Header} %s %b %D"
   CSV format:        "timestamp, count, status-code"
 
 'events' will try to apply heuristics and figure out what type of format was specified.  For more
  details about input formats, see "Input Formats" section below.
-
-Commands:
-
-@COMMANDS@
-Input Formats
 
 httpd Input Format
 

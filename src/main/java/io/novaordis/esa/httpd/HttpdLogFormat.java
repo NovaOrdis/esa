@@ -76,6 +76,11 @@ public class HttpdLogFormat implements LineFormat {
 
     // Static ----------------------------------------------------------------------------------------------------------
 
+    public static String replaceSpecialHTMLCharacters(String s) {
+
+        return s.replaceAll("&quot;", "\"");
+    }
+
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private List<FormatString> formatStrings;
@@ -95,12 +100,17 @@ public class HttpdLogFormat implements LineFormat {
         this.formatStrings = Arrays.asList(formatStrings);
     }
 
+    /**
+     * HTML special characters in format specification are handled correctly, they are replaced with the equivalent
+     * characters.
+     */
     public HttpdLogFormat(String formatSpecification) throws Exception {
 
         if (formatSpecification == null) {
             throw new IllegalArgumentException("null format specification");
         }
 
+        formatSpecification = HttpdLogFormat.replaceSpecialHTMLCharacters(formatSpecification);
         this.formatStrings = FormatString.fromString(formatSpecification);
     }
 

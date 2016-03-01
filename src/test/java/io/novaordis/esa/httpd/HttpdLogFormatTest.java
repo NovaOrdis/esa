@@ -46,6 +46,8 @@ public class HttpdLogFormatTest extends LineFormatTest {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    // constructors ----------------------------------------------------------------------------------------------------
+
     @Test
     public void constructor() throws Exception {
 
@@ -83,6 +85,34 @@ public class HttpdLogFormatTest extends LineFormatTest {
     public void constructor_FormatAsString2() throws Exception {
 
         String s = HttpdLogFormat.PERFORMANCE_ANALYSIS.toString();
+        HttpdLogFormat f = new HttpdLogFormat(s);
+
+        List<FormatString> formatStrings = f.getFormatStrings();
+
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(0));
+        assertEquals(FormatStrings.THREAD_NAME, formatStrings.get(1));
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(2));
+        assertEquals(FormatStrings.REMOTE_HOST, formatStrings.get(3));
+        assertEquals(FormatStrings.REMOTE_USER, formatStrings.get(4));
+        assertEquals(FormatStrings.OPENING_BRACKET, formatStrings.get(5));
+        assertEquals(FormatStrings.TIMESTAMP, formatStrings.get(6));
+        assertEquals(FormatStrings.CLOSING_BRACKET, formatStrings.get(7));
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(8));
+        assertEquals(FormatStrings.FIRST_REQUEST_LINE, formatStrings.get(9));
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(10));
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(11));
+        assertEquals(FormatStrings.QUERY_STRING, formatStrings.get(12));
+        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(13));
+        assertEquals(FormatStrings.ORIGINAL_REQUEST_STATUS_CODE, formatStrings.get(14));
+        assertEquals(FormatStrings.RESPONSE_ENTITY_BODY_SIZE, formatStrings.get(15));
+        assertEquals(FormatStrings.REQUEST_PROCESSING_TIME_MS, formatStrings.get(16));
+    }
+
+    @Test
+    public void constructor_SpecialHTMLCharacter() throws Exception {
+
+        String s = "&quot;%I&quot; %h %u [%t] &quot;%r&quot; &quot;%q&quot; %s %b %D";
+
         HttpdLogFormat f = new HttpdLogFormat(s);
 
         List<FormatString> formatStrings = f.getFormatStrings();
@@ -145,6 +175,8 @@ public class HttpdLogFormatTest extends LineFormatTest {
         }
     }
 
+    // getFormatStrings() ----------------------------------------------------------------------------------------------
+
     @Test
     public void getFormatStrings_ReturnsTheUnderlyingStorage() throws Exception {
 
@@ -167,6 +199,21 @@ public class HttpdLogFormatTest extends LineFormatTest {
         assertEquals(2, fes2.size());
         assertNull(fes.get(0));
         assertEquals(fs2, fes.get(1));
+    }
+
+    // replaceSpecialHTMLCharacters() ----------------------------------------------------------------------------------
+
+
+    @Test
+    public void replaceSpecialHTMLCharacters_NoSpecialCharacter() throws Exception {
+
+        assertEquals("abc", HttpdLogFormat.replaceSpecialHTMLCharacters("abc"));
+    }
+
+    @Test
+    public void replaceSpecialHTMLCharacters_Quot() throws Exception {
+
+        assertEquals("\"a\" b \"c\"", HttpdLogFormat.replaceSpecialHTMLCharacters("&quot;a&quot; b &quot;c&quot;"));
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

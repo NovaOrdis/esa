@@ -33,6 +33,9 @@ import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.StringEventConverter;
 import org.apache.log4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -52,6 +55,16 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
     public static final int QUEUE_SIZE = 1000000;
 
     public static final StringOption INPUT_FORMAT_OPTION = new StringOption('i', "input-format");
+    public static final StringOption INPUT_FORMAT_FILE_OPTION = new StringOption("input-format-file");
+
+    static {
+
+        //
+        // establish option equivalency
+        //
+
+        INPUT_FORMAT_OPTION.addEquivalentOption(INPUT_FORMAT_FILE_OPTION);
+    }
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -153,6 +166,77 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
 
     // Package protected -----------------------------------------------------------------------------------------------
 
+    // Package protected static ----------------------------------------------------------------------------------------
+
+    /**
+     * The input stream format specification can be specified on command line (-i|--input-format) or in a file
+     * (--input-format-file). This method reconciles all these possibilities and performs sanity checks.
+     * @throws UserErrorException
+     */
+    static String getInputFormatSpecification(Configuration configuration) throws UserErrorException {
+
+        String inputFormatSpec;
+
+        StringOption inputFormat = (StringOption)configuration.getGlobalOption(INPUT_FORMAT_OPTION);
+        StringOption inputFormatFile = (StringOption)configuration.getGlobalOption(INPUT_FORMAT_FILE_OPTION);
+
+        if (inputFormat != null) {
+
+            inputFormatSpec = inputFormat.getString();
+            log.debug("format specification on command line: " + inputFormatSpec);
+
+            if (inputFormatFile != null) {
+                throw new UserErrorException(
+                        "both " + INPUT_FORMAT_OPTION.getLabel() + " and " + INPUT_FORMAT_FILE_OPTION.getLabel() + " are specified, remove one");
+            }
+
+            return inputFormatSpec;
+        }
+
+        //
+        // try --input-format-file
+        //
+
+
+        if (inputFormatFile == null) {
+
+            throw new UserErrorException(
+                    "input format not specified, use " + INPUT_FORMAT_OPTION.getLabel() + " or " + INPUT_FORMAT_FILE_OPTION.getLabel());
+        }
+
+        String fileName = inputFormatFile.getValue();
+        File file =  new File(fileName);
+        if (!file.isFile() || !file.canRead()) {
+            throw new UserErrorException("file " + fileName + " does not exist or cannot be read");
+        }
+
+        BufferedReader br = null;
+
+        try {
+
+            br = new BufferedReader(new FileReader(file));
+            inputFormatSpec = br.readLine();
+            log.debug("format specification from file " + fileName + ": " + inputFormatSpec);
+            return inputFormatSpec;
+        }
+        catch (Exception e) {
+
+            throw new UserErrorException("failed to read file " + file, e);
+        }
+        finally {
+
+            if (br != null) {
+
+                try {
+                    br.close();
+                }
+                catch(Exception e) {
+                    log.warn("failed to close buffered reader", e);
+                }
+            }
+        }
+    }
+
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
@@ -165,19 +249,13 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
     private LineParser figureOutParserTypeBasedOnInputFormatString(Configuration configuration)
             throws UserErrorException {
 
+        String inputFormatSpec = getInputFormatSpecification(configuration);
 
-        StringOption inputFormat = (StringOption)configuration.getGlobalOption(INPUT_FORMAT_OPTION);
-
-        if (inputFormat == null) {
-            throw new UserErrorException("input format not specified, use " + INPUT_FORMAT_OPTION.getLabel());
-        }
-
-        String format = inputFormat.getString();
-
-        LineParser lineParser = LineParserFactory.getInstance(format);
+        LineParser lineParser = LineParserFactory.getInstance(inputFormatSpec);
 
         if (lineParser == null) {
-            throw new UserErrorException("no known parser knows how to interpret the format string \"" + format + "\"");
+            throw new UserErrorException(
+                    "no known parser knows how to interpret the format string \"" + inputFormatSpec + "\"");
         }
 
         return lineParser;
