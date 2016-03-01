@@ -43,7 +43,7 @@ Examples:
 
 httpd Input Format
 
-  Quotes need to be escaped: \"%r\".
+  Quotes need to be escaped: \"%r\". HTTP special characters can also be used (&quot;).
 
   %t - Time the request was received, in the format [18/Sep/2011:19:18:28 -0400]. The last number
        indicates the timezone offset from GMT. Usually declared between brackets.
