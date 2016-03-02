@@ -1,0 +1,3 @@
+
+Extracts business-scenarios (related, ordered sets of HTTP invocations) from a HTTP request series.
+
