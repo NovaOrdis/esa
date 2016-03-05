@@ -1,5 +1,6 @@
-# esa
-Event Stream Analyzer
+# events
+
+A Java library that manipulates event streams.
 
 # Documentation
 
