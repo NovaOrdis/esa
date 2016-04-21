@@ -1,3 +1,5 @@
 
-Extracts business-scenarios (related, ordered sets of HTTP invocations) from a HTTP request series.
+Extracts business-scenarios events from a HTTP request event series.
+
+A business scenario event is built based on a succession of multiple HTTP requests.
 
