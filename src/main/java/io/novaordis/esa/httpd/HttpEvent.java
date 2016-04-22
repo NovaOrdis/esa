@@ -55,6 +55,8 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
     public static final String RESPONSE_HEADERS = "response-headers";
     public static final String COOKIES = "cookies";
 
+    public static final String JSESSIONID_COOKIE_KEY = "JSESSIONID";
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -237,6 +239,19 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
     public void setRequestHeader(String headerName) {
 
         setRequestHeader(headerName, null);
+    }
+
+    @Override
+    public String toString() {
+
+        String s = getMethod() + " " + getRequestUri();
+        String jSessionId = getCookie(JSESSIONID_COOKIE_KEY);
+        if (jSessionId != null) {
+
+            s += " (JSESSIONID=" + jSessionId + ")";
+        }
+
+        return s;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

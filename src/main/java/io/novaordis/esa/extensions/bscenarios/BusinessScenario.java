@@ -30,12 +30,12 @@ public class BusinessScenario {
 
     // If this header is encountered, it means the containing HTTP request is the first HTTP request of a business
     // scenario of the type mentioned as the header value
-    public static final String BUSINESS_SCENARIO_START_MARKER_HEADER_NAME = "Events-Business-Scenario-Start";
+    public static final String BUSINESS_SCENARIO_START_MARKER_HEADER_NAME = "Business-Scenario-Start-Marker";
 
     // If this header is encountered, it means the containing HTTP request is the last HTTP request of a business
     // scenario of the type mentioned as the header value; all HTTP requests between the start and stop marker
     // belong to the business scenario
-    public static final String BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME = "Events-Business-Scenario-Stop";
+    public static final String BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME = "Business-Scenario-Stop-Marker";
 
     // Static ----------------------------------------------------------------------------------------------------------
 

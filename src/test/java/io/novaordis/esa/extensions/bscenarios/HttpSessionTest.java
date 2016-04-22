@@ -17,6 +17,7 @@
 package io.novaordis.esa.extensions.bscenarios;
 
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.FaultEvent;
 import io.novaordis.esa.core.event.IntegerProperty;
 import io.novaordis.esa.core.event.LongProperty;
 import io.novaordis.esa.httpd.HttpEvent;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -73,6 +75,22 @@ public class HttpSessionTest {
     }
 
     @Test
+    public void processBusinessScenario_JSessionIDPresent_NoBusinessScenarioMarker() throws Exception {
+
+        HttpSession s = new HttpSession("test-session-1");
+
+        HttpEvent e = new HttpEvent(0L);
+        e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+        e.setProperty(new LongProperty(HttpEvent.REQUEST_PROCESSING_TIME, 1L));
+
+        FaultEvent fe = (FaultEvent)s.processBusinessScenario(e);
+
+        String msg = fe.getMessage();
+        log.info(msg);
+        assertTrue(msg.matches("HTTP request .* does not belong to any business scenario"));
+    }
+
+    @Test
     public void processBusinessScenario() throws Exception {
 
         HttpSession s = new HttpSession("test-session-1");
@@ -80,7 +98,7 @@ public class HttpSessionTest {
         Event re;
 
         HttpEvent e = new HttpEvent(0L);
-        e.setCookie(HttpSession.JSESSIONID_COOKIE_KEY, "test-session-1");
+        e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
         e.setProperty(new LongProperty(HttpEvent.REQUEST_PROCESSING_TIME, 1L));
 
@@ -88,14 +106,14 @@ public class HttpSessionTest {
         assertNull(re);
 
         HttpEvent e2 = new HttpEvent(0L);
-        e2.setCookie(HttpSession.JSESSIONID_COOKIE_KEY, "test-session-1");
+        e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e2.setProperty(new LongProperty(HttpEvent.REQUEST_PROCESSING_TIME, 1L));
 
         re = s.processBusinessScenario(e2);
         assertNull(re);
 
         HttpEvent e3 = new HttpEvent(0L);
-        e3.setCookie(HttpSession.JSESSIONID_COOKIE_KEY, "test-session-1");
+        e3.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e3.setProperty(new LongProperty(HttpEvent.REQUEST_PROCESSING_TIME, 1L));
         e3.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
 

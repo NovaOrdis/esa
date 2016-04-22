@@ -71,7 +71,7 @@ public class OutputCommand extends CommandBase {
         //
 
         OutputStreamTerminator terminator = runtime.getTerminator();
-        terminator.setInputQueue(runtime.getTerminator().getInputQueue());
+        terminator.setInputQueue(runtime.getEventProcessor().getOutputQueue());
 
         StringOption outputFormatOption = (StringOption)getOption(OUTPUT_FORMAT_OPTION);
         if (outputFormatOption != null) {

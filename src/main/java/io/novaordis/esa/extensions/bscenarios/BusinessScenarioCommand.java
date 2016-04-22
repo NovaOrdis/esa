@@ -137,11 +137,11 @@ public class BusinessScenarioCommand extends CommandBase {
      */
     Event process(HttpEvent event) {
 
-        String jSessionId = event.getCookie(HttpSession.JSESSIONID_COOKIE_KEY);
+        String jSessionId = event.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY);
 
         if (jSessionId == null) {
             return new FaultEvent(
-                    "HTTP request " + event + " does not carry a \"" + HttpSession.JSESSIONID_COOKIE_KEY + "\" cookie");
+                    "HTTP request " + event + " does not carry a \"" + HttpEvent.JSESSIONID_COOKIE_KEY + "\" cookie");
         }
 
         HttpSession s = sessions.get(jSessionId);

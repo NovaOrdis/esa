@@ -17,6 +17,7 @@
 package io.novaordis.esa.extensions.bscenarios;
 
 import io.novaordis.esa.core.event.Event;
+import io.novaordis.esa.core.event.FaultEvent;
 import io.novaordis.esa.httpd.HttpEvent;
 
 /**
@@ -28,8 +29,6 @@ import io.novaordis.esa.httpd.HttpEvent;
 class HttpSession {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final String JSESSIONID_COOKIE_KEY = "JSESSIONID";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -74,11 +73,9 @@ class HttpSession {
             throw new IllegalArgumentException("null event");
         }
 
-        if (!jSessionId.equals(event.getCookie(HttpSession.JSESSIONID_COOKIE_KEY))) {
+        if (!jSessionId.equals(event.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY))) {
             throw new IllegalArgumentException("HTTP request " + event + " does not belong to " + this);
         }
-
-        Event result = null;
 
         if (current != null) {
 
@@ -121,7 +118,11 @@ class HttpSession {
             return null;
         }
 
-        throw new RuntimeException("NOT YET IMPLEMENTED");
+        //
+        // there's no current scenario, and we did not encounter the scenario start marker yet, issue a fault
+        //
+
+        return new FaultEvent("HTTP request " + event + " does not belong to any business scenario");
     }
 
 //        if (cookies != null) {
