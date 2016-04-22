@@ -116,6 +116,12 @@ public class OutputStreamTerminator extends ComponentBase implements Terminator 
         disabled = true;
     }
 
+    @Override
+    public boolean isDisabled() {
+
+        return disabled;
+    }
+
     /**
      * Handle disable.
      */

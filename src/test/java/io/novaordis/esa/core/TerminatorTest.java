@@ -22,7 +22,9 @@ import org.junit.Test;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -66,6 +68,28 @@ public abstract class TerminatorTest extends ComponentTest {
         terminator.setConversionLogic(conversionLogic);
 
         assertEquals(conversionLogic, terminator.getConversionLogic());
+    }
+
+    // disable() -------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void disable() throws Exception {
+
+        Terminator terminator = getComponentToTest("test");
+
+        assertFalse(terminator.isActive());
+
+        assertFalse(terminator.isDisabled());
+
+        terminator.disable();
+
+        assertTrue(terminator.isDisabled());
+
+        //
+        // make sure cannot be started after disabling
+        //
+
+        terminator.start();
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

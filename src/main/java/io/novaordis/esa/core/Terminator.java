@@ -52,9 +52,13 @@ public interface Terminator extends Component {
     ConversionLogic getConversionLogic();
 
     /**
-     * Takes this terminator out - it removes it from the pipeline.
+     * Takes this terminator out - it stops it (if necessary) and removes it from the pipeline.
      */
     void disable();
 
+    /**
+     * @return true if the component was disable (disable()) was invoked), false otherwise.
+     */
+    boolean isDisabled();
 
 }

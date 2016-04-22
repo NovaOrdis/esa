@@ -154,6 +154,12 @@ public abstract class ComponentBase implements Component {
     @Override
     public boolean stop() throws InterruptedException {
 
+        if (!active) {
+
+            log.debug(this + " not active");
+            return true;
+        }
+
         if (stopped) {
 
             log.debug(this + " already stopped");
