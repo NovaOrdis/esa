@@ -21,7 +21,9 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -79,6 +81,18 @@ public class MapPropertyTest extends PropertyTest {
 //        MapProperty mp = new MapProperty("test-name", 1.1f);
 //        assertEquals("test-name", mp.externalizeValue());
 //    }
+
+    // getMap() --------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void getMap_emptyMapNeverNull() throws Exception {
+
+        MapProperty mp = new MapProperty("test", null);
+
+        Map<String, Object> map = mp.getMap();
+        assertNotNull(map);
+        assertTrue(map.isEmpty());
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

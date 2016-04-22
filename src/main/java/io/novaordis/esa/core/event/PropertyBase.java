@@ -37,6 +37,9 @@ public abstract class PropertyBase implements Property, Comparable<Property> {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    /**
+     * @param name the property name
+     */
     protected PropertyBase(String name, Object value) {
         this.name = name;
         this.value = value;

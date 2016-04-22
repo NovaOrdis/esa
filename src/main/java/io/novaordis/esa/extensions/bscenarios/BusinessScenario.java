@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.experimental;
+package io.novaordis.esa.extensions.bscenarios;
 
 import io.novaordis.esa.core.event.IntegerProperty;
 import io.novaordis.esa.core.event.LongProperty;
+import io.novaordis.esa.extensions.bscenarios.BusinessScenarioEvent;
 import io.novaordis.esa.httpd.HttpEvent;
 
 /**

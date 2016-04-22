@@ -22,10 +22,8 @@ import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.esa.clad.EventsApplicationRuntime;
 import io.novaordis.esa.core.event.EndOfStreamEvent;
 import io.novaordis.esa.core.event.Event;
-import io.novaordis.esa.core.event.FaultEvent;
 import io.novaordis.esa.core.event.MapProperty;
 import io.novaordis.esa.core.event.Property;
-import io.novaordis.esa.core.event.StringEvent;
 import io.novaordis.esa.core.event.TimedEvent;
 
 import java.util.ArrayList;
@@ -35,7 +33,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
@@ -69,7 +66,7 @@ public class DescribeCommand extends CommandBase {
         runtime.getTerminator().disable();
         runtime.start();
 
-        BlockingQueue<Event> inputQueue = runtime.getOutputQueue();
+        BlockingQueue<Event> inputQueue = runtime.getTerminator().getInputQueue();
 
         for(;;) {
 

@@ -1,5 +1,10 @@
 
 Extracts business-scenarios events from a HTTP request event series.
 
-A business scenario event is built based on a succession of multiple HTTP requests.
+A business scenario event is built based on a succession of multiple HTTP requests, that are
+landing on the server within the context of the same HTTP session, identified by the
+"JSESSIONID" cookie.
+
+A business scenario is started by a
+specific request and ended by other specific request.
 

@@ -16,6 +16,7 @@
 
 package io.novaordis.esa.core.event;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,10 +63,19 @@ public class MapProperty extends PropertyBase implements Property {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    /**
+     * @return an empty map, never null
+     */
     public Map<String, Object> getMap() {
 
         //noinspection unchecked
-        return (Map<String, Object>)getValue();
+        Map<String, Object> map = ( Map<String, Object>)getValue();
+
+        if (map == null) {
+            map = Collections.emptyMap();
+        }
+
+        return map;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

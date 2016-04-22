@@ -149,6 +149,37 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         return getLong(REQUEST_PROCESSING_TIME);
     }
 
+    /**
+     * @return null if no such cookie is present
+     */
+    public String getCookie(String cookieName) {
+
+        MapProperty cookies = (MapProperty)getProperty(HttpEvent.COOKIES);
+
+        if (cookies == null) {
+            return null;
+        }
+
+        Map<String, Object> map = cookies.getMap();
+        if (map == null) {
+            return null;
+        }
+
+        return (String)map.get(cookieName);
+    }
+
+    public void setCookie(String cookieName, String cookieValue) {
+
+        MapProperty mp = (MapProperty)getProperty(HttpEvent.COOKIES);
+
+        if (mp == null) {
+            mp = new MapProperty(HttpEvent.COOKIES);
+            setProperty(mp);
+        }
+
+        mp.getMap().put(cookieName, cookieValue);
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

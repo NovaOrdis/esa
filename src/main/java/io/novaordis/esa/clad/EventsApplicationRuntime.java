@@ -134,13 +134,12 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public BlockingQueue<Event> getOutputQueue() {
-
-        return parser.getOutputQueue();
-    }
-
     public OutputStreamTerminator getTerminator() {
         return terminator;
+    }
+
+    public EventProcessor getEventProcessor() {
+        return parser;
     }
 
     public void start() throws Exception {

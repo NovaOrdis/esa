@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.httpd;
-
-import io.novaordis.esa.core.event.MapProperty;
-import io.novaordis.esa.core.event.TimedEventTest;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+package io.novaordis.esa.extensions.bscenarios;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/1/16
+ * @since 4/21/16
  */
-public class HttpEventTest extends TimedEventTest {
+public class MockHttpSession extends HttpSession {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -39,54 +32,9 @@ public class HttpEventTest extends TimedEventTest {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    // getCookie() -----------------------------------------------------------------------------------------------------
-
-    @Test
-    public void getCookie_NoCookie() throws Exception {
-
-        HttpEvent e = getEventToTest(0L);
-        assertNull(e.getCookie("no-such-cookie"));
-    }
-
-    @Test
-    public void getCookie_NoCookiesInMap() throws Exception {
-
-        HttpEvent e = getEventToTest(0L);
-        MapProperty mp = new MapProperty(HttpEvent.COOKIES);
-        e.setProperty(mp);
-        assertNull(e.getCookie("no-such-cookie"));
-    }
-
-    @Test
-    public void getCookie() throws Exception {
-
-        HttpEvent e = getEventToTest(0L);
-        MapProperty mp = new MapProperty(HttpEvent.COOKIES);
-        mp.getMap().put("test-cookie-name", "test-cookie-value");
-        e.setProperty(mp);
-
-        assertEquals("test-cookie-value", e.getCookie("test-cookie-name"));
-    }
-
-    // setCookie() -----------------------------------------------------------------------------------------------------
-
-    @Test
-    public void setCookie() throws Exception {
-
-        HttpEvent e = getEventToTest(0L);
-        assertNull(e.getCookie("test-cookie-name"));
-        e.setCookie("test-cookie-name", "test-cookie-value");
-        assertEquals("test-cookie-value", e.getCookie("test-cookie-name"));
-    }
-
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
-
-    @Override
-    protected HttpEvent getEventToTest(Long timestamp) throws Exception {
-        return new HttpEvent(timestamp);
-    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

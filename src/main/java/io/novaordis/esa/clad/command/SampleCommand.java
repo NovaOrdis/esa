@@ -78,7 +78,7 @@ public class SampleCommand extends CommandBase {
 
             EventProcessor sampler = new EventProcessor(
                     "Sampler",
-                    eventsApplicationRuntime.getOutputQueue(),
+                    eventsApplicationRuntime.getTerminator().getInputQueue(),
                     new Sampler(samplingIntervalSecs * 1000L, samplingFieldName),
                     new ArrayBlockingQueue<>(EventsApplicationRuntime.QUEUE_SIZE));
 

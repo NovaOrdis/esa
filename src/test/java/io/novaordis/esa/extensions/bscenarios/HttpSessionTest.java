@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package io.novaordis.esa.experimental;
+package io.novaordis.esa.extensions.bscenarios;
 
-import io.novaordis.esa.httpd.HttpEvent;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
  */
-public class UserContext {
+public class HttpSessionTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,39 +33,20 @@ public class UserContext {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private BusinessScenario currentBusinessScenario;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    /**
-     * May return null
-     */
-    public BusinessScenario getCurrentBusinessScenario() {
+    @Test
+    public void constructor() throws Exception {
 
-        return currentBusinessScenario;
-    }
-
-    public void clear() {
-        currentBusinessScenario = null;
-    }
-
-    public void startNewBusinessScenario(HttpEvent event) {
-
-        if (currentBusinessScenario != null) {
-            throw new IllegalStateException(
-                    "cannot start a new business scenario while there is one active: " + currentBusinessScenario);
-        }
-
-        currentBusinessScenario = new BusinessScenario(event);
+        HttpSession s = new HttpSession("test");
+        assertEquals("test", s.getJSessionId());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
-
-    // Private ---------------------------------------------------------------------------------------------------------
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 
