@@ -49,7 +49,7 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
     public static final String REMOTE_LOGNAME = "remote-logname";
     public static final String REMOTE_USER = "remote-user";
     public static final String RESPONSE_ENTITY_BODY_SIZE = "response-body-size";
-    public static final String REQUEST_PROCESSING_TIME = "request-processing-time";
+    public static final String REQUEST_DURATION = "request-duration";
     public static final String QUERY = "query";
     public static final String REQUEST_HEADERS = "request-headers";
     public static final String RESPONSE_HEADERS = "response-headers";
@@ -151,8 +151,12 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         return s;
     }
 
-    public Long getRequestProcessingTimeMs() {
-        return getLong(REQUEST_PROCESSING_TIME);
+    public Long getRequestDuration() {
+        return getLong(REQUEST_DURATION);
+    }
+
+    public void setRequestDuration(long duration) {
+        setLongProperty(REQUEST_DURATION, duration);
     }
 
     /**

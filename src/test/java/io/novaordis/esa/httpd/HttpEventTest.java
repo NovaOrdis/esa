@@ -144,6 +144,17 @@ public class HttpEventTest extends TimedEventTest {
         assertEquals("/test/", e.getRequestUri());
     }
 
+    // setRequestDuration()/getRequestDuration() -----------------------------------------------------------------------
+
+    @Test
+    public void requestDuration() throws Exception {
+
+        HttpEvent e = getEventToTest(0L);
+        assertNull(e.getRequestDuration());
+        e.setRequestDuration(7L);
+        assertEquals(7L, e.getRequestDuration().longValue());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

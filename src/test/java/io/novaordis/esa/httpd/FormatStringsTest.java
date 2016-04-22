@@ -269,7 +269,7 @@ public class FormatStringsTest extends FormatStringTest {
         assertNull(e.getMatchingEnclosure());
 
         LongProperty property = (LongProperty)e.toProperty(1L);
-        assertEquals(HttpEvent.REQUEST_PROCESSING_TIME, property.getName());
+        assertEquals(HttpEvent.REQUEST_DURATION, property.getName());
         assertEquals(1L, property.getLong().longValue());
         assertEquals(TimeMeasureUnit.MILLISECOND, property.getMeasureUnit());
     }

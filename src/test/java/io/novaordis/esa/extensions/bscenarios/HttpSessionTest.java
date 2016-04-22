@@ -81,7 +81,7 @@ public class HttpSessionTest {
 
         HttpEvent e = new HttpEvent(0L);
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
-        e.setProperty(new LongProperty(HttpEvent.REQUEST_PROCESSING_TIME, 1L));
+        e.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
 
         FaultEvent fe = (FaultEvent)s.processBusinessScenario(e);
 
@@ -100,21 +100,21 @@ public class HttpSessionTest {
         HttpEvent e = new HttpEvent(0L);
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
-        e.setProperty(new LongProperty(HttpEvent.REQUEST_PROCESSING_TIME, 1L));
+        e.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
 
         re = s.processBusinessScenario(e);
         assertNull(re);
 
         HttpEvent e2 = new HttpEvent(0L);
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
-        e2.setProperty(new LongProperty(HttpEvent.REQUEST_PROCESSING_TIME, 1L));
+        e2.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
 
         re = s.processBusinessScenario(e2);
         assertNull(re);
 
         HttpEvent e3 = new HttpEvent(0L);
         e3.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
-        e3.setProperty(new LongProperty(HttpEvent.REQUEST_PROCESSING_TIME, 1L));
+        e3.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
         e3.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
 
         re = s.processBusinessScenario(e3);
@@ -122,12 +122,124 @@ public class HttpSessionTest {
 
         BusinessScenarioEvent bse = (BusinessScenarioEvent)re;
 
-        IntegerProperty ip = bse.getIntegerProperty("request-count");
+        IntegerProperty ip = bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT);
         assertEquals(3, ip.getInteger().intValue());
 
-        LongProperty lp = bse.getLongProperty("total-processing-time");
+        LongProperty lp = bse.getLongProperty(BusinessScenarioEvent.DURATION);
         assertEquals(3, lp.getLong().longValue());
+
+        //
+        // successive scenario
+        //
+
+        HttpEvent e4 = new HttpEvent(0L);
+        e4.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+        e4.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
+        e4.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
+
+        re = s.processBusinessScenario(e4);
+        assertNull(re);
+
+        HttpEvent e5 = new HttpEvent(0L);
+        e5.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+        e5.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
+        e5.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
+
+        re = s.processBusinessScenario(e3);
+        assertNotNull(re);
+
+        BusinessScenarioEvent bse2 = (BusinessScenarioEvent)re;
+
+        IntegerProperty ip2 = bse2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT);
+        assertEquals(2, ip2.getInteger().intValue());
+
+        LongProperty lp2 = bse2.getLongProperty(BusinessScenarioEvent.DURATION);
+        assertEquals(2, lp2.getLong().longValue());
     }
+
+    @Test
+    public void processBusinessScenario_StopMarkerSameTypeLabel() throws Exception {
+
+        HttpSession s = new HttpSession("test-session-1");
+
+        Event re;
+
+        HttpEvent e = new HttpEvent(0L);
+        e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
+        e.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
+
+        re = s.processBusinessScenario(e);
+        assertNull(re);
+
+        HttpEvent e2 = new HttpEvent(0L);
+        e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+        e2.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "scenario-1");
+
+        re = s.processBusinessScenario(e2);
+        assertNotNull(re);
+
+        BusinessScenarioEvent bse = (BusinessScenarioEvent)re;
+
+        IntegerProperty ip = bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT);
+        assertEquals(2, ip.getInteger().intValue());
+
+        LongProperty lp = bse.getLongProperty(BusinessScenarioEvent.DURATION);
+        assertEquals(2, lp.getLong().longValue());
+    }
+
+    @Test
+    public void processBusinessScenario_StopMarkerDifferentTypeLabel() throws Exception {
+
+        HttpSession s = new HttpSession("test-session-1");
+
+        Event re;
+
+        HttpEvent e = new HttpEvent(1L);
+        e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
+        e.setRequestDuration(1L);
+
+        re = s.processBusinessScenario(e);
+        assertNull(re);
+
+        HttpEvent e2 = new HttpEvent(2L);
+        e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+        e2.setRequestDuration(2L);
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "scenario-2");
+
+        try {
+            s.processBusinessScenario(e2);
+            fail("should throw exception");
+        }
+        catch(IllegalArgumentException ex) {
+            log.info(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void processBusinessScenario_InvalidRequest() throws Exception {
+
+        HttpSession s = new HttpSession("test-session-1");
+
+        Event re;
+
+        HttpEvent e = new HttpEvent(1L);
+        e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
+        e.setRequestDuration(1L);
+
+        re = s.processBusinessScenario(e);
+        assertNull(re);
+
+        HttpEvent noDurationRequest = new HttpEvent(2L);
+        noDurationRequest.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+
+        FaultEvent fe = (FaultEvent)s.processBusinessScenario(noDurationRequest);
+        log.info("" + fe);
+    }
+
 
     // Package protected -----------------------------------------------------------------------------------------------
 

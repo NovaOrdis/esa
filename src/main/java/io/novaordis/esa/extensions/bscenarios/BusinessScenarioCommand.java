@@ -85,8 +85,12 @@ public class BusinessScenarioCommand extends CommandBase {
 
             terminator.setInputQueue(terminatorQueue);
 
-            ((OutputFormatter) terminator.getConversionLogic()).setOutputFormat(
-                    "timestamp, request-count, total-processing-time");
+            String propertiesToDisplay =
+                    "timestamp, " +
+                    BusinessScenarioEvent.REQUEST_COUNT + ", " +
+                    BusinessScenarioEvent.DURATION;
+
+            ((OutputFormatter) terminator.getConversionLogic()).setOutputFormat(propertiesToDisplay);
         }
 
         runtime.start();

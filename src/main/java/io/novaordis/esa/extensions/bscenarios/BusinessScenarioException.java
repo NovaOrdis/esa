@@ -16,18 +16,13 @@
 
 package io.novaordis.esa.extensions.bscenarios;
 
-import io.novaordis.esa.core.event.GenericTimedEvent;
-
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/4/16
+ * @since 1/22/16
  */
-public class BusinessScenarioEvent extends GenericTimedEvent {
+public class BusinessScenarioException extends Exception {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final String DURATION = "duration";
-    public static final String REQUEST_COUNT = "request-count";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -35,8 +30,20 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    protected BusinessScenarioEvent(long timestamp) {
-        super(timestamp);
+    public BusinessScenarioException() {
+        super();
+    }
+
+    public BusinessScenarioException(String message) {
+        super(message);
+    }
+
+    public BusinessScenarioException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public BusinessScenarioException(Throwable cause) {
+        super(cause);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

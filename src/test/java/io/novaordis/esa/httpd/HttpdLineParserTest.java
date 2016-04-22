@@ -193,7 +193,7 @@ public class HttpdLineParserTest extends LineParserTest {
         assertEquals(404, e.getOriginalRequestStatusCode().intValue());
         assertNull(e.getStatusCode());
         assertEquals(74, e.getResponseEntityBodySize().longValue());
-        assertEquals(27, e.getRequestProcessingTimeMs().longValue());
+        assertEquals(27, e.getRequestDuration().longValue());
     }
 
     /**
