@@ -1,6 +1,6 @@
 
-Turns the event stream into human-readable, comma separated value text. Each event produces its
-own separate text line.
+Turns the event stream into human-readable, comma separated value text. Each event is represented
+on its own separate text line.
 
 Usage:
 
