@@ -202,7 +202,7 @@ public class HttpdLogLine {
 
                 String[] methodPathHtmlVersion = parseFirstRequestLine(s);
                 httpEvent.setProperty(new StringProperty(HttpEvent.METHOD, methodPathHtmlVersion[0]));
-                httpEvent.setProperty(new StringProperty(HttpEvent.PATH, methodPathHtmlVersion[1]));
+                httpEvent.setProperty(new StringProperty(HttpEvent.REQUEST_URI, methodPathHtmlVersion[1]));
                 httpEvent.setProperty(new StringProperty(HttpEvent.HTTP_VERSION, methodPathHtmlVersion[2]));
             }
             else {

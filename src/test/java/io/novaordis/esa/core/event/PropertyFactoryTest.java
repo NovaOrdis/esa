@@ -24,7 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -156,7 +158,9 @@ public class PropertyFactoryTest {
 
         assertEquals("test", mp.getName());
         assertEquals(Map.class, mp.getType());
-        assertNull(mp.getMap());
+        Map<String, Object> map = mp.getMap();
+        assertNotNull(map);
+        assertTrue(map.isEmpty());
     }
 
     @Test

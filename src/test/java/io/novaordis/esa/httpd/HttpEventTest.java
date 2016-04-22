@@ -79,6 +79,71 @@ public class HttpEventTest extends TimedEventTest {
         assertEquals("test-cookie-value", e.getCookie("test-cookie-name"));
     }
 
+    // getRequestHeader() ----------------------------------------------------------------------------------------------
+
+    @Test
+    public void getRequestHeader_NoHeader() throws Exception {
+
+        HttpEvent e = getEventToTest(0L);
+        assertNull(e.getRequestHeader("no-such-header"));
+    }
+
+    @Test
+    public void getRequestHeader_NoHeadersInMap() throws Exception {
+
+        HttpEvent e = getEventToTest(0L);
+        MapProperty mp = new MapProperty(HttpEvent.REQUEST_HEADERS);
+        e.setProperty(mp);
+        assertNull(e.getRequestHeader("no-such-header"));
+    }
+
+    @Test
+    public void getRequestHeader() throws Exception {
+
+        HttpEvent e = getEventToTest(0L);
+        MapProperty mp = new MapProperty(HttpEvent.REQUEST_HEADERS);
+        mp.getMap().put("test-header-name", "test-header-value");
+        e.setProperty(mp);
+
+        assertEquals("test-header-value", e.getRequestHeader("test-header-name"));
+    }
+
+    // setCookie() -----------------------------------------------------------------------------------------------------
+
+    @Test
+    public void setRequestHeader() throws Exception {
+
+        HttpEvent e = getEventToTest(0L);
+        assertNull(e.getRequestHeader("test-header-name"));
+        e.setRequestHeader("test-header-name", "test-header-value");
+        assertEquals("test-header-value", e.getRequestHeader("test-header-name"));
+    }
+
+    @Test
+    public void setRequestHeader_EmptyHeaderBody() throws Exception {
+
+        HttpEvent e = getEventToTest(0L);
+        assertNull(e.getRequestHeader("test-header-name"));
+        assertNull(e.getRequestHeader("test-header-name-2"));
+
+        e.setRequestHeader("test-header-name");
+        assertEquals("", e.getRequestHeader("test-header-name"));
+
+        e.setRequestHeader("est-header-name-2", null);
+        assertEquals("", e.getRequestHeader("est-header-name-2"));
+    }
+
+    // setRequestUri()/getRequestUri() ---------------------------------------------------------------------------------
+
+    @Test
+    public void requestUri() throws Exception {
+
+        HttpEvent e = getEventToTest(0L);
+        assertNull(e.getRequestUri());
+        e.setRequestUri("/test/");
+        assertEquals("/test/", e.getRequestUri());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

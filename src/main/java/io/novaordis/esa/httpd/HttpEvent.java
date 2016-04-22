@@ -40,7 +40,7 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
     // Constants -------------------------------------------------------------------------------------------------------
 
     public static final String METHOD = "method";
-    public static final String PATH = "path";
+    public static final String REQUEST_URI = "request-uri";
     public static final String HTTP_VERSION = "http-version";
     public static final String ORIGINAL_REQUEST_STATUS_CODE = "original-request-status-code";
     public static final String STATUS_CODE = "status-code";
@@ -83,8 +83,12 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         return getString(METHOD);
     }
 
-    public String getPath() {
-        return getString(PATH);
+    public String getRequestUri() {
+        return getString(REQUEST_URI);
+    }
+
+    public void setRequestUri(String requestUri) {
+        setStringProperty(REQUEST_URI, requestUri);
     }
 
     public String getHttpVersion() {
@@ -94,7 +98,7 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
     public String getFirstRequestLine() {
 
         String method = getMethod();
-        String path = getPath();
+        String path = getRequestUri();
         String version = getHttpVersion();
 
         if (method == null || path == null || version == null) {
@@ -168,6 +172,9 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         return (String)map.get(cookieName);
     }
 
+    /**
+     * Overwrites the previous cookie with the same name, if exists.
+     */
     public void setCookie(String cookieName, String cookieValue) {
 
         MapProperty mp = (MapProperty)getProperty(HttpEvent.COOKIES);
@@ -178,6 +185,58 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         }
 
         mp.getMap().put(cookieName, cookieValue);
+    }
+
+    /**
+     * @return null if no such header is present. Returns the empty string "" if the header is present but has an empty
+     * body.
+     */
+    public String getRequestHeader(String headerName) {
+
+        MapProperty requestHeaders = (MapProperty)getProperty(HttpEvent.REQUEST_HEADERS);
+
+        if (requestHeaders == null) {
+            return null;
+        }
+
+        Map<String, Object> map = requestHeaders.getMap();
+        if (map == null) {
+            return null;
+        }
+
+        return (String)map.get(headerName);
+    }
+
+    /**
+     * Overwrites the previous header with the same name, if exists.
+     *
+     * @param headerValue if null, it means we want to add the request header with an empty body, it will show as
+     *                    Some-Header-Name: in the request. The corresponding getRequestHeader() will return an empty
+     *                    string.
+     */
+    public void setRequestHeader(String headerName, String headerValue) {
+
+        MapProperty mp = (MapProperty)getProperty(HttpEvent.REQUEST_HEADERS);
+
+        if (mp == null) {
+            mp = new MapProperty(HttpEvent.REQUEST_HEADERS);
+            setProperty(mp);
+        }
+
+        if (headerValue == null) {
+            headerValue = "";
+        }
+
+        mp.getMap().put(headerName, headerValue);
+    }
+
+    /**
+     * Sets a request header an empty body, it will show as Some-Header-Name: in the request. The corresponding
+     * getRequestHeader() will return an empty string.
+     */
+    public void setRequestHeader(String headerName) {
+
+        setRequestHeader(headerName, null);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

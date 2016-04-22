@@ -152,7 +152,13 @@ public class GenericEvent implements Event {
             }
         }
 
-        orderedPropertyNames.add(propertyName);
+        //
+        // only add it to the ordered property name list if it does not exist already
+        //
+
+        if (!orderedPropertyNames.contains(propertyName)) {
+            orderedPropertyNames.add(propertyName);
+        }
 
         //
         // replace
@@ -171,6 +177,14 @@ public class GenericEvent implements Event {
         }
 
         return result;
+    }
+
+    public void setStringProperty(String name, String value) {
+        setProperty(new StringProperty(name, value));
+    }
+
+    public void setLongProperty(String name, long value) {
+        setProperty(new LongProperty(name, value));
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

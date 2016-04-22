@@ -177,7 +177,7 @@ public class HttpdLogLineTest {
 
         assertEquals(1L, event.getTimestamp().longValue());
         assertEquals(HTTPMethod.PUT.name(), ((StringProperty)event.getProperty(HttpEvent.METHOD)).getString());
-        assertEquals("/test/", ((StringProperty)event.getProperty(HttpEvent.PATH)).getString());
+        assertEquals("/test/", ((StringProperty)event.getProperty(HttpEvent.REQUEST_URI)).getString());
         assertEquals("HTTP/1.1", ((StringProperty) event.getProperty(HttpEvent.HTTP_VERSION)).getString());
         assertEquals(404, ((IntegerProperty)event.
                 getProperty(HttpEvent.ORIGINAL_REQUEST_STATUS_CODE)).getInteger().intValue());

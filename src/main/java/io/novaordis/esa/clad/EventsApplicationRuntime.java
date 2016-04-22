@@ -29,7 +29,6 @@ import io.novaordis.esa.core.LineParser;
 import io.novaordis.esa.core.LineStreamParser;
 import io.novaordis.esa.core.OutputFormatter;
 import io.novaordis.esa.core.OutputStreamTerminator;
-import io.novaordis.esa.core.event.Event;
 import io.novaordis.esa.core.event.StringEventConverter;
 import org.apache.log4j.Logger;
 
@@ -39,7 +38,6 @@ import java.io.FileReader;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
 /**

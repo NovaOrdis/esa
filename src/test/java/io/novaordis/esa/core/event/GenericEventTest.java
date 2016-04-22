@@ -63,6 +63,58 @@ public class GenericEventTest extends EventTest {
         assertEquals("val3", props.get(2).getValue());
     }
 
+    @Test
+    public void setStringProperty() throws Exception {
+
+        GenericEvent ge = getEventToTest();
+
+        assertNull(ge.getStringProperty("test-property"));
+
+        ge.setStringProperty("test-property", "value1");
+        assertEquals("value1", ge.getStringProperty("test-property").getValue());
+
+        List<Property> pl = ge.getPropertyList();
+        assertEquals(1, pl.size());
+        StringProperty sp = (StringProperty)pl.get(0);
+        assertEquals("test-property", sp.getName());
+        assertEquals("value1", sp.getValue());
+
+        ge.setStringProperty("test-property", "value2");
+        assertEquals("value2", ge.getStringProperty("test-property").getValue());
+
+        List<Property> pl2 = ge.getPropertyList();
+        assertEquals(1, pl2.size());
+        StringProperty sp2 = (StringProperty)pl2.get(0);
+        assertEquals("test-property", sp2.getName());
+        assertEquals("value2", sp2.getValue());
+    }
+
+    @Test
+    public void setLongProperty() throws Exception {
+
+        GenericEvent ge = getEventToTest();
+
+        assertNull(ge.getLongProperty("test-property"));
+
+        ge.setLongProperty("test-property", 7L);
+        assertEquals(7L, ge.getLongProperty("test-property").getValue());
+
+        List<Property> pl = ge.getPropertyList();
+        assertEquals(1, pl.size());
+        LongProperty p = (LongProperty)pl.get(0);
+        assertEquals("test-property", p.getName());
+        assertEquals(7L, p.getValue());
+
+        ge.setLongProperty("test-property", 8L);
+        assertEquals(8L, ge.getLongProperty("test-property").getValue());
+
+        List<Property> pl2 = ge.getPropertyList();
+        assertEquals(1, pl2.size());
+        LongProperty p2 = (LongProperty)pl2.get(0);
+        assertEquals("test-property", p2.getName());
+        assertEquals(8L, p2.getValue());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

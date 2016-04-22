@@ -37,6 +37,8 @@ class HttpSession {
 
     private String jSessionId;
 
+    private BusinessScenario current;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public HttpSession() {
@@ -62,8 +64,63 @@ class HttpSession {
      *
      * @return a BusinessScenarioEvent, a FaultEvent or null if it gets a HTTP event that belongs to the business
      * scenario being processes.
+     *
+     * @exception IllegalArgumentException if the HTTP request does not belong to the current session.
      */
     public Event processBusinessScenario(HttpEvent event) {
+
+        // sanity check
+        if (event == null) {
+            throw new IllegalArgumentException("null event");
+        }
+
+        if (!jSessionId.equals(event.getCookie(HttpSession.JSESSIONID_COOKIE_KEY))) {
+            throw new IllegalArgumentException("HTTP request " + event + " does not belong to " + this);
+        }
+
+        Event result = null;
+
+        if (current != null) {
+
+            //
+            // we're in the middle of a business scenario, and we do belong to the right session
+            //
+            current.update(event);
+
+            if (!current.isClosed()) {
+                return null;
+            }
+
+            //
+            // this request closed the scenario
+            //
+
+            return current.toEvent();
+        }
+
+        //
+        // no business scenario active
+        //
+
+        //
+        // are we the first request of a scenario?
+        //
+
+        String bsType = event.getRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME);
+        if (bsType != null) {
+
+            //
+            // we do start a scenario indeed
+            //
+            current = new BusinessScenario(bsType);
+            current.update(event);
+
+            //
+            // nothing (yet) for the layer above
+            //
+            return null;
+        }
+
         throw new RuntimeException("NOT YET IMPLEMENTED");
     }
 
@@ -155,9 +212,6 @@ class HttpSession {
 
 
     //
-//    public static final String MARKER_REQUEST_HEADER_NAME = "NovaOrdis-Request-Group-Marker";
-//    public static final String START_BUSINESS_SCENARIO_MARKER = "start";
-//    public static final String STOP_BUSINESS_SCENARIO_MARKER = "stop";
 //    /**
 //     * @return the business scenario marker if it finds one or null otherwise
 //     */
@@ -178,7 +232,11 @@ class HttpSession {
 //    }
 
 
+    @Override
+    public String toString() {
 
+        return "HTTP session JSESSIONID=" + getJSessionId();
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

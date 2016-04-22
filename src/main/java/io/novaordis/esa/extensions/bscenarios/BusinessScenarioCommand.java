@@ -81,10 +81,13 @@ public class BusinessScenarioCommand extends CommandBase {
 
         Terminator terminator = runtime.getTerminator();
 
-        terminator.setInputQueue(terminatorQueue);
+        if (terminator != null) {
 
-        ((OutputFormatter)terminator.getConversionLogic()).setOutputFormat(
-                "timestamp, request-count, total-processing-time");
+            terminator.setInputQueue(terminatorQueue);
+
+            ((OutputFormatter) terminator.getConversionLogic()).setOutputFormat(
+                    "timestamp, request-count, total-processing-time");
+        }
 
         runtime.start();
 
@@ -93,11 +96,11 @@ public class BusinessScenarioCommand extends CommandBase {
         while(true) {
 
             Event event = httpRequestQueue.take();
+
             if (event == null || event instanceof EndOfStreamEvent) {
                 break;
             }
-
-            if (event instanceof FaultEvent) {
+            else if (event instanceof FaultEvent) {
                 terminatorQueue.put(event);
             }
             else if (!(event instanceof HttpEvent)) {
