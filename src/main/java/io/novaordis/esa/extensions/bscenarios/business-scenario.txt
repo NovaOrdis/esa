@@ -1,10 +1,14 @@
 
 Extracts business-scenarios events from a HTTP request event series.
 
-A business scenario event is built based on a succession of multiple HTTP requests, that are
-landing on the server within the context of the same HTTP session, identified by the
-"JSESSIONID" cookie.
+A business scenario is a succession of inter-related HTTP requests, issued by the same user,
+in order to achieve a well defined result. An example of business scenario, for a banking
+application is login, navigate to the checking account status page, and display the details
+of the last transaction.
 
-A business scenario is started by a
-specific request and ended by other specific request.
+From a performance measurement tool, a scenario is defined as the succession of the HTTP requests
+received by the server in the context of the same HTTP session, as identified by the "JSESSIONID"
+cookie, between two special "marked" requests. The load testing generator can usually easy mark
+request by using custom headers.
+
 
