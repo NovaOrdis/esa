@@ -1,0 +1,5 @@
+
+CSV data set sampling example:
+
+events < <file-name.csv> -i "timestamp(time:MM/dd/yy HH:mm:ss), count(int), response-time(long)" \
+  sample --sampling-interval=5secs --field-name=response-time
