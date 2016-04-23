@@ -16,6 +16,7 @@
 
 package io.novaordis.events.extensions.bscenarios;
 
+import io.novaordis.clad.UserErrorException;
 import io.novaordis.events.httpd.HttpEvent;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -107,12 +108,14 @@ public class BusinessScenario {
      *
      * @exception BusinessScenarioException checked exception that does not stop processing, but it is turned into
      *            a fault by the upper layer
-     * @exception IllegalArgumentException fatal error caused by the incoming request that breaks the processing
-     * @exception IllegalStateException fatal error caused by the internal state that breaks the processing
+     * @exception UserErrorException if the lower layers encountered a problem that stops us from processing the
+     *  event stream (most likely because trying to produce further results won't make sense). Example: if the HTTP
+     *  request does not belong to the current session, etc. In this case, the process must exit with a user-readable
+     *  error.
      *
      * @return true is this business scenario instance is "closed" and another
      */
-    public boolean update(HttpEvent event) throws BusinessScenarioException {
+    public boolean update(HttpEvent event) throws BusinessScenarioException, UserErrorException {
 
         if (isClosed()) {
             throw new IllegalStateException(this + " already closed, cannot be updated with " + event);
@@ -128,7 +131,7 @@ public class BusinessScenario {
                 // start marker arrived before a end marker
                 //
 
-                throw new IllegalArgumentException(
+                throw new UserErrorException(
                         "a start marker arrived on an already opened scenario " + this + ":" + event);
             }
 
@@ -166,7 +169,7 @@ public class BusinessScenario {
             stopMarker = stopMarker.trim();
 
             if (stopMarker.length() != 0 && !stopMarker.equals(type)) {
-                throw new IllegalArgumentException(event +
+                throw new UserErrorException(event +
                         " ends a different scenario type (" + stopMarker + ") than the current one (" + type + ")");
             }
 
@@ -234,7 +237,8 @@ public class BusinessScenario {
     @Override
     public String toString() {
 
-        return "BusinessScenario[" + getId() + "](" + getType() + ")";
+        return "BusinessScenario[" + BusinessScenarioCommand.formatTimestamp(getBeginTimestamp()) +
+                "][" + getId() + "](" + getType() + ")";
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

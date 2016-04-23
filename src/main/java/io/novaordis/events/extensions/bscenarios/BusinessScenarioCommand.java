@@ -16,6 +16,7 @@
 
 package io.novaordis.events.extensions.bscenarios;
 
+import io.novaordis.clad.UserErrorException;
 import io.novaordis.clad.application.ApplicationRuntime;
 import io.novaordis.clad.command.CommandBase;
 import io.novaordis.clad.configuration.Configuration;
@@ -27,6 +28,7 @@ import io.novaordis.events.core.Terminator;
 import io.novaordis.events.core.event.EndOfStreamEvent;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
+import io.novaordis.events.httpd.FormatString;
 import io.novaordis.events.httpd.HttpEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +55,17 @@ public class BusinessScenarioCommand extends CommandBase {
     private static final BooleanOption IGNORE_FAULTS_OPTION = new BooleanOption("ignore-faults");
 
     // Static ----------------------------------------------------------------------------------------------------------
+
+    public static String formatTimestamp(long timestamp) {
+
+        //
+        // currently we use the standard httpd timestamp format, but TODO in the future we must generalize this and
+        // be able to use the same time format used in the input log - to ease searching.
+        //
+
+        return FormatString.TIMESTAMP_FORMAT.format(timestamp);
+
+    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
@@ -194,9 +207,11 @@ public class BusinessScenarioCommand extends CommandBase {
      *
      * @return a BusinessScenarioEvent, a FaultEvent or null if we're in mid-flight while processing a scenario.
      *
-     * @exception IllegalArgumentException if the processing needs to be interrupted at event processor level.
+     * @exception UserErrorException if the lower layers encountered a problem that stops us from processing the
+     *  event stream (most likely because trying to produce further results won't make sense). In this case, the process
+     *  must exit with a user-readable error.
      */
-    Event process(HttpEvent event) {
+    Event process(HttpEvent event) throws UserErrorException {
 
         String jSessionId = event.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY);
 

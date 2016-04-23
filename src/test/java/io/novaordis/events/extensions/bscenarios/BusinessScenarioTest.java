@@ -16,6 +16,7 @@
 
 package io.novaordis.events.extensions.bscenarios;
 
+import io.novaordis.clad.UserErrorException;
 import io.novaordis.events.httpd.HttpEvent;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -96,8 +97,10 @@ public class BusinessScenarioTest {
             bs.update(e2);
             fail("should throw exception");
         }
-        catch(IllegalArgumentException ex) {
-            log.info(ex.getMessage());
+        catch(UserErrorException ex) {
+            String msg = ex.getMessage();
+            log.info(msg);
+            assertTrue(msg.matches("a start marker arrived on an already opened scenario .*:.*"));
         }
     }
 
@@ -298,7 +301,7 @@ public class BusinessScenarioTest {
             bs.update(e2);
             fail("should have thrown exception");
         }
-        catch(IllegalArgumentException ex) {
+        catch(UserErrorException ex) {
             log.info(ex.getMessage());
         }
     }
@@ -324,8 +327,10 @@ public class BusinessScenarioTest {
             bs.update(e2);
             fail("should have thrown exception");
         }
-        catch(IllegalArgumentException ex) {
-            log.info(ex.getMessage());
+        catch(UserErrorException ex) {
+            String msg = ex.getMessage();
+            log.info(msg);
+            assertTrue(msg.matches("a start marker arrived on an already opened scenario .*:.*"));
         }
     }
 

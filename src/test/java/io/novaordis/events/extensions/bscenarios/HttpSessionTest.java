@@ -16,9 +16,9 @@
 
 package io.novaordis.events.extensions.bscenarios;
 
+import io.novaordis.clad.UserErrorException;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
-import io.novaordis.events.core.event.IntegerProperty;
 import io.novaordis.events.core.event.LongProperty;
 import io.novaordis.events.httpd.HttpEvent;
 import org.junit.Test;
@@ -59,7 +59,7 @@ public class HttpSessionTest {
     // processBusinessScenario() ---------------------------------------------------------------------------------------
 
     @Test
-    public void processBusinessScenario_EventDoesNotBelongToTheSession() throws Exception {
+    public void processBusinessScenario_RequestDoesNotBelongToTheSession() throws Exception {
 
         HttpSession s = new HttpSession("test-session-1");
 
@@ -69,8 +69,10 @@ public class HttpSessionTest {
             s.processBusinessScenario(e);
             fail("should have thrown exception, the request is not associated with the session");
         }
-        catch(IllegalArgumentException ex) {
-            log.info(ex.getMessage());
+        catch(UserErrorException ex) {
+            String message = ex.getMessage();
+            log.info(message);
+            assertTrue(message.matches("HTTP request .* does not belong to .*"));
         }
     }
 
@@ -235,7 +237,7 @@ public class HttpSessionTest {
             s.processBusinessScenario(e2);
             fail("should throw exception");
         }
-        catch(IllegalArgumentException ex) {
+        catch(UserErrorException ex) {
             log.info(ex.getMessage());
         }
     }
