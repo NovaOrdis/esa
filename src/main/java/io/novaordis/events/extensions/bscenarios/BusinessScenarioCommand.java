@@ -28,12 +28,18 @@ import io.novaordis.events.core.Terminator;
 import io.novaordis.events.core.event.EndOfStreamEvent;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
+import io.novaordis.events.core.event.FaultType;
+import io.novaordis.events.core.event.IntegerProperty;
+import io.novaordis.events.core.event.LongProperty;
+import io.novaordis.events.extensions.bscenarios.stats.FaultStats;
 import io.novaordis.events.httpd.FormatString;
 import io.novaordis.events.httpd.HttpEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,6 +60,7 @@ public class BusinessScenarioCommand extends CommandBase {
     private static final Logger log = LoggerFactory.getLogger(BusinessScenarioCommand.class);
 
     private static final BooleanOption IGNORE_FAULTS_OPTION = new BooleanOption("ignore-faults");
+    private static final BooleanOption STATS_OPTION = new BooleanOption("stats");
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -83,6 +90,9 @@ public class BusinessScenarioCommand extends CommandBase {
     private Map<String, HttpSession> sessions;
 
     private boolean ignoreFaults;
+    private boolean statsOnly;
+
+    private long httpEventCount;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -99,6 +109,7 @@ public class BusinessScenarioCommand extends CommandBase {
         };
 
         ignoreFaults = false;
+        statsOnly = false;
 
         log.debug(this + " created");
     }
@@ -108,7 +119,7 @@ public class BusinessScenarioCommand extends CommandBase {
     @Override
     public Set<Option> optionalOptions() {
 
-        return new HashSet<>(Collections.singletonList(IGNORE_FAULTS_OPTION));
+        return new HashSet<>(Arrays.asList(IGNORE_FAULTS_OPTION, STATS_OPTION));
     }
 
     /**
@@ -126,6 +137,14 @@ public class BusinessScenarioCommand extends CommandBase {
         }
 
         log.debug(this + "'s ignoreFaults set to " + ignoreFaults);
+
+        o = (BooleanOption)getOption(STATS_OPTION);
+
+        if (o != null) {
+            statsOnly = o.getValue();
+        }
+
+        log.debug(this + "'s stats set to " + statsOnly);
     }
 
     @Override
@@ -141,9 +160,9 @@ public class BusinessScenarioCommand extends CommandBase {
 
             String propertiesToDisplay =
                     "timestamp, " +
-                    BusinessScenarioEvent.REQUEST_COUNT + ", " +
-                    BusinessScenarioEvent.DURATION + ", " +
-                    BusinessScenarioEvent.NOTE;
+                            BusinessScenarioEvent.REQUEST_COUNT + ", " +
+                            BusinessScenarioEvent.DURATION + ", " +
+                            BusinessScenarioEvent.NOTE;
 
             ((OutputFormatter) terminator.getConversionLogic()).setOutputFormat(propertiesToDisplay);
         }
@@ -165,23 +184,30 @@ public class BusinessScenarioCommand extends CommandBase {
             if (event instanceof FaultEvent) {
 
                 resultEvent = event;
-            }
-            else if (!(event instanceof HttpEvent)) {
+
+            } else if (!(event instanceof HttpEvent)) {
 
                 //
                 // this is a programming error, stop processing right away
                 //
                 throw new IllegalArgumentException(this + " got an " + event + " while it is only expecting HttpEvents");
-            }
-            else {
 
-                resultEvent = process((HttpEvent)event);
+            } else {
+
+                resultEvent = process((HttpEvent) event);
             }
 
             // the result event can be null if multiple individual HTTP request are "consolidated" into a larger
             // in-flight business scenario event
+            if (resultEvent == null) {
+                continue;
+            }
 
-            if (resultEvent != null) {
+            if (statsOnly) {
+
+                updateStatistics(resultEvent);
+            }
+            else {
 
                 if (ignoreFaults && resultEvent instanceof FaultEvent) {
 
@@ -195,6 +221,10 @@ public class BusinessScenarioCommand extends CommandBase {
 
                 terminatorQueue.put(resultEvent);
             }
+        }
+
+        if (statsOnly) {
+            displayStatistics();
         }
     }
 
@@ -220,10 +250,13 @@ public class BusinessScenarioCommand extends CommandBase {
      */
     Event process(HttpEvent event) throws UserErrorException {
 
+        httpEventCount ++;
+
         String jSessionId = event.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY);
 
         if (jSessionId == null) {
             return new FaultEvent(
+                    BusinessScenarioFaultType.NO_JSESSIONID_COOKIE,
                     "HTTP request " + event + " does not carry a \"" + HttpEvent.JSESSIONID_COOKIE_KEY + "\" cookie");
         }
 
@@ -241,6 +274,73 @@ public class BusinessScenarioCommand extends CommandBase {
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
+
+    private long businessScenarioCount;
+    private long otherEventsCount;
+    private int maxRequestsPerScenario = 0;
+    private int minRequestsPerScenario = Integer.MAX_VALUE;
+    private long aggregatedScenarioDuration = 0L;
+    private FaultStats faultStats = new FaultStats();
+
+    private void updateStatistics(Event e) {
+
+        if (e == null) {
+            return;
+        }
+
+        if (e instanceof FaultEvent) {
+
+            faultStats.update((FaultEvent)e);
+        }
+        else if (e instanceof BusinessScenarioEvent) {
+
+            businessScenarioCount ++;
+
+            BusinessScenarioEvent bse = (BusinessScenarioEvent)e;
+
+            IntegerProperty p = bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT);
+            int requestCount = p == null ? -1 : p.getInteger();
+            if (requestCount > maxRequestsPerScenario) {
+                maxRequestsPerScenario = requestCount;
+            }
+            if (requestCount < minRequestsPerScenario) {
+                minRequestsPerScenario = requestCount;
+            }
+
+            LongProperty lp = bse.getLongProperty(BusinessScenarioEvent.DURATION);
+            if (lp != null) {
+                aggregatedScenarioDuration += lp.getLong();
+            }
+        }
+        else {
+
+            otherEventsCount ++;
+        }
+    }
+
+    private void displayStatistics() {
+
+        double requestsPerScenario =
+                ((double)(httpEventCount - faultStats.getFaultCount() - otherEventsCount))/businessScenarioCount;
+        double averageScenarioDuration = ((double)aggregatedScenarioDuration)/businessScenarioCount;
+
+        System.out.printf("Counters\n");
+        System.out.printf("       business scenarios: %d\n", businessScenarioCount);
+        System.out.printf("                   faults: %d (%d different types)\n",
+                faultStats.getFaultCount(), faultStats.getFaultTypeCount());
+
+        Set<FaultType> faultTypes = faultStats.getFaultTypes();
+        for(FaultType ft: faultTypes) {
+            System.out.printf("                             %s: %d\n", ft, faultStats.getCountPerType(ft));
+        }
+        System.out.printf("             other events: %d\n", otherEventsCount);
+        System.out.printf("            HTTP requests: %d\n", httpEventCount);
+        System.out.printf("        requests/scenario: %2.2f\n", requestsPerScenario);
+        System.out.printf("    max requests/scenario: %d\n", maxRequestsPerScenario);
+        System.out.printf("    min requests/scenario: %d\n", minRequestsPerScenario);
+        System.out.printf(" average request duration: %2.2f ms\n", averageScenarioDuration);
+        System.out.printf("            HTTP sessions: %d\n", sessions.size());
+    }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 

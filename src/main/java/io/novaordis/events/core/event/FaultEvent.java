@@ -30,26 +30,43 @@ public class FaultEvent extends GenericEvent {
 
     private String message;
     private Throwable cause;
+    private FaultType type;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public FaultEvent() {
 
-        this(null, null);
+        this(null, null, null);
     }
 
     public FaultEvent(String message) {
 
-        this(message, null);
+        this(null, message, null);
     }
 
     public FaultEvent(Throwable cause) {
 
-        this(null, cause);
+        this(null, null, cause);
     }
 
     public FaultEvent(String message, Throwable cause) {
 
+        this(null, message, cause);
+    }
+
+    public FaultEvent(FaultType type, String message) {
+
+        this(type, message, null);
+    }
+
+    public FaultEvent(FaultType type, Throwable cause) {
+
+        this(type, null, cause);
+    }
+
+    public FaultEvent(FaultType type, String message, Throwable cause) {
+
+        this.type = type;
         this.message = message;
         this.cause = cause;
     }
@@ -68,6 +85,10 @@ public class FaultEvent extends GenericEvent {
      */
     public Throwable getCause() {
         return cause;
+    }
+
+    public FaultType getType() {
+        return type;
     }
 
     @Override

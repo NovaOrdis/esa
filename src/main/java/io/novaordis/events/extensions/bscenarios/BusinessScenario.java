@@ -162,7 +162,9 @@ public class BusinessScenario {
 
             if (beginTimestamp <= 0) {
 
-                throw new BusinessScenarioException("there is no active business scenario for " + event);
+                throw new BusinessScenarioException(
+                        BusinessScenarioFaultType.NO_ACTIVE_BUSINESS_SCENARIO,
+                        "there is no active business scenario for " + event);
             }
         }
 

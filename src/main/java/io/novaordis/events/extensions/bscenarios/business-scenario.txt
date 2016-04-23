@@ -1,5 +1,6 @@
 
-Extracts business-scenarios events from a HTTP request event series.
+Extract business-scenarios events from a HTTP request event series and generate a CSV series
+with one business scenario information per line.
 
 A business scenario is a succession of inter-related HTTP requests, issued by the same user,
 in order to achieve a business result. An example of business scenario for a banking application
@@ -20,6 +21,8 @@ Example:
     events < access_log.log --input-format-file=./access_log.def business-scenario
 
 Business Scenario Command Options:
+
+    --stats - Generate a brief summary (counts, failure types, etc.), instead of a CSV series.
 
     --ignore-faults - By default, all faults (invalid HTTP requests) that are detected are
       reported at stdout interspersed with business scenario output. This mode is useful when

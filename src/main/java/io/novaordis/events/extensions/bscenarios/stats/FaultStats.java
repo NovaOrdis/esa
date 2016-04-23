@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package io.novaordis.events.extensions.bscenarios;
+package io.novaordis.events.extensions.bscenarios.stats;
 
+import io.novaordis.events.core.event.FaultEvent;
 import io.novaordis.events.core.event.FaultType;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/22/16
+ * @since 4/23/16
  */
-public class BusinessScenarioException extends Exception {
+public class FaultStats {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,40 +35,60 @@ public class BusinessScenarioException extends Exception {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private long faultCount;
 
-    private FaultType faultType;
+    private Map<FaultType, Integer> faultPerType;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public BusinessScenarioException() {
-        super();
-    }
+    public FaultStats() {
 
-    public BusinessScenarioException(String message) {
-        super(message);
-    }
-
-    public BusinessScenarioException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public BusinessScenarioException(Throwable cause) {
-        super(cause);
-    }
-
-    public BusinessScenarioException(FaultType type, String message) {
-        super(message);
-        this.faultType = type;
+        this.faultPerType = new HashMap<>();
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    /**
-     * As BusinessScenarioException are usually turned into FaultEvents, we need to know the type. Can be null.
-     */
-    public FaultType getFaultType() {
-        return faultType;
+    public void update(FaultEvent e) {
+
+        faultCount ++;
+
+        FaultType type = e.getType();
+
+        Integer count = faultPerType.get(type);
+
+        if (count == null) {
+            count = 1;
+        }
+        else {
+            count = count + 1;
+        }
+        faultPerType.put(type, count);
     }
+
+    public long getFaultCount() {
+
+        return faultCount;
+    }
+
+    public int getFaultTypeCount() {
+        return faultPerType.size();
+    }
+
+    public Set<FaultType> getFaultTypes() {
+        return faultPerType.keySet();
+    }
+
+    public int getCountPerType(FaultType t) {
+
+        Integer c = faultPerType.get(t);
+
+        if (c == null) {
+            return 0;
+        }
+
+        return c;
+    }
+
 
     // Package protected -----------------------------------------------------------------------------------------------
 

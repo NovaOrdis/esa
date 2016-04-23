@@ -115,7 +115,7 @@ class HttpSession {
             // this type of failure is translated into a FaultEvent and it does not stop processing
             //
 
-            result = new FaultEvent(e);
+            result = new FaultEvent(e.getFaultType(), e);
         }
 
         return result;
