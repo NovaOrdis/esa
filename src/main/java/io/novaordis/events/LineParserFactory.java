@@ -64,9 +64,12 @@ public class LineParserFactory {
             throw new UserErrorException("invalid httpd line format: " + ifse.getMessage());
         }
         catch(Exception e) {
+
             //
             // this is fine, the HttpdLineParser does not recognize the format, go to the next one
             //
+
+            log.debug("could not build a HttpdLineParser from the line format", e);
         }
 
         try {
@@ -80,6 +83,8 @@ public class LineParserFactory {
             //
             // this is fine, the HttpdLineParser does not recognize the format, go to the next one
             //
+
+            log.debug("could not build a HttpdLineParser from the line format", e);
         }
 
         log.debug(LineParserFactory.class.getSimpleName() + "" +
