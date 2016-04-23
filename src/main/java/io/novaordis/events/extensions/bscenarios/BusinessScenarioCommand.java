@@ -33,6 +33,7 @@ import io.novaordis.events.httpd.HttpEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -56,15 +57,20 @@ public class BusinessScenarioCommand extends CommandBase {
 
     // Static ----------------------------------------------------------------------------------------------------------
 
+    private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(FormatString.TIMESTAMP_FORMAT_STRING);
+
     public static String formatTimestamp(long timestamp) {
 
         //
         // currently we use the standard httpd timestamp format, but TODO in the future we must generalize this and
         // be able to use the same time format used in the input log - to ease searching.
         //
+        // TODO implement a better concurrent access than synchronization
+        //
 
-        return FormatString.TIMESTAMP_FORMAT.format(timestamp);
-
+        synchronized (TIMESTAMP_FORMAT) {
+            return TIMESTAMP_FORMAT.format(timestamp);
+        }
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------

@@ -100,7 +100,7 @@ public class BusinessScenarioTest {
         catch(UserErrorException ex) {
             String msg = ex.getMessage();
             log.info(msg);
-            assertTrue(msg.matches("a start marker arrived on an already opened scenario .*:.*"));
+            assertTrue(msg.matches("a start marker .* arrived on the already opened scenario .*"));
         }
     }
 
@@ -330,7 +330,7 @@ public class BusinessScenarioTest {
         catch(UserErrorException ex) {
             String msg = ex.getMessage();
             log.info(msg);
-            assertTrue(msg.matches("a start marker arrived on an already opened scenario .*:.*"));
+            assertTrue(msg.matches("a start marker .* arrived on the already opened scenario .*"));
         }
     }
 

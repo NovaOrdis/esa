@@ -248,7 +248,9 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
     @Override
     public String toString() {
 
-        String s = getMethod() + " " + getRequestUri();
+        Long timestamp = getTimestamp();
+        String s = (timestamp == null ? "N/A" : FormatString.TIMESTAMP_FORMAT.format(timestamp.longValue()));
+        s += " " + getMethod() + " " + getRequestUri();
         String jSessionId = getCookie(JSESSIONID_COOKIE_KEY);
         if (jSessionId != null) {
 

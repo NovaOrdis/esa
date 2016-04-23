@@ -132,7 +132,7 @@ public class BusinessScenario {
                 //
 
                 throw new UserErrorException(
-                        "a start marker arrived on an already opened scenario " + this + ":" + event);
+                        "a start marker " + event + " arrived on the already opened scenario " + this);
             }
 
             //
