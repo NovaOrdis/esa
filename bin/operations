@@ -183,7 +183,73 @@ function get-version() {
 }
 
 #
-# returns the artifact extension as specified in the pom.xml file
+# replaces the version string in pom.xml with the version given as argument
+#
+function set-version() {
+
+    local version=$1
+    [ -z "${version}" ] && fail "'version' not specified"
+
+    local pom_file=$2
+    [ -z "${pom_file}" ] && pom_file=${project_home}/pom.xml
+    [ -f ${pom_file} ] || fail "pom.xml file ${pom_file} not found"
+
+    #
+    # replace the first occurrence of <version>...</version> with our version
+    #
+
+    local tmp_file=./.tmp
+    sed -e '1,/^ *<version>.*<\/version> *$/s/^\( *<version>\).*\(<\/version> *\)$/\1'${version}'\2/' ${pom_file} > ${tmp_file} || \
+        fail "failed to perform sed replacement"
+    diff -q ${pom_file} ${tmp_file} > /dev/null && fail "no replacement was made in ${pom_file}"
+    mv ${tmp_file} ${pom_file} || fail "failed to restore ${pom_file} from ${tmp_file}"
+}
+
+function compute-next-snapshot-version() {
+
+    local current_version=$1
+    [ -z "${current_version}" ] && fail "'current_version' not specified"
+
+    local root=${current_version##*SNAPSHOT}
+
+    debug "root: ${root}"
+
+    if [ "${root}" != ${current_version} ]; then
+        #
+        # 'SNAPSHOT' found in the current version string, increment it
+        #
+        local prefix
+        prefix=${current_version%SNAPSHOT*}
+
+        if [ -z "${root}" ]; then
+            # "clean" SNAPSHOT, start to add postfixes
+            echo ${current_version}-1
+            return 0
+        fi
+
+        # postfix already present, see if it's "legal"
+        [ ${root:0:1} != "-" ] && \
+            fail "current snapshot version string ${current_version} has an illegal format, '-' must follow after '*SNAPSHOT'"
+
+        root=${root#?}
+
+        [ -z "${root}" ] && \
+            fail "current snapshot version string ${current_version} has an illegal format, a number must follow after '*SNAPSHOT-'"
+
+        # increment
+        local next
+        next=$(expr ${root} + 1) || \
+            fail "current snapshot version string ${current_version} has an illegal format, a number must follow after '*SNAPSHOT-'"
+
+        echo "${prefix}SNAPSHOT-${next}"
+        return 0
+    fi
+
+    fail "NOT YET IMPLEMENTED 2"
+}
+
+#
+# returns the artifact extension as specified in the pom.xml file or fails if it cannot extract it
 #
 function get-artifact-extension() {
 
@@ -511,7 +577,7 @@ function do-install-release-tools() {
     #
     # these are the links to ./operations that are going to be created in ./bin
     #
-    local links="install";
+    local links="install release test";
     # create symbolic links
     (cd ${bin_dir}; \
         for link in ${links}; \
@@ -523,12 +589,12 @@ function do-install-release-tools() {
         done \
     )
 
-    # create the run wrapper target directory and turn the run wrapper template into the final run script
-    # for the application
+    # create the run wrapper target directory and turn the run wrapper template into the final run script for the
+    # application
 
     local run_wrapper_dir=${project_home}/src/main/bash
     if [ ! -d ${run_wrapper_dir} ]; then
-        mkdir ${run_wrapper_dir} && \
+        mkdir -p ${run_wrapper_dir} && \
             info "created ${run_wrapper_dir}" || \
             fail "failed to create ${run_wrapper_dir}"
     fi
@@ -543,6 +609,23 @@ function do-install-release-tools() {
     chmod a+x ${run_wrapper_path} && \
         debug "chmod a+x ${run_wrapper_path}" || \
         fail "failed to chmod a+x ${run_wrapper_path}"
+
+    #
+    # initialize the version mechanism
+    #
+
+    mkdir -p ${project_home}/src/main/resources || fail "failed to mkdir -p ${project_home}/src/main/resource"
+
+    (cat << EOF
+version=\${version}
+release_date=\${release_date}
+EOF
+) > ${project_home}/src/main/resources/VERSION
+}
+
+function do-test() {
+
+    set-version "blah" /Users/ovidiu/projects/clad/pom-test.xml
 }
 
 #
@@ -589,6 +672,65 @@ function do-install() {
     installed_path=$(install ${zip_file_path} ${RUNTIME_DIR} ${force}) || exit 1
 
     info "installed $(basename ${installed_path}) in $(dirname ${installed_path})"
+}
+
+#
+# expects all its arguments in the "arguments" global array
+#
+function do-release() {
+
+    #
+    # process arguments
+    #
+
+    local snapshot_or_version
+
+    local i=0
+    while [ ${i} -lt ${#arguments[*]} ]; do
+        local arg=${arguments[${i}]}
+        debug "do-install arg ${i}: ${arg}"
+        if [ -z "${snapshot_or_version}" ]; then
+            snapshot_or_version=${arg}
+        fi
+        ((i++))
+    done
+
+    #
+    # checking pre-requisites
+    #
+
+    [ -z "${snapshot_or_version}" ] && fail "'snapshot' or the version string must be specified"
+
+
+    if [ "${snapshot_or_version}" = "snapshot" ]; then
+        release-snapshot
+        return 0
+    fi
+
+    #
+    #
+    #
+
+    local new_version=${snapshot_or_version}
+
+    fail "functionality to release '${new_version}' not yet implemented; make sure the version make sense and implement the functionality"
+}
+
+function release-snapshot() {
+
+    local current_version
+    current_version=$(get-version) || exit 1
+    local next_snapshot_version
+    next_snapshot_version=$(compute-next-snapshot-version "${current_version}") || exit 1
+    debug "next snapshot version ${next_snapshot_version}"
+    set-version ${next_snapshot_version}
+    mvn clean install || fail "failed to pass tests, must restore the version in pom.xml manually"
+
+    info "###########################################################################################"
+    info "#"
+    info "#       A new snapshot version was released locally, you may want to commit in git        #"
+    info "#"
+    info "###########################################################################################"
 }
 
 main $@

@@ -16,7 +16,7 @@
         <release_date>${maven.build.timestamp}</release_date>
         <slf4j-version>1.7.12</slf4j-version>
         <junit-version>4.12</junit-version>
-        <novaordis-clad-version>2-SNAPSHOT-2</novaordis-clad-version>
+        <novaordis-clad-version>2-SNAPSHOT-6</novaordis-clad-version>
     </properties>
 
     <build>

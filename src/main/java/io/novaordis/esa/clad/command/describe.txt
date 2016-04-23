@@ -5,7 +5,7 @@ string of the "output" command, specified with the -o|--output-format command op
 
 Usage:
 
-    esa < input-file.log [global-options] describe
+    esa < input-file [global-options] describe
 
 Also see:
 

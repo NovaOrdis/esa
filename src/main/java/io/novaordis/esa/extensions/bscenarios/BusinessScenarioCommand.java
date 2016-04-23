@@ -19,6 +19,8 @@ package io.novaordis.esa.extensions.bscenarios;
 import io.novaordis.clad.application.ApplicationRuntime;
 import io.novaordis.clad.command.CommandBase;
 import io.novaordis.clad.configuration.Configuration;
+import io.novaordis.clad.option.BooleanOption;
+import io.novaordis.clad.option.Option;
 import io.novaordis.esa.clad.EventsApplicationRuntime;
 import io.novaordis.esa.core.OutputFormatter;
 import io.novaordis.esa.core.Terminator;
@@ -29,8 +31,12 @@ import io.novaordis.esa.httpd.HttpEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -44,6 +50,8 @@ public class BusinessScenarioCommand extends CommandBase {
 
     private static final Logger log = LoggerFactory.getLogger(BusinessScenarioCommand.class);
 
+    private static final BooleanOption IGNORE_FAULTS_OPTION = new BooleanOption("ignore-faults");
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -54,6 +62,8 @@ public class BusinessScenarioCommand extends CommandBase {
 
     // JSESSIONID - HttpSession instance
     private Map<String, HttpSession> sessions;
+
+    private boolean ignoreFaults;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -69,10 +79,35 @@ public class BusinessScenarioCommand extends CommandBase {
             }
         };
 
+        ignoreFaults = false;
+
         log.debug(this + " created");
     }
 
     // CommandBase overrides -------------------------------------------------------------------------------------------
+
+    @Override
+    public Set<Option> optionalOptions() {
+
+        return new HashSet<>(Collections.singletonList(IGNORE_FAULTS_OPTION));
+    }
+
+    /**
+     * Set our local variables
+     */
+    @Override
+    public void configure(int from, List<String> commandLineArguments) throws Exception {
+
+        super.configure(from, commandLineArguments);
+
+        BooleanOption o = (BooleanOption)getOption(IGNORE_FAULTS_OPTION);
+
+        if (o != null) {
+            ignoreFaults = o.getValue();
+        }
+
+        log.debug(this + "'s ignoreFaults set to " + ignoreFaults);
+    }
 
     @Override
     public void execute(Configuration configuration, ApplicationRuntime r) throws Exception {
@@ -104,21 +139,41 @@ public class BusinessScenarioCommand extends CommandBase {
             if (event == null || event instanceof EndOfStreamEvent) {
                 break;
             }
-            else if (event instanceof FaultEvent) {
-                terminatorQueue.put(event);
+
+            Event resultEvent;
+
+            if (event instanceof FaultEvent) {
+
+                resultEvent = event;
             }
             else if (!(event instanceof HttpEvent)) {
-                terminatorQueue.put(new FaultEvent("not a HttpEvent: " + event));
+
+                //
+                // this is a programming error, stop processing right away
+                //
+                throw new IllegalArgumentException(this + " got an " + event + " while it is only expecting HttpEvents");
             }
             else {
 
-                Event result = process((HttpEvent)event);
+                resultEvent = process((HttpEvent)event);
+            }
 
-                if (result != null) {
+            // the result event can be null if multiple individual HTTP request are "consolidated" into a larger
+            // in-flight business scenario event
 
-                    // null is possible, it means we're in flight while processing a business scenario
-                    terminatorQueue.put(result);
+            if (resultEvent != null) {
+
+                if (ignoreFaults && resultEvent instanceof FaultEvent) {
+
+                    //
+                    // we are configured to not display faults
+                    //
+
+                    log.debug("ignoring " + resultEvent);
+                    continue;
                 }
+
+                terminatorQueue.put(resultEvent);
             }
         }
     }
