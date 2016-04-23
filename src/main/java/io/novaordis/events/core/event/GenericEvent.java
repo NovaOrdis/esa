@@ -187,6 +187,10 @@ public class GenericEvent implements Event {
         setProperty(new LongProperty(name, value));
     }
 
+    public void setIntegerProperty(String name, int value) {
+        setProperty(new IntegerProperty(name, value));
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

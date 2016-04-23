@@ -193,6 +193,8 @@ public class BusinessScenarioCommand extends CommandBase {
      * The method locates the session for the specific request, and then delegates further processing to the session.
      *
      * @return a BusinessScenarioEvent, a FaultEvent or null if we're in mid-flight while processing a scenario.
+     *
+     * @exception IllegalArgumentException if the processing needs to be interrupted at event processor level.
      */
     Event process(HttpEvent event) {
 
@@ -204,6 +206,7 @@ public class BusinessScenarioCommand extends CommandBase {
         }
 
         HttpSession s = sessions.get(jSessionId);
+
         if (s == null) {
             s = httpSessionFactory.create();
             s.setJSessionId(jSessionId);

@@ -78,19 +78,19 @@ public class BusinessScenarioCommandTest {
             }
         });
 
-        HttpEvent e = new HttpEvent(0L);
+        HttpEvent e = new HttpEvent(10L);
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
         e.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
 
         assertNull(c.process(e));
 
-        HttpEvent e2 = new HttpEvent(0L);
+        HttpEvent e2 = new HttpEvent(20L);
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e2.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
         assertNull(c.process(e2));
 
-        HttpEvent e3 = new HttpEvent(0L);
+        HttpEvent e3 = new HttpEvent(30L);
         e3.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e3.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
         e3.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);

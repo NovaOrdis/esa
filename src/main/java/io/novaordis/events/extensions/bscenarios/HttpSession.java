@@ -45,7 +45,9 @@ class HttpSession {
     }
 
     public HttpSession(String jSessionId) {
+
         this.jSessionId = jSessionId;
+        current = new BusinessScenario();
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -61,9 +63,6 @@ class HttpSession {
     /**
      * NOT thread safe.
      *
-     * @return a BusinessScenarioEvent, a FaultEvent or null if it gets a HTTP event that belongs to the business
-     * scenario being processes.
-     *
      * @exception IllegalArgumentException signals a condition serious enough to stop processing (if the HTTP request
      * does not belong to the current session, etc.)
      */
@@ -78,74 +77,31 @@ class HttpSession {
             throw new IllegalArgumentException("HTTP request " + event + " does not belong to " + this);
         }
 
-        if (current != null) {
+        Event result = null;
 
-            //
-            // we're in the middle of a business scenario, and we do belong to the right session
-            //
+        try {
 
-            try {
-                current.update(event);
-            }
-            catch(BusinessScenarioException e) {
+            if (current.update(event)) {
 
                 //
-                // we don't stop the processing of the current scenario, return a fault instead
+                // we've just "closed" the current business scenario, issue the corresponding BusinessScenarioEvent
+                // and initialize a new instance
                 //
-                return new FaultEvent(e);
-            }
 
-            if (!current.isClosed()) {
-                return null;
+                result = current.toEvent();
+                current = new BusinessScenario();
             }
+        }
+        catch(BusinessScenarioException e) {
 
             //
-            // this request closed the scenario
+            // this type of failure is translated into a FaultEvent and it does not stop processing
             //
 
-            BusinessScenarioEvent bse = current.toEvent();
-            current = null;
-            return bse;
+            result = new FaultEvent(e);
         }
 
-        //
-        // no business scenario active
-        //
-
-        //
-        // are we the first request of a scenario?
-        //
-
-        String bsType = event.getRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME);
-        if (bsType != null) {
-
-            //
-            // we do start a scenario indeed
-            //
-            current = new BusinessScenario(bsType);
-
-            try {
-                current.update(event);
-            }
-            catch(BusinessScenarioException e) {
-
-                //
-                // we don't stop the processing of the current scenario, return a fault instead
-                //
-                return new FaultEvent(e);
-            }
-
-            //
-            // nothing (yet) for the layer above
-            //
-            return null;
-        }
-
-        //
-        // there's no current scenario, and we did not encounter the scenario start marker yet, issue a fault
-        //
-
-        return new FaultEvent("HTTP request " + event + " does not belong to any business scenario");
+        return result;
     }
 
     @Override
