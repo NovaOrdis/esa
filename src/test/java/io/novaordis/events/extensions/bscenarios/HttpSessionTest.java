@@ -264,6 +264,48 @@ public class HttpSessionTest {
         log.info("" + fe);
     }
 
+    @Test
+    public void processBusinessScenario_StartMarkerArrivesBeforeEndMarker() throws Exception {
+
+        HttpSession s = new HttpSession("test-session-1");
+
+        HttpEvent startRequest = new HttpEvent(7L);
+        startRequest.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+        startRequest.setLongProperty(HttpEvent.REQUEST_DURATION, 10L);
+        startRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
+
+        Event event = s.process(startRequest);
+        assertNull(event);
+
+        HttpEvent secondStartRequest = new HttpEvent(20L);
+        secondStartRequest.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+        secondStartRequest.setLongProperty(HttpEvent.REQUEST_DURATION, 20L);
+        secondStartRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
+
+        BusinessScenarioEvent bse = (BusinessScenarioEvent)s.process(secondStartRequest);
+
+        assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
+        assertEquals(1, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
+        assertEquals(10L, bse.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
+        assertEquals(7L, bse.getTimestamp().longValue());
+
+        HttpEvent e2 = new HttpEvent(30L);
+        e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+        e2.setLongProperty(HttpEvent.REQUEST_DURATION, 30L);
+
+        assertNull(s.process(e2));
+
+        HttpEvent end = new HttpEvent(40L);
+        end.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+        end.setLongProperty(HttpEvent.REQUEST_DURATION, 40L);
+        end.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "scenario-1");
+
+        BusinessScenarioEvent bse2 = (BusinessScenarioEvent)s.process(end);
+        assertEquals("scenario-1", bse2.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
+        assertEquals(3, bse2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
+        assertEquals(90L, bse2.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
+        assertEquals(20L, bse2.getTimestamp().longValue());
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

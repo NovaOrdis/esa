@@ -142,7 +142,8 @@ public class BusinessScenarioCommand extends CommandBase {
             String propertiesToDisplay =
                     "timestamp, " +
                     BusinessScenarioEvent.REQUEST_COUNT + ", " +
-                    BusinessScenarioEvent.DURATION;
+                    BusinessScenarioEvent.DURATION + ", " +
+                    BusinessScenarioEvent.NOTE;
 
             ((OutputFormatter) terminator.getConversionLogic()).setOutputFormat(propertiesToDisplay);
         }

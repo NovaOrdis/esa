@@ -29,6 +29,7 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
     public static final String DURATION = "duration";
     public static final String REQUEST_COUNT = "request-count";
     public static final String TYPE = "type";
+    public static final String NOTE = "note";
 
     // Static ----------------------------------------------------------------------------------------------------------
 

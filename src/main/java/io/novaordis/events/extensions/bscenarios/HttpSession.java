@@ -95,6 +95,18 @@ class HttpSession {
 
                 result = current.toEvent();
                 current = new BusinessScenario();
+
+                //
+                // There is a special case were the stop marker is missing, so the request containing the start marker
+                // of the next scenario is used both to close the previous scenario and to update the new scenario
+                //
+
+                if (event.getRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME) != null) {
+                    boolean newScenarioUpdateClosedScenario = current.update(event);
+                    if (newScenarioUpdateClosedScenario) {
+                        throw new IllegalStateException(event + " closed " + current);
+                    }
+                }
             }
         }
         catch(BusinessScenarioException e) {

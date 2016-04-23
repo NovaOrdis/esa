@@ -23,6 +23,7 @@ import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.events.core.event.TimedEvent;
 import io.novaordis.events.core.event.GenericTimedEvent;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -58,6 +59,18 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
     public static final String JSESSIONID_COOKIE_KEY = "JSESSIONID";
 
     // Static ----------------------------------------------------------------------------------------------------------
+
+    private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(FormatString.TIMESTAMP_FORMAT_STRING);
+
+    private static String formatTimestamp(long timestamp) {
+
+        //
+        // we cannot concurrently access a Format instance
+        //
+        synchronized (TIMESTAMP_FORMAT) {
+            return TIMESTAMP_FORMAT.format(timestamp);
+        }
+    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
@@ -249,7 +262,7 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
     public String toString() {
 
         Long timestamp = getTimestamp();
-        String s = (timestamp == null ? "N/A" : FormatString.TIMESTAMP_FORMAT.format(timestamp.longValue()));
+        String s = (timestamp == null ? "N/A" : formatTimestamp(timestamp));
         s += " " + getMethod() + " " + getRequestUri();
         String jSessionId = getCookie(JSESSIONID_COOKIE_KEY);
         if (jSessionId != null) {

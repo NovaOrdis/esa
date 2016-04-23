@@ -79,6 +79,11 @@ public class BusinessScenario {
     //
     private int requestCount;
 
+    //
+    // we use the "note" as a mechanism to single out problematic scenarios
+    //
+    private String note;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
@@ -113,7 +118,7 @@ public class BusinessScenario {
      *  request does not belong to the current session, etc. In this case, the process must exit with a user-readable
      *  error.
      *
-     * @return true is this business scenario instance is "closed" and another
+     * @return true is this business scenario instance was closed by this update.
      */
     public boolean update(HttpEvent event) throws BusinessScenarioException, UserErrorException {
 
@@ -130,16 +135,24 @@ public class BusinessScenario {
                 //
                 // start marker arrived before a end marker
                 //
+                // We've seen situations where the end marker is not present for a small percentage of scenarios;
+                // we don't know why, yet, it could be a load generator artifact. For the time being, we create
+                // a "problematic" business scenario, with an note.
+                //
 
-                throw new UserErrorException(
-                        "a start marker " + event + " arrived on the already opened scenario " + this);
+                //
+                // "close" the business scenario
+                //
+                endTimestamp = event.getTimestamp();
+                setNote("missing end marker");
+                return true;
             }
 
             //
             // we "start" the scenario
             //
-            type = startMarker;
-            beginTimestamp = event.getTimestamp();
+            setType(startMarker);
+            setBeginTimestamp(event.getTimestamp());
         }
         else {
 
@@ -153,9 +166,8 @@ public class BusinessScenario {
             }
         }
 
-        requestCount++;
         Long requestDuration = event.getRequestDuration();
-        duration += (requestDuration == null ? 0 : requestDuration);
+        updateCounters(requestDuration);
 
         String stopMarker = event.getRequestHeader(BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
 
@@ -231,7 +243,14 @@ public class BusinessScenario {
         bse.setLongProperty(BusinessScenarioEvent.DURATION, duration);
         bse.setIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT, requestCount);
         bse.setStringProperty(BusinessScenarioEvent.TYPE, type);
+        if (note != null) {
+            bse.setStringProperty(BusinessScenarioEvent.NOTE, note);
+        }
         return bse;
+    }
+
+    public String getNote() {
+        return note;
     }
 
     @Override
@@ -258,6 +277,26 @@ public class BusinessScenario {
         }
 
         this.endTimestamp = endTimestamp;
+    }
+
+    void setNote(String note) {
+        this.note = note;
+    }
+
+    void setType(String type) {
+        this.type = type;
+    }
+
+    void setBeginTimestamp(long ts) {
+        this.beginTimestamp = ts;
+    }
+
+    /**
+     * @param requestDuration may be null
+     */
+    void updateCounters(Long requestDuration) {
+        requestCount ++;
+        duration += (requestDuration == null ? 0 : requestDuration);
     }
 
     // Protected -------------------------------------------------------------------------------------------------------

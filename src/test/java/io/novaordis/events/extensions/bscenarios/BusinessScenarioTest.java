@@ -70,7 +70,7 @@ public class BusinessScenarioTest {
     }
 
     @Test
-    public void update_SuccessiveStartMarkers() throws Exception {
+    public void update_StartMarkerArrivesBeforeEndMarker() throws Exception {
 
         BusinessScenario bs = new BusinessScenario();
         assertNull(bs.getType());
@@ -78,7 +78,7 @@ public class BusinessScenarioTest {
 
         HttpEvent e = new HttpEvent(1L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
-        e.setRequestDuration(1L);
+        e.setRequestDuration(77L);
 
         assertFalse(bs.update(e));
 
@@ -86,22 +86,21 @@ public class BusinessScenarioTest {
         assertFalse(bs.isClosed());
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(1, bs.getRequestCount());
-        assertEquals(1L, bs.getDuration());
+        assertEquals(77L, bs.getDuration());
 
-        HttpEvent e2 = new HttpEvent(2L);
+        HttpEvent e2 = new HttpEvent(55L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e2.setRequestDuration(2L);
 
-        try {
+        assertTrue(bs.update(e2));
 
-            bs.update(e2);
-            fail("should throw exception");
-        }
-        catch(UserErrorException ex) {
-            String msg = ex.getMessage();
-            log.info(msg);
-            assertTrue(msg.matches("a start marker .* arrived on the already opened scenario .*"));
-        }
+        assertTrue(bs.isClosed());
+        assertEquals("missing end marker", bs.getNote());
+        assertEquals("TYPE-A", bs.getType());
+        assertEquals(1L, bs.getBeginTimestamp());
+        assertEquals(55L, bs.getEndTimestamp());
+        assertEquals(1, bs.getRequestCount());
+        assertEquals(77L, bs.getDuration());
     }
 
     @Test
@@ -323,15 +322,15 @@ public class BusinessScenarioTest {
         e2.setRequestDuration(2L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
 
-        try {
-            bs.update(e2);
-            fail("should have thrown exception");
-        }
-        catch(UserErrorException ex) {
-            String msg = ex.getMessage();
-            log.info(msg);
-            assertTrue(msg.matches("a start marker .* arrived on the already opened scenario .*"));
-        }
+        assertTrue(bs.update(e2));
+
+        assertTrue(bs.isClosed());
+        assertEquals("missing end marker", bs.getNote());
+        assertEquals("TYPE-A", bs.getType());
+        assertEquals(1L, bs.getBeginTimestamp());
+        assertEquals(2L, bs.getEndTimestamp());
+        assertEquals(1, bs.getRequestCount());
+        assertEquals(1L, bs.getDuration());
     }
 
     @Test
@@ -391,6 +390,27 @@ public class BusinessScenarioTest {
         assertEquals(2, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
         assertEquals("TYPE-A", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
     }
+
+    @Test
+    public void toEvent_WithNote() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+        bs.setNote("test test test");
+        bs.setType("SOME-TYPE");
+        bs.setBeginTimestamp(101L);
+        bs.updateCounters(11L);
+        bs.updateCounters(null);
+        bs.updateCounters(22L);
+
+        BusinessScenarioEvent bse = bs.toEvent();
+
+        assertEquals("test test test", bse.getStringProperty(BusinessScenarioEvent.NOTE).getString());
+        assertEquals(101L, bse.getTimestamp().longValue());
+        assertEquals(33L, bse.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
+        assertEquals(3, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
+        assertEquals("SOME-TYPE", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
+    }
+
 
     // Package protected -----------------------------------------------------------------------------------------------
 
