@@ -62,6 +62,8 @@ class HttpSession {
     }
 
     /**
+     * Updates the statistics associated with the corresponding business scenario or throws it away.
+     *
      * NOT thread safe.
      *
      * @exception UserErrorException if the lower layers encountered a problem that stops us from processing the
@@ -69,7 +71,7 @@ class HttpSession {
      *  request does not belong to the current session, etc. In this case, the process must exit with a user-readable
      *  error.
      */
-    public Event processBusinessScenario(HttpEvent event) throws UserErrorException {
+    public Event process(HttpEvent event) throws UserErrorException {
 
         // sanity check
         if (event == null) {

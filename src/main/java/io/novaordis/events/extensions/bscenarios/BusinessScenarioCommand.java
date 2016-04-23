@@ -234,7 +234,7 @@ public class BusinessScenarioCommand extends CommandBase {
             sessions.put(jSessionId, s);
         }
 
-        return s.processBusinessScenario(event);
+        return s.process(event);
     }
 
     // Protected -------------------------------------------------------------------------------------------------------
