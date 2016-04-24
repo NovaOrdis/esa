@@ -22,7 +22,7 @@ import io.novaordis.events.core.LineStreamParser;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
 import io.novaordis.events.core.event.MockEvent;
-import io.novaordis.events.core.event.StringEvent;
+import io.novaordis.events.core.event.LineEvent;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -279,7 +279,7 @@ public class HttpdLineParserTest extends LineParserTest {
         log.info(e.getMessage());
     }
 
-    //    return new StringEvent("test-host test-remote-logname test-remote-user [31/Jan/2016:06:59:53 -0800] \"GET /test HTTP/1.1\" 200 1024");
+    //    return new LineEvent("test-host test-remote-logname test-remote-user [31/Jan/2016:06:59:53 -0800] \"GET /test HTTP/1.1\" 200 1024");
 
     @Test
     public void notAHttpdLogLine() throws Exception {
@@ -288,7 +288,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         String line = "definitely not a httpd log line";
 
-        assertTrue(p.process(new StringEvent(line)));
+        assertTrue(p.process(new LineEvent(line)));
 
         List<Event> outputEvents = p.getEvents();
 

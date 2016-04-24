@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class StringEventConverterTest extends InputStreamConversionLogicTest {
+public class LineEventConverterTest extends InputStreamConversionLogicTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ public class StringEventConverterTest extends InputStreamConversionLogicTest {
 
         List<Event> result = sep.getEvents();
         assertEquals(1, result.size());
-        StringEvent se = (StringEvent)result.get(0);
+        LineEvent se = (LineEvent)result.get(0);
         assertEquals("hello", se.get());
 
         assertTrue(sep.getEvents().isEmpty());
@@ -85,7 +85,7 @@ public class StringEventConverterTest extends InputStreamConversionLogicTest {
         List<Event> result = sep.getEvents();
         assertFalse(result.isEmpty());
         assertEquals(1, result.size());
-        StringEvent se = (StringEvent)result.get(0);
+        LineEvent se = (LineEvent)result.get(0);
         assertEquals("", se.get());
 
         assertTrue(sep.getEvents().isEmpty());
@@ -95,7 +95,7 @@ public class StringEventConverterTest extends InputStreamConversionLogicTest {
         result = sep.getEvents();
         assertFalse(result.isEmpty());
         assertEquals(1, result.size());
-        se = (StringEvent)result.get(0);
+        se = (LineEvent)result.get(0);
         assertEquals("", se.get());
 
         assertTrue(sep.getEvents().isEmpty());
@@ -117,7 +117,7 @@ public class StringEventConverterTest extends InputStreamConversionLogicTest {
 
         result = sep.getEvents();
         assertEquals(2, result.size());
-        StringEvent se = (StringEvent)result.get(0);
+        LineEvent se = (LineEvent)result.get(0);
         assertEquals("h", se.get());
         EndOfStreamEvent eos = (EndOfStreamEvent)result.get(1);
         assertNotNull(eos);
@@ -139,7 +139,7 @@ public class StringEventConverterTest extends InputStreamConversionLogicTest {
 
         result = sep.getEvents();
         assertEquals(1, result.size());
-        StringEvent se = (StringEvent)result.get(0);
+        LineEvent se = (LineEvent)result.get(0);
         assertEquals("h", se.get());
 
         result = sep.getEvents();

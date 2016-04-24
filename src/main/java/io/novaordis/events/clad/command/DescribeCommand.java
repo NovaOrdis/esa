@@ -98,7 +98,7 @@ public class DescribeCommand extends CommandBase {
 
             signatures.add(signature);
             System.out.println(getSignature(event, YAML));
-            //terminatorQueue.put(new StringEvent(getSignature(event, YAML)));
+            //terminatorQueue.put(new LineEvent(getSignature(event, YAML)));
         }
     }
 

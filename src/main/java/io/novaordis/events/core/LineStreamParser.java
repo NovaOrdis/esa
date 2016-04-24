@@ -18,7 +18,7 @@ package io.novaordis.events.core;
 
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
-import io.novaordis.events.core.event.StringEvent;
+import io.novaordis.events.core.event.LineEvent;
 
 /**
  * Logic wired into event processors that receive lines from their queues (in form of StringEvents) and parse them into
@@ -68,11 +68,11 @@ public class LineStreamParser extends ProcessingLogicBase {
         // we generate FaultEvents if we get an unknown event
         //
 
-        if (!(e instanceof StringEvent)) {
+        if (!(e instanceof LineEvent)) {
             return new FaultEvent(this + " does not know how to handle " + e);
         }
 
-        String line = ((StringEvent)e).get();
+        String line = ((LineEvent)e).get();
 
         if (lineParser == null) {
             //

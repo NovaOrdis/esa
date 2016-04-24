@@ -22,7 +22,7 @@ package io.novaordis.events.core.event;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class StringEvent extends GenericEvent {
+public class LineEvent extends GenericEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ public class StringEvent extends GenericEvent {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public StringEvent(String s) {
+    public LineEvent(String s) {
         this.s = s;
     }
 

@@ -20,8 +20,8 @@ import io.novaordis.events.ParsingException;
 import io.novaordis.events.core.event.EndOfStreamEvent;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
+import io.novaordis.events.core.event.LineEvent;
 import io.novaordis.events.core.event.MockEvent;
-import io.novaordis.events.core.event.StringEvent;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +78,7 @@ public class LineStreamParserTest extends ProcessingLogicTest {
         assertNull(lsp.getLineParser());
 
         // this will trigger illegal state
-        StringEvent se = new StringEvent("does not matter");
+        LineEvent se = new LineEvent("does not matter");
 
         try {
             lsp.process(se);
@@ -206,7 +206,7 @@ public class LineStreamParserTest extends ProcessingLogicTest {
 
         // this can be parsed and produces a MockEvent
         String validLine = mlp.getValidLine();
-        StringEvent se = new StringEvent(validLine);
+        LineEvent se = new LineEvent(validLine);
 
         boolean outputEventsAvailableForRetrieval = lsp.process(se);
         assertTrue(outputEventsAvailableForRetrieval);
@@ -226,7 +226,7 @@ public class LineStreamParserTest extends ProcessingLogicTest {
 
         // this cannot be parsed and produces a FaultEvent
         String invalidLine = mlp.getInvalidLine();
-        StringEvent se = new StringEvent(invalidLine);
+        LineEvent se = new LineEvent(invalidLine);
 
         boolean outputEventsAvailableForRetrieval = lsp.process(se);
         assertTrue(outputEventsAvailableForRetrieval);
@@ -251,7 +251,7 @@ public class LineStreamParserTest extends ProcessingLogicTest {
     @Override
     protected Event getInputEventRelevantToProcessingLogic() throws Exception {
 
-        return new StringEvent(MockLineParser.VALID_LINE);
+        return new LineEvent(MockLineParser.VALID_LINE);
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

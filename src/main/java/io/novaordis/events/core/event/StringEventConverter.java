@@ -78,7 +78,7 @@ public class StringEventConverter implements InputStreamConversionLogic {
             }
             else
             {
-                buffer.add(new StringEvent(sb.toString()));
+                buffer.add(new LineEvent(sb.toString()));
                 buffer.add(new EndOfStreamEvent());
             }
 
@@ -87,7 +87,7 @@ public class StringEventConverter implements InputStreamConversionLogic {
         }
         else if (b == '\n') {
 
-            buffer.add(new StringEvent(sb.toString()));
+            buffer.add(new LineEvent(sb.toString()));
             sb.setLength(0);
         }
         else if (b <= 255) {
