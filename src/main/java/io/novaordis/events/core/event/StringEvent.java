@@ -17,6 +17,8 @@
 package io.novaordis.events.core.event;
 
 /**
+ * Represents a line of text.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */

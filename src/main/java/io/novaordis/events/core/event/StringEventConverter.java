@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Breaks the input stream content into lines and send the LineEvents downstream.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
@@ -39,6 +41,8 @@ public class StringEventConverter implements InputStreamConversionLogic {
     private StringBuilder sb;
     private List<Event> buffer;
 
+    private long lineNumber;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public StringEventConverter() {
@@ -46,6 +50,7 @@ public class StringEventConverter implements InputStreamConversionLogic {
         this.closed = false;
         this.sb = new StringBuilder();
         this.buffer = new ArrayList<>();
+        this.lineNumber = 0;
     }
 
     // InputStreamConversionLogic implementation -----------------------------------------------------------------------
