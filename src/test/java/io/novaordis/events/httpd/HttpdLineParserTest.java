@@ -288,7 +288,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         String line = "definitely not a httpd log line";
 
-        assertTrue(p.process(new LineEvent(line)));
+        assertTrue(p.process(new LineEvent(1L, line)));
 
         List<Event> outputEvents = p.getEvents();
 

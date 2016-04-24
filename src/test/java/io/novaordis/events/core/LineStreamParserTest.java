@@ -78,7 +78,7 @@ public class LineStreamParserTest extends ProcessingLogicTest {
         assertNull(lsp.getLineParser());
 
         // this will trigger illegal state
-        LineEvent se = new LineEvent("does not matter");
+        LineEvent se = new LineEvent(1L, "does not matter");
 
         try {
             lsp.process(se);
@@ -206,7 +206,7 @@ public class LineStreamParserTest extends ProcessingLogicTest {
 
         // this can be parsed and produces a MockEvent
         String validLine = mlp.getValidLine();
-        LineEvent se = new LineEvent(validLine);
+        LineEvent se = new LineEvent(1L, validLine);
 
         boolean outputEventsAvailableForRetrieval = lsp.process(se);
         assertTrue(outputEventsAvailableForRetrieval);
@@ -226,7 +226,7 @@ public class LineStreamParserTest extends ProcessingLogicTest {
 
         // this cannot be parsed and produces a FaultEvent
         String invalidLine = mlp.getInvalidLine();
-        LineEvent se = new LineEvent(invalidLine);
+        LineEvent se = new LineEvent(1L, invalidLine);
 
         boolean outputEventsAvailableForRetrieval = lsp.process(se);
         assertTrue(outputEventsAvailableForRetrieval);
@@ -251,7 +251,7 @@ public class LineStreamParserTest extends ProcessingLogicTest {
     @Override
     protected Event getInputEventRelevantToProcessingLogic() throws Exception {
 
-        return new LineEvent(MockLineParser.VALID_LINE);
+        return new LineEvent(1L, MockLineParser.VALID_LINE);
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

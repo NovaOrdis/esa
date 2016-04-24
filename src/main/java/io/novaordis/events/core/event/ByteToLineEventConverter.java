@@ -41,6 +41,7 @@ public class ByteToLineEventConverter implements InputStreamConversionLogic {
     private StringBuilder sb;
     private List<Event> buffer;
 
+    // 1-based line numbering
     private long lineNumber;
 
     // Constructors ----------------------------------------------------------------------------------------------------
@@ -50,7 +51,9 @@ public class ByteToLineEventConverter implements InputStreamConversionLogic {
         this.closed = false;
         this.sb = new StringBuilder();
         this.buffer = new ArrayList<>();
-        this.lineNumber = 0;
+
+        // text files start with line 1, not line 0
+        this.lineNumber = 1;
     }
 
     // InputStreamConversionLogic implementation -----------------------------------------------------------------------
@@ -78,7 +81,7 @@ public class ByteToLineEventConverter implements InputStreamConversionLogic {
             }
             else
             {
-                buffer.add(new LineEvent(sb.toString()));
+                buffer.add(new LineEvent(lineNumber ++, sb.toString()));
                 buffer.add(new EndOfStreamEvent());
             }
 
@@ -87,7 +90,7 @@ public class ByteToLineEventConverter implements InputStreamConversionLogic {
         }
         else if (b == '\n') {
 
-            buffer.add(new LineEvent(sb.toString()));
+            buffer.add(new LineEvent(lineNumber ++, sb.toString()));
             sb.setLength(0);
         }
         else if (b <= 255) {

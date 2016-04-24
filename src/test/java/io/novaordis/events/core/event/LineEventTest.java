@@ -16,13 +16,15 @@
 
 package io.novaordis.events.core.event;
 
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+
 /**
- * Represents a line of text.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/24/16
+ * @since 2/6/16
  */
-public class LineEvent extends GenericEvent {
+public class LineEventTest extends GenericEventTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,35 +32,26 @@ public class LineEvent extends GenericEvent {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String s;
-    private long lineNumber;
-
     // Constructors ----------------------------------------------------------------------------------------------------
-
-    public LineEvent(long lineNumber, String s) {
-        this.lineNumber = lineNumber;
-        this.s = s;
-    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public String get() {
-        return s;
-    }
+    @Test
+    public void constructor() throws Exception {
 
-    public long getLineNumber() {
-        return lineNumber;
-    }
-
-    @Override
-    public String toString() {
-
-        return s;
+        LineEvent le = new LineEvent(7L, "test");
+        assertEquals(7L, le.getLineNumber());
+        assertEquals("test", le.get());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected LineEvent getEventToTest() throws Exception {
+        return new LineEvent(1, "test");
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 
