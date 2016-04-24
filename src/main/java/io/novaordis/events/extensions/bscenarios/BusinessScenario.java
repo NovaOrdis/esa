@@ -157,7 +157,8 @@ public class BusinessScenario {
         else {
 
             //
-            // can't allow regular requests for a non-active scenario
+            // ignore the request if the scenario is not active. Throwing a BusinessScenarioException will cause
+            // a Fault to be sent down the pipeline, but it won't interrupt processing
             //
 
             if (beginTimestamp <= 0) {
@@ -191,7 +192,9 @@ public class BusinessScenario {
         }
 
         if (requestDuration == null) {
-            throw new BusinessScenarioException(event + " does not have request duration information");
+            throw new BusinessScenarioException(
+                    BusinessScenarioFaultType.NO_REQUEST_DURATION_INFO,
+                    event + " does not have request duration information");
         }
 
         return isClosed();

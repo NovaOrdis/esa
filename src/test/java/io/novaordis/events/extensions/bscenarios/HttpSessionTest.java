@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -59,7 +60,7 @@ public class HttpSessionTest {
     // processBusinessScenario() ---------------------------------------------------------------------------------------
 
     @Test
-    public void processBusinessScenario_RequestDoesNotBelongToTheSession() throws Exception {
+    public void process_RequestDoesNotBelongToTheSession() throws Exception {
 
         HttpSession s = new HttpSession("test-session-1");
 
@@ -77,7 +78,7 @@ public class HttpSessionTest {
     }
 
     @Test
-    public void processBusinessScenario_TwoRequestScenario() throws Exception {
+    public void process_TwoRequestScenario() throws Exception {
 
         HttpSession s = new HttpSession("test-session-1");
 
@@ -103,7 +104,7 @@ public class HttpSessionTest {
     }
 
     @Test
-    public void processBusinessScenario_JSessionIDPresent_NoBusinessScenarioMarker() throws Exception {
+    public void process_JSessionIDPresent_NoBusinessScenarioMarker() throws Exception {
 
         HttpSession s = new HttpSession("test-session-1");
 
@@ -119,9 +120,14 @@ public class HttpSessionTest {
     }
 
     @Test
-    public void processBusinessScenario() throws Exception {
+    public void process() throws Exception {
 
         HttpSession s = new HttpSession("test-session-1");
+
+        BusinessScenario bs = s.getCurrentBusinessScenario();
+        assertFalse(bs.isActive());
+        assertFalse(bs.isClosed());
+        assertNull(bs.getType());
 
         Event re;
 
@@ -133,12 +139,20 @@ public class HttpSessionTest {
         re = s.process(e);
         assertNull(re);
 
+        bs = s.getCurrentBusinessScenario();
+        assertTrue(bs.isActive());
+        assertEquals(1, bs.getRequestCount());
+        assertEquals("scenario-1", bs.getType());
+
         HttpEvent e2 = new HttpEvent(20L);
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e2.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
 
         re = s.process(e2);
         assertNull(re);
+
+        bs = s.getCurrentBusinessScenario();
+        assertEquals(2, bs.getRequestCount());
 
         HttpEvent e3 = new HttpEvent(30L);
         e3.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
@@ -147,6 +161,16 @@ public class HttpSessionTest {
 
         re = s.process(e3);
         assertNotNull(re);
+
+        bs = s.getCurrentBusinessScenario();
+        //
+        // the current business scenario has been replaced with a fresh one
+        //
+        assertEquals(0, bs.getRequestCount());
+        assertFalse(bs.isActive());
+        assertFalse(bs.isClosed());
+        assertNull(bs.getType());
+
 
         BusinessScenarioEvent bse = (BusinessScenarioEvent)re;
 
@@ -167,6 +191,11 @@ public class HttpSessionTest {
         re = s.process(e4);
         assertNull(re);
 
+        bs = s.getCurrentBusinessScenario();
+        assertTrue(bs.isActive());
+        assertEquals(1, bs.getRequestCount());
+        assertEquals("scenario-2", bs.getType());
+
         HttpEvent e5 = new HttpEvent(50L);
         e5.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e5.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
@@ -174,6 +203,15 @@ public class HttpSessionTest {
 
         re = s.process(e3);
         assertNotNull(re);
+
+        bs = s.getCurrentBusinessScenario();
+        //
+        // the current business scenario has been replaced with a fresh one
+        //
+        assertEquals(0, bs.getRequestCount());
+        assertFalse(bs.isActive());
+        assertFalse(bs.isClosed());
+        assertNull(bs.getType());
 
         BusinessScenarioEvent bse2 = (BusinessScenarioEvent)re;
 
@@ -184,7 +222,7 @@ public class HttpSessionTest {
     }
 
     @Test
-    public void processBusinessScenario_StopMarkerSameTypeLabel() throws Exception {
+    public void process_StopMarkerSameTypeLabel() throws Exception {
 
         HttpSession s = new HttpSession("test-session-1");
 
@@ -214,7 +252,7 @@ public class HttpSessionTest {
     }
 
     @Test
-    public void processBusinessScenario_StopMarkerDifferentTypeLabel() throws Exception {
+    public void process_StopMarkerDifferentTypeLabel() throws Exception {
 
         HttpSession s = new HttpSession("test-session-1");
 
@@ -243,7 +281,7 @@ public class HttpSessionTest {
     }
 
     @Test
-    public void processBusinessScenario_InvalidRequest() throws Exception {
+    public void process_InvalidRequest() throws Exception {
 
         HttpSession s = new HttpSession("test-session-1");
 
@@ -265,7 +303,7 @@ public class HttpSessionTest {
     }
 
     @Test
-    public void processBusinessScenario_StartMarkerArrivesBeforeEndMarker() throws Exception {
+    public void process_StartMarkerArrivesBeforeEndMarker() throws Exception {
 
         HttpSession s = new HttpSession("test-session-1");
 

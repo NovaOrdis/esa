@@ -25,6 +25,7 @@ import io.novaordis.events.core.event.FaultType;
 public enum BusinessScenarioFaultType implements FaultType {
 
     NO_JSESSIONID_COOKIE,
-    NO_ACTIVE_BUSINESS_SCENARIO;
+    NO_ACTIVE_BUSINESS_SCENARIO,
+    NO_REQUEST_DURATION_INFO;
 
 }
