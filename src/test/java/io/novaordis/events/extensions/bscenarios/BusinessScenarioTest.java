@@ -55,7 +55,7 @@ public class BusinessScenarioTest {
 
         assertFalse(bs.isClosed());
 
-        bs.close(System.currentTimeMillis());
+        bs.close();
 
         HttpEvent e = new HttpEvent(1L);
 
@@ -75,6 +75,7 @@ public class BusinessScenarioTest {
         BusinessScenario bs = new BusinessScenario();
         assertNull(bs.getType());
         assertEquals(0L, bs.getBeginTimestamp());
+        assertEquals(BusinessScenarioState.NEW, bs.getState());
 
         HttpEvent e = new HttpEvent(1L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
@@ -87,6 +88,7 @@ public class BusinessScenarioTest {
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(1, bs.getRequestCount());
         assertEquals(77L, bs.getDuration());
+        assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
 
         HttpEvent e2 = new HttpEvent(55L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
@@ -95,7 +97,7 @@ public class BusinessScenarioTest {
         assertTrue(bs.update(e2));
 
         assertTrue(bs.isClosed());
-        assertEquals("missing end marker", bs.getNote());
+        assertEquals(BusinessScenarioState.CLOSED_BY_START_MARKER, bs.getState());
         assertEquals("TYPE-A", bs.getType());
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(55L, bs.getEndTimestamp());
@@ -107,6 +109,7 @@ public class BusinessScenarioTest {
     public void update_NoDuration_StartMarker() throws Exception {
 
         BusinessScenario bs = new BusinessScenario();
+        assertEquals(BusinessScenarioState.NEW, bs.getState());
 
         HttpEvent e = new HttpEvent(1L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
@@ -125,6 +128,7 @@ public class BusinessScenarioTest {
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(1, bs.getRequestCount());
         assertEquals(0L, bs.getDuration());
+        assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
     }
 
     @Test
@@ -132,6 +136,7 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
         assertNull(bs.getType());
+        assertEquals(BusinessScenarioState.NEW, bs.getState());
 
         HttpEvent e = new HttpEvent(1L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
@@ -144,6 +149,7 @@ public class BusinessScenarioTest {
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(1, bs.getRequestCount());
         assertEquals(1L, bs.getDuration());
+        assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
 
         // no duration
         HttpEvent e2 = new HttpEvent(2L);
@@ -161,6 +167,7 @@ public class BusinessScenarioTest {
         assertFalse(bs.isClosed());
         assertEquals(2, bs.getRequestCount());
         assertEquals(1L, bs.getDuration());
+        assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
     }
 
     @Test
@@ -173,6 +180,7 @@ public class BusinessScenarioTest {
         assertEquals(0L, bs.getBeginTimestamp());
         assertEquals(0L, bs.getEndTimestamp());
         assertNull(bs.getType());
+        assertEquals(BusinessScenarioState.NEW, bs.getState());
 
         HttpEvent firstRequest = new HttpEvent(100L);
         firstRequest.setRequestDuration(7L);
@@ -185,6 +193,7 @@ public class BusinessScenarioTest {
         assertEquals(100L, bs.getBeginTimestamp());
         assertEquals(0L, bs.getEndTimestamp());
         assertEquals("TYPE-A", bs.getType());
+        assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
 
         HttpEvent secondRequest = new HttpEvent(200L);
         secondRequest.setRequestDuration(8L);
@@ -196,6 +205,7 @@ public class BusinessScenarioTest {
         assertEquals(100L, bs.getBeginTimestamp());
         assertEquals(0L, bs.getEndTimestamp());
         assertEquals("TYPE-A", bs.getType());
+        assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
 
         assertFalse(bs.isClosed());
     }
@@ -215,6 +225,7 @@ public class BusinessScenarioTest {
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(0L, bs.getEndTimestamp());
         assertFalse(bs.isClosed());
+        assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
 
         HttpEvent e2 = new HttpEvent(5L);
         e2.setRequestDuration(6L);
@@ -226,6 +237,7 @@ public class BusinessScenarioTest {
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(11L, bs.getEndTimestamp());
         assertTrue(bs.isClosed());
+        assertEquals(BusinessScenarioState.CLOSED, bs.getState());
 
         HttpEvent e3 = new HttpEvent(7L);
 
@@ -236,6 +248,8 @@ public class BusinessScenarioTest {
         catch(IllegalStateException ex) {
             log.info(ex.getMessage());
         }
+
+        assertEquals(BusinessScenarioState.CLOSED, bs.getState());
     }
 
     @Test
@@ -253,6 +267,7 @@ public class BusinessScenarioTest {
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(0L, bs.getEndTimestamp());
         assertFalse(bs.isClosed());
+        assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
 
         HttpEvent e2 = new HttpEvent(5L);
         e2.setRequestDuration(6L);
@@ -264,6 +279,7 @@ public class BusinessScenarioTest {
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(11L, bs.getEndTimestamp());
         assertTrue(bs.isClosed());
+        assertEquals(BusinessScenarioState.CLOSED, bs.getState());
 
         HttpEvent e3 = new HttpEvent(7L);
 
@@ -274,6 +290,8 @@ public class BusinessScenarioTest {
         catch(IllegalStateException ex) {
             log.info(ex.getMessage());
         }
+
+        assertEquals(BusinessScenarioState.CLOSED, bs.getState());
     }
 
     @Test
@@ -291,6 +309,7 @@ public class BusinessScenarioTest {
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(0L, bs.getEndTimestamp());
         assertFalse(bs.isClosed());
+        assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
 
         HttpEvent e2 = new HttpEvent(5L);
         e2.setRequestDuration(6L);
@@ -303,6 +322,8 @@ public class BusinessScenarioTest {
         catch(UserErrorException ex) {
             log.info(ex.getMessage());
         }
+
+        assertEquals(BusinessScenarioState.FAULT, bs.getState());
     }
 
     @Test
@@ -317,6 +338,7 @@ public class BusinessScenarioTest {
         assertFalse(bs.update(e));
 
         assertFalse(bs.isClosed());
+        assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
 
         HttpEvent e2 = new HttpEvent(2L);
         e2.setRequestDuration(2L);
@@ -325,7 +347,7 @@ public class BusinessScenarioTest {
         assertTrue(bs.update(e2));
 
         assertTrue(bs.isClosed());
-        assertEquals("missing end marker", bs.getNote());
+        assertEquals(BusinessScenarioState.CLOSED_BY_START_MARKER, bs.getState());
         assertEquals("TYPE-A", bs.getType());
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(2L, bs.getEndTimestamp());
@@ -342,6 +364,7 @@ public class BusinessScenarioTest {
         // this scenario was not started
         //
 
+        assertEquals(BusinessScenarioState.NEW, bs.getState());
         assertFalse(bs.isActive());
 
         HttpEvent e = new HttpEvent(1L);
@@ -360,6 +383,7 @@ public class BusinessScenarioTest {
         assertEquals(0, bs.getRequestCount());
         assertEquals(0, bs.getDuration());
         assertNull(bs.getType());
+        assertEquals(BusinessScenarioState.NEW, bs.getState());
     }
 
     // toEvent() -------------------------------------------------------------------------------------------------------
@@ -389,13 +413,15 @@ public class BusinessScenarioTest {
         assertEquals(15L, bse.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
         assertEquals(2, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
         assertEquals("TYPE-A", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
+        assertEquals(BusinessScenarioState.CLOSED.name(),
+                bse.getStringProperty(BusinessScenarioEvent.STATE).getValue());
     }
 
     @Test
-    public void toEvent_WithNote() throws Exception {
+    public void toEvent_SpecialClosedState() throws Exception {
 
         BusinessScenario bs = new BusinessScenario();
-        bs.setNote("test test test");
+        bs.setState(BusinessScenarioState.CLOSED_BY_START_MARKER);
         bs.setType("SOME-TYPE");
         bs.setBeginTimestamp(101L);
         bs.updateCounters(11L);
@@ -404,7 +430,8 @@ public class BusinessScenarioTest {
 
         BusinessScenarioEvent bse = bs.toEvent();
 
-        assertEquals("test test test", bse.getStringProperty(BusinessScenarioEvent.NOTE).getString());
+        assertEquals(BusinessScenarioState.CLOSED_BY_START_MARKER.name(),
+                bse.getStringProperty(BusinessScenarioEvent.STATE).getString());
         assertEquals(101L, bse.getTimestamp().longValue());
         assertEquals(33L, bse.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
         assertEquals(3, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
@@ -432,6 +459,15 @@ public class BusinessScenarioTest {
         catch(IllegalStateException e) {
             log.info(e.getMessage());
         }
+    }
+
+    // state -----------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void state_NEW() {
+
+        BusinessScenario bs = new BusinessScenario();
+        assertEquals(BusinessScenarioState.NEW, bs.getState());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

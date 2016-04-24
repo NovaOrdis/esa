@@ -79,10 +79,7 @@ public class BusinessScenario {
     //
     private int requestCount;
 
-    //
-    // we use the "note" as a mechanism to single out problematic scenarios
-    //
-    private String note;
+    private BusinessScenarioState state;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -93,7 +90,7 @@ public class BusinessScenario {
     public BusinessScenario() {
 
         this.id = getNextId();
-        this.endTimestamp = 0L;
+        this.state = BusinessScenarioState.NEW;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -130,7 +127,7 @@ public class BusinessScenario {
 
         if (startMarker != null) {
 
-            if (beginTimestamp > 0) {
+            if (state.equals(BusinessScenarioState.ACTIVE)) {
 
                 //
                 // start marker arrived before a end marker
@@ -144,7 +141,7 @@ public class BusinessScenario {
                 // "close" the business scenario
                 //
                 endTimestamp = event.getTimestamp();
-                setNote("missing end marker");
+                setState(BusinessScenarioState.CLOSED_BY_START_MARKER);
                 return true;
             }
 
@@ -153,6 +150,7 @@ public class BusinessScenario {
             //
             setType(startMarker);
             setBeginTimestamp(event.getTimestamp());
+            setState(BusinessScenarioState.ACTIVE);
         }
         else {
 
@@ -184,11 +182,14 @@ public class BusinessScenario {
             stopMarker = stopMarker.trim();
 
             if (stopMarker.length() != 0 && !stopMarker.equals(type)) {
+
+                setState(BusinessScenarioState.FAULT);
                 throw new UserErrorException(event +
                         " ends a different scenario type (" + stopMarker + ") than the current one (" + type + ")");
             }
 
             endTimestamp = event.getTimestamp() + (requestDuration == null ? 0 : requestDuration);
+            setState(BusinessScenarioState.CLOSED);
         }
 
         if (requestDuration == null) {
@@ -206,7 +207,7 @@ public class BusinessScenario {
      */
     public boolean isClosed() {
 
-        return endTimestamp != 0L;
+        return !state.equals(BusinessScenarioState.NEW) && !state.equals(BusinessScenarioState.ACTIVE);
     }
 
     /**
@@ -249,14 +250,16 @@ public class BusinessScenario {
         bse.setLongProperty(BusinessScenarioEvent.DURATION, duration);
         bse.setIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT, requestCount);
         bse.setStringProperty(BusinessScenarioEvent.TYPE, type);
-        if (note != null) {
-            bse.setStringProperty(BusinessScenarioEvent.NOTE, note);
-        }
+        bse.setStringProperty(BusinessScenarioEvent.STATE, getState().name());
         return bse;
     }
 
-    public String getNote() {
-        return note;
+    public BusinessScenarioState getState() {
+        return state;
+    }
+
+    public void setState(BusinessScenarioState state) {
+        this.state = state;
     }
 
     @Override
@@ -270,23 +273,10 @@ public class BusinessScenario {
 
     /**
      * For internal class use and testing only.
-     *
-     * @param endTimestamp a value larger than 0L.
-     *
      */
-    void close(long endTimestamp) {
+    void close() {
 
-        if (endTimestamp <= 0L) {
-
-            throw new IllegalArgumentException(
-                    "cannot close a business scenario with a zero or negative timestamp: " + endTimestamp);
-        }
-
-        this.endTimestamp = endTimestamp;
-    }
-
-    void setNote(String note) {
-        this.note = note;
+        setState(BusinessScenarioState.CLOSED);
     }
 
     void setType(String type) {

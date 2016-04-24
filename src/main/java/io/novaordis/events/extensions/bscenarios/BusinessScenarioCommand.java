@@ -74,6 +74,10 @@ public class BusinessScenarioCommand extends CommandBase {
         // TODO implement a better concurrent access than synchronization
         //
 
+        if (timestamp <= 0) {
+            return "-";
+        }
+
         synchronized (TIMESTAMP_FORMAT) {
             return TIMESTAMP_FORMAT.format(timestamp);
         }
@@ -162,7 +166,7 @@ public class BusinessScenarioCommand extends CommandBase {
                             BusinessScenarioEvent.ID + ", " +
                             BusinessScenarioEvent.REQUEST_COUNT + ", " +
                             BusinessScenarioEvent.DURATION + ", " +
-                            BusinessScenarioEvent.NOTE;
+                            BusinessScenarioEvent.STATE;
 
             ((OutputFormatter) terminator.getConversionLogic()).setOutputFormat(propertiesToDisplay);
         }
@@ -213,6 +217,7 @@ public class BusinessScenarioCommand extends CommandBase {
             // handle end-of-stream, cleanup whatever in-flight state we might have when we detect the end of the input
             // stream
             //
+            return Collections.emptyList();
         }
 
         if (incoming instanceof FaultEvent) {
@@ -376,13 +381,13 @@ public class BusinessScenarioCommand extends CommandBase {
         System.out.printf(" average request duration: %2.2f ms\n", averageScenarioDuration);
         System.out.printf("            HTTP sessions: %d\n", sessions.size());
 
+        System.out.println();
 
-        long c = 0;
         for(HttpSession s: sessions.values()) {
 
-            c += s.getRequestsProcessedBySessionCount();
+            BusinessScenario bs = s.getCurrentBusinessScenario();
+            System.out.println(s + " has " + (bs.isActive() ? "an active" : "a non-active") + " current scenario " + bs);
         }
-        System.out.printf("TOTAL REQUESTS ENTERING SESSIONS: %d\n", c);
     }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
