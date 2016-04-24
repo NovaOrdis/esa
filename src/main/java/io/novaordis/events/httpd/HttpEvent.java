@@ -16,6 +16,7 @@
 
 package io.novaordis.events.httpd;
 
+import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.IntegerProperty;
 import io.novaordis.events.core.event.LongProperty;
 import io.novaordis.events.core.event.MapProperty;
@@ -258,17 +259,26 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         setRequestHeader(headerName, null);
     }
 
+    public long getLineNumber() {
+
+        LongProperty p = getLongProperty(Event.LINE_NUMBER_PROPERTY_NAME);
+        Long v = p == null ? null : p.getLong();
+        return v == null ? 0L : v;
+    }
+
     @Override
     public String toString() {
 
         Long timestamp = getTimestamp();
         String s = (timestamp == null ? "N/A" : formatTimestamp(timestamp));
         s += " " + getMethod() + " " + getRequestUri();
+        s += "(line " + getLineNumber();
         String jSessionId = getCookie(JSESSIONID_COOKIE_KEY);
         if (jSessionId != null) {
 
-            s += " (JSESSIONID=" + jSessionId + ")";
+            s += ", JSESSIONID=" + jSessionId;
         }
+        s += ")";
 
         return s;
     }
