@@ -29,7 +29,7 @@ import java.util.List;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class StringEventConverter implements InputStreamConversionLogic {
+public class ByteToLineEventConverter implements InputStreamConversionLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ public class StringEventConverter implements InputStreamConversionLogic {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public StringEventConverter() {
+    public ByteToLineEventConverter() {
 
         this.closed = false;
         this.sb = new StringBuilder();

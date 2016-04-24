@@ -29,7 +29,7 @@ import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.LineStreamParser;
 import io.novaordis.events.core.OutputFormatter;
 import io.novaordis.events.core.OutputStreamTerminator;
-import io.novaordis.events.core.event.StringEventConverter;
+import io.novaordis.events.core.event.ByteToLineEventConverter;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -111,7 +111,7 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
         initiator = new InputStreamInitiator(
                 "Input Stream Reader",
                 System.in,
-                new StringEventConverter(),
+                new ByteToLineEventConverter(),
                 new ArrayBlockingQueue<>(QUEUE_SIZE));
 
         parser = new EventProcessor(

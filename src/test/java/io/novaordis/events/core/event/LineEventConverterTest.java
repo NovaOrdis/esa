@@ -45,7 +45,7 @@ public class LineEventConverterTest extends InputStreamConversionLogicTest {
     @Test
     public void oneLine() throws Exception {
 
-        StringEventConverter sep = getConversionLogicToTest();
+        ByteToLineEventConverter sep = getConversionLogicToTest();
 
         assertTrue(sep.getEvents().isEmpty());
 
@@ -77,7 +77,7 @@ public class LineEventConverterTest extends InputStreamConversionLogicTest {
     @Test
     public void emptyLine() throws Exception {
 
-        StringEventConverter sep = getConversionLogicToTest();
+        ByteToLineEventConverter sep = getConversionLogicToTest();
 
         assertTrue(sep.getEvents().isEmpty());
 
@@ -104,7 +104,7 @@ public class LineEventConverterTest extends InputStreamConversionLogicTest {
     @Test
     public void endOfStreamAfterSomeCharacters() throws Exception {
 
-        StringEventConverter sep = getConversionLogicToTest();
+        ByteToLineEventConverter sep = getConversionLogicToTest();
 
         assertTrue(sep.getEvents().isEmpty());
 
@@ -126,7 +126,7 @@ public class LineEventConverterTest extends InputStreamConversionLogicTest {
     @Test
     public void endOfStreamAfterAfterNewLine() throws Exception {
 
-        StringEventConverter sep = getConversionLogicToTest();
+        ByteToLineEventConverter sep = getConversionLogicToTest();
 
         assertTrue(sep.getEvents().isEmpty());
 
@@ -156,7 +156,7 @@ public class LineEventConverterTest extends InputStreamConversionLogicTest {
     @Test
     public void endOfStreamRightAtTheBeginning() throws Exception {
 
-        StringEventConverter sep = getConversionLogicToTest();
+        ByteToLineEventConverter sep = getConversionLogicToTest();
 
         assertTrue(sep.getEvents().isEmpty());
 
@@ -185,9 +185,9 @@ public class LineEventConverterTest extends InputStreamConversionLogicTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected StringEventConverter getConversionLogicToTest() throws Exception {
+    protected ByteToLineEventConverter getConversionLogicToTest() throws Exception {
 
-        return new StringEventConverter();
+        return new ByteToLineEventConverter();
     }
 
     // Private ---------------------------------------------------------------------------------------------------------
