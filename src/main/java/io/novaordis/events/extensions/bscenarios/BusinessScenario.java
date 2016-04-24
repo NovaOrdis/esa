@@ -245,6 +245,7 @@ public class BusinessScenario {
     public BusinessScenarioEvent toEvent() {
 
         BusinessScenarioEvent bse = new BusinessScenarioEvent(beginTimestamp);
+        bse.setLongProperty(BusinessScenarioEvent.ID, getId());
         bse.setLongProperty(BusinessScenarioEvent.DURATION, duration);
         bse.setIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT, requestCount);
         bse.setStringProperty(BusinessScenarioEvent.TYPE, type);
@@ -261,8 +262,8 @@ public class BusinessScenario {
     @Override
     public String toString() {
 
-        return "BusinessScenario[" + BusinessScenarioCommand.formatTimestamp(getBeginTimestamp()) +
-                "][" + getId() + "](" + getType() + ")";
+        return "BusinessScenario[" + BusinessScenarioCommand.formatTimestamp(getBeginTimestamp()) + "][" +
+                getId() + "](" + getType() + ")";
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -289,6 +290,14 @@ public class BusinessScenario {
     }
 
     void setType(String type) {
+
+        //
+        // BusinessScenario type can be set only once
+        //
+
+        if (this.type != null && !this.type.equals(type)) {
+            throw new IllegalStateException(this + "'s type can be set only once");
+        }
         this.type = type;
     }
 

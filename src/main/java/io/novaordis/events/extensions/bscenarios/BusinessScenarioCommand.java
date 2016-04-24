@@ -38,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -150,7 +149,7 @@ public class BusinessScenarioCommand extends CommandBase {
     @Override
     public void execute(Configuration configuration, ApplicationRuntime r) throws Exception {
 
-        EventsApplicationRuntime runtime = (EventsApplicationRuntime)r;
+        EventsApplicationRuntime runtime = (EventsApplicationRuntime) r;
 
         Terminator terminator = runtime.getTerminator();
 
@@ -160,6 +159,7 @@ public class BusinessScenarioCommand extends CommandBase {
 
             String propertiesToDisplay =
                     "timestamp, " +
+                            BusinessScenarioEvent.ID + ", " +
                             BusinessScenarioEvent.REQUEST_COUNT + ", " +
                             BusinessScenarioEvent.DURATION + ", " +
                             BusinessScenarioEvent.NOTE;
@@ -171,56 +171,18 @@ public class BusinessScenarioCommand extends CommandBase {
 
         BlockingQueue<Event> httpRequestQueue = runtime.getEventProcessor().getOutputQueue();
 
-        while(true) {
+        boolean incomingStreamOpen = true;
+
+        while (incomingStreamOpen) {
 
             Event event = httpRequestQueue.take();
 
             if (event == null || event instanceof EndOfStreamEvent) {
-                break;
+                incomingStreamOpen = false;
             }
 
-            Event resultEvent;
-
-            if (event instanceof FaultEvent) {
-
-                resultEvent = event;
-
-            } else if (!(event instanceof HttpEvent)) {
-
-                //
-                // this is a programming error, stop processing right away
-                //
-                throw new IllegalArgumentException(this + " got an " + event + " while it is only expecting HttpEvents");
-
-            } else {
-
-                resultEvent = process((HttpEvent) event);
-            }
-
-            // the result event can be null if multiple individual HTTP request are "consolidated" into a larger
-            // in-flight business scenario event
-            if (resultEvent == null) {
-                continue;
-            }
-
-            if (statsOnly) {
-
-                updateStatistics(resultEvent);
-            }
-            else {
-
-                if (ignoreFaults && resultEvent instanceof FaultEvent) {
-
-                    //
-                    // we are configured to not display faults
-                    //
-
-                    log.debug("ignoring " + resultEvent);
-                    continue;
-                }
-
-                terminatorQueue.put(resultEvent);
-            }
+            List<Event> outgoing = process(event);
+            handleOutgoing(outgoing);
         }
 
         if (statsOnly) {
@@ -240,6 +202,43 @@ public class BusinessScenarioCommand extends CommandBase {
     // Package protected -----------------------------------------------------------------------------------------------
 
     /**
+     * @param incoming usually a civilian, but it can also be null or EndOfStreamEvent, so the method must be able
+     *                 to handle that.
+     */
+    List<Event> process (Event incoming) throws UserErrorException {
+
+        if (incoming == null || incoming instanceof EndOfStreamEvent) {
+
+            //
+            // handle end-of-stream, cleanup whatever in-flight state we might have when we detect the end of the input
+            // stream
+            //
+        }
+
+        if (incoming instanceof FaultEvent) {
+
+            return Collections.singletonList(incoming);
+        }
+
+        if (!(incoming instanceof HttpEvent)) {
+
+            //
+            // this is a programming error, stop processing right away
+            //
+            throw new IllegalArgumentException(this + " got an " + incoming + " while it is only expecting HttpEvents");
+
+        }
+
+        Event outgoing = processHttpEvent((HttpEvent)incoming);
+
+        if (outgoing == null) {
+            return Collections.emptyList();
+        }
+
+        return Collections.singletonList(outgoing);
+    }
+
+    /**
      * The method locates the session for the specific request, and then delegates further processing to the session.
      *
      * @return a BusinessScenarioEvent, a FaultEvent or null if we're in mid-flight while processing a scenario.
@@ -248,7 +247,7 @@ public class BusinessScenarioCommand extends CommandBase {
      *  event stream (most likely because trying to produce further results won't make sense). In this case, the process
      *  must exit with a user-readable error.
      */
-    Event process(HttpEvent event) throws UserErrorException {
+    Event processHttpEvent(HttpEvent event) throws UserErrorException {
 
         httpEventCount ++;
 
@@ -271,6 +270,39 @@ public class BusinessScenarioCommand extends CommandBase {
         return s.process(event);
     }
 
+    void handleOutgoing(List<Event> outgoing) throws InterruptedException{
+
+        if (statsOnly) {
+
+            updateStatistics(outgoing);
+        }
+        else {
+
+            //
+            // send outgoing events downstream
+            //
+
+            for (Event o : outgoing) {
+
+                if (o == null) {
+                    continue;
+                }
+
+                if (ignoreFaults && o instanceof FaultEvent) {
+
+                    //
+                    // we are configured to not display faults
+                    //
+
+                    log.debug("ignoring " + o);
+                    continue;
+                }
+
+                terminatorQueue.put(o);
+            }
+        }
+    }
+
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
@@ -282,39 +314,42 @@ public class BusinessScenarioCommand extends CommandBase {
     private long aggregatedScenarioDuration = 0L;
     private FaultStats faultStats = new FaultStats();
 
-    private void updateStatistics(Event e) {
+    private void updateStatistics(List<Event> outgoing) {
 
-        if (e == null) {
-            return;
-        }
+        for(Event e: outgoing) {
 
-        if (e instanceof FaultEvent) {
-
-            faultStats.update((FaultEvent)e);
-        }
-        else if (e instanceof BusinessScenarioEvent) {
-
-            businessScenarioCount ++;
-
-            BusinessScenarioEvent bse = (BusinessScenarioEvent)e;
-
-            IntegerProperty p = bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT);
-            int requestCount = p == null ? -1 : p.getInteger();
-            if (requestCount > maxRequestsPerScenario) {
-                maxRequestsPerScenario = requestCount;
-            }
-            if (requestCount < minRequestsPerScenario) {
-                minRequestsPerScenario = requestCount;
+            if (e == null) {
+                continue;
             }
 
-            LongProperty lp = bse.getLongProperty(BusinessScenarioEvent.DURATION);
-            if (lp != null) {
-                aggregatedScenarioDuration += lp.getLong();
-            }
-        }
-        else {
+            if (e instanceof FaultEvent) {
 
-            otherEventsCount ++;
+                faultStats.update((FaultEvent) e);
+            }
+            else if (e instanceof BusinessScenarioEvent) {
+
+                businessScenarioCount++;
+
+                BusinessScenarioEvent bse = (BusinessScenarioEvent) e;
+
+                IntegerProperty p = bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT);
+                int requestCount = p == null ? -1 : p.getInteger();
+                if (requestCount > maxRequestsPerScenario) {
+                    maxRequestsPerScenario = requestCount;
+                }
+                if (requestCount < minRequestsPerScenario) {
+                    minRequestsPerScenario = requestCount;
+                }
+
+                LongProperty lp = bse.getLongProperty(BusinessScenarioEvent.DURATION);
+                if (lp != null) {
+                    aggregatedScenarioDuration += lp.getLong();
+                }
+            }
+            else {
+
+                otherEventsCount++;
+            }
         }
     }
 
@@ -340,6 +375,14 @@ public class BusinessScenarioCommand extends CommandBase {
         System.out.printf("    min requests/scenario: %d\n", minRequestsPerScenario);
         System.out.printf(" average request duration: %2.2f ms\n", averageScenarioDuration);
         System.out.printf("            HTTP sessions: %d\n", sessions.size());
+
+
+        long c = 0;
+        for(HttpSession s: sessions.values()) {
+
+            c += s.getRequestsProcessedBySessionCount();
+        }
+        System.out.printf("TOTAL REQUESTS ENTERING SESSIONS: %d\n", c);
     }
 
     // Inner classes ---------------------------------------------------------------------------------------------------

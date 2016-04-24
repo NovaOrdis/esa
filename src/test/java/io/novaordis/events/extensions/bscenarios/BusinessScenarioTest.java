@@ -411,6 +411,28 @@ public class BusinessScenarioTest {
         assertEquals("SOME-TYPE", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
     }
 
+    // setType() -------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void setType_TypeCanOnlyBeSetOnce() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+        assertNull(bs.getType());
+
+        bs.setType("something");
+        assertEquals("something", bs.getType());
+
+        bs.setType("something");
+        assertEquals("something", bs.getType());
+
+        try {
+            bs.setType("something else");
+            fail("should throw exception");
+        }
+        catch(IllegalStateException e) {
+            log.info(e.getMessage());
+        }
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

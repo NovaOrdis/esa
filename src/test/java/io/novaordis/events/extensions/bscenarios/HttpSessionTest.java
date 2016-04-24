@@ -171,7 +171,6 @@ public class HttpSessionTest {
         assertFalse(bs.isClosed());
         assertNull(bs.getType());
 
-
         BusinessScenarioEvent bse = (BusinessScenarioEvent)re;
 
         assertEquals(3, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
@@ -219,6 +218,8 @@ public class HttpSessionTest {
         assertEquals(2, bse2.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
         assertEquals(40L, bse2.getTimestamp().longValue());
         assertEquals("scenario-2", bse2.getStringProperty(BusinessScenarioEvent.TYPE).getString());
+
+        assertEquals(5, s.getRequestsProcessedBySessionCount());
     }
 
     @Test

@@ -39,6 +39,9 @@ class HttpSession {
 
     private BusinessScenario current;
 
+    private long requestsProcessedBySessionCount;
+    private long faultCount;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public HttpSession() {
@@ -82,6 +85,8 @@ class HttpSession {
             throw new UserErrorException("HTTP request " + event + " does not belong to " + this);
         }
 
+        requestsProcessedBySessionCount ++;
+
         Event result = null;
 
         try {
@@ -116,6 +121,8 @@ class HttpSession {
             //
 
             result = new FaultEvent(e.getFaultType(), e);
+
+            faultCount ++;
         }
 
         return result;
@@ -136,6 +143,15 @@ class HttpSession {
 
         return current;
     }
+
+    long getRequestsProcessedBySessionCount() {
+        return requestsProcessedBySessionCount;
+    }
+
+    long getFaultCount() {
+        return faultCount;
+    }
+
 
     // Protected -------------------------------------------------------------------------------------------------------
 
