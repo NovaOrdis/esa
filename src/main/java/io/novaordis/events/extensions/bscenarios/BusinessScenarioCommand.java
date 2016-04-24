@@ -23,15 +23,16 @@ import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.clad.option.BooleanOption;
 import io.novaordis.clad.option.Option;
 import io.novaordis.events.clad.EventsApplicationRuntime;
+import io.novaordis.events.core.EndOfStreamListener;
 import io.novaordis.events.core.OutputFormatter;
 import io.novaordis.events.core.Terminator;
 import io.novaordis.events.core.event.EndOfStreamEvent;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
 import io.novaordis.events.core.event.FaultType;
-import io.novaordis.events.core.event.IntegerProperty;
-import io.novaordis.events.core.event.LongProperty;
-import io.novaordis.events.extensions.bscenarios.stats.FaultStats;
+import io.novaordis.events.extensions.bscenarios.stats.BusinessScenarioStateStatistics;
+import io.novaordis.events.extensions.bscenarios.stats.BusinessScenarioStatistics;
+import io.novaordis.events.extensions.bscenarios.stats.FaultStatistics;
 import io.novaordis.events.httpd.FormatString;
 import io.novaordis.events.httpd.HttpEvent;
 import org.slf4j.Logger;
@@ -48,6 +49,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -158,6 +160,8 @@ public class BusinessScenarioCommand extends CommandBase {
 
         Terminator terminator = runtime.getTerminator();
 
+        final CountDownLatch rendezVous = new CountDownLatch(1);
+
         if (terminator != null) {
 
             terminator.setInputQueue(terminatorQueue);
@@ -165,11 +169,18 @@ public class BusinessScenarioCommand extends CommandBase {
             String propertiesToDisplay =
                     "timestamp, " +
                             BusinessScenarioEvent.ID + ", " +
+                            BusinessScenarioEvent.STATE + ", " +
                             BusinessScenarioEvent.REQUEST_COUNT + ", " +
-                            BusinessScenarioEvent.DURATION + ", " +
-                            BusinessScenarioEvent.STATE;
+                            BusinessScenarioEvent.DURATION;
 
             ((OutputFormatter) terminator.getConversionLogic()).setOutputFormat(propertiesToDisplay);
+
+            terminator.addEndOfStreamListener(new EndOfStreamListener() {
+                @Override
+                public void eventStreamEnded() {
+                    rendezVous.countDown();
+                }
+            });
         }
 
         runtime.start();
@@ -192,6 +203,14 @@ public class BusinessScenarioCommand extends CommandBase {
 
         if (statsOnly) {
             displayStatistics();
+        }
+        else {
+
+            //
+            // wait until terminator finishes its queue
+            //
+            rendezVous.await();
+
         }
     }
 
@@ -231,6 +250,7 @@ public class BusinessScenarioCommand extends CommandBase {
                 outgoing.add(bs.toEvent());
             }
 
+            outgoing.add(new EndOfStreamEvent());
             return outgoing;
         }
 
@@ -326,12 +346,9 @@ public class BusinessScenarioCommand extends CommandBase {
 
     // Private ---------------------------------------------------------------------------------------------------------
 
-    private long businessScenarioCount;
     private long otherEventsCount;
-    private int maxRequestsPerScenario = 0;
-    private int minRequestsPerScenario = Integer.MAX_VALUE;
-    private long aggregatedScenarioDuration = 0L;
-    private FaultStats faultStats = new FaultStats();
+    private BusinessScenarioStatistics bsStats = new BusinessScenarioStatistics();
+    private FaultStatistics faultStats = new FaultStatistics();
 
     private void updateStatistics(List<Event> outgoing) {
 
@@ -347,23 +364,7 @@ public class BusinessScenarioCommand extends CommandBase {
             }
             else if (e instanceof BusinessScenarioEvent) {
 
-                businessScenarioCount++;
-
-                BusinessScenarioEvent bse = (BusinessScenarioEvent) e;
-
-                IntegerProperty p = bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT);
-                int requestCount = p == null ? -1 : p.getInteger();
-                if (requestCount > maxRequestsPerScenario) {
-                    maxRequestsPerScenario = requestCount;
-                }
-                if (requestCount < minRequestsPerScenario) {
-                    minRequestsPerScenario = requestCount;
-                }
-
-                LongProperty lp = bse.getLongProperty(BusinessScenarioEvent.DURATION);
-                if (lp != null) {
-                    aggregatedScenarioDuration += lp.getLong();
-                }
+                bsStats.update((BusinessScenarioEvent)e);
             }
             else {
 
@@ -374,33 +375,56 @@ public class BusinessScenarioCommand extends CommandBase {
 
     private void displayStatistics() {
 
-        double requestsPerScenario =
-                ((double)(httpEventCount - faultStats.getFaultCount() - otherEventsCount))/businessScenarioCount;
-        double averageScenarioDuration = ((double)aggregatedScenarioDuration)/businessScenarioCount;
-
         System.out.printf("Counters\n");
-        System.out.printf("       business scenarios: %d\n", businessScenarioCount);
+
+        Set<BusinessScenarioState> bsStates = bsStats.getBusinessScenarioStates();
+
+        System.out.printf("       business scenarios: %d (%d different states)\n",
+                bsStats.getBusinessScenarioCount(), bsStates.size());
+
+        //
+        // always start by reporting "CLOSED_NORMALLY" scenarios, those are theo most important
+        //
+        displayScenarioStatsPerState(BusinessScenarioState.CLOSED_NORMALLY);
+
+        //
+        // then loop through the others
+        //
+
+        for(BusinessScenarioState s: bsStates) {
+            if (s.equals(BusinessScenarioState.CLOSED_NORMALLY)) {
+                // already reported
+                continue;
+            }
+            displayScenarioStatsPerState(s);
+        }
+
+        System.out.println();
         System.out.printf("                   faults: %d (%d different types)\n",
                 faultStats.getFaultCount(), faultStats.getFaultTypeCount());
 
         Set<FaultType> faultTypes = faultStats.getFaultTypes();
+
         for(FaultType ft: faultTypes) {
             System.out.printf("                             %s: %d\n", ft, faultStats.getCountPerType(ft));
         }
-        System.out.printf("             other events: %d\n", otherEventsCount);
-        System.out.printf("            HTTP requests: %d\n", httpEventCount);
-        System.out.printf("        requests/scenario: %2.2f\n", requestsPerScenario);
-        System.out.printf("    max requests/scenario: %d\n", maxRequestsPerScenario);
-        System.out.printf("    min requests/scenario: %d\n", minRequestsPerScenario);
-        System.out.printf(" average request duration: %2.2f ms\n", averageScenarioDuration);
-        System.out.printf("            HTTP sessions: %d\n", sessions.size());
 
         System.out.println();
+        System.out.printf("             other events: %d\n", otherEventsCount);
+        System.out.printf("            HTTP requests: %d\n", httpEventCount);
+        System.out.printf("            HTTP sessions: %d\n", sessions.size());
+    }
 
-        for(HttpSession s: sessions.values()) {
+    private void displayScenarioStatsPerState(BusinessScenarioState state) {
 
-            System.out.println(s + ": " + s.getCurrentBusinessScenario());
-        }
+        BusinessScenarioStateStatistics s = bsStats.getBusinessScenarioStatisticsPerState(state);
+        long counterPerState = s.getBusinessScenarioCount();
+
+        System.out.printf(
+                "                             %s: %d, duration min/avg/max: %d/%d/%d ms, reqs/scenario min/avg/max: %d/%2.2f/%d\n",
+                state.name(), counterPerState,
+                s.getMinDurationMs(), s.getAverageDurationMs(), s.getMaxDurationMs(),
+                s.getMinRequestsPerScenario(), s.getAverageRequestsPerScenario(), s.getMaxRequestsPerScenario());
     }
 
     // Inner classes ---------------------------------------------------------------------------------------------------

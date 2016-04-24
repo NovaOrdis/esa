@@ -14,85 +14,75 @@
  * limitations under the License.
  */
 
-package io.novaordis.events.extensions.bscenarios.stats;
+package io.novaordis.events.extensions.bscenarios;
 
-import io.novaordis.events.core.event.FaultEvent;
-import io.novaordis.events.core.event.FaultType;
+import io.novaordis.events.core.event.TimedEvent;
+import io.novaordis.events.core.event.TimedEventTest;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 4/23/16
  */
-public class FaultStats {
+public class BusinessScenarioEventTest extends TimedEventTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(BusinessScenarioEventTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private long faultCount;
-
-    private Map<FaultType, Integer> faultPerType;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public FaultStats() {
-
-        this.faultPerType = new HashMap<>();
-    }
+    // Overrides -------------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public void update(FaultEvent e) {
+    @Test
+    public void getState_NoState() throws Exception {
 
-        faultCount ++;
+        BusinessScenarioEvent bse = getEventToTest(1L);
+        assertNull(bse.getState());
+    }
 
-        FaultType type = e.getType();
+    @Test
+    public void getState_InvalidState() throws Exception {
 
-        Integer count = faultPerType.get(type);
+        BusinessScenarioEvent bse = getEventToTest(1L);
+        bse.setStringProperty(BusinessScenarioEvent.STATE, "I-am-pretty-sure-there-is-no-such-value-in-enum");
 
-        if (count == null) {
-            count = 1;
+        try {
+            bse.getState();
+            fail("should have thrown exception");
         }
-        else {
-            count = count + 1;
+        catch(IllegalStateException e) {
+
+            String msg = e.getMessage();
+            log.info(msg);
+            assertTrue(msg.matches(
+                    ".* carries an invalid BusinessScenarioState value \"I-am-pretty-sure-there-is-no-such-value-in-enum\""));
+
+            Throwable t = e.getCause();
+            assertTrue(t instanceof IllegalArgumentException);
         }
-        faultPerType.put(type, count);
     }
-
-    public long getFaultCount() {
-
-        return faultCount;
-    }
-
-    public int getFaultTypeCount() {
-        return faultPerType.size();
-    }
-
-    public Set<FaultType> getFaultTypes() {
-        return faultPerType.keySet();
-    }
-
-    public int getCountPerType(FaultType t) {
-
-        Integer c = faultPerType.get(t);
-
-        if (c == null) {
-            return 0;
-        }
-
-        return c;
-    }
-
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected BusinessScenarioEvent getEventToTest(Long timestamp) throws Exception {
+        return new BusinessScenarioEvent(timestamp);
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

@@ -194,7 +194,7 @@ public class BusinessScenario {
             }
 
             endTimestamp = event.getTimestamp() + (requestDuration == null ? 0 : requestDuration);
-            setState(BusinessScenarioState.CLOSED);
+            setState(BusinessScenarioState.CLOSED_NORMALLY);
         }
 
         if (requestDuration == null) {
@@ -209,7 +209,7 @@ public class BusinessScenario {
     /**
      * Forcibly closes a business scenario in a NEW or ACTIVE state (closing a NEW scenario is a noop).
      *
-     * A CLOSED instance cannot be closed, will throw an IllegalArgumentException.
+     * A CLOSED_NORMALLY instance cannot be closed, will throw an IllegalArgumentException.
      *
      * @exception IllegalArgumentException on attempt to close an already closed instance.
      */

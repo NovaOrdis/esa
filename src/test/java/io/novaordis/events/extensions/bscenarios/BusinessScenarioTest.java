@@ -237,7 +237,7 @@ public class BusinessScenarioTest {
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(11L, bs.getEndTimestamp());
         assertTrue(bs.isClosed());
-        assertEquals(BusinessScenarioState.CLOSED, bs.getState());
+        assertEquals(BusinessScenarioState.CLOSED_NORMALLY, bs.getState());
 
         HttpEvent e3 = new HttpEvent(7L);
 
@@ -249,7 +249,7 @@ public class BusinessScenarioTest {
             log.info(ex.getMessage());
         }
 
-        assertEquals(BusinessScenarioState.CLOSED, bs.getState());
+        assertEquals(BusinessScenarioState.CLOSED_NORMALLY, bs.getState());
     }
 
     @Test
@@ -279,7 +279,7 @@ public class BusinessScenarioTest {
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(11L, bs.getEndTimestamp());
         assertTrue(bs.isClosed());
-        assertEquals(BusinessScenarioState.CLOSED, bs.getState());
+        assertEquals(BusinessScenarioState.CLOSED_NORMALLY, bs.getState());
 
         HttpEvent e3 = new HttpEvent(7L);
 
@@ -291,7 +291,7 @@ public class BusinessScenarioTest {
             log.info(ex.getMessage());
         }
 
-        assertEquals(BusinessScenarioState.CLOSED, bs.getState());
+        assertEquals(BusinessScenarioState.CLOSED_NORMALLY, bs.getState());
     }
 
     @Test
@@ -413,7 +413,7 @@ public class BusinessScenarioTest {
         assertEquals(15L, bse.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
         assertEquals(2, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
         assertEquals("TYPE-A", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
-        assertEquals(BusinessScenarioState.CLOSED.name(),
+        assertEquals(BusinessScenarioState.CLOSED_NORMALLY.name(),
                 bse.getStringProperty(BusinessScenarioEvent.STATE).getValue());
     }
 
@@ -519,7 +519,7 @@ public class BusinessScenarioTest {
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TEST");
         assertTrue(bs.update(e));
 
-        assertEquals(BusinessScenarioState.CLOSED, bs.getState());
+        assertEquals(BusinessScenarioState.CLOSED_NORMALLY, bs.getState());
 
         try {
             bs.close();
@@ -529,7 +529,7 @@ public class BusinessScenarioTest {
             log.info(ex.getMessage());
         }
 
-        assertEquals(BusinessScenarioState.CLOSED, bs.getState());
+        assertEquals(BusinessScenarioState.CLOSED_NORMALLY, bs.getState());
     }
 
     @Test

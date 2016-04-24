@@ -36,7 +36,7 @@ public enum BusinessScenarioState {
     //
     // the scenario has been closed normally by an STOP marker and it contains valid data
     //
-    CLOSED,
+    CLOSED_NORMALLY,
 
 
     //

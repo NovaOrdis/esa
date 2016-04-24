@@ -14,59 +14,81 @@
  * limitations under the License.
  */
 
-package io.novaordis.events.extensions.bscenarios;
+package io.novaordis.events.extensions.bscenarios.stats;
 
-import io.novaordis.events.core.event.GenericTimedEvent;
-import io.novaordis.events.core.event.StringProperty;
+import io.novaordis.events.core.event.FaultEvent;
+import io.novaordis.events.core.event.FaultType;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/4/16
+ * @since 4/23/16
  */
-public class BusinessScenarioEvent extends GenericTimedEvent {
+public class FaultStatistics {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final String ID = "id";
-    public static final String DURATION = "duration";
-    public static final String REQUEST_COUNT = "request-count";
-    public static final String TYPE = "type";
-    public static final String STATE = "state";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private long faultCount;
+
+    private Map<FaultType, Integer> faultPerType;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    protected BusinessScenarioEvent(Long timestamp) {
-        super(timestamp);
+    public FaultStatistics() {
+
+        this.faultPerType = new HashMap<>();
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    /**
-     * @return may return null if the state is not stored in the event, or it may throw
-     * IllegalStateException if the event carries an invalid state.
-     *
-     * @exception IllegalStateException
-     */
-    public BusinessScenarioState getState() {
+    public void update(FaultEvent e) {
 
-        StringProperty sp = getStringProperty(BusinessScenarioEvent.STATE);
-        String s = sp == null ? null : sp.getString();
+        faultCount ++;
 
-        if (s == null) {
-            return null;
-        }
+        FaultType type = e.getType();
 
-        try {
-            return BusinessScenarioState.valueOf(s);
+        Integer count = faultPerType.get(type);
+
+        if (count == null) {
+            count = 1;
         }
-        catch(Exception e) {
-            throw new IllegalStateException(this + " carries an invalid BusinessScenarioState value \"" + s + "\"", e);
+        else {
+            count = count + 1;
         }
+        faultPerType.put(type, count);
     }
+
+    public long getFaultCount() {
+
+        return faultCount;
+    }
+
+    public int getFaultTypeCount() {
+        return faultPerType.size();
+    }
+
+    public Set<FaultType> getFaultTypes() {
+        return faultPerType.keySet();
+    }
+
+    public int getCountPerType(FaultType t) {
+
+        Integer c = faultPerType.get(t);
+
+        if (c == null) {
+            return 0;
+        }
+
+        return c;
+    }
+
 
     // Package protected -----------------------------------------------------------------------------------------------
 

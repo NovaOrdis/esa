@@ -14,58 +14,76 @@
  * limitations under the License.
  */
 
-package io.novaordis.events.extensions.bscenarios;
+package io.novaordis.events.extensions.bscenarios.stats;
 
-import io.novaordis.events.core.event.GenericTimedEvent;
-import io.novaordis.events.core.event.StringProperty;
+import io.novaordis.events.extensions.bscenarios.BusinessScenarioEvent;
+import io.novaordis.events.extensions.bscenarios.BusinessScenarioState;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/4/16
+ * @since 4/23/16
  */
-public class BusinessScenarioEvent extends GenericTimedEvent {
+public class BusinessScenarioStatistics {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final String ID = "id";
-    public static final String DURATION = "duration";
-    public static final String REQUEST_COUNT = "request-count";
-    public static final String TYPE = "type";
-    public static final String STATE = "state";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private Map<BusinessScenarioState, BusinessScenarioStateStatistics> statsPerState;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    protected BusinessScenarioEvent(Long timestamp) {
-        super(timestamp);
+    public BusinessScenarioStatistics() {
+
+        this.statsPerState = new HashMap<>();
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    public void update(BusinessScenarioEvent bse) {
+
+        BusinessScenarioState state = bse.getState();
+        BusinessScenarioStateStatistics bsss = statsPerState.get(state);
+
+        if (bsss == null) {
+            bsss = new BusinessScenarioStateStatistics(state);
+            statsPerState.put(state, bsss);
+        }
+
+        bsss.update(bse);
+    }
+
     /**
-     * @return may return null if the state is not stored in the event, or it may throw
-     * IllegalStateException if the event carries an invalid state.
-     *
-     * @exception IllegalStateException
+     * @return the total number of business scenarios that entered the statistics instance so far
      */
-    public BusinessScenarioState getState() {
+    public long getBusinessScenarioCount() {
 
-        StringProperty sp = getStringProperty(BusinessScenarioEvent.STATE);
-        String s = sp == null ? null : sp.getString();
+        long c = 0;
+        for(BusinessScenarioStateStatistics s: statsPerState.values()) {
 
-        if (s == null) {
-            return null;
+            c += s.getBusinessScenarioCount();
         }
 
-        try {
-            return BusinessScenarioState.valueOf(s);
-        }
-        catch(Exception e) {
-            throw new IllegalStateException(this + " carries an invalid BusinessScenarioState value \"" + s + "\"", e);
-        }
+        return c;
+    }
+
+    public Set<BusinessScenarioState> getBusinessScenarioStates() {
+
+        return statsPerState.keySet();
+    }
+
+    /**
+     * May return null if no such state is known.
+     */
+    public BusinessScenarioStateStatistics getBusinessScenarioStatisticsPerState(BusinessScenarioState s) {
+
+        return statsPerState.get(s);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
