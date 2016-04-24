@@ -45,7 +45,7 @@ public class MockLineParser implements LineParser {
     }
 
     @Override
-    public Event parseLine(String line) throws ParsingException {
+    public Event parseLine(long lineNumber, String line) throws ParsingException {
 
         if (VALID_LINE.equals(line)) {
 

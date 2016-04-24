@@ -107,6 +107,12 @@ public class EventProcessor extends ComponentBase implements Component {
         return logic;
     }
 
+    @Override
+    public String toString() {
+
+        return "EventProcessor[" + logic + "]";
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

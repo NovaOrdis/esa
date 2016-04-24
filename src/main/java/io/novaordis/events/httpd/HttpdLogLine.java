@@ -16,6 +16,7 @@
 
 package io.novaordis.events.httpd;
 
+import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.StringProperty;
 
@@ -38,6 +39,8 @@ public class HttpdLogLine {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private long lineNumber;
+
     private Map<FormatString, Object> values;
 
     // Constructors ----------------------------------------------------------------------------------------------------
@@ -48,6 +51,14 @@ public class HttpdLogLine {
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public void setLineNumber(long lineNumber) {
+        this.lineNumber = lineNumber;
+    }
+
+    public long getLineNumber() {
+        return lineNumber;
+    }
 
     /**
      * @return the value corresponding to the specified format element or null if there is no corresponding value
@@ -183,6 +194,10 @@ public class HttpdLogLine {
 //        }
 
         HttpEvent httpEvent = new HttpEvent(timestamp);
+
+        if (lineNumber > 0) {
+            httpEvent.setLongProperty(Event.LINE_NUMBER_PROPERTY_NAME, lineNumber);
+        }
 
         Set<FormatString> formatStrings = getFormatStrings();
 

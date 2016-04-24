@@ -16,6 +16,7 @@
 
 package io.novaordis.events.httpd;
 
+import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.IntegerProperty;
 import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.StringProperty;
@@ -140,6 +141,17 @@ public class HttpdLogLineTest {
         assertEquals(FormatStrings.TIMESTAMP, formatStrings.iterator().next());
     }
 
+    // setLineNumber() -------------------------------------------------------------------------------------------------
+
+    @Test
+    public void setLineNumber() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+        assertEquals(0, e.getLineNumber());
+        e.setLineNumber(7L);
+        assertEquals(7L, e.getLineNumber());
+    }
+
     // toEvent() -------------------------------------------------------------------------------------------------------
 
     @Test
@@ -168,6 +180,8 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
+        e.setLineNumber(7L);
+
         e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
         e.setLogValue(FormatStrings.FIRST_REQUEST_LINE, "PUT /test/ HTTP/1.1");
         e.setLogValue(FormatStrings.ORIGINAL_REQUEST_STATUS_CODE, 404);
@@ -182,9 +196,9 @@ public class HttpdLogLineTest {
         assertEquals(404, ((IntegerProperty)event.
                 getProperty(HttpEvent.ORIGINAL_REQUEST_STATUS_CODE)).getInteger().intValue());
         assertNull(event.getProperty(HttpEvent.STATUS_CODE));
-        assertEquals("some thread name XXX-100", ((StringProperty)event.getProperty(HttpEvent.THREAD_NAME)).getString());
+        assertEquals("some thread name XXX-100", ((StringProperty) event.getProperty(HttpEvent.THREAD_NAME)).getString());
 
-        // "default task-1" 127.0.0.1 - "Module=CentricIdentityProvider&Operation=Login&LoginID=Administrator&Password=centric8" 74 27
+        assertEquals(7L, event.getLongProperty(Event.LINE_NUMBER_PROPERTY_NAME).getLong().longValue());
     }
 
     @Test

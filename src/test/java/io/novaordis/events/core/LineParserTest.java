@@ -20,6 +20,7 @@ import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 /**
@@ -45,9 +46,11 @@ public abstract class LineParserTest {
         LineParser lp = getLineParserToTest(format);
         String line = getValidLineForLineParserToTest();
 
-        Event e = lp.parseLine(line);
+        Event e = lp.parseLine(7L, line);
 
         assertFalse(e instanceof FaultEvent);
+
+        assertEquals(7L, e.getLongProperty(Event.LINE_NUMBER_PROPERTY_NAME).getLong().longValue());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

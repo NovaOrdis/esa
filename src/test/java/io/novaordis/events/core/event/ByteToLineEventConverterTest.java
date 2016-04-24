@@ -16,7 +16,6 @@
 
 package io.novaordis.events.core.event;
 
-import io.novaordis.events.core.InputStreamConversionLogic;
 import io.novaordis.events.core.InputStreamConversionLogicTest;
 import org.junit.Test;
 

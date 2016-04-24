@@ -18,9 +18,12 @@ package io.novaordis.events.csv;
 
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.LineParserTest;
+import io.novaordis.events.core.event.Event;
+import io.novaordis.events.core.event.EventTest;
 import io.novaordis.events.core.event.GenericEvent;
 import io.novaordis.events.core.event.GenericTimedEvent;
 import io.novaordis.events.core.event.IntegerProperty;
+import io.novaordis.events.core.event.LongProperty;
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.StringProperty;
 import org.junit.Test;
@@ -186,22 +189,26 @@ public class CsvLineParserTest extends LineParserTest {
 
         CsvLineParser parser = new CsvLineParser("a, b, c");
 
-        GenericEvent event = (GenericEvent)parser.parseLine("A, B, C");
+        GenericEvent event = (GenericEvent)parser.parseLine(7L, "A, B, C");
         assertNotNull(event);
 
         List<Property> properties = event.getPropertyList();
 
-        assertEquals(3, properties.size());
+        assertEquals(4, properties.size());
 
-        StringProperty p = (StringProperty)properties.get(0);
+        LongProperty p0 = (LongProperty)properties.get(0);
+        assertEquals(Event.LINE_NUMBER_PROPERTY_NAME, p0.getName());
+        assertEquals(7L, p0.getValue());
+
+        StringProperty p = (StringProperty)properties.get(1);
         assertEquals("a", p.getName());
         assertEquals("A", p.getValue());
 
-        StringProperty p2 = (StringProperty)properties.get(1);
+        StringProperty p2 = (StringProperty)properties.get(2);
         assertEquals("b", p2.getName());
         assertEquals("B", p2.getValue());
 
-        StringProperty p3 = (StringProperty)properties.get(2);
+        StringProperty p3 = (StringProperty)properties.get(3);
         assertEquals("c", p3.getName());
         assertEquals("C", p3.getValue());
     }
@@ -211,22 +218,26 @@ public class CsvLineParserTest extends LineParserTest {
 
         CsvLineParser parser = new CsvLineParser("a, b, c");
 
-        GenericEvent event = (GenericEvent)parser.parseLine("A, B, C, D");
+        GenericEvent event = (GenericEvent)parser.parseLine(7L, "A, B, C, D");
         assertNotNull(event);
 
         List<Property> properties = event.getPropertyList();
 
-        assertEquals(3, properties.size());
+        assertEquals(4, properties.size());
 
-        StringProperty p = (StringProperty)properties.get(0);
+        LongProperty p0 = (LongProperty)properties.get(0);
+        assertEquals(Event.LINE_NUMBER_PROPERTY_NAME, p0.getName());
+        assertEquals(7L, p0.getValue());
+
+        StringProperty p = (StringProperty)properties.get(1);
         assertEquals("a", p.getName());
         assertEquals("A", p.getValue());
 
-        StringProperty p2 = (StringProperty)properties.get(1);
+        StringProperty p2 = (StringProperty)properties.get(2);
         assertEquals("b", p2.getName());
         assertEquals("B", p2.getValue());
 
-        StringProperty p3 = (StringProperty)properties.get(2);
+        StringProperty p3 = (StringProperty)properties.get(3);
         assertEquals("c", p3.getName());
         assertEquals("C", p3.getValue());
     }
@@ -236,41 +247,48 @@ public class CsvLineParserTest extends LineParserTest {
 
         CsvLineParser parser = new CsvLineParser("a, b, c");
 
-        GenericEvent event = (GenericEvent)parser.parseLine("A, B");
+        GenericEvent event = (GenericEvent)parser.parseLine(1L, "A, B");
         assertNotNull(event);
 
         List<Property> properties = event.getPropertyList();
 
-        assertEquals(2, properties.size());
+        assertEquals(3, properties.size());
 
-        StringProperty p = (StringProperty)properties.get(0);
+        LongProperty p0 = (LongProperty)properties.get(0);
+        assertEquals(Event.LINE_NUMBER_PROPERTY_NAME, p0.getName());
+        assertEquals(1L, p0.getValue());
+
+        StringProperty p = (StringProperty)properties.get(1);
         assertEquals("a", p.getName());
         assertEquals("A", p.getValue());
 
-        StringProperty p2 = (StringProperty)properties.get(1);
+        StringProperty p2 = (StringProperty)properties.get(2);
         assertEquals("b", p2.getName());
         assertEquals("B", p2.getValue());
     }
-
 
     @Test
     public void parse_UntimedEvent() throws Exception {
 
         CsvLineParser parser = new CsvLineParser("brand(string), count(int)");
 
-        GenericEvent event = (GenericEvent)parser.parseLine("Audi, 5");
+        GenericEvent event = (GenericEvent)parser.parseLine(5L, "Audi, 5");
 
         assertNotNull(event);
 
         List<Property> properties = event.getPropertyList();
 
-        assertEquals(2, properties.size());
+        assertEquals(3, properties.size());
 
-        StringProperty p = (StringProperty)properties.get(0);
+        LongProperty p0 = (LongProperty)properties.get(0);
+        assertEquals(Event.LINE_NUMBER_PROPERTY_NAME, p0.getName());
+        assertEquals(5L, p0.getValue());
+
+        StringProperty p = (StringProperty)properties.get(1);
         assertEquals("brand", p.getName());
         assertEquals("Audi", p.getValue());
 
-        IntegerProperty p2 = (IntegerProperty)properties.get(1);
+        IntegerProperty p2 = (IntegerProperty)properties.get(2);
         assertEquals("count", p2.getName());
         assertEquals(5, p2.getValue());
     }
@@ -280,7 +298,7 @@ public class CsvLineParserTest extends LineParserTest {
 
         CsvLineParser parser = new CsvLineParser("T(time:MMM-dd yyyy HH:mm:ss), brand(string), count(int)");
 
-        GenericTimedEvent event = (GenericTimedEvent)parser.parseLine("Jan-01 2016 12:01:01, BMW, 7");
+        GenericTimedEvent event = (GenericTimedEvent)parser.parseLine(1L, "Jan-01 2016 12:01:01, BMW, 7");
         assertNotNull(event);
 
         Long timestamp = event.getTimestamp();
@@ -289,13 +307,17 @@ public class CsvLineParserTest extends LineParserTest {
 
         List<Property> properties = event.getPropertyList();
 
-        assertEquals(2, properties.size());
+        assertEquals(3, properties.size());
 
-        StringProperty p = (StringProperty)properties.get(0);
+        LongProperty p0 = (LongProperty)properties.get(0);
+        assertEquals(Event.LINE_NUMBER_PROPERTY_NAME, p0.getName());
+        assertEquals(1L, p0.getValue());
+
+        StringProperty p = (StringProperty)properties.get(1);
         assertEquals("brand", p.getName());
         assertEquals("BMW", p.getValue());
 
-        IntegerProperty p2 = (IntegerProperty)properties.get(1);
+        IntegerProperty p2 = (IntegerProperty)properties.get(2);
         assertEquals("count", p2.getName());
         assertEquals(7, p2.getValue());
     }
@@ -305,7 +327,7 @@ public class CsvLineParserTest extends LineParserTest {
 
         CsvLineParser parser = new CsvLineParser("brand(string), T(time:MMM-dd yyyy HH:mm:ss), count(int)");
 
-        GenericTimedEvent event = (GenericTimedEvent)parser.parseLine("BMW, Jan-01 2016 12:01:01, 7");
+        GenericTimedEvent event = (GenericTimedEvent)parser.parseLine(1L, "BMW, Jan-01 2016 12:01:01, 7");
         assertNotNull(event);
 
         Long timestamp = event.getTimestamp();
@@ -314,13 +336,17 @@ public class CsvLineParserTest extends LineParserTest {
 
         List<Property> properties = event.getPropertyList();
 
-        assertEquals(2, properties.size());
+        assertEquals(3, properties.size());
 
-        StringProperty p = (StringProperty)properties.get(0);
+        LongProperty p0 = (LongProperty)properties.get(0);
+        assertEquals(Event.LINE_NUMBER_PROPERTY_NAME, p0.getName());
+        assertEquals(1L, p0.getValue());
+
+        StringProperty p = (StringProperty)properties.get(1);
         assertEquals("brand", p.getName());
         assertEquals("BMW", p.getValue());
 
-        IntegerProperty p2 = (IntegerProperty)properties.get(1);
+        IntegerProperty p2 = (IntegerProperty)properties.get(2);
         assertEquals("count", p2.getName());
         assertEquals(7, p2.getValue());
     }

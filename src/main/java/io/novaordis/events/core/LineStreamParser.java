@@ -72,17 +72,22 @@ public class LineStreamParser extends ProcessingLogicBase {
             return new FaultEvent(this + " does not know how to handle " + e);
         }
 
-        String line = ((LineEvent)e).get();
+        LineEvent le = (LineEvent)e;
+        String line = le.get();
+        long lineNumber = le.getLineNumber();
 
         if (lineParser == null) {
+
             //
-            // not a Fault, but an invalid state, the pipeline was not assembled correctly
+            // not a Fault, but an invalid state, the pipeline was not assembled correctly, so bubble it up instead of
+            // downstream
             //
             throw new IllegalStateException(this + " has a null line parser");
         }
 
         try {
-            return lineParser.parseLine(line);
+
+            return lineParser.parseLine(lineNumber, line);
         }
         catch(Exception ex) {
             // parsing failure, propagate as FaultEvent
@@ -98,6 +103,12 @@ public class LineStreamParser extends ProcessingLogicBase {
 
     public LineParser getLineParser() {
         return lineParser;
+    }
+
+    @Override
+    public String toString() {
+
+        return "LineStreamParser[" + lineParser + "]";
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

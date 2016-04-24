@@ -22,6 +22,7 @@ import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.GenericEvent;
 import io.novaordis.events.core.event.GenericTimedEvent;
+import io.novaordis.events.core.event.LongProperty;
 import io.novaordis.events.core.event.Property;
 
 import java.text.DateFormat;
@@ -93,19 +94,25 @@ public class CsvLineParser implements LineParser {
     }
 
     @Override
-    public Event parseLine(String line) throws ParsingException {
+    public Event parseLine(long lineNumber, String line) throws ParsingException {
 
         Event event;
+
         if (timestampFieldIndex >= 0) {
+
             event = new GenericTimedEvent();
         }
         else {
+
             event = new GenericEvent();
         }
+
+        event.setProperty(new LongProperty(Event.LINE_NUMBER_PROPERTY_NAME, lineNumber));
 
         int headerIndex = 0;
 
         for(StringTokenizer st = new StringTokenizer(line, ",");
+
             st.hasMoreTokens() && headerIndex < headers.size();
             headerIndex ++) {
 

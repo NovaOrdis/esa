@@ -94,7 +94,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         HttpdLineParser parser = new HttpdLineParser("[]");
 
-        HttpEvent e = (HttpEvent)parser.parseLine(line);
+        HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
         assertNotNull(e);
         assertNull(e.getTimestamp());
     }
@@ -106,9 +106,10 @@ public class HttpdLineParserTest extends LineParserTest {
 
         HttpdLineParser parser = new HttpdLineParser("\"\"");
 
-        HttpEvent e = (HttpEvent)parser.parseLine(line);
+        HttpEvent e = (HttpEvent)parser.parseLine(7L, line);
         assertNotNull(e);
         assertNull(e.getTimestamp());
+        assertEquals(7L, e.getLongProperty(Event.LINE_NUMBER_PROPERTY_NAME).getLong().longValue());
     }
 
     @Test
@@ -118,7 +119,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         HttpdLineParser parser = new HttpdLineParser(HttpdLogFormat.COMMON);
 
-        HttpEvent e = (HttpEvent)parser.parseLine(line);
+        HttpEvent e = (HttpEvent)parser.parseLine(7L, line);
         assertEquals("127.0.0.1", e.getRemoteHost());
         assertNull(e.getRemoteLogname());
         assertEquals("bob", e.getRemoteUser());
@@ -126,6 +127,7 @@ public class HttpdLineParserTest extends LineParserTest {
         assertEquals("GET /test.gif HTTP/1.1", e.getFirstRequestLine());
         assertEquals(200, e.getStatusCode().intValue());
         assertEquals(1024, e.getResponseEntityBodySize().longValue());
+        assertEquals(7L, e.getLongProperty(Event.LINE_NUMBER_PROPERTY_NAME).getLong().longValue());
     }
 
     @Test
@@ -135,7 +137,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         HttpdLineParser parser = new HttpdLineParser(HttpdLogFormat.COMMON);
 
-        HttpEvent e = (HttpEvent)parser.parseLine(line);
+        HttpEvent e = (HttpEvent)parser.parseLine(7L, line);
         assertEquals("172.20.2.41", e.getRemoteHost());
         assertNull(e.getRemoteLogname());
         assertNull(e.getRemoteUser());
@@ -143,6 +145,8 @@ public class HttpdLineParserTest extends LineParserTest {
         assertEquals("OPTIONS * HTTP/1.0", e.getFirstRequestLine());
         assertEquals(200, e.getStatusCode().intValue());
         assertNull(e.getResponseEntityBodySize());
+        assertEquals(7L, e.getLongProperty(Event.LINE_NUMBER_PROPERTY_NAME).getLong().longValue());
+
     }
 
     @Test
@@ -164,7 +168,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         HttpdLineParser parser = new HttpdLineParser(format);
 
-        HttpEvent e = (HttpEvent)parser.parseLine(line);
+        HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
         assertEquals("127.0.0.1", e.getRemoteHost());
         assertNull(e.getRemoteLogname());
         assertEquals("bob", e.getRemoteUser());
@@ -182,7 +186,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         HttpdLineParser parser = new HttpdLineParser(HttpdLogFormat.PERFORMANCE_ANALYSIS);
 
-        HttpEvent e = (HttpEvent)parser.parseLine(line);
+        HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
 
         assertEquals("default task-1", e.getThreadName());
         assertEquals("127.0.0.1", e.getRemoteHost());
@@ -209,7 +213,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         HttpdLineParser parser = new HttpdLineParser(FormatStrings.THREAD_NAME, FormatStrings.REMOTE_HOST);
 
-        HttpEvent e = (HttpEvent)parser.parseLine(line);
+        HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
 
         assertEquals("default", e.getThreadName());
         assertEquals("task-1", e.getRemoteHost());
@@ -223,7 +227,7 @@ public class HttpdLineParserTest extends LineParserTest {
         HttpdLineParser parser = new HttpdLineParser(HttpdLogFormat.COMMON);
 
         try {
-            parser.parseLine(line);
+            parser.parseLine(1L, line);
             fail("should have thrown exception");
         }
         catch(ParsingException e) {
@@ -239,9 +243,9 @@ public class HttpdLineParserTest extends LineParserTest {
 
         HttpdLineParser parser = new HttpdLineParser(FormatStrings.REMOTE_HOST);
 
-        HttpEvent e = (HttpEvent)parser.parseLine(line);
+        HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
 
-        assertEquals(1, e.getProperties().size());
+        assertEquals(2, e.getProperties().size());
         assertEquals("127.0.0.1", e.getRemoteHost());
         assertNull(e.getTimestamp());
         assertNull(e.getRemoteUser());
@@ -257,7 +261,7 @@ public class HttpdLineParserTest extends LineParserTest {
                 FormatStrings.FIRST_REQUEST_LINE,
                 FormatStrings.SINGLE_QUOTE);
 
-        HttpEvent e = (HttpEvent)parser.parseLine(line);
+        HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
         assertEquals("GET /test.gif HTTP/1.1", e.getFirstRequestLine());
     }
 

@@ -81,9 +81,11 @@ public class HttpdLineParser implements LineParser {
     }
 
     @Override
-    public Event parseLine(String line) throws ParsingException {
+    public Event parseLine(long lineNumber, String line) throws ParsingException {
 
-        HttpdLogLine e = new HttpdLogLine();
+        HttpdLogLine logLine = new HttpdLogLine();
+
+        logLine.setLineNumber(lineNumber);
 
         //
         // we don't perform a match against an aggregated format that would match the entire line because we also want
@@ -148,14 +150,14 @@ public class HttpdLineParser implements LineParser {
             i = i == -1 ? line.length() : i;
             String value = line.substring(cursor, i);
             Object o = fe.parse(value);
-            e.setLogValue(fe, o);
+            logLine.setLogValue(fe, o);
 
             // advance the cursor to the next non-blank character
             while(i < line.length() && line.charAt(i) == ' ') { i++; }
             cursor = i;
         }
 
-        return e.toEvent();
+        return logLine.toEvent();
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

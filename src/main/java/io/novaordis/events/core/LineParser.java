@@ -33,7 +33,7 @@ public interface LineParser {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    Event parseLine(String line) throws ParsingException;
+    Event parseLine(long lineNumber, String line) throws ParsingException;
 
     LineFormat getLineFormat();
 
