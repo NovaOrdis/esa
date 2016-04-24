@@ -16,6 +16,7 @@
 
 package io.novaordis.events.extensions.bscenarios;
 
+import io.novaordis.events.core.event.EndOfStreamEvent;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
 import io.novaordis.events.core.event.IntegerProperty;
@@ -51,6 +52,53 @@ public class BusinessScenarioCommandTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     // process() -------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void process_EndOfStream() throws Exception {
+
+        BusinessScenarioCommand c = new BusinessScenarioCommand();
+
+        c.process(new EndOfStreamEvent());
+
+
+
+//        //noinspection Convert2Lambda,Anonymous2MethodRef
+//        c.setHttpSessionFactory(new HttpSessionFactory() {
+//            @Override
+//            public HttpSession create() {
+//                return new MockHttpSession();
+//            }
+//        });
+//
+//        HttpEvent e = new HttpEvent(10L);
+//        e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+//        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
+//        e.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
+//
+//        assertNull(c.processHttpEvent(e));
+//
+//        HttpEvent e2 = new HttpEvent(20L);
+//        e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+//        e2.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
+//        assertNull(c.processHttpEvent(e2));
+//
+//        HttpEvent e3 = new HttpEvent(30L);
+//        e3.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
+//        e3.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
+//        e3.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
+//
+//        BusinessScenarioEvent bse = (BusinessScenarioEvent)c.processHttpEvent(e3);
+//        assertNotNull(bse);
+//
+//        IntegerProperty ip = bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT);
+//        assertEquals(3, ip.getInteger().intValue());
+//
+//        LongProperty lp = bse.getLongProperty(BusinessScenarioEvent.DURATION);
+//        assertEquals(3, lp.getLong().longValue());
+    }
+
+
+    // processHttpEvent() ----------------------------------------------------------------------------------------------
 
     @Test
     public void processHttpEvent_NoJSESSIONID() throws Exception {

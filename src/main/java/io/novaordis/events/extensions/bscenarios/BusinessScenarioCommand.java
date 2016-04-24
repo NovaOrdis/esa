@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -215,9 +216,22 @@ public class BusinessScenarioCommand extends CommandBase {
 
             //
             // handle end-of-stream, cleanup whatever in-flight state we might have when we detect the end of the input
-            // stream
+            // stream; iterate over the session list and forcibly close the active scenarios
             //
-            return Collections.emptyList();
+
+            List<Event> outgoing = new ArrayList<>();
+
+            for(HttpSession s: sessions.values()) {
+
+                BusinessScenario bs = s.getCurrentBusinessScenario();
+                if (bs.isNew()) {
+                    continue;
+                }
+                bs.close();
+                outgoing.add(bs.toEvent());
+            }
+
+            return outgoing;
         }
 
         if (incoming instanceof FaultEvent) {
@@ -385,8 +399,7 @@ public class BusinessScenarioCommand extends CommandBase {
 
         for(HttpSession s: sessions.values()) {
 
-            BusinessScenario bs = s.getCurrentBusinessScenario();
-            System.out.println(s + " has " + (bs.isActive() ? "an active" : "a non-active") + " current scenario " + bs);
+            System.out.println(s + ": " + s.getCurrentBusinessScenario());
         }
     }
 

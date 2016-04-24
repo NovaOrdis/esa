@@ -468,7 +468,115 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
         assertEquals(BusinessScenarioState.NEW, bs.getState());
+        assertTrue(bs.isNew());
     }
+
+    // close() ---------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void close_NEW() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+        assertTrue(bs.isNew());
+        bs.close();
+        assertFalse(bs.isNew());
+        assertTrue(bs.isClosed());
+        assertEquals(BusinessScenarioState.CLOSED_EXPLICITLY, bs.getState());
+    }
+
+    @Test
+    public void close_ACTIVE() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+
+        HttpEvent e = new HttpEvent(1L);
+        e.setRequestDuration(1L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
+
+        assertFalse(bs.update(e));
+
+        assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
+
+        bs.close();
+
+        assertFalse(bs.isNew());
+        assertFalse(bs.isActive());
+        assertEquals(BusinessScenarioState.CLOSED_EXPLICITLY, bs.getState());
+        assertEquals(-1L, bs.getEndTimestamp());
+    }
+
+    @Test
+    public void close_CLOSED() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+
+        HttpEvent e = new HttpEvent(1L);
+        e.setRequestDuration(1L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
+        bs.update(e);
+        e = new HttpEvent(2L);
+        e.setRequestDuration(2L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TEST");
+        assertTrue(bs.update(e));
+
+        assertEquals(BusinessScenarioState.CLOSED, bs.getState());
+
+        try {
+            bs.close();
+            fail("should throw exception");
+        }
+        catch(IllegalStateException ex) {
+            log.info(ex.getMessage());
+        }
+
+        assertEquals(BusinessScenarioState.CLOSED, bs.getState());
+    }
+
+    @Test
+    public void close_CLOSED_BY_START_MARKER() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+
+        HttpEvent e = new HttpEvent(1L);
+        e.setRequestDuration(1L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
+        bs.update(e);
+        e = new HttpEvent(2L);
+        e.setRequestDuration(2L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
+        assertTrue(bs.update(e));
+
+        assertEquals(BusinessScenarioState.CLOSED_BY_START_MARKER, bs.getState());
+
+        try {
+            bs.close();
+            fail("should throw exception");
+        }
+        catch(IllegalStateException ex) {
+            log.info(ex.getMessage());
+        }
+
+        assertEquals(BusinessScenarioState.CLOSED_BY_START_MARKER, bs.getState());
+    }
+
+    @Test
+    public void close_FAULT() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+        bs.setState(BusinessScenarioState.FAULT);
+        assertEquals(BusinessScenarioState.FAULT, bs.getState());
+
+        try {
+            bs.close();
+            fail("should throw exception");
+        }
+        catch(IllegalStateException e) {
+            log.info(e.getMessage());
+        }
+
+        assertEquals(BusinessScenarioState.FAULT, bs.getState());
+    }
+
 
     // Package protected -----------------------------------------------------------------------------------------------
 

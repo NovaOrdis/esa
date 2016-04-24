@@ -44,6 +44,12 @@ public enum BusinessScenarioState {
     //
     CLOSED_BY_START_MARKER,
 
+    //
+    // the business scenario was closed explicitly via the close() API call, usually because the end of stream occured
+    // before being updated with a STOP marker.
+    //
+    CLOSED_EXPLICITLY,
+
 
     //
     // an invalid state - a BusinessScenario instance in this state cannot be relied upon and must be discarded

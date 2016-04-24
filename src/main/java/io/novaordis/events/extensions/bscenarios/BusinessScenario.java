@@ -18,6 +18,8 @@ package io.novaordis.events.extensions.bscenarios;
 
 import io.novaordis.clad.UserErrorException;
 import io.novaordis.events.httpd.HttpEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -31,6 +33,8 @@ import java.util.concurrent.atomic.AtomicLong;
 public class BusinessScenario {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(BusinessScenario.class);
 
     // If this header is encountered, it means the containing HTTP request is the first HTTP request of a business
     // scenario of the type mentioned as the header value
@@ -91,6 +95,7 @@ public class BusinessScenario {
 
         this.id = getNextId();
         this.state = BusinessScenarioState.NEW;
+        log.debug(this + " constructed");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -202,12 +207,41 @@ public class BusinessScenario {
     }
 
     /**
+     * Forcibly closes a business scenario in a NEW or ACTIVE state (closing a NEW scenario is a noop).
+     *
+     * A CLOSED instance cannot be closed, will throw an IllegalArgumentException.
+     *
+     * @exception IllegalArgumentException on attempt to close an already closed instance.
+     */
+    public void close() {
+
+        if (!state.equals(BusinessScenarioState.NEW) && !state.equals(BusinessScenarioState.ACTIVE )) {
+
+            //
+            // we cannot forcibly close a scenario unless is in ACTIVE state
+            //
+            throw new IllegalStateException("cannot forcibly close a " + getState() + " scenario");
+        }
+
+        setState(BusinessScenarioState.CLOSED_EXPLICITLY);
+
+        //
+        // we don't know end timestamp
+        //
+        endTimestamp = -1L;
+    }
+
+    /**
      * @return true if this business scenario was updated with the last HTTP request from the sequence - the one
      * that contains the proper BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME header.
      */
     public boolean isClosed() {
 
         return !state.equals(BusinessScenarioState.NEW) && !state.equals(BusinessScenarioState.ACTIVE);
+    }
+
+    public boolean isNew() {
+        return state.equals(BusinessScenarioState.NEW);
     }
 
     /**
@@ -266,18 +300,10 @@ public class BusinessScenario {
     public String toString() {
 
         return "BusinessScenario[" + BusinessScenarioCommand.formatTimestamp(getBeginTimestamp()) + "][" +
-                getId() + "](" + getType() + ")";
+                getId() + "][" + getState() + "](" + getType() + ")";
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
-
-    /**
-     * For internal class use and testing only.
-     */
-    void close() {
-
-        setState(BusinessScenarioState.CLOSED);
-    }
 
     void setType(String type) {
 
