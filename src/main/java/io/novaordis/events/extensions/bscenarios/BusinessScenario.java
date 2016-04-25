@@ -158,6 +158,7 @@ public class BusinessScenario {
             setType(startMarker);
             setBeginTimestamp(event.getTimestamp());
             setState(BusinessScenarioState.ACTIVE);
+            setJSessionId(event.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY));
         }
         else {
 
@@ -171,6 +172,19 @@ public class BusinessScenario {
                 throw new BusinessScenarioException(
                         BusinessScenarioFaultType.NO_ACTIVE_BUSINESS_SCENARIO,
                         "there is no active business scenario for " + event);
+            }
+
+            //
+            // sanity check, all events must be part of the same session
+            //
+
+            String eventSession = event.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY);
+            if ((jSessionId != null || eventSession != null) &&
+                    (jSessionId == null || !jSessionId.equals(eventSession))) {
+
+                throw new UserErrorException(
+                        this + " was updated with a request that belongs to a different session " +
+                                event.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY));
             }
         }
 

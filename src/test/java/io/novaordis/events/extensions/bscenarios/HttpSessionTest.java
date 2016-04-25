@@ -128,6 +128,7 @@ public class HttpSessionTest {
         assertFalse(bs.isActive());
         assertFalse(bs.isClosed());
         assertNull(bs.getType());
+        assertNull(bs.getJSessionId());
 
         Event re;
 
@@ -143,6 +144,7 @@ public class HttpSessionTest {
         assertTrue(bs.isActive());
         assertEquals(1, bs.getRequestCount());
         assertEquals("scenario-1", bs.getType());
+        assertEquals("test-session-1", bs.getJSessionId());
 
         HttpEvent e2 = new HttpEvent(20L);
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");

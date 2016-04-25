@@ -100,7 +100,6 @@ class HttpSession {
 
                 result = current.toEvent();
                 current = new BusinessScenario();
-                current.setJSessionId(jSessionId);
 
                 //
                 // There is a special case were the stop marker is missing, so the request containing the start marker

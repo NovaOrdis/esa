@@ -386,6 +386,33 @@ public class BusinessScenarioTest {
         assertEquals(BusinessScenarioState.NEW, bs.getState());
     }
 
+    @Test
+    public void update_RequestThatBelongsToADifferentSession() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+
+        HttpEvent firstRequest = new HttpEvent(100L);
+        firstRequest.setRequestDuration(7L);
+        firstRequest.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "session-1");
+        firstRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
+
+        assertFalse(bs.update(firstRequest));
+
+        assertEquals("session-1", bs.getJSessionId());
+
+        HttpEvent requestFromAnotherSession = new HttpEvent(200L);
+        requestFromAnotherSession.setRequestDuration(1L);
+        requestFromAnotherSession.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "session-2");
+
+        try {
+            bs.update(requestFromAnotherSession);
+        }
+        catch(UserErrorException e) {
+            String msg = e.getMessage();
+            assertTrue(msg.contains("was updated with a request that belongs to a different session"));
+        }
+    }
+
     // toEvent() -------------------------------------------------------------------------------------------------------
 
     @Test
@@ -393,11 +420,9 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
-        bs.setJSessionId("something");
-        assertEquals("something", bs.getJSessionId());
-
         HttpEvent e = new HttpEvent(777L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
+        e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "a-session");
         e.setRequestDuration(7L);
 
         assertFalse(bs.update(e));
@@ -405,6 +430,7 @@ public class BusinessScenarioTest {
         HttpEvent e2 = new HttpEvent(888L);
         e2.setRequestDuration(8L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TYPE-A");
+        e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "a-session");
 
         assertTrue(bs.update(e2));
 
@@ -418,7 +444,7 @@ public class BusinessScenarioTest {
         assertEquals("TYPE-A", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
         assertEquals(BusinessScenarioState.CLOSED_NORMALLY.name(),
                 bse.getStringProperty(BusinessScenarioEvent.STATE).getValue());
-        assertEquals("something", bse.getJSessionId());
+        assertEquals("a-session", bse.getJSessionId());
     }
 
     @Test
