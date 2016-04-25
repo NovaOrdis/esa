@@ -32,6 +32,7 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
     public static final String REQUEST_COUNT = "request-count";
     public static final String TYPE = "type";
     public static final String STATE = "state";
+    public static final String JSESSIONID = "jsessionid";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -66,6 +67,12 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
         catch(Exception e) {
             throw new IllegalStateException(this + " carries an invalid BusinessScenarioState value \"" + s + "\"", e);
         }
+    }
+
+    public String getJSessionId() {
+
+        StringProperty sp = getStringProperty(BusinessScenarioEvent.JSESSIONID);
+        return sp == null ? null : sp.getString();
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

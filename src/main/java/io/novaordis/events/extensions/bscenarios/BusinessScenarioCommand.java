@@ -169,6 +169,7 @@ public class BusinessScenarioCommand extends CommandBase {
             String propertiesToDisplay =
                     "timestamp, " +
                             BusinessScenarioEvent.ID + ", " +
+                            BusinessScenarioEvent.JSESSIONID + ", " +
                             BusinessScenarioEvent.STATE + ", " +
                             BusinessScenarioEvent.REQUEST_COUNT + ", " +
                             BusinessScenarioEvent.DURATION;

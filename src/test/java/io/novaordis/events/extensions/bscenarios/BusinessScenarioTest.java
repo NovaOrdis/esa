@@ -393,6 +393,9 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
+        bs.setJSessionId("something");
+        assertEquals("something", bs.getJSessionId());
+
         HttpEvent e = new HttpEvent(777L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestDuration(7L);
@@ -415,6 +418,7 @@ public class BusinessScenarioTest {
         assertEquals("TYPE-A", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
         assertEquals(BusinessScenarioState.CLOSED_NORMALLY.name(),
                 bse.getStringProperty(BusinessScenarioEvent.STATE).getValue());
+        assertEquals("something", bse.getJSessionId());
     }
 
     @Test

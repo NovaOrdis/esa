@@ -83,6 +83,8 @@ public class BusinessScenario {
     //
     private int requestCount;
 
+    private String jSessionId;
+
     private BusinessScenarioState state;
 
     // Constructors ----------------------------------------------------------------------------------------------------
@@ -285,6 +287,9 @@ public class BusinessScenario {
         bse.setIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT, requestCount);
         bse.setStringProperty(BusinessScenarioEvent.TYPE, type);
         bse.setStringProperty(BusinessScenarioEvent.STATE, getState().name());
+        if (jSessionId != null) {
+            bse.setStringProperty(BusinessScenarioEvent.JSESSIONID, jSessionId);
+        }
         return bse;
     }
 
@@ -294,6 +299,14 @@ public class BusinessScenario {
 
     public void setState(BusinessScenarioState state) {
         this.state = state;
+    }
+
+    public void setJSessionId(String jSessionId) {
+        this.jSessionId = jSessionId;
+    }
+
+    public String getJSessionId() {
+        return jSessionId;
     }
 
     @Override
