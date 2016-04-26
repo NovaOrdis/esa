@@ -16,6 +16,7 @@
 
 package io.novaordis.events.core.event;
 
+import io.novaordis.events.extensions.bscenarios.BusinessScenarioException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -48,7 +49,7 @@ public class FaultEventTest extends EventTest {
         assertNull(e.getCause());
 
         String s = e.toString();
-        assertTrue(s.matches("FAULT EVENT\\[.+\\]"));
+        assertTrue(s.matches("FAULT \\(UNTYPED\\)\\[.+\\]"));
     }
 
     @Test
@@ -59,7 +60,7 @@ public class FaultEventTest extends EventTest {
         assertNull(e.getCause());
 
         String s = e.toString();
-        assertEquals("FAULT EVENT: something", s);
+        assertEquals("FAULT (UNTYPED): something", s);
     }
 
     @Test
@@ -71,7 +72,7 @@ public class FaultEventTest extends EventTest {
         assertEquals(cause, e.getCause());
 
         String s = e.toString();
-        assertEquals("FAULT EVENT: Exception: some message", s);
+        assertEquals("FAULT (UNTYPED): Exception: some message", s);
     }
 
     @Test
@@ -83,7 +84,24 @@ public class FaultEventTest extends EventTest {
         assertEquals(cause, e.getCause());
 
         String s = e.toString();
-        assertEquals("FAULT EVENT: something, Exception: some message", s);
+        assertEquals("FAULT (UNTYPED): something, Exception: some message", s);
+    }
+
+    // getLineNumber() -------------------------------------------------------------------------------------------------
+
+    @Test
+    public void getLineNumber_Null() throws Exception {
+
+        FaultEvent e = new FaultEvent();
+        assertNull(e.getLineNumber());
+    }
+
+    @Test
+    public void getLineNumber_FromBusinessScenarioException() throws Exception {
+
+        long lineNumber = 7L;
+        FaultEvent e = new FaultEvent(new BusinessScenarioException(lineNumber, "something"));
+        assertEquals(7L, e.getLineNumber().longValue());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

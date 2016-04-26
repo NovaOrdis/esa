@@ -17,6 +17,7 @@
 package io.novaordis.events.extensions.bscenarios;
 
 import io.novaordis.clad.UserErrorException;
+import io.novaordis.events.core.event.Event;
 import io.novaordis.events.httpd.HttpEvent;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -187,6 +188,7 @@ public class BusinessScenarioTest {
         assertNull(bs.getIterationId());
 
         HttpEvent firstRequest = new HttpEvent(100L);
+        firstRequest.setLongProperty(Event.LINE_NUMBER_PROPERTY_NAME, 777L);
         firstRequest.setRequestDuration(7L);
         firstRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         firstRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "A");
@@ -204,6 +206,7 @@ public class BusinessScenarioTest {
         assertEquals(1, requestSequenceIds.size());
         assertEquals("A", requestSequenceIds.get(0));
         assertEquals("10", bs.getIterationId());
+        assertEquals(777L, bs.getLineNumber().longValue());
 
         HttpEvent secondRequest = new HttpEvent(200L);
         secondRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "B");

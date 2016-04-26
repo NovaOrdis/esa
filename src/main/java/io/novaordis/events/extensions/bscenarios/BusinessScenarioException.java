@@ -32,30 +32,23 @@ public class BusinessScenarioException extends Exception {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-
     private FaultType faultType;
+    private Long lineNumber;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public BusinessScenarioException() {
-        super();
+    public BusinessScenarioException(Long lineNumber, String message) {
+        this(lineNumber, null, message, null);
     }
 
-    public BusinessScenarioException(String message) {
-        super(message);
+    public BusinessScenarioException(Long lineNumber, FaultType type, String message) {
+        this(lineNumber, type, message, null);
     }
 
-    public BusinessScenarioException(String message, Throwable cause) {
+    public BusinessScenarioException(Long lineNumber, FaultType type, String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public BusinessScenarioException(Throwable cause) {
-        super(cause);
-    }
-
-    public BusinessScenarioException(FaultType type, String message) {
-        super(message);
         this.faultType = type;
+        this.lineNumber = lineNumber;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -65,6 +58,13 @@ public class BusinessScenarioException extends Exception {
      */
     public FaultType getFaultType() {
         return faultType;
+    }
+
+    /**
+     * May return null.
+     */
+    public Long getLineNumber() {
+        return lineNumber;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

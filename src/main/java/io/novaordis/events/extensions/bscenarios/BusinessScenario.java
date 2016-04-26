@@ -111,6 +111,11 @@ public class BusinessScenario {
      */
     private String iterationId;
 
+    //
+    // The line number of the first request of the scenario.
+    //
+    private Long lineNumber;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
@@ -181,6 +186,7 @@ public class BusinessScenario {
             //
             // we "start" the scenario
             //
+            lineNumber = event.getLineNumber();
             setType(startMarker);
             setBeginTimestamp(event.getTimestamp());
             setState(BusinessScenarioState.ACTIVE);
@@ -189,7 +195,6 @@ public class BusinessScenario {
             if (iterationId != null) {
                 setIterationId(iterationId);
             }
-
         }
         else {
 
@@ -201,6 +206,7 @@ public class BusinessScenario {
             if (beginTimestamp <= 0) {
 
                 throw new BusinessScenarioException(
+                        getLineNumber(),
                         BusinessScenarioFaultType.NO_ACTIVE_BUSINESS_SCENARIO,
                         "there is no active business scenario for " + event);
             }
@@ -247,7 +253,7 @@ public class BusinessScenario {
 
         if (requestDuration == null) {
             throw new BusinessScenarioException(
-                    BusinessScenarioFaultType.NO_REQUEST_DURATION_INFO,
+                    getLineNumber(), BusinessScenarioFaultType.NO_REQUEST_DURATION_INFO,
                     event + " does not have request duration information");
         }
 
@@ -373,11 +379,18 @@ public class BusinessScenario {
         return iterationId;
     }
 
+    /**
+     * @return the line number of the first request of the scenario.
+     */
+    public Long getLineNumber() {
+        return lineNumber;
+    }
+
     @Override
     public String toString() {
 
-        return "BusinessScenario[" + BusinessScenarioCommand.formatTimestamp(getBeginTimestamp()) + "][" +
-                getId() + "][" + getState() + "](" + getType() + ")";
+        return "BusinessScenario[" + BusinessScenarioCommand.formatTimestamp(getBeginTimestamp()) + " id=" +
+                getId() + ", iteration-id=" + iterationId + ", state=" + getState() + ", type=" + getType() + "]";
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -421,7 +434,9 @@ public class BusinessScenario {
             // check for duplicates
             //
             if (requestSequenceIds.contains(requestSequenceId)) {
-                throw new BusinessScenarioException(BusinessScenarioFaultType.DUPLICATE_REQUEST_SEQUENCE_ID,
+                throw new BusinessScenarioException(
+                        getLineNumber(),
+                        BusinessScenarioFaultType.DUPLICATE_REQUEST_SEQUENCE_ID,
                         this + " received duplicate request sequence ID \"" + requestSequenceId + "\"");
 
             }
@@ -431,7 +446,9 @@ public class BusinessScenario {
         if (this.iterationId == null && iterationId != null ||
                 (this.iterationId != null && !this.iterationId.equals(iterationId))) {
 
-            throw new BusinessScenarioException(BusinessScenarioFaultType.MULTIPLE_ITERATION_IDS,
+            throw new BusinessScenarioException(
+                    getLineNumber(),
+                    BusinessScenarioFaultType.MULTIPLE_ITERATION_IDS,
                     this + " exposed to multiple iterations: " + this.iterationId + ", " + iterationId);
         }
     }

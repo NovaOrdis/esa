@@ -16,6 +16,8 @@
 
 package io.novaordis.events.core.event;
 
+import io.novaordis.events.extensions.bscenarios.BusinessScenarioException;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
@@ -31,6 +33,7 @@ public class FaultEvent extends GenericEvent {
     private String message;
     private Throwable cause;
     private FaultType type;
+    private Long lineNumber;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -69,6 +72,10 @@ public class FaultEvent extends GenericEvent {
         this.type = type;
         this.message = message;
         this.cause = cause;
+
+        if (cause instanceof BusinessScenarioException) {
+            this.lineNumber = ((BusinessScenarioException)cause).getLineNumber();
+        }
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -91,10 +98,18 @@ public class FaultEvent extends GenericEvent {
         return type;
     }
 
+    public Long getLineNumber() {
+        return lineNumber;
+    }
+
     @Override
     public String toString() {
 
-        String s = "FAULT EVENT";
+        String s = "FAULT " + (type == null ? "(UNTYPED)" : type);
+
+        if (lineNumber != null) {
+            s += ", line " + lineNumber;
+        }
 
         String msg = getMessage();
         Throwable cause = getCause();
@@ -115,7 +130,15 @@ public class FaultEvent extends GenericEvent {
                 s += ": ";
             }
 
-            s += cause.getClass().getSimpleName() + ": " + cause.getMessage();
+            String exceptionToString;
+            if (cause instanceof BusinessScenarioException) {
+                exceptionToString = cause.getMessage();
+            }
+            else {
+                exceptionToString = cause.getClass().getSimpleName() + ": " + cause.getMessage();
+            }
+
+            s += exceptionToString;
         }
 
         return s;
