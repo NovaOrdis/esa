@@ -26,6 +26,8 @@ public enum BusinessScenarioFaultType implements FaultType {
 
     NO_JSESSIONID_COOKIE,
     NO_ACTIVE_BUSINESS_SCENARIO,
-    NO_REQUEST_DURATION_INFO;
+    NO_REQUEST_DURATION_INFO,
+    DUPLICATE_REQUEST_SEQUENCE_ID, // a business scenario receives duplicate request sequence IDs
+    MULTIPLE_ITERATION_IDS; // a business scenario sees more than one iteration ID during its life
 
 }

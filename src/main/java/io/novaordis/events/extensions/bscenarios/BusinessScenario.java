@@ -105,6 +105,12 @@ public class BusinessScenario {
      */
     private List<String> requestSequenceIds;
 
+    /**
+     * May be null, but once it is set, it must stay the same for the duration of the business scenario, if an update
+     * with a different iteration ID is received, the update invocation must throw exception.
+     */
+    private String iterationId;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
@@ -150,6 +156,7 @@ public class BusinessScenario {
         }
 
         String startMarker = event.getRequestHeader(BUSINESS_SCENARIO_START_MARKER_HEADER_NAME);
+        String iterationId = event.getIterationId();
 
         if (startMarker != null) {
 
@@ -178,6 +185,11 @@ public class BusinessScenario {
             setBeginTimestamp(event.getTimestamp());
             setState(BusinessScenarioState.ACTIVE);
             setJSessionId(event.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY));
+            // this is the only time when we set the iteration ID
+            if (iterationId != null) {
+                setIterationId(iterationId);
+            }
+
         }
         else {
 
@@ -208,7 +220,8 @@ public class BusinessScenario {
         }
 
         Long requestDuration = event.getRequestDuration();
-        updateScenarioStatistics(requestDuration, event.getRequestSequenceId());
+        String requestSequenceId = event.getRequestSequenceId();
+        updateScenarioStatistics(requestDuration, requestSequenceId, iterationId);
 
         String stopMarker = event.getRequestHeader(BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
 
@@ -296,7 +309,7 @@ public class BusinessScenario {
 
     /**
      * The timestamp of the moment the last request exists the scenario, 0 if the scenario is still active.
-    */
+     */
     public long getEndTimestamp() {
         return endTimestamp;
     }
@@ -351,6 +364,15 @@ public class BusinessScenario {
         return requestSequenceIds;
     }
 
+    /**
+     * @return the iteration ID. May be null, but once it is set, it must stay the same for the duration of the business
+     * scenario, if an update with a different iteration ID is received, the update invocation must throw exception.
+     */
+    public String getIterationId() {
+
+        return iterationId;
+    }
+
     @Override
     public String toString() {
 
@@ -379,25 +401,43 @@ public class BusinessScenario {
     /**
      * @param requestDuration may be null.
      * @param requestSequenceId the request sequence ID, may be null. For more details, see
-     *                          BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME constant definition.
-     *
-     * @exception BusinessScenarioException if duplicate request sequence ID is detected
+     *                    BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME constant definition.
+     * @param iterationId the iteration ID, may be null. For more details, see
+     *                    BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME constant definition. A business scenario
+     *                    can only exists in the context of a single iteration, so if a business scenario receives
+     *                    requests belonging to different iterations, will throw a BusinessScenarioException
+     * @exception BusinessScenarioException if duplicate request sequence ID is detected, if more than on iteration ID
+     * is detected.
      */
-    void updateScenarioStatistics(Long requestDuration, String requestSequenceId) throws BusinessScenarioException {
+    void updateScenarioStatistics(Long requestDuration, String requestSequenceId, String iterationId)
+            throws BusinessScenarioException {
+
         requestCount ++;
         duration += (requestDuration == null ? 0 : requestDuration);
+
         if (requestSequenceId != null) {
 
             //
             // check for duplicates
             //
             if (requestSequenceIds.contains(requestSequenceId)) {
-                throw new BusinessScenarioException(this +
-                        " received duplicate request sequence ID \"" + requestSequenceId + "\"");
+                throw new BusinessScenarioException(BusinessScenarioFaultType.DUPLICATE_REQUEST_SEQUENCE_ID,
+                        this + " received duplicate request sequence ID \"" + requestSequenceId + "\"");
 
             }
             requestSequenceIds.add(requestSequenceId);
         }
+
+        if (this.iterationId == null && iterationId != null ||
+                (this.iterationId != null && !this.iterationId.equals(iterationId))) {
+
+            throw new BusinessScenarioException(BusinessScenarioFaultType.MULTIPLE_ITERATION_IDS,
+                    this + " exposed to multiple iterations: " + this.iterationId + ", " + iterationId);
+        }
+    }
+
+    void setIterationId(String iterationId) {
+        this.iterationId = iterationId;
     }
 
     // Protected -------------------------------------------------------------------------------------------------------

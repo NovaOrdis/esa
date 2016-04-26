@@ -33,6 +33,7 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
     public static final String TYPE = "type";
     public static final String STATE = "state";
     public static final String JSESSIONID = "jsessionid";
+    public static final String ITERATION_ID = "iteration-id";
 
     // Static ----------------------------------------------------------------------------------------------------------
 

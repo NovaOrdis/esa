@@ -168,6 +168,18 @@ public class HttpEventTest extends TimedEventTest {
         assertEquals("something", e.getRequestSequenceId());
     }
 
+    // getIterationId() ------------------------------------------------------------------------------------------------
+
+    @Test
+    public void getIterationId() throws Exception {
+
+        HttpEvent e = getEventToTest(1L);
+        assertNull(e.getIterationId());
+
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "something");
+        assertEquals("something", e.getIterationId());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

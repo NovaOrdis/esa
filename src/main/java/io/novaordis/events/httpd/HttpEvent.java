@@ -276,6 +276,15 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         return getRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME);
     }
 
+    /**
+     * @return the value corresponding to the request header 'Business-Scenario-Iteration-ID'. May be null
+     * if the header is not present.
+     */
+    public String getIterationId() {
+
+        return getRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME);
+    }
+
     @Override
     public String toString() {
 

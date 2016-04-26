@@ -170,6 +170,7 @@ public class BusinessScenarioCommand extends CommandBase {
                     "timestamp, " +
                             BusinessScenarioEvent.ID + ", " +
                             BusinessScenarioEvent.JSESSIONID + ", " +
+                            BusinessScenarioEvent.ITERATION_ID + ", " +
                             BusinessScenarioEvent.STATE + ", " +
                             BusinessScenarioEvent.REQUEST_COUNT + ", " +
                             BusinessScenarioEvent.DURATION;

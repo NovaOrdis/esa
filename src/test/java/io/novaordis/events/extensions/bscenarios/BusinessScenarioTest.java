@@ -184,11 +184,13 @@ public class BusinessScenarioTest {
         assertNull(bs.getType());
         assertEquals(BusinessScenarioState.NEW, bs.getState());
         assertTrue(bs.getRequestSequenceIds().isEmpty());
+        assertNull(bs.getIterationId());
 
         HttpEvent firstRequest = new HttpEvent(100L);
         firstRequest.setRequestDuration(7L);
         firstRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         firstRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "A");
+        firstRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "10");
 
         assertFalse(bs.update(firstRequest));
 
@@ -201,9 +203,11 @@ public class BusinessScenarioTest {
         List<String> requestSequenceIds = bs.getRequestSequenceIds();
         assertEquals(1, requestSequenceIds.size());
         assertEquals("A", requestSequenceIds.get(0));
+        assertEquals("10", bs.getIterationId());
 
         HttpEvent secondRequest = new HttpEvent(200L);
         secondRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "B");
+        secondRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "10");
         secondRequest.setRequestDuration(8L);
 
         assertFalse(bs.update(secondRequest));
@@ -218,6 +222,7 @@ public class BusinessScenarioTest {
         assertEquals(2, requestSequenceIds.size());
         assertEquals("A", requestSequenceIds.get(0));
         assertEquals("B", requestSequenceIds.get(1));
+        assertEquals("10", bs.getIterationId());
 
         assertFalse(bs.isClosed());
     }
@@ -272,6 +277,7 @@ public class BusinessScenarioTest {
         HttpEvent e = new HttpEvent(1L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "A");
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "11");
 
         e.setRequestDuration(1L);
 
@@ -285,11 +291,13 @@ public class BusinessScenarioTest {
         List<String> requestSequenceIds = bs.getRequestSequenceIds();
         assertEquals(1, requestSequenceIds.size());
         assertEquals("A", requestSequenceIds.get(0));
+        assertEquals("11", bs.getIterationId());
 
         HttpEvent e2 = new HttpEvent(5L);
         e2.setRequestDuration(6L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TYPE-A");
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "B");
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "11");
 
         assertTrue(bs.update(e2));
 
@@ -302,6 +310,7 @@ public class BusinessScenarioTest {
         assertEquals(2, requestSequenceIds.size());
         assertEquals("A", requestSequenceIds.get(0));
         assertEquals("B", requestSequenceIds.get(1));
+        assertEquals("11", bs.getIterationId());
 
         HttpEvent e3 = new HttpEvent(7L);
 
@@ -454,10 +463,80 @@ public class BusinessScenarioTest {
             bs.update(e2);
             fail("should throw exception");
         }
-        catch(BusinessScenarioException ex) {
-            String msg = ex.getMessage();
+        catch(BusinessScenarioException bse) {
+            String msg = bse.getMessage();
             log.info(msg);
             assertTrue(msg.matches(".* received duplicate request sequence ID \"samevalue\""));
+            assertEquals(BusinessScenarioFaultType.DUPLICATE_REQUEST_SEQUENCE_ID, bse.getFaultType());
+        }
+    }
+
+    @Test
+    public void update_nonNullIterationIDAfterSTARTMarker() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+
+        HttpEvent e = new HttpEvent(1L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
+        e.setRequestDuration(1L);
+
+        assertFalse(bs.update(e));
+
+        assertNull(bs.getIterationId());
+
+        HttpEvent e2 = new HttpEvent(5L);
+        e2.setRequestDuration(6L);
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "something");
+
+        try {
+            //
+            // we cannot update a business scenario with a request that has a non-null Iteration ID if the
+            // scenario was started without Iteration ID.
+            //
+            bs.update(e2);
+        }
+        catch(BusinessScenarioException bse) {
+
+            String msg = bse.getMessage();
+            log.info(msg);
+            assertTrue(msg.matches(".* exposed to multiple iterations: .*"));
+            assertEquals(BusinessScenarioFaultType.MULTIPLE_ITERATION_IDS, bse.getFaultType());
+        }
+    }
+
+    @Test
+    public void update_differentIterationIds() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+
+        HttpEvent e = new HttpEvent(1L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "something");
+        e.setRequestDuration(1L);
+
+        assertFalse(bs.update(e));
+
+        assertEquals("something", bs.getIterationId());
+
+        HttpEvent e2 = new HttpEvent(5L);
+        e2.setRequestDuration(6L);
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "something-else");
+
+        try {
+            //
+            // we cannot update a business scenario with a request that has a non-null Iteration ID if the
+            // scenario was started without Iteration ID.
+            //
+            bs.update(e2);
+        }
+        catch(BusinessScenarioException bse) {
+
+            String msg = bse.getMessage();
+            log.info(msg);
+            assertTrue(msg.matches(".* exposed to multiple iterations: .*"));
+            assertEquals(BusinessScenarioFaultType.MULTIPLE_ITERATION_IDS, bse.getFaultType());
         }
     }
 
@@ -502,9 +581,9 @@ public class BusinessScenarioTest {
         bs.setState(BusinessScenarioState.CLOSED_BY_START_MARKER);
         bs.setType("SOME-TYPE");
         bs.setBeginTimestamp(101L);
-        bs.updateScenarioStatistics(11L, null);
-        bs.updateScenarioStatistics(null, null);
-        bs.updateScenarioStatistics(22L, null);
+        bs.updateScenarioStatistics(11L, null, null);
+        bs.updateScenarioStatistics(null, null, null);
+        bs.updateScenarioStatistics(22L, null, null);
 
         BusinessScenarioEvent bse = bs.toEvent();
 
