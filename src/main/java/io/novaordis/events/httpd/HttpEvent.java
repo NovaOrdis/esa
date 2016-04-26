@@ -291,7 +291,7 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         Long timestamp = getTimestamp();
         String s = (timestamp == null ? "N/A" : formatTimestamp(timestamp));
         s += " " + getMethod() + " " + getRequestUri();
-        s += "(line " + getLineNumber();
+        s += "(line=" + getLineNumber();
         String jSessionId = getCookie(JSESSIONID_COOKIE_KEY);
         if (jSessionId != null) {
 

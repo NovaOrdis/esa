@@ -389,8 +389,9 @@ public class BusinessScenario {
     @Override
     public String toString() {
 
-        return "BusinessScenario[" + BusinessScenarioCommand.formatTimestamp(getBeginTimestamp()) + " id=" +
-                getId() + ", iteration-id=" + iterationId + ", state=" + getState() + ", type=" + getType() + "]";
+        return "BusinessScenario[" + BusinessScenarioCommand.formatTimestamp(getBeginTimestamp()) + " " +
+                "line=" + getLineNumber() + ", id=" + getId() + ", iteration-id=" + iterationId + ", " +
+                "state=" + getState() + ", type=" + getType() + "]";
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
