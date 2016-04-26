@@ -18,6 +18,7 @@ package io.novaordis.events.httpd;
 
 import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.TimedEventTest;
+import io.novaordis.events.extensions.bscenarios.BusinessScenario;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -153,6 +154,18 @@ public class HttpEventTest extends TimedEventTest {
         assertNull(e.getRequestDuration());
         e.setRequestDuration(7L);
         assertEquals(7L, e.getRequestDuration().longValue());
+    }
+
+    // getRequestSequenceId() ------------------------------------------------------------------------------------------
+
+    @Test
+    public void getRequestSequenceId() throws Exception {
+
+        HttpEvent e = getEventToTest(1L);
+        assertNull(e.getRequestSequenceId());
+
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "something");
+        assertEquals("something", e.getRequestSequenceId());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

@@ -21,6 +21,8 @@ import io.novaordis.events.httpd.HttpEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -44,6 +46,17 @@ public class BusinessScenario {
     // scenario of the type mentioned as the header value; all HTTP requests between the start and stop marker
     // belong to the business scenario
     public static final String BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME = "Business-Scenario-Stop-Marker";
+
+    // The load generator is supposed to generate an unique ID for each iteration (an iteration is defined as a "full"
+    // sequence of requests the load scenario consists of; runs are usually executed in loops). Nothing essential should
+    // break if the run id is not present, in the worst case we will not be able to do some types of analyses.
+    public static final String BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME = "Business-Scenario-Iteration-ID";
+
+    // Each request of a business scenario may have its own unique ID, if the scenario is instrumented as such.
+    // Nothing essential should break if the run id is not present, in the worst case we will not be able to do some
+    // types of analyses.
+    public static final String BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME =
+            "Business-Scenario-Request-Sequence-ID";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -87,6 +100,11 @@ public class BusinessScenario {
 
     private BusinessScenarioState state;
 
+    /**
+     * The request sequence IDs seen by this scenario, in the order in which they were detected.
+     */
+    private List<String> requestSequenceIds;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
@@ -97,6 +115,7 @@ public class BusinessScenario {
 
         this.id = getNextId();
         this.state = BusinessScenarioState.NEW;
+        this.requestSequenceIds = new ArrayList<>();
         log.debug(this + " constructed");
     }
 
@@ -189,7 +208,7 @@ public class BusinessScenario {
         }
 
         Long requestDuration = event.getRequestDuration();
-        updateCounters(requestDuration);
+        updateScenarioStatistics(requestDuration, event.getRequestSequenceId());
 
         String stopMarker = event.getRequestHeader(BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
 
@@ -323,6 +342,15 @@ public class BusinessScenario {
         return jSessionId;
     }
 
+    /**
+     * @return the request sequence IDs in the order they were received. Returns the underlying storage, so handle with
+     * care. The list may be empty but never null.
+     */
+    public List<String> getRequestSequenceIds() {
+
+        return requestSequenceIds;
+    }
+
     @Override
     public String toString() {
 
@@ -349,11 +377,27 @@ public class BusinessScenario {
     }
 
     /**
-     * @param requestDuration may be null
+     * @param requestDuration may be null.
+     * @param requestSequenceId the request sequence ID, may be null. For more details, see
+     *                          BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME constant definition.
+     *
+     * @exception BusinessScenarioException if duplicate request sequence ID is detected
      */
-    void updateCounters(Long requestDuration) {
+    void updateScenarioStatistics(Long requestDuration, String requestSequenceId) throws BusinessScenarioException {
         requestCount ++;
         duration += (requestDuration == null ? 0 : requestDuration);
+        if (requestSequenceId != null) {
+
+            //
+            // check for duplicates
+            //
+            if (requestSequenceIds.contains(requestSequenceId)) {
+                throw new BusinessScenarioException(this +
+                        " received duplicate request sequence ID \"" + requestSequenceId + "\"");
+
+            }
+            requestSequenceIds.add(requestSequenceId);
+        }
     }
 
     // Protected -------------------------------------------------------------------------------------------------------

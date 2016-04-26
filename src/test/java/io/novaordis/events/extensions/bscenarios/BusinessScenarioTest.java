@@ -22,6 +22,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -181,10 +183,12 @@ public class BusinessScenarioTest {
         assertEquals(0L, bs.getEndTimestamp());
         assertNull(bs.getType());
         assertEquals(BusinessScenarioState.NEW, bs.getState());
+        assertTrue(bs.getRequestSequenceIds().isEmpty());
 
         HttpEvent firstRequest = new HttpEvent(100L);
         firstRequest.setRequestDuration(7L);
         firstRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
+        firstRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "A");
 
         assertFalse(bs.update(firstRequest));
 
@@ -194,8 +198,12 @@ public class BusinessScenarioTest {
         assertEquals(0L, bs.getEndTimestamp());
         assertEquals("TYPE-A", bs.getType());
         assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
+        List<String> requestSequenceIds = bs.getRequestSequenceIds();
+        assertEquals(1, requestSequenceIds.size());
+        assertEquals("A", requestSequenceIds.get(0));
 
         HttpEvent secondRequest = new HttpEvent(200L);
+        secondRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "B");
         secondRequest.setRequestDuration(8L);
 
         assertFalse(bs.update(secondRequest));
@@ -206,6 +214,10 @@ public class BusinessScenarioTest {
         assertEquals(0L, bs.getEndTimestamp());
         assertEquals("TYPE-A", bs.getType());
         assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
+        requestSequenceIds = bs.getRequestSequenceIds();
+        assertEquals(2, requestSequenceIds.size());
+        assertEquals("A", requestSequenceIds.get(0));
+        assertEquals("B", requestSequenceIds.get(1));
 
         assertFalse(bs.isClosed());
     }
@@ -259,6 +271,8 @@ public class BusinessScenarioTest {
 
         HttpEvent e = new HttpEvent(1L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "A");
+
         e.setRequestDuration(1L);
 
         assertFalse(bs.update(e));
@@ -268,10 +282,14 @@ public class BusinessScenarioTest {
         assertEquals(0L, bs.getEndTimestamp());
         assertFalse(bs.isClosed());
         assertEquals(BusinessScenarioState.ACTIVE, bs.getState());
+        List<String> requestSequenceIds = bs.getRequestSequenceIds();
+        assertEquals(1, requestSequenceIds.size());
+        assertEquals("A", requestSequenceIds.get(0));
 
         HttpEvent e2 = new HttpEvent(5L);
         e2.setRequestDuration(6L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TYPE-A");
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "B");
 
         assertTrue(bs.update(e2));
 
@@ -280,6 +298,10 @@ public class BusinessScenarioTest {
         assertEquals(11L, bs.getEndTimestamp());
         assertTrue(bs.isClosed());
         assertEquals(BusinessScenarioState.CLOSED_NORMALLY, bs.getState());
+        requestSequenceIds = bs.getRequestSequenceIds();
+        assertEquals(2, requestSequenceIds.size());
+        assertEquals("A", requestSequenceIds.get(0));
+        assertEquals("B", requestSequenceIds.get(1));
 
         HttpEvent e3 = new HttpEvent(7L);
 
@@ -413,6 +435,32 @@ public class BusinessScenarioTest {
         }
     }
 
+    @Test
+    public void update_duplicateRequestSequenceId() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+        HttpEvent e = new HttpEvent(1L);
+        e.setRequestDuration(1L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "samevalue");
+
+        assertFalse(bs.update(e));
+
+        HttpEvent e2 = new HttpEvent(2L);
+        e2.setRequestDuration(2L);
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "samevalue");
+
+        try {
+            bs.update(e2);
+            fail("should throw exception");
+        }
+        catch(BusinessScenarioException ex) {
+            String msg = ex.getMessage();
+            log.info(msg);
+            assertTrue(msg.matches(".* received duplicate request sequence ID \"samevalue\""));
+        }
+    }
+
     // toEvent() -------------------------------------------------------------------------------------------------------
 
     @Test
@@ -454,9 +502,9 @@ public class BusinessScenarioTest {
         bs.setState(BusinessScenarioState.CLOSED_BY_START_MARKER);
         bs.setType("SOME-TYPE");
         bs.setBeginTimestamp(101L);
-        bs.updateCounters(11L);
-        bs.updateCounters(null);
-        bs.updateCounters(22L);
+        bs.updateScenarioStatistics(11L, null);
+        bs.updateScenarioStatistics(null, null);
+        bs.updateScenarioStatistics(22L, null);
 
         BusinessScenarioEvent bse = bs.toEvent();
 

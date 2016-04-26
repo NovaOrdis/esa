@@ -19,6 +19,8 @@ package io.novaordis.events.extensions.bscenarios;
 import io.novaordis.events.core.event.FaultType;
 
 /**
+ * An exception that will generate a fault to be sent downstream, but not interrupt processing.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/22/16
  */

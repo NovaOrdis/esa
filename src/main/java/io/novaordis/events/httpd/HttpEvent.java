@@ -23,6 +23,7 @@ import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.events.core.event.TimedEvent;
 import io.novaordis.events.core.event.GenericTimedEvent;
+import io.novaordis.events.extensions.bscenarios.BusinessScenario;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -264,6 +265,15 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         LongProperty p = getLongProperty(Event.LINE_NUMBER_PROPERTY_NAME);
         Long v = p == null ? null : p.getLong();
         return v == null ? 0L : v;
+    }
+
+    /**
+     * @return the value corresponding to the request header 'Business-Scenario-Request-Sequence-ID'. May be null
+     * if the header is not present.
+     */
+    public String getRequestSequenceId() {
+
+        return getRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME);
     }
 
     @Override
