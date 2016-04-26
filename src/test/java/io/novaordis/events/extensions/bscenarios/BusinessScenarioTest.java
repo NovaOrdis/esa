@@ -588,6 +588,7 @@ public class BusinessScenarioTest {
 
         HttpEvent e = new HttpEvent(777L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "iteration-one");
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "a-session");
         e.setRequestDuration(7L);
 
@@ -596,6 +597,7 @@ public class BusinessScenarioTest {
         HttpEvent e2 = new HttpEvent(888L);
         e2.setRequestDuration(8L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TYPE-A");
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "iteration-one");
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "a-session");
 
         assertTrue(bs.update(e2));
@@ -611,6 +613,7 @@ public class BusinessScenarioTest {
         assertEquals(BusinessScenarioState.CLOSED_NORMALLY.name(),
                 bse.getStringProperty(BusinessScenarioEvent.STATE).getValue());
         assertEquals("a-session", bse.getJSessionId());
+        assertEquals("iteration-one", bse.getIterationId());
     }
 
     @Test

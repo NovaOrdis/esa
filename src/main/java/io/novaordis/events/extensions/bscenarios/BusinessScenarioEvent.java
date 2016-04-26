@@ -76,6 +76,13 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
         return sp == null ? null : sp.getString();
     }
 
+    public String getIterationId() {
+
+        StringProperty sp = getStringProperty(BusinessScenarioEvent.ITERATION_ID);
+        return sp == null ? null : sp.getString();
+    }
+
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

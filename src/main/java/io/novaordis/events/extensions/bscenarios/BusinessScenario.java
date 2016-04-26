@@ -342,6 +342,9 @@ public class BusinessScenario {
         if (jSessionId != null) {
             bse.setStringProperty(BusinessScenarioEvent.JSESSIONID, jSessionId);
         }
+        if (iterationId != null) {
+            bse.setStringProperty(BusinessScenarioEvent.ITERATION_ID, iterationId);
+        }
         return bse;
     }
 
