@@ -475,7 +475,7 @@ public class BusinessScenarioTest {
     }
 
     @Test
-    public void update_nonNullIterationIDAfterSTARTMarker() throws Exception {
+    public void update_suddenIterationID() throws Exception {
 
         BusinessScenario bs = new BusinessScenario();
 
@@ -483,8 +483,10 @@ public class BusinessScenarioTest {
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestDuration(1L);
 
+        //
+        // we start with NO iteration ID
+        //
         assertFalse(bs.update(e));
-
         assertNull(bs.getIterationId());
 
         HttpEvent e2 = new HttpEvent(5L);
@@ -503,8 +505,8 @@ public class BusinessScenarioTest {
 
             String msg = bse.getMessage();
             log.info(msg);
-            assertTrue(msg.matches(".* exposed to multiple iterations: .*"));
-            assertEquals(BusinessScenarioFaultType.MULTIPLE_ITERATION_IDS, bse.getFaultType());
+            assertTrue(msg.matches(".* is suddenly starting to see iteration IDs after it started without one: .*"));
+            assertEquals(BusinessScenarioFaultType.SUDDEN_ITERATION_IDS, bse.getFaultType());
         }
     }
 
@@ -540,6 +542,40 @@ public class BusinessScenarioTest {
             log.info(msg);
             assertTrue(msg.matches(".* exposed to multiple iterations: .*"));
             assertEquals(BusinessScenarioFaultType.MULTIPLE_ITERATION_IDS, bse.getFaultType());
+        }
+    }
+
+    @Test
+    public void update_missingIterationId() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+
+        HttpEvent e = new HttpEvent(1L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "something");
+        e.setRequestDuration(1L);
+
+        assertFalse(bs.update(e));
+
+        assertEquals("something", bs.getIterationId());
+
+        HttpEvent e2 = new HttpEvent(5L);
+        e2.setRequestDuration(6L);
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
+
+        try {
+            //
+            // we cannot update a business scenario with a request that has a non-null Iteration ID if the
+            // scenario was started without Iteration ID.
+            //
+            bs.update(e2);
+        }
+        catch(BusinessScenarioException bse) {
+
+            String msg = bse.getMessage();
+            log.info(msg);
+            assertTrue(msg.matches(".* does not see iteration IDs anymore"));
+            assertEquals(BusinessScenarioFaultType.MISSING_ITERATION_ID, bse.getFaultType());
         }
     }
 

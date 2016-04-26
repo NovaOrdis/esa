@@ -444,8 +444,23 @@ public class BusinessScenario {
             requestSequenceIds.add(requestSequenceId);
         }
 
-        if (this.iterationId == null && iterationId != null ||
-                (this.iterationId != null && !this.iterationId.equals(iterationId))) {
+        if (this.iterationId == null && iterationId != null)
+        {
+            throw new BusinessScenarioException(
+                    getLineNumber(),
+                    BusinessScenarioFaultType.SUDDEN_ITERATION_IDS,
+                    this + " is suddenly starting to see iteration IDs after it started without one: " + iterationId);
+        }
+
+        if (this.iterationId != null && iterationId == null) {
+
+            throw new BusinessScenarioException(
+                    getLineNumber(),
+                    BusinessScenarioFaultType.MISSING_ITERATION_ID,
+                    this + " does not see iteration IDs anymore");
+        }
+
+        if (this.iterationId != null && !this.iterationId.equals(iterationId)) {
 
             throw new BusinessScenarioException(
                     getLineNumber(),
