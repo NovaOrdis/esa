@@ -68,19 +68,27 @@ public class MapPropertyTest extends PropertyTest {
         //
     }
 
-//    @Test
-//    public void externalizeValue_MapProperty() throws Exception {
-//
-//        MapProperty mp = new MapProperty("test-name", 1.1f);
-//        //assertEquals("1.1", fp.externalizeValue());
-//    }
-//
-//    @Test
-//    public void externalizeType_MapProperty() throws Exception {
-//
-//        MapProperty mp = new MapProperty("test-name", 1.1f);
-//        assertEquals("test-name", mp.externalizeValue());
-//    }
+    @Test
+    public void externalizeValue_MapProperty() throws Exception {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("key1", "value1");
+        map.put("key2", 7);
+        MapProperty mp = new MapProperty("test-name", map);
+        String externalizedValue = mp.externalizeValue();
+        assertTrue(externalizedValue.matches("\\{.*=.*,.*=.*\\}"));
+        assertTrue(externalizedValue.contains("key1=value1"));
+        assertTrue(externalizedValue.contains("key2=7"));
+    }
+
+    @Test
+    public void externalizeType_MapProperty() throws Exception {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("key1", "value1");
+        MapProperty mp = new MapProperty("test-name", map);
+        assertEquals("test-name", mp.externalizeType());
+    }
 
     // getMap() --------------------------------------------------------------------------------------------------------
 

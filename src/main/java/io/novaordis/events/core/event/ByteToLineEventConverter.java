@@ -93,6 +93,14 @@ public class ByteToLineEventConverter implements InputStreamConversionLogic {
             buffer.add(new LineEvent(lineNumber ++, sb.toString()));
             sb.setLength(0);
         }
+        else //noinspection StatementWithEmptyBody
+            if (b == '\r') {
+
+            //
+            // ignore it, as we expect an immediately following '\n'.
+            // TODO this implementation is incomplete, we don't handle situations like '\r' by itself, or '\r\r'.
+            //
+        }
         else if (b <= 255) {
             sb.append((char) b);
         }
@@ -123,6 +131,13 @@ public class ByteToLineEventConverter implements InputStreamConversionLogic {
     // Public ----------------------------------------------------------------------------------------------------------
 
     // Package protected -----------------------------------------------------------------------------------------------
+
+    /**
+     * For testing only.
+     */
+    StringBuilder getStringBuilder() {
+        return sb;
+    }
 
     // Protected -------------------------------------------------------------------------------------------------------
 

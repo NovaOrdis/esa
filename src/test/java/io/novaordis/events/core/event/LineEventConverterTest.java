@@ -72,6 +72,15 @@ public class LineEventConverterTest extends InputStreamConversionLogicTest {
         assertEquals("hello", se.get());
 
         assertTrue(sep.getEvents().isEmpty());
+
+        //
+        // beginning of another line
+        //
+
+        assertFalse(sep.process('x'));
+        assertTrue(sep.getEvents().isEmpty());
+        StringBuilder sb = sep.getStringBuilder();
+        assertEquals("x", sb.toString());
     }
 
     @Test
@@ -170,15 +179,31 @@ public class LineEventConverterTest extends InputStreamConversionLogicTest {
         assertTrue(sep.getEvents().isEmpty());
     }
 
-//    @Test
-//    public void cRAndLfAndCombinations() throws Exception {
-//        fail("return here");
-//    }
-//
-//    @Test
-//    public void windows() throws Exception {
-//        fail("return here");
-//    }
+    @Test
+    public void cRAndLfAndCombinations_CarriageReturnNewLine() throws Exception {
+
+        // "\r\n"
+        ByteToLineEventConverter sep = getConversionLogicToTest();
+        assertFalse(sep.process('.'));
+        assertTrue(sep.getEvents().isEmpty());
+        assertFalse(sep.process('\r'));
+        assertTrue(sep.getEvents().isEmpty());
+        assertTrue(sep.process('\n'));
+        List<Event> result = sep.getEvents();
+        assertEquals(1, result.size());
+        LineEvent se = (LineEvent)result.get(0);
+        assertEquals(".", se.get());
+        assertTrue(sep.getEvents().isEmpty());
+
+        //
+        // beginning of another line
+        //
+
+        assertFalse(sep.process('x'));
+        assertTrue(sep.getEvents().isEmpty());
+        StringBuilder sb = sep.getStringBuilder();
+        assertEquals("x", sb.toString());
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
