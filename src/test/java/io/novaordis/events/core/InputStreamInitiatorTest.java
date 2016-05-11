@@ -496,7 +496,7 @@ public class InputStreamInitiatorTest extends InitiatorTest {
         //
         for(long timeout = 1000L, t0 = System.currentTimeMillis();;) {
             if (isi.isStopped()) { break; }
-            Thread.sleep(10);
+            Thread.sleep(20);
             if (System.currentTimeMillis() - t0 > timeout) { fail("polled more than " + timeout + " ms"); }
         }
 

@@ -160,8 +160,11 @@ public class BusinessScenario {
             throw new IllegalStateException(this + " already closed, cannot be updated with " + event);
         }
 
+        long requestTimestamp = event.getTimestamp();
+
         String startMarker = event.getRequestHeader(BUSINESS_SCENARIO_START_MARKER_HEADER_NAME);
         String iterationId = event.getIterationId();
+
 
         if (startMarker != null) {
 
@@ -178,7 +181,7 @@ public class BusinessScenario {
                 //
                 // "close" the business scenario
                 //
-                endTimestamp = event.getTimestamp();
+                endTimestamp = requestTimestamp;
                 setState(BusinessScenarioState.CLOSED_BY_START_MARKER);
                 return true;
             }
@@ -188,7 +191,7 @@ public class BusinessScenario {
             //
             lineNumber = event.getLineNumber();
             setType(startMarker);
-            setBeginTimestamp(event.getTimestamp());
+            setBeginTimestamp(requestTimestamp);
             setState(BusinessScenarioState.OPEN);
             setJSessionId(event.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY));
             // this is the only time when we set the iteration ID
@@ -227,7 +230,7 @@ public class BusinessScenario {
 
         Long requestDuration = event.getRequestDuration();
         String requestSequenceId = event.getRequestSequenceId();
-        updateScenarioStatistics(requestDuration, requestSequenceId, iterationId);
+        updateScenarioStatistics(requestTimestamp, requestDuration, requestSequenceId, iterationId);
 
         String stopMarker = event.getRequestHeader(BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
 
@@ -247,8 +250,7 @@ public class BusinessScenario {
                         " ends a different scenario type (" + stopMarker + ") than the current one (" + type + ")");
             }
 
-            endTimestamp = event.getTimestamp() + (requestDuration == null ? 0 : requestDuration);
-            setState(BusinessScenarioState.CLOSED_NORMALLY);
+            setState(BusinessScenarioState.NORMAL);
         }
 
         if (requestDuration == null) {
@@ -263,7 +265,7 @@ public class BusinessScenario {
     /**
      * Forcibly closes a business scenario in a NEW or OPEN state (closing a NEW scenario is a noop).
      *
-     * A CLOSED_NORMALLY instance cannot be closed, will throw an IllegalArgumentException.
+     * A NORMAL instance cannot be closed, will throw an IllegalArgumentException.
      *
      * @exception IllegalArgumentException on attempt to close an already closed instance.
      */
@@ -280,9 +282,8 @@ public class BusinessScenario {
         setState(BusinessScenarioState.INCOMPLETE);
 
         //
-        // we don't know end timestamp
+        // endTimestamp was already updated by updateScenarioStatistics
         //
-        endTimestamp = -1L;
     }
 
     /**
@@ -426,11 +427,13 @@ public class BusinessScenario {
      * @exception BusinessScenarioException if duplicate request sequence ID is detected, if more than on iteration ID
      * is detected.
      */
-    void updateScenarioStatistics(Long requestDuration, String requestSequenceId, String iterationId)
-            throws BusinessScenarioException {
+    void updateScenarioStatistics(long requestTimestamp, Long requestDuration, String requestSequenceId,
+                                  String iterationId) throws BusinessScenarioException {
 
         requestCount ++;
-        duration += (requestDuration == null ? 0 : requestDuration);
+        long rd = requestDuration == null ? 0 : requestDuration;
+        duration += rd;
+        endTimestamp = requestTimestamp + rd;
 
         if (requestSequenceId != null) {
 

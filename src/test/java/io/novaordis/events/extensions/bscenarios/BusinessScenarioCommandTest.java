@@ -76,7 +76,7 @@ public class BusinessScenarioCommandTest {
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "scenario-1");
 
         BusinessScenarioEvent bse = (BusinessScenarioEvent)c.processHttpEvent(e2);
-        assertEquals(BusinessScenarioState.CLOSED_NORMALLY.name(),
+        assertEquals(BusinessScenarioState.NORMAL.name(),
                 bse.getStringProperty(BusinessScenarioEvent.STATE).getString());
 
 
