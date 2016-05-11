@@ -90,7 +90,7 @@ public class BusinessScenarioCommandTest {
         assertEquals(2, output.size());
 
         BusinessScenarioEvent bse2 = (BusinessScenarioEvent)output.get(0);
-        assertEquals(BusinessScenarioState.CLOSED_EXPLICITLY.name(),
+        assertEquals(BusinessScenarioState.INCOMPLETE.name(),
                 bse2.getStringProperty(BusinessScenarioEvent.STATE).getString());
         assertEquals(7L, bse2.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
         assertEquals(1, bse2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());

@@ -680,11 +680,11 @@ public class BusinessScenarioTest {
         bs.close();
         assertFalse(bs.isNew());
         assertTrue(bs.isClosed());
-        assertEquals(BusinessScenarioState.CLOSED_EXPLICITLY, bs.getState());
+        assertEquals(BusinessScenarioState.INCOMPLETE, bs.getState());
     }
 
     @Test
-    public void close_ACTIVE() throws Exception {
+    public void close_OPEN() throws Exception {
 
         BusinessScenario bs = new BusinessScenario();
 
@@ -700,7 +700,7 @@ public class BusinessScenarioTest {
 
         assertFalse(bs.isNew());
         assertFalse(bs.isOpen());
-        assertEquals(BusinessScenarioState.CLOSED_EXPLICITLY, bs.getState());
+        assertEquals(BusinessScenarioState.INCOMPLETE, bs.getState());
         assertEquals(-1L, bs.getEndTimestamp());
     }
 

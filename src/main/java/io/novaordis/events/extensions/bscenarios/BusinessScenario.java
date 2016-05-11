@@ -277,7 +277,7 @@ public class BusinessScenario {
             throw new IllegalStateException("cannot forcibly close a " + getState() + " scenario");
         }
 
-        setState(BusinessScenarioState.CLOSED_EXPLICITLY);
+        setState(BusinessScenarioState.INCOMPLETE);
 
         //
         // we don't know end timestamp

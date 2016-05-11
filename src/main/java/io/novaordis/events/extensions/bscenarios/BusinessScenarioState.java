@@ -45,10 +45,10 @@ public enum BusinessScenarioState {
     CLOSED_BY_START_MARKER,
 
     //
-    // the business scenario was closed explicitly via the close() API call, usually because the end of stream occurred
-    // before being updated with a STOP marker.
+    // the business scenario was closed explicitly via the close() API call and left in an "incomplete" state, usually
+    // because the end of stream occurred before being updated with a STOP marker.
     //
-    CLOSED_EXPLICITLY,
+    INCOMPLETE,
 
 
     //
