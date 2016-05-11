@@ -34,7 +34,7 @@ public enum BusinessScenarioState {
     ACTIVE,
 
     //
-    // the scenario has been closed normally by an STOP marker and it contains valid data
+    // the business scenario has been closed normally by an STOP marker and it contains valid data
     //
     CLOSED_NORMALLY,
 
@@ -45,7 +45,7 @@ public enum BusinessScenarioState {
     CLOSED_BY_START_MARKER,
 
     //
-    // the business scenario was closed explicitly via the close() API call, usually because the end of stream occured
+    // the business scenario was closed explicitly via the close() API call, usually because the end of stream occurred
     // before being updated with a STOP marker.
     //
     CLOSED_EXPLICITLY,

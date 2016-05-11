@@ -380,12 +380,11 @@ public class BusinessScenarioCommand extends CommandBase {
         System.out.printf("Counters\n");
 
         Set<BusinessScenarioState> bsStates = bsStats.getBusinessScenarioStates();
-
-        System.out.printf("       business scenarios: %d (%d different states)\n",
-                bsStats.getBusinessScenarioCount(), bsStates.size());
+        System.out.printf("       business scenarios: %d (%s)\n",
+                bsStats.getBusinessScenarioCount(), buildStateCountComment(bsStates));
 
         //
-        // always start by reporting "CLOSED_NORMALLY" scenarios, those are theo most important
+        // always start by reporting "CLOSED_NORMALLY" scenarios, those are the most important
         //
         displayScenarioStatsPerState(BusinessScenarioState.CLOSED_NORMALLY);
 
@@ -420,6 +419,15 @@ public class BusinessScenarioCommand extends CommandBase {
     private void displayScenarioStatsPerState(BusinessScenarioState state) {
 
         BusinessScenarioStateStatistics s = bsStats.getBusinessScenarioStatisticsPerState(state);
+
+        //
+        // there are cases when there are NO CLOSED_NORMALLY scenarios
+        //
+        if (s == null) {
+            System.out.printf("                             NO CLOSED_NORMALLY scenarios\n");
+            return;
+        }
+
         long counterPerState = s.getBusinessScenarioCount();
 
         System.out.printf(
@@ -427,6 +435,21 @@ public class BusinessScenarioCommand extends CommandBase {
                 state.name(), counterPerState,
                 s.getMinDurationMs(), s.getAverageDurationMs(), s.getMaxDurationMs(),
                 s.getMinRequestsPerScenario(), s.getAverageRequestsPerScenario(), s.getMaxRequestsPerScenario());
+    }
+
+    private String buildStateCountComment(Set<BusinessScenarioState> bsStates) {
+
+        if (bsStates.isEmpty()) {
+            return "NO business scenario states";
+        }
+
+        int size = bsStates.size();
+
+        if (size == 1) {
+            return "1 state only";
+        }
+
+        return size + " different states";
     }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
