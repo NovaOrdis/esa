@@ -211,7 +211,7 @@ public class BusinessScenario {
                 throw new BusinessScenarioException(
                         getLineNumber(),
                         BusinessScenarioFaultType.NO_OPEN_BUSINESS_SCENARIO,
-                        "there is no active business scenario for " + event);
+                        "there is no open business scenario for " + event);
             }
 
             //
