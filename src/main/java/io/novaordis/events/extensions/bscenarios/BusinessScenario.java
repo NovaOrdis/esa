@@ -165,7 +165,7 @@ public class BusinessScenario {
 
         if (startMarker != null) {
 
-            if (state.equals(BusinessScenarioState.ACTIVE)) {
+            if (state.equals(BusinessScenarioState.OPEN)) {
 
                 //
                 // start marker arrived before a end marker
@@ -189,7 +189,7 @@ public class BusinessScenario {
             lineNumber = event.getLineNumber();
             setType(startMarker);
             setBeginTimestamp(event.getTimestamp());
-            setState(BusinessScenarioState.ACTIVE);
+            setState(BusinessScenarioState.OPEN);
             setJSessionId(event.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY));
             // this is the only time when we set the iteration ID
             if (iterationId != null) {
@@ -207,7 +207,7 @@ public class BusinessScenario {
 
                 throw new BusinessScenarioException(
                         getLineNumber(),
-                        BusinessScenarioFaultType.NO_ACTIVE_BUSINESS_SCENARIO,
+                        BusinessScenarioFaultType.NO_OPEN_BUSINESS_SCENARIO,
                         "there is no active business scenario for " + event);
             }
 
@@ -261,7 +261,7 @@ public class BusinessScenario {
     }
 
     /**
-     * Forcibly closes a business scenario in a NEW or ACTIVE state (closing a NEW scenario is a noop).
+     * Forcibly closes a business scenario in a NEW or OPEN state (closing a NEW scenario is a noop).
      *
      * A CLOSED_NORMALLY instance cannot be closed, will throw an IllegalArgumentException.
      *
@@ -269,10 +269,10 @@ public class BusinessScenario {
      */
     public void close() {
 
-        if (!state.equals(BusinessScenarioState.NEW) && !state.equals(BusinessScenarioState.ACTIVE )) {
+        if (!state.equals(BusinessScenarioState.NEW) && !state.equals(BusinessScenarioState.OPEN)) {
 
             //
-            // we cannot forcibly close a scenario unless is in ACTIVE state
+            // we cannot forcibly close a scenario unless is in OPEN state
             //
             throw new IllegalStateException("cannot forcibly close a " + getState() + " scenario");
         }
@@ -291,7 +291,7 @@ public class BusinessScenario {
      */
     public boolean isClosed() {
 
-        return !state.equals(BusinessScenarioState.NEW) && !state.equals(BusinessScenarioState.ACTIVE);
+        return !state.equals(BusinessScenarioState.NEW) && !state.equals(BusinessScenarioState.OPEN);
     }
 
     public boolean isNew() {
@@ -308,7 +308,7 @@ public class BusinessScenario {
     /**
      * @return if true, this business scenario has seen the start marker and can be updated with new requests.
      */
-    public boolean isActive() {
+    public boolean isOpen() {
 
         return beginTimestamp > 0 && !isClosed();
     }

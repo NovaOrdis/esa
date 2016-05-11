@@ -125,7 +125,7 @@ public class HttpSessionTest {
         HttpSession s = new HttpSession("test-session-1");
 
         BusinessScenario bs = s.getCurrentBusinessScenario();
-        assertFalse(bs.isActive());
+        assertFalse(bs.isOpen());
         assertFalse(bs.isClosed());
         assertNull(bs.getType());
         assertNull(bs.getJSessionId());
@@ -141,7 +141,7 @@ public class HttpSessionTest {
         assertNull(re);
 
         bs = s.getCurrentBusinessScenario();
-        assertTrue(bs.isActive());
+        assertTrue(bs.isOpen());
         assertEquals(1, bs.getRequestCount());
         assertEquals("scenario-1", bs.getType());
         assertEquals("test-session-1", bs.getJSessionId());
@@ -169,7 +169,7 @@ public class HttpSessionTest {
         // the current business scenario has been replaced with a fresh one
         //
         assertEquals(0, bs.getRequestCount());
-        assertFalse(bs.isActive());
+        assertFalse(bs.isOpen());
         assertFalse(bs.isClosed());
         assertNull(bs.getType());
 
@@ -193,7 +193,7 @@ public class HttpSessionTest {
         assertNull(re);
 
         bs = s.getCurrentBusinessScenario();
-        assertTrue(bs.isActive());
+        assertTrue(bs.isOpen());
         assertEquals(1, bs.getRequestCount());
         assertEquals("scenario-2", bs.getType());
 
@@ -210,7 +210,7 @@ public class HttpSessionTest {
         // the current business scenario has been replaced with a fresh one
         //
         assertEquals(0, bs.getRequestCount());
-        assertFalse(bs.isActive());
+        assertFalse(bs.isOpen());
         assertFalse(bs.isClosed());
         assertNull(bs.getType());
 

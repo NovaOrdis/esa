@@ -31,7 +31,7 @@ public enum BusinessScenarioState {
     // the business scenario has seen a START marker and it is waiting to be updated with http requests
     // belonging to the scenario
     //
-    ACTIVE,
+    OPEN,
 
     //
     // the business scenario has been closed normally by an STOP marker and it contains valid data

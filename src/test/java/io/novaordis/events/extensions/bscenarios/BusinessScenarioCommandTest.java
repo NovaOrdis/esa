@@ -61,7 +61,7 @@ public class BusinessScenarioCommandTest {
         BusinessScenarioCommand c = new BusinessScenarioCommand();
 
         //
-        // initialize two sessions - one has a NEW scenario and one has an ACTIVE scenario
+        // initialize two sessions - one has a NEW scenario and one has an OPEN scenario
         //
 
         HttpEvent e = new HttpEvent(10L);
