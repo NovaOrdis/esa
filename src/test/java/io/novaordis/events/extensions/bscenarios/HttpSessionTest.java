@@ -116,7 +116,7 @@ public class HttpSessionTest {
 
         String msg = fe.toString();
         log.info(msg);
-        assertTrue(msg.contains("there is no active business scenario for"));
+        assertTrue(msg.contains("there is no open business scenario for"));
     }
 
     @Test
