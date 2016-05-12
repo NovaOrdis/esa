@@ -23,14 +23,21 @@ Global Options:
 
 Commands:
 
-    install-release-tools <project-home-directory>
-
-        Install the release tools into the 'bin' subdirectory of the specified project home directory.
-        A target directory qualifies as "project home directory" if it has a Maven pom.xml in it.
-
-
     install [-f|--force]
 
+    release <snapshot|minor|major|"version-string">
+
+        Makes a release by incrementing the release information appropriately, running all tests, building the final
+        artifact and installing the artifact in the appropriate repository.
+
+Installation:
+
+    ./src/main/bash/operations install-release-tools <project-home-directory>
+
+        The installation functionality can currently only be accessed from the original repository.
+        'install-release-tools' installs the release tools into the 'bin' subdirectory of the specified project home
+        directory. A target directory qualifies as "project home directory" if it has a Maven pom.xml in it. If an
+        older version of the release tools is already installed, 'install-release-tools' will upgrade in place.
 
 EOF
 }
