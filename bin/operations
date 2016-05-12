@@ -8,6 +8,7 @@ verbose=false
 command=""
 declare -a arguments
 project_home=""
+configuration_file=$(dirname $0)/operations.conf
 
 function usage() {
 cat  <<EOF
@@ -25,10 +26,14 @@ Commands:
 
     install [-f|--force]
 
-    release <snapshot|minor|major|"version-string">
+    release <snapshot|minor|major|patch|"version-string">
 
         Makes a release by incrementing the release information appropriately, running all tests, building the final
-        artifact and installing the artifact in the appropriate repository.
+        artifact and installing the artifact in the appropriate repository. If a version string is used, the string
+        is checked for consistency. The release process will fail if the version string is invalid or represents an
+        older version than the current version.
+
+     test - internal release tools testing shortcut. Advanced users only.
 
 Installation:
 
@@ -38,6 +43,11 @@ Installation:
         'install-release-tools' installs the release tools into the 'bin' subdirectory of the specified project home
         directory. A target directory qualifies as "project home directory" if it has a Maven pom.xml in it. If an
         older version of the release tools is already installed, 'install-release-tools' will upgrade in place.
+
+Per-Project Configuration:
+
+    Create an operations.conf in the directory the release tools were installed into and configure local project
+    properties.
 
 EOF
 }
@@ -54,6 +64,7 @@ function main() {
     debug "global debug: ${debug}"
     debug "global verbose: ${verbose}"
     debug "command: ${command}"
+
     local i=0
     while [ ${i} -lt ${#arguments[*]} ]; do
         debug "arg ${i}: ${arguments[${i}]}"
@@ -66,6 +77,12 @@ function main() {
     # set project home
     #
     project_home=$(dirname $0)/..
+
+    #
+    # load local configuration
+    #
+
+    [ -f ${configuration_file} ] && . ${configuration_file}
 
     #
     # execute the top-level operation, the function expects all its arguments in the "arguments" global array
@@ -85,9 +102,32 @@ function debug
 #
 # Activated by --verbose|-v. Relies on a "verbose" global variable
 #
+# Usage:
+#        debug-arguments "$@".
+#
+# It is important to quote the argument, otherwise the empty arguments won't be displayed.
+#
 function debug-arguments
 {
-    ${verbose} && echo "${FUNCNAME[1]}($@)" 1>&2;
+    local first=$1 # placeholder, to avoid IDE warnings
+    local args
+    if ${verbose}; then
+        for arg do
+            #
+            # this is how we mask passwords
+            #
+            if [ "--aws-secret-key" = "${arg}" ]; then
+                arg="--aws-secret-key ***"
+            fi
+            [ -z "${arg}" ] && arg="\"\""
+            if [ -z "${args}" ]; then
+                args="${arg}"
+            else
+                args="${args}, ${arg}"
+            fi
+        done
+        echo "${FUNCNAME[1]}(${args})" 1>&2;
+    fi
     return 0
 }
 
@@ -97,6 +137,14 @@ function debug-arguments
 function fail
 {
     echo "[error]: $@" 1>&2 && exit 255
+}
+
+# Send warning information at stderr and returns
+#
+function warn
+{
+    echo "[warning]: $@" 1>&2
+    return 0
 }
 
 #
@@ -212,47 +260,221 @@ function set-version() {
     mv ${tmp_file} ${pom_file} || fail "failed to restore ${pom_file} from ${tmp_file}"
 }
 
-function compute-next-snapshot-version() {
+# mode can be 'major', 'minor', 'patch', 'snapshot' or a full version string.
+# If a full version string is provided, the function will verify that is a valid version string and the version it
+# specifies if newer than the current version.
+# Sends the version string at stdout.
+function compute-next-version() {
+
+    debug-arguments "$@"
 
     local current_version=$1
     [ -z "${current_version}" ] && fail "'current_version' not specified"
+    local mode=$2
+    [ -z "${mode}" ] && fail "'mode' not specified"
 
-    local root=${current_version##*SNAPSHOT}
+    local major
+    local minor
+    local patch
+    local snapshot
 
-    debug "root: ${root}"
+    major=$(extract-version-component major ${current_version}) || exit 1
+    minor=$(extract-version-component minor ${current_version}) || exit 1
+    patch=$(extract-version-component patch ${current_version}) || exit 1
+    snapshot=$(extract-version-component snapshot ${current_version}) || exit 1
 
-    if [ "${root}" != ${current_version} ]; then
+    debug "major=${major}, minor=${minor}, patch=${patch}, snapshot=${snapshot}"
+
+    if [ "${mode}" = "major" ]; then
+        major=$(expr ${major} + 1) || exit 1
+        minor=""
+        patch=""
+        snapshot=""
+    elif [ "${mode}" = "minor" ]; then
+        minor=$(expr ${minor} + 1) || exit 1
+        patch=""
+        snapshot=""
+    elif [ "${mode}" = "patch" ]; then
+        patch=$(expr ${patch} + 1) || exit 1
+        snapshot=""
+    elif [ "${mode}" = "snapshot" ]; then
+        if [ -z "${snapshot}" ]; then
+            snapshot=1
+        else
+            snapshot=$(expr ${snapshot} + 1) || exit 1
+        fi
+    else
+        local new_version=${mode}
+        local new_major
+        local new_minor
+        local new_patch
+        local new_snapshot
+        new_major=$(extract-version-component major ${new_version}) || exit 1
+        new_minor=$(extract-version-component minor ${new_version}) || exit 1
+        new_patch=$(extract-version-component patch ${new_version}) || exit 1
+        new_snapshot=$(extract-version-component snapshot ${new_version}) || exit 1
+
         #
-        # 'SNAPSHOT' found in the current version string, increment it
+        # this is where new version consistency verifications are done
         #
-        local prefix
-        prefix=${current_version%SNAPSHOT*}
 
-        if [ -z "${root}" ]; then
-            # "clean" SNAPSHOT, start to add postfixes
-            echo ${current_version}-1
-            return 0
+        [ ${new_major} -lt ${major} ] && \
+            fail "the major component (${new_major}) of the new version ${new_version} is older then the corresponding major component of the current version ${current_version}"
+
+        if [ ${new_major} -eq ${major} ]; then
+            #
+            # we must compare minor versions
+            #
+            [ -z "${new_minor}" ] && new_minor_for_comparison=0 || new_minor_for_comparison=${new_minor}
+            [ -z "${minor}" ] && minor_for_comparison=0 || minor_for_comparison=${minor}
+            [ "${new_minor_for_comparison}" -le "${minor_for_comparison}" ] && \
+                fail "the minor component (${new_minor_for_comparison}) of the new version ${new_version} is equal or older than the corresponding minor component of the current version ${current_version}"
+
+            if [ ${new_minor_for_comparison} -eq ${minor_for_comparison} ]; then
+                #
+                # we must compare patch versions
+                #
+                [ -z "${new_patch}" ] && new_patch_for_comparison=0 || new_patch_for_comparison=${new_patch}
+                [ -z "${patch}" ] && patch_for_comparison=0 || patch_for_comparison=${patch}
+                [ "${new_patch_for_comparison}" -le "${patch_for_comparison}" ] && \
+                    fail "the patch component (${new_patch_for_comparison}) of the new version ${new_version} is equal or older than the corresponding patch component of the current version ${current_version}"
+
+                if [ ${new_patch_for_comparison} -eq ${patch_for_comparison} ]; then
+                    #
+                    # we must compare snapshot versions
+                    #
+                    if [ -z "${new_snapshot}" ]; then
+                        debug "we end a snapshot series with the 'clean' version"
+                    else
+                        [ -z "${new_snapshot}" ] && new_snapshot_for_comparison=0 || new_snapshot_for_comparison=${new_snapshot}
+                        [ -z "${snapshot}" ] && snapshot_for_comparison=0 || snapshot_for_comparison=${snapshot}
+                        [ "${new_snapshot_for_comparison}" -le "${snapshot_for_comparison}" ] && \
+                            fail "the snapshot component (${new_snapshot_for_comparison}) of the new version ${new_version} is equal or older than the corresponding snapshot component of the current version ${current_version}"
+                    fi
+                fi
+            fi
         fi
 
-        # postfix already present, see if it's "legal"
-        [ ${root:0:1} != "-" ] && \
-            fail "current snapshot version string ${current_version} has an illegal format, '-' must follow after '*SNAPSHOT'"
+        #
+        # verification passed
+        #
 
-        root=${root#?}
-
-        [ -z "${root}" ] && \
-            fail "current snapshot version string ${current_version} has an illegal format, a number must follow after '*SNAPSHOT-'"
-
-        # increment
-        local next
-        next=$(expr ${root} + 1) || \
-            fail "current snapshot version string ${current_version} has an illegal format, a number must follow after '*SNAPSHOT-'"
-
-        echo "${prefix}SNAPSHOT-${next}"
-        return 0
+        major=${new_major}
+        minor=${new_minor}
+        patch=${new_patch}
+        snapshot=${new_snapshot}
     fi
 
-    fail "NOT YET IMPLEMENTED 2"
+    assemble-version-string "${major}" "${minor}" "${patch}" "${snapshot}"
+}
+
+# gets the full version string and returns requested component (major, minor, patch or snapshot).
+# They can only be numbers. If not numbers, the method will fail.
+# If the component is absent, the method will stdout the empty string
+function extract-version-component {
+
+    local mode=$1
+    [ -z "${mode}" ] && fail "'mode' not specified"
+    [ ${mode} != "major" -a ${mode} != "minor" -a ${mode} != "patch" -a ${mode} != "snapshot" ] && \
+        fail "unknown mode ${mode}, must be one of 'major', 'minor', 'patch' or 'snapshot'"
+    local version=$2
+    [ -z "${version}" ] && fail "'version' not specified"
+    local original_version_string=${version}
+
+    local snapshot
+    local major
+    local minor
+    local patch
+
+    local pre_snapshot=${version%-SNAPSHOT*}
+
+    if [ "${version}" != "${pre_snapshot}" ]; then
+        #
+        # snapshot version
+        #
+        snapshot=${version#*SNAPSHOT-}
+        if ! expr ${snapshot} + 1 >/dev/null 2>&1; then
+            fail "the snapshot component of the version string ${original_version_string} (${snapshot}) is not an integer, version string not valid"
+        fi
+        version=${pre_snapshot}
+    fi
+
+    major=${version%%.*}
+
+    if [ "${major}" != "${version}" ]; then
+        # there is a dot, the major version is already extracted and stored in 'major', extract the rest
+        version=${version#*.}
+        minor=${version%%.*}
+        if [ "${minor}" != "${version}" ]; then
+            # there is a dot, the minor version is already extracted and stored in 'minor', the rest, without the dot, is the patch
+            patch=${version#*.}
+            [ "${patch}" = "" ] && \
+                fail "no patch information follows after the last dot in ${original_version_string}, version string not valid"
+            if ! expr ${patch} + 1 >/dev/null 2>&1; then
+                fail "the patch component of the version string ${original_version_string} (${patch}) is not an integer, version string not valid"
+            fi
+        fi
+        if ! expr ${minor} + 1 >/dev/null 2>&1; then
+            fail "the minor component of the version string ${original_version_string} (${minor}) is not an integer, version string not valid"
+        fi
+    fi
+
+    if ! expr ${major} + 1 >/dev/null 2>&1; then
+        fail "the major component of the version string ${original_version_string} (${major}) is not an integer, version string not valid"
+    fi
+
+    if [ "${mode}" = "major" ]; then
+        echo ${major}
+    elif [ "${mode}" = "minor" ]; then
+        echo ${minor}
+    elif [ "${mode}" = "patch" ]; then
+        echo ${patch}
+    elif [ "${mode}" = "snapshot" ]; then
+        echo ${snapshot}
+    else
+        fail "invalid mode ${mode}"
+    fi
+}
+
+function assemble-version-string() {
+
+    debug-arguments "$@"
+
+    local major=$1
+    local minor=$2
+    local patch=$3
+    local snapshot=$4
+
+    [ -z "${major}" ] && fail "no major version specified"
+    if ! expr ${major} + 1 >/dev/null 2>&1; then
+        fail "the major component ${major} is not an integer"
+    fi
+
+    local version=${major}
+
+    if [ -n "${minor}" ]; then
+        if ! expr ${minor} + 1 >/dev/null 2>&1; then
+            fail "the minor component ${minor} is not an integer"
+        fi
+        version=${version}.${minor}
+        if [ -n "${patch}" ]; then
+            if ! expr ${patch} + 1 >/dev/null 2>&1; then
+                fail "the patch component ${patch} is not an integer"
+            fi
+            version=${version}.${patch}
+        fi
+    else
+       [ -n "${patch}" ] && fail "no minor component provided while a patch component was provided: ${patch}"
+    fi
+
+    if [ -n "${snapshot}" ]; then
+        if ! expr ${snapshot} + 1 >/dev/null 2>&1; then
+            fail "the snapshot component ${snapshot} is not an integer"
+        fi
+        version=${version}-SNAPSHOT-${snapshot}
+    fi
+
+    echo ${version}
 }
 
 #
@@ -324,7 +546,7 @@ function get-artifact-file-name()
     echo ${prefix}${postfix}
 }
 
-function get-installation-zip-file-name() {
+function get-release-zip-file-name() {
     echo "$(get-artifact-base-name)-$(get-version).zip"
 }
 
@@ -342,7 +564,7 @@ function get-run-wrapper-name() {
 #
 function configure-run-wrapper()
 {
-    debug-arguments $@
+    debug-arguments "$@"
 
     local zip_bin_dir=$1
 
@@ -432,11 +654,11 @@ function get-dependencies()
 }
 
 #
-# we don't check whether it exists or not, we just build it. If it exists, we overwrite it.
+# We don't check whether it exists or not, we just build it. If it exists, we overwrite it.
 #
 # returns the newly created zip file path
 #
-function build-installation-zip-file() {
+function build-release-zip-file() {
 
     local artifact_path=${project_home}/target/$(get-artifact-file-name)
 
@@ -504,7 +726,7 @@ function build-installation-zip-file() {
 #
 function install()
 {
-    debug-arguments $@
+    debug-arguments "$@"
 
     local zip_file=$1
     local target_dir=$2 # the system directory where third-party software is installed (/opt or /usr/local)
@@ -553,6 +775,34 @@ function install()
     echo "${application_home_dir}"
 }
 
+#
+# Installs the release into repository.
+#
+# Relies on the presence of 'release_repository' in scope, which should be a project local configuration. If not set,
+# the function fails.
+#
+function install-release() {
+
+    debug-arguments "$@"
+
+    [ -z "${release_repository}" ] && \
+        fail "'release_repository' not defined. Check your local configuration file ${configuration_file}"
+
+    debug "release repository: ${release_repository}"
+
+    local release_file_path=$1
+    [ -z "${release_file_path}" ] && fail "'release_file' not provided"
+    [ -f ${release_file_path} ] || fail "the release file ${release_file_path} does not exist"
+
+    local target_file=${release_repository}/$(basename ${release_file_path})
+
+    [ -f ${target_file} ] && fail "${target_file} already exists in the repository"
+
+    cp ${release_file_path} ${target_file} && \
+        info "installed $(basename ${target_file}) in ${release_repository}" || \
+        fail "failed to install $(basename ${target_file}) in ${release_repository}"
+}
+
 ########################################################################################################################
 # top level operations, exposed as external commands - they expect the arguments in the "arguments" global array
 ########################################################################################################################
@@ -580,6 +830,13 @@ function do-install-release-tools() {
 
     # copy ourselves into bin - we will overwrite an existing "operations" file and that allows us to easily upgrade
     cp $0 ${bin_dir} && info "copied $0 into ${bin_dir}" || fail "failed to copy $0 into ${bin_dir}"
+
+    # copy the sample configuration file
+    if [ ! -f ${bin_dir}/operations.conf ]; then
+        cp $(dirname $0)/operations.conf ${bin_dir} && \
+            info "copied $(dirname $0)/operations.conf into ${bin_dir}" || \
+            fail "failed to copy $(dirname $0)/operations.conf into ${bin_dir}"
+    fi
 
     #
     # these are the links to ./operations that are going to be created in ./bin
@@ -610,29 +867,40 @@ function do-install-release-tools() {
     local run_wrapper_name
     run_wrapper_name=$(get-run-wrapper-name) || exit 1
     local run_wrapper_path=${run_wrapper_dir}/${run_wrapper_name}
-    cp ${run_wrapper_template} ${run_wrapper_path} && \
-        info "copied ${run_wrapper_template} as ${run_wrapper_path}" || \
-        fail "failed to copy ${run_wrapper_template} as ${run_wrapper_path}"
-    chmod a+x ${run_wrapper_path} && \
-        debug "chmod a+x ${run_wrapper_path}" || \
-        fail "failed to chmod a+x ${run_wrapper_path}"
+
+    if [ -f ${run_wrapper_path} ]; then
+        warn "run wrapper ${run_wrapper_path} already exists, won't overwrite. Do it manually if required."
+    else
+        cp ${run_wrapper_template} ${run_wrapper_path} && \
+            info "copied ${run_wrapper_template} as ${run_wrapper_path}" || \
+            fail "failed to copy ${run_wrapper_template} as ${run_wrapper_path}"
+        chmod a+x ${run_wrapper_path} && \
+            debug "chmod a+x ${run_wrapper_path}" || \
+            fail "failed to chmod a+x ${run_wrapper_path}"
+    fi
 
     #
     # initialize the version mechanism
     #
 
-    mkdir -p ${project_home}/src/main/resources || fail "failed to mkdir -p ${project_home}/src/main/resource"
+    if [ ! -d ${project_home}/src/main/resources ]; then
+        mkdir -p ${project_home}/src/main/resources || fail "failed to mkdir -p ${project_home}/src/main/resource"
+    fi
 
-    (cat << EOF
+    local release_date
+    local version
+    if [ ! -f ${project_home}/src/main/resources/VERSION ]; then
+        (cat << EOF
 version=\${version}
 release_date=\${release_date}
 EOF
 ) > ${project_home}/src/main/resources/VERSION
+    fi
 }
 
 function do-test() {
 
-    set-version "blah" /Users/ovidiu/projects/clad/pom-test.xml
+    compute-next-version ${arguments[0]} ${arguments[1]}
 }
 
 #
@@ -664,19 +932,11 @@ function do-install() {
 
     debug "checking whether the project installation zip has been built ..."
 
-    local zip_file_name
-    zip_file_name=$(get-installation-zip-file-name) || exit 1
-    debug "zip_file_name: ${zip_file_name}"
-
-    local zip_file_path=${project_home}/target/${zip_file_name}
-
-    if [ ! -f ${zip_file_path} ]; then
-        debug "zip file ${zip_file_path} does not exist"
-        zip_file_path=$(build-installation-zip-file) || exit 1
-    fi
+    local release_zip_file_path
+    release_zip_file_path=$(build-relese-zip-file) || exit 1
 
     local installed_path
-    installed_path=$(install ${zip_file_path} ${RUNTIME_DIR} ${force}) || exit 1
+    installed_path=$(install ${release_zip_file_path} ${RUNTIME_DIR} ${force}) || exit 1
 
     info "installed $(basename ${installed_path}) in $(dirname ${installed_path})"
 }
@@ -690,14 +950,14 @@ function do-release() {
     # process arguments
     #
 
-    local snapshot_or_version
+    local mode # 'snapshot'|'minor'|'major'|'patch' or version string
 
     local i=0
     while [ ${i} -lt ${#arguments[*]} ]; do
         local arg=${arguments[${i}]}
-        debug "do-install arg ${i}: ${arg}"
-        if [ -z "${snapshot_or_version}" ]; then
-            snapshot_or_version=${arg}
+        debug "do-release arg ${i}: ${arg}"
+        if [ -z "${mode}" ]; then
+            mode=${arg}
         fi
         ((i++))
     done
@@ -706,38 +966,32 @@ function do-release() {
     # checking pre-requisites
     #
 
-    [ -z "${snapshot_or_version}" ] && fail "'snapshot' or the version string must be specified"
-
-
-    if [ "${snapshot_or_version}" = "snapshot" ]; then
-        release-snapshot
-        return 0
-    fi
-
-    #
-    #
-    #
-
-    local new_version=${snapshot_or_version}
-
-    fail "functionality to release '${new_version}' not yet implemented; make sure the version make sense and implement the functionality"
-}
-
-function release-snapshot() {
+    [ -z "${mode}" ] && fail "snapshot|minor|major|patch or the version string must be specified"
 
     local current_version
     current_version=$(get-version) || exit 1
-    local next_snapshot_version
-    next_snapshot_version=$(compute-next-snapshot-version "${current_version}") || exit 1
-    debug "next snapshot version ${next_snapshot_version}"
-    set-version ${next_snapshot_version}
-    mvn clean install || fail "failed to pass tests, must restore the version in pom.xml manually"
+    debug "current version: ${current_version}"
 
+    local next_version
+    next_version=$(compute-next-version "${current_version}" "${mode}") || exit 1
+    debug "next version ${next_version}"
+
+    set-version ${next_version}
+    mvn clean install || fail "failed to pass tests, must restore the version in pom.xml to ${current_version} manually"
+
+    local release_zip_file_path
+    release_zip_file_path=$(build-release-zip-file) || exit 1
+
+    install-release ${release_zip_file_path}
+
+    info ""
     info "###########################################################################################"
     info "#"
-    info "#       A new snapshot version was released locally, you may want to commit in git        #"
+    info "#    A new ${mode} version (${next_version}) was released locally, you may want to commit and push git #"
     info "#"
     info "###########################################################################################"
+    info ""
+
 }
 
 main $@
