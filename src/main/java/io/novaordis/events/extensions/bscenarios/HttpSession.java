@@ -20,6 +20,12 @@ import io.novaordis.clad.UserErrorException;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
 import io.novaordis.events.httpd.HttpEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Collects data associated with a HTTP session, as identified in the incoming event stream by its JSESSIONID.
@@ -30,6 +36,8 @@ import io.novaordis.events.httpd.HttpEvent;
 class HttpSession {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(HttpSession.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -69,12 +77,16 @@ class HttpSession {
      *
      * NOT thread safe.
      *
+     * @return one or more events. May be an empty list, but never null.
+     *
      * @exception UserErrorException if the lower layers encountered a problem that stops us from processing the
      *  event stream (most likely because trying to produce further results won't make sense). Example: if the HTTP
      *  request does not belong to the current session, etc. In this case, the process must exit with a user-readable
      *  error.
      */
-    public Event process(HttpEvent event) throws UserErrorException {
+    public List<Event> process(HttpEvent event) throws UserErrorException {
+
+        List<Event> result = null;
 
         // sanity check
         if (event == null) {
@@ -87,32 +99,9 @@ class HttpSession {
 
         requestsProcessedBySessionCount ++;
 
-        Event result = null;
-
         try {
 
-            if (current.update(event)) {
-
-                //
-                // we've just "closed" the current business scenario, issue the corresponding BusinessScenarioEvent
-                // and initialize a new instance
-                //
-
-                result = current.toEvent();
-                current = new BusinessScenario();
-
-                //
-                // There is a special case were the stop marker is missing, so the request containing the start marker
-                // of the next scenario is used both to close the previous scenario and to update the new scenario
-                //
-
-                if (event.getRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME) != null) {
-                    boolean newScenarioUpdateClosedScenario = current.update(event);
-                    if (newScenarioUpdateClosedScenario) {
-                        throw new IllegalStateException(event + " closed " + current);
-                    }
-                }
-            }
+            current.update(event);
         }
         catch(BusinessScenarioException e) {
 
@@ -120,9 +109,61 @@ class HttpSession {
             // this type of failure is translated into a FaultEvent and it does not stop processing
             //
 
-            result = new FaultEvent(e.getFaultType(), e);
+            //noinspection ConstantConditions
+            result = addToResult(result, e);
+        }
 
-            faultCount ++;
+        //
+        // check the state
+        //
+
+        if (current.isClosed()) {
+
+            //
+            // we've just "closed" the current business scenario, issue the corresponding BusinessScenarioEvent
+            // and initialize a new instance
+            //
+
+            BusinessScenarioEvent bse = current.toEvent();
+
+            log.debug(this + " closed " + bse);
+
+            result = addToResult(result, bse);
+
+            current = new BusinessScenario();
+
+            //
+            // This is a special case were the stop marker never arrived and now we're seeing a start marker again -
+            // the request containing the start marker of the next scenario is used both to close the previous scenario
+            // and to update the new scenario, below:
+            //
+
+            if (event.getRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME) != null) {
+
+                try {
+
+                    current.update(event);
+
+                    //
+                    // sanity check, this is a bit redundant
+                    //
+                    if (current.isClosed()) {
+                        throw new IllegalStateException(event + " closed " + current);
+                    }
+                }
+                catch(BusinessScenarioException e) {
+
+                    //
+                    // this type of failure is translated into a FaultEvent and it does not stop processing
+                    //
+
+                    result = addToResult(result, e);
+                }
+            }
+        }
+
+        if (result == null) {
+            return Collections.emptyList();
         }
 
         return result;
@@ -156,6 +197,41 @@ class HttpSession {
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
+
+    /**
+     * Adds the current argument (either a BusinessScenarioEvent or a BusinessScenarioException that will turned into
+     * a FaultEvent) to the result, handling null and empty list as appropriate.
+     *
+     * @param current the current list - may be null.
+     * @param o a BusinessScenarioEvent or a BusinessScenarioException that will be converted to a Fault.
+     */
+    private List<Event> addToResult(List<Event> current, Object o) {
+
+        Event e;
+
+        if (o instanceof BusinessScenarioEvent) {
+
+            e = (BusinessScenarioEvent)o;
+        }
+        else if (o instanceof BusinessScenarioException) {
+
+            BusinessScenarioException bse = (BusinessScenarioException)o;
+            e = new FaultEvent(bse.getFaultType(), bse);
+            faultCount ++;
+        }
+        else {
+            throw new IllegalArgumentException(
+                    "the argument must be either a BusinessScenarioEvent or a BusinessScenarioException, but it is " +
+                            o);
+        }
+
+        if (current == null) {
+             current = new ArrayList<>();
+        }
+
+        current.add(e);
+        return current;
+    }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 

@@ -579,6 +579,79 @@ public class BusinessScenarioTest {
         }
     }
 
+    @Test
+    public void update_StartMarkerRequestHasNoDurationInformation() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+
+        HttpEvent e = new HttpEvent(1L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
+        e.setLineNumber(1001L);
+        assertNull(e.getRequestDuration());
+
+
+        try {
+            assertFalse(bs.update(e));
+            fail("should throw exception");
+        }
+        catch(BusinessScenarioException ex) {
+
+            assertEquals(1001L, ex.getLineNumber().longValue());
+            assertEquals(BusinessScenarioFaultType.NO_REQUEST_DURATION_INFO, ex.getFaultType());
+            String msg = ex.getMessage();
+            log.info(msg);
+            assertTrue(msg.matches("^.* does not have request duration information"));
+        }
+
+        //
+        // the state of the scenario is consistent even if the exception was thrown
+        //
+        assertEquals(1, bs.getRequestCount());
+        assertEquals(1L, bs.getBeginTimestamp());
+        assertEquals(1L, bs.getEndTimestamp());
+        assertFalse(bs.isClosed());
+        assertEquals(BusinessScenarioState.OPEN, bs.getState());
+    }
+
+    @Test
+    public void update_ScenarioIsClosedButThereIsNoDuration() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+
+        HttpEvent e = new HttpEvent(1L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
+        e.setRequestDuration(1L);
+
+        assertFalse(bs.update(e));
+
+        HttpEvent e2 = new HttpEvent(10L);
+        assertNull(e2.getRequestDuration());
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TEST");
+        e2.setLineNumber(1001L);
+
+        try {
+            assertTrue(bs.update(e2));
+            fail("should throw exception");
+        }
+        catch(BusinessScenarioException ex) {
+
+            assertEquals(1001L, ex.getLineNumber().longValue());
+            assertEquals(BusinessScenarioFaultType.NO_REQUEST_DURATION_INFO, ex.getFaultType());
+            String msg = ex.getMessage();
+            log.info(msg);
+            assertTrue(msg.matches("^.* does not have request duration information"));
+        }
+
+        //
+        // the state of the scenario is consistent even if the exception was thrown
+        //
+        assertEquals(2, bs.getRequestCount());
+        assertEquals(1L, bs.getBeginTimestamp());
+        assertEquals(10L, bs.getEndTimestamp());
+        assertTrue(bs.isClosed());
+        assertEquals(BusinessScenarioState.NORMAL, bs.getState());
+    }
+
     // toEvent() -------------------------------------------------------------------------------------------------------
 
     @Test

@@ -267,6 +267,10 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         return v == null ? 0L : v;
     }
 
+    public void setLineNumber(long lineNumber) {
+        setLongProperty(Event.LINE_NUMBER_PROPERTY_NAME, lineNumber);
+    }
+
     /**
      * @return the value corresponding to the request header 'Business-Scenario-Request-Sequence-ID'. May be null
      * if the header is not present.

@@ -25,9 +25,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -87,15 +88,17 @@ public class HttpSessionTest {
         startRequest.setLongProperty(HttpEvent.REQUEST_DURATION, 10L);
         startRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
 
-        Event event = s.process(startRequest);
-        assertNull(event);
+        List<Event> events = s.process(startRequest);
+        assertTrue(events.isEmpty());
 
         HttpEvent stopRequest = new HttpEvent(8L);
         stopRequest.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         stopRequest.setLongProperty(HttpEvent.REQUEST_DURATION, 20L);
         stopRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "scenario-1");
 
-        BusinessScenarioEvent bse = (BusinessScenarioEvent)s.process(stopRequest);
+        List<Event> events2 = s.process(stopRequest);
+        assertEquals(1, events2.size());
+        BusinessScenarioEvent bse = (BusinessScenarioEvent)events2.get(0);
 
         assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
         assertEquals(2, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
@@ -112,11 +115,15 @@ public class HttpSessionTest {
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e.setLongProperty(HttpEvent.REQUEST_DURATION, 1L);
 
-        FaultEvent fe = (FaultEvent)s.process(e);
+        List<Event> events = s.process(e);
+        assertEquals(1, events.size());
+        FaultEvent fe = (FaultEvent)events.get(0);
 
         String msg = fe.toString();
         log.info(msg);
         assertTrue(msg.contains("there is no open business scenario for"));
+
+        assertEquals(1, s.getFaultCount());
     }
 
     @Test
@@ -130,7 +137,7 @@ public class HttpSessionTest {
         assertNull(bs.getType());
         assertNull(bs.getJSessionId());
 
-        Event re;
+        List<Event> re;
 
         HttpEvent e = new HttpEvent(10L);
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
@@ -138,7 +145,7 @@ public class HttpSessionTest {
         e.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
 
         re = s.process(e);
-        assertNull(re);
+        assertTrue(re.isEmpty());
 
         bs = s.getCurrentBusinessScenario();
         assertTrue(bs.isOpen());
@@ -151,7 +158,7 @@ public class HttpSessionTest {
         e2.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
 
         re = s.process(e2);
-        assertNull(re);
+        assertTrue(re.isEmpty());
 
         bs = s.getCurrentBusinessScenario();
         assertEquals(2, bs.getRequestCount());
@@ -162,7 +169,8 @@ public class HttpSessionTest {
         e3.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
 
         re = s.process(e3);
-        assertNotNull(re);
+        assertEquals(1, re.size());
+
 
         bs = s.getCurrentBusinessScenario();
         //
@@ -173,7 +181,7 @@ public class HttpSessionTest {
         assertFalse(bs.isClosed());
         assertNull(bs.getType());
 
-        BusinessScenarioEvent bse = (BusinessScenarioEvent)re;
+        BusinessScenarioEvent bse = (BusinessScenarioEvent)re.get(0);
 
         assertEquals(3, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
         assertEquals(3L, bse.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
@@ -190,7 +198,7 @@ public class HttpSessionTest {
         e4.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
 
         re = s.process(e4);
-        assertNull(re);
+        assertTrue(re.isEmpty());
 
         bs = s.getCurrentBusinessScenario();
         assertTrue(bs.isOpen());
@@ -203,7 +211,7 @@ public class HttpSessionTest {
         e5.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
 
         re = s.process(e3);
-        assertNotNull(re);
+        assertEquals(1, re.size());
 
         bs = s.getCurrentBusinessScenario();
         //
@@ -214,7 +222,7 @@ public class HttpSessionTest {
         assertFalse(bs.isClosed());
         assertNull(bs.getType());
 
-        BusinessScenarioEvent bse2 = (BusinessScenarioEvent)re;
+        BusinessScenarioEvent bse2 = (BusinessScenarioEvent)re.get(0);
 
         assertEquals(2, bse2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
         assertEquals(2, bse2.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
@@ -229,7 +237,7 @@ public class HttpSessionTest {
 
         HttpSession s = new HttpSession("test-session-1");
 
-        Event re;
+        List<Event> re;
 
         HttpEvent e = new HttpEvent(1L);
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
@@ -237,7 +245,7 @@ public class HttpSessionTest {
         e.setLongProperty(HttpEvent.REQUEST_DURATION, 1L);
 
         re = s.process(e);
-        assertNull(re);
+        assertTrue(re.isEmpty());
 
         HttpEvent e2 = new HttpEvent(2L);
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
@@ -245,9 +253,9 @@ public class HttpSessionTest {
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "scenario-1");
 
         re = s.process(e2);
-        assertNotNull(re);
+        assertEquals(1, re.size());
 
-        BusinessScenarioEvent bse = (BusinessScenarioEvent)re;
+        BusinessScenarioEvent bse = (BusinessScenarioEvent)re.get(0);
 
         assertEquals(2, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
         assertEquals(2, bse.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
@@ -259,7 +267,7 @@ public class HttpSessionTest {
 
         HttpSession s = new HttpSession("test-session-1");
 
-        Event re;
+        List<Event> re;
 
         HttpEvent e = new HttpEvent(1L);
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
@@ -267,7 +275,7 @@ public class HttpSessionTest {
         e.setRequestDuration(1L);
 
         re = s.process(e);
-        assertNull(re);
+        assertTrue(re.isEmpty());
 
         HttpEvent e2 = new HttpEvent(2L);
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
@@ -288,7 +296,7 @@ public class HttpSessionTest {
 
         HttpSession s = new HttpSession("test-session-1");
 
-        Event re;
+        List<Event> re;
 
         HttpEvent e = new HttpEvent(1L);
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
@@ -296,13 +304,16 @@ public class HttpSessionTest {
         e.setRequestDuration(1L);
 
         re = s.process(e);
-        assertNull(re);
+        assertTrue(re.isEmpty());
 
         HttpEvent noDurationRequest = new HttpEvent(2L);
         noDurationRequest.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
 
-        FaultEvent fe = (FaultEvent)s.process(noDurationRequest);
+        List<Event> re2 = s.process(noDurationRequest);
+        assertEquals(1, re2.size());
+        FaultEvent fe = (FaultEvent)re2.get(0);
         log.info("" + fe);
+        assertEquals(1, s.getFaultCount());
     }
 
     @Test
@@ -315,15 +326,17 @@ public class HttpSessionTest {
         startRequest.setLongProperty(HttpEvent.REQUEST_DURATION, 10L);
         startRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
 
-        Event event = s.process(startRequest);
-        assertNull(event);
+        List<Event> events = s.process(startRequest);
+        assertTrue(events.isEmpty());
 
         HttpEvent secondStartRequest = new HttpEvent(20L);
         secondStartRequest.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         secondStartRequest.setLongProperty(HttpEvent.REQUEST_DURATION, 20L);
         secondStartRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
 
-        BusinessScenarioEvent bse = (BusinessScenarioEvent)s.process(secondStartRequest);
+        events = s.process(secondStartRequest);
+        assertEquals(1, events.size());
+        BusinessScenarioEvent bse = (BusinessScenarioEvent)events.get(0);
 
         assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
         assertEquals(1, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
@@ -334,14 +347,18 @@ public class HttpSessionTest {
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e2.setLongProperty(HttpEvent.REQUEST_DURATION, 30L);
 
-        assertNull(s.process(e2));
+        events = s.process(e2);
+        assertTrue(events.isEmpty());
 
         HttpEvent end = new HttpEvent(40L);
         end.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         end.setLongProperty(HttpEvent.REQUEST_DURATION, 40L);
         end.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "scenario-1");
 
-        BusinessScenarioEvent bse2 = (BusinessScenarioEvent)s.process(end);
+        events = s.process(end);
+        assertEquals(1, events.size());
+        BusinessScenarioEvent bse2 = (BusinessScenarioEvent)events.get(0);
+
         assertEquals("scenario-1", bse2.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
         assertEquals(3, bse2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
         assertEquals(90L, bse2.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());

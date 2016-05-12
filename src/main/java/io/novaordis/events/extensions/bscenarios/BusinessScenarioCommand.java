@@ -177,6 +177,7 @@ public class BusinessScenarioCommand extends CommandBase {
 
             ((OutputFormatter) terminator.getConversionLogic()).setOutputFormat(propertiesToDisplay);
 
+            //noinspection Convert2Lambda,Anonymous2MethodRef
             terminator.addEndOfStreamListener(new EndOfStreamListener() {
                 @Override
                 public void eventStreamEnded() {
@@ -270,34 +271,29 @@ public class BusinessScenarioCommand extends CommandBase {
 
         }
 
-        Event outgoing = processHttpEvent((HttpEvent)incoming);
-
-        if (outgoing == null) {
-            return Collections.emptyList();
-        }
-
-        return Collections.singletonList(outgoing);
+        return processHttpEvent((HttpEvent) incoming);
     }
 
     /**
      * The method locates the session for the specific request, and then delegates further processing to the session.
      *
-     * @return a BusinessScenarioEvent, a FaultEvent or null if we're in mid-flight while processing a scenario.
+     * @return a list containing BusinessScenarioEvents and/or FaultEvent or an empty list if we're in mid-flight while
+     * processing a scenario.
      *
      * @exception UserErrorException if the lower layers encountered a problem that stops us from processing the
      *  event stream (most likely because trying to produce further results won't make sense). In this case, the process
      *  must exit with a user-readable error.
      */
-    Event processHttpEvent(HttpEvent event) throws UserErrorException {
+    List<Event> processHttpEvent(HttpEvent event) throws UserErrorException {
 
         httpEventCount ++;
 
         String jSessionId = event.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY);
 
         if (jSessionId == null) {
-            return new FaultEvent(
+            return Collections.singletonList(new FaultEvent(
                     BusinessScenarioFaultType.NO_JSESSIONID_COOKIE,
-                    "HTTP request " + event + " does not carry a \"" + HttpEvent.JSESSIONID_COOKIE_KEY + "\" cookie");
+                    "HTTP request " + event + " does not carry a \"" + HttpEvent.JSESSIONID_COOKIE_KEY + "\" cookie"));
         }
 
         HttpSession s = sessions.get(jSessionId);
@@ -306,6 +302,7 @@ public class BusinessScenarioCommand extends CommandBase {
             s = httpSessionFactory.create();
             s.setJSessionId(jSessionId);
             sessions.put(jSessionId, s);
+            log.debug(s + " identified");
         }
 
         return s.process(event);

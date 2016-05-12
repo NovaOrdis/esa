@@ -142,15 +142,19 @@ public class BusinessScenario {
 
     /**
      * Update the current business scenario's statistics with this request. Close the business scenario if appropriate.
+     * If the request is sufficiently broken to produce a fault, but not broken enough to stop processing, the method
+     * will correctly update the state of the scenario and then throw a BusinessScenarioException. The upper layer can
+     * rely on a correct state of the scenario even if a BusinessScenarioException was thrown.
      *
      * @see BusinessScenario#isClosed()
      *
-     * @exception BusinessScenarioException checked exception that does not stop processing, but it is turned into
-     *            a fault by the upper layer
      * @exception UserErrorException if the lower layers encountered a problem that stops us from processing the
      *  event stream (most likely because trying to produce further results won't make sense). Example: if the HTTP
      *  request does not belong to the current session, etc. In this case, the process must exit with a user-readable
      *  error.
+     * @exception BusinessScenarioException if the request is sufficiently broken to produce a fault, but not broken
+     *  enough to stop processing. The business scenario state is guaranteed to be consistent if this exception is
+     *  thrown. The fault information (BusinessScenarioException state) will be turned into a fault by the upper layer.
      *
      * @return true is this business scenario instance was closed by this update.
      */
@@ -160,6 +164,7 @@ public class BusinessScenario {
             throw new IllegalStateException(this + " already closed, cannot be updated with " + event);
         }
 
+        lineNumber = event.getLineNumber();
         long requestTimestamp = event.getTimestamp();
 
         String startMarker = event.getRequestHeader(BUSINESS_SCENARIO_START_MARKER_HEADER_NAME);
@@ -189,7 +194,6 @@ public class BusinessScenario {
             //
             // we "start" the scenario
             //
-            lineNumber = event.getLineNumber();
             setType(startMarker);
             setBeginTimestamp(requestTimestamp);
             setState(BusinessScenarioState.OPEN);
@@ -198,11 +202,13 @@ public class BusinessScenario {
             if (iterationId != null) {
                 setIterationId(iterationId);
             }
+
+            log.debug("A START marker for a scenario of type " + startMarker + " was found in HTTP session " + jSessionId);
         }
         else {
 
             //
-            // ignore the request if the scenario is not active. Throwing a BusinessScenarioException will cause
+            // ignore the request if the scenario is not open. Throwing a BusinessScenarioException will cause
             // a Fault to be sent down the pipeline, but it won't interrupt processing
             //
 
