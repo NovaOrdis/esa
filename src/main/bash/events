@@ -13,6 +13,15 @@ memory=1024m
 
 verbose=false
 
+cygwin=false;
+os=unix
+case "`uname`" in
+    CYGWIN*)
+        cygwin=true
+        os=windows
+        ;;
+esac
+
 function debug()
 {
     ${verbose} && echo "$@" 1>&2;
@@ -62,9 +71,12 @@ function get_java_home()
 function get_classpath()
 {
     debug "${FUNCNAME[0]}: home_dir=${home_dir}"
+    local sep=":"
+    ${cygwin} && sep="\;"
     local first=true
     for i in ${home_dir}/lib/*.jar; do
-        ${first} && first=false || echo -n ":"
+        ${first} && first=false || echo -n "${sep}"
+        ${cygwin} && i=$(cygpath -w ${i}) || exit 1
         echo -n ${i}
     done
 }
