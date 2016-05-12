@@ -946,7 +946,7 @@ function do-install() {
     debug "checking whether the project installation zip has been built ..."
 
     local release_zip_file_path
-    release_zip_file_path=$(build-relese-zip-file) || exit 1
+    release_zip_file_path=$(build-release-zip-file) || exit 1
 
     local installed_path
     installed_path=$(install ${release_zip_file_path} ${RUNTIME_DIR} ${force}) || exit 1

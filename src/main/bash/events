@@ -76,7 +76,7 @@ function get_classpath()
     local first=true
     for i in ${home_dir}/lib/*.jar; do
         ${first} && first=false || echo -n "${sep}"
-        ${cygwin} && i=$(cygpath -w ${i}) || exit 1
+        ${cygwin} && { i=$(cygpath -w ${i}) || exit 1; }
         echo -n ${i}
     done
 }
@@ -144,7 +144,7 @@ while [ "$1" != "" ]; do
     if [ "$1" = "--debug" ]; then
         debug_args="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5011"
         verbose=true
-    elif [ "$1" = "--verbose" ]; then
+    elif [ "$1" = "--verbose" -o "$1" = "-v" ]; then
         verbose=true
     elif [ "$1" = "--background" ]; then
         background=true
