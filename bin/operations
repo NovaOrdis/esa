@@ -31,7 +31,8 @@ Commands:
         Makes a release by incrementing the release information appropriately, running all tests, building the final
         artifact and installing the artifact in the appropriate repository. If a version string is used, the string
         is checked for consistency. The release process will fail if the version string is invalid or represents an
-        older version than the current version.
+        older version than the current version. The repository can be the local Maven repository, a directory, a
+        remote server, etc.
 
      test - internal release tools testing shortcut. Advanced users only.
 
@@ -48,6 +49,10 @@ Per-Project Configuration:
 
     Create an operations.conf in the directory the release tools were installed into and configure local project
     properties.
+
+    Configuration options:
+
+    release_repository - the release repository. Can be LOCAL_MAVEN, a local directory, etc.
 
 EOF
 }
@@ -803,6 +808,15 @@ function install-release() {
         fail "failed to install $(basename ${target_file}) in ${release_repository}"
 }
 
+# return 0 if the configured release_repository is LOCAL_MAVEN
+function is-local-maven-release() {
+
+    [ -z "${release_repository}" ] && \
+        fail "'release_repository' not defined. Check your local configuration file ${configuration_file}"
+
+    [ "${release_repository}" = "LOCAL_MAVEN" ] && return 0 || return 1
+}
+
 ########################################################################################################################
 # top level operations, exposed as external commands - they expect the arguments in the "arguments" global array
 ########################################################################################################################
@@ -977,12 +991,20 @@ function do-release() {
     debug "next version ${next_version}"
 
     set-version ${next_version}
-    mvn clean install || fail "failed to pass tests, must restore the version in pom.xml to ${current_version} manually"
 
-    local release_zip_file_path
-    release_zip_file_path=$(build-release-zip-file) || exit 1
+    #
+    # If we release externally (as a zip file), we only need to create the JAR locally in the project, so we package.
+    # If we release to LOCAL_MAVEN, we install
+    #
 
-    install-release ${release_zip_file_path}
+    if is-local-maven-release; then
+        mvn clean install || fail "failed to pass tests, must restore the version in pom.xml to ${current_version} manually"
+    else
+        mvn clean package || fail "failed to pass tests, must restore the version in pom.xml to ${current_version} manually"
+        local release_zip_file_path
+        release_zip_file_path=$(build-release-zip-file) || exit 1
+        install-release ${release_zip_file_path}
+    fi
 
     info ""
     info "###########################################################################################"
