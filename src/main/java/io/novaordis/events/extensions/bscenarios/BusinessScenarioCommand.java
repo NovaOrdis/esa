@@ -171,6 +171,7 @@ public class BusinessScenarioCommand extends CommandBase {
                             BusinessScenarioEvent.ID + ", " +
                             BusinessScenarioEvent.JSESSIONID + ", " +
                             BusinessScenarioEvent.ITERATION_ID + ", " +
+                            BusinessScenarioEvent.TYPE + ", " +
                             BusinessScenarioEvent.STATE + ", " +
                             BusinessScenarioEvent.REQUEST_COUNT + ", " +
                             BusinessScenarioEvent.DURATION;
