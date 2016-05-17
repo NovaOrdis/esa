@@ -31,10 +31,15 @@ Commands:
         If 'info' is used, returns the current version information.
 
         Makes a release by incrementing the release information appropriately, running all tests, building the final
-        artifact and installing the artifact in the appropriate repository. If a version string is used, the string
-        is checked for consistency. The release process will fail if the version string is invalid or represents an
-        older version than the current version. The repository can be the local Maven repository, a directory, a
-        remote server, etc.
+        artifact and installing the artifact in the appropriate repository.
+
+        If 'snapshot' is used, and the current release is a dot release, it will be incremented to the next patch
+        snapshot release. If the current release is a snapshot release, the snapshot counter will be simply
+        incremented.
+
+        If a version string is used, the string is checked for consistency. The release process will fail if the
+        version string is invalid or represents an older version than the current version. The repository can be
+        the local Maven repository, a directory, a remote server, etc.
 
      test - internal release tools testing shortcut. Advanced users only.
 
@@ -161,6 +166,16 @@ function info
 {
     echo "$@" 1>&2;
     return 0
+}
+
+#
+# Asks the question and it expects a y/n answer. If the answer starts with 'y', returns 0, otherwise it returns 1
+#
+function yes
+{
+    echo -n "$@ [y/n] " 1>&2;
+    read line
+    [ "${line:0:1}" = "y" ] && return 0 || return 1
 }
 
 #
@@ -307,8 +322,25 @@ function compute-next-version() {
         patch=$(expr ${patch} + 1) || exit 1
         snapshot=""
     elif [ "${mode}" = "snapshot" ]; then
-        [ -z "${snapshot}" ] && snapshot=0
-        snapshot=$(expr ${snapshot} + 1) || exit 1
+        if [ -z "${snapshot}" ]; then
+            #
+            # current release is a dot release, increment to the next patch snapshot 1
+            #
+            snapshot=1
+            if [ -z "${patch}" ]; then
+                patch=1
+                if [ -z "${minor}" ]; then
+                    minor=0
+                fi
+            else
+                patch=$(expr ${patch} + 1) || exit 1
+            fi
+        else
+            #
+            # regular snapshot
+            #
+            snapshot=$(expr ${snapshot} + 1) || exit 1
+        fi
     else
         local new_version=${mode}
         local new_major
@@ -996,6 +1028,8 @@ function do-release() {
     local next_version
     next_version=$(compute-next-version "${current_version}" "${mode}") || exit 1
     debug "next version ${next_version}"
+
+    yes "releasing ${next_version}, is this OK?" || { info "release canceled, no files were changed"; return 0; }
 
     set-version ${next_version}
 
