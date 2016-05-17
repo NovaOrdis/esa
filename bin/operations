@@ -26,7 +26,9 @@ Commands:
 
     install [-f|--force]
 
-    release <snapshot|minor|major|patch|"version-string">
+    release <info|snapshot|minor|major|patch|"version-string">
+
+        If 'info' is used, returns the current version information.
 
         Makes a release by incrementing the release information appropriately, running all tests, building the final
         artifact and installing the artifact in the appropriate repository. If a version string is used, the string
@@ -979,11 +981,17 @@ function do-release() {
     # checking pre-requisites
     #
 
-    [ -z "${mode}" ] && fail "snapshot|minor|major|patch or the version string must be specified"
+    [ -z "${mode}" ] && fail "info|snapshot|minor|major|patch or the version string must be specified"
 
     local current_version
     current_version=$(get-version) || exit 1
     debug "current version: ${current_version}"
+
+    if [ "${mode}" = "info" ]; then
+        # report the current version and exit
+        info "current version: ${current_version}"
+        return 0
+    fi
 
     local next_version
     next_version=$(compute-next-version "${current_version}" "${mode}") || exit 1
