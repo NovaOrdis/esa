@@ -382,16 +382,16 @@ public class BusinessScenarioCommand extends CommandBase {
                 bsStats.getBusinessScenarioCount(), buildStateCountComment(bsStates));
 
         //
-        // always start by reporting "NORMAL" scenarios, those are the most important
+        // always start by reporting "COMPLETE" scenarios, those are the most important
         //
-        displayScenarioStatsPerState(BusinessScenarioState.NORMAL);
+        displayScenarioStatsPerState(BusinessScenarioState.COMPLETE);
 
         //
         // then loop through the others
         //
 
         for(BusinessScenarioState s: bsStates) {
-            if (s.equals(BusinessScenarioState.NORMAL)) {
+            if (s.equals(BusinessScenarioState.COMPLETE)) {
                 // already reported
                 continue;
             }
@@ -419,10 +419,10 @@ public class BusinessScenarioCommand extends CommandBase {
         BusinessScenarioStateStatistics s = bsStats.getBusinessScenarioStatisticsPerState(state);
 
         //
-        // there are cases when there are NO NORMAL scenarios
+        // there are cases when there are NO COMPLETE scenarios
         //
         if (s == null) {
-            System.out.printf("                             NO NORMAL scenarios\n");
+            System.out.printf("                             NO COMPLETE scenarios\n");
             return;
         }
 

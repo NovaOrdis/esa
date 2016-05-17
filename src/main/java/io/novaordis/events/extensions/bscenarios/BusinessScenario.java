@@ -256,7 +256,7 @@ public class BusinessScenario {
                         " ends a different scenario type (" + stopMarker + ") than the current one (" + type + ")");
             }
 
-            setState(BusinessScenarioState.NORMAL);
+            setState(BusinessScenarioState.COMPLETE);
         }
 
         if (requestDuration == null) {
@@ -271,7 +271,7 @@ public class BusinessScenario {
     /**
      * Forcibly closes a business scenario in a NEW or OPEN state (closing a NEW scenario is a noop).
      *
-     * A NORMAL instance cannot be closed, will throw an IllegalArgumentException.
+     * A COMPLETE instance cannot be closed, will throw an IllegalArgumentException.
      *
      * @exception IllegalArgumentException on attempt to close an already closed instance.
      */

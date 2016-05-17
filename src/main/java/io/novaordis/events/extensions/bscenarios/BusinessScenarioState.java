@@ -34,10 +34,10 @@ public enum BusinessScenarioState {
     OPEN,
 
     //
-    // the business scenario has been closed normally by an STOP marker and it contains valid data
+    // the scenario has been closed normally by the occurrence of a STOP marker. If the load was sent sequentially,
+    // it is guaranteed that all component HTTP requests have been applied to the scenario.
     //
-    NORMAL,
-
+    COMPLETE,
 
     //
     // the business scenario was closed by the occurrence of a new START marker (it has not seen the STOP marker).

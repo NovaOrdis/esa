@@ -80,7 +80,7 @@ public class BusinessScenarioCommandTest {
         events = c.processHttpEvent(e2);
         assertEquals(1, events.size());
         BusinessScenarioEvent bse = (BusinessScenarioEvent)events.get(0);
-        assertEquals(BusinessScenarioState.NORMAL.name(),
+        assertEquals(BusinessScenarioState.COMPLETE.name(),
                 bse.getStringProperty(BusinessScenarioEvent.STATE).getString());
 
 
