@@ -90,6 +90,20 @@ public class LineParserFactoryTest {
     }
 
     @Test
+    public void getInstance_HttpdLineParser_CorruptedHttpdFormat() throws Exception {
+
+        try {
+            LineParserFactory.getInstance("[%t] %h/>");
+            fail("should throw exception");
+        }
+        catch(UserErrorException e) {
+            String msg = e.getMessage();
+            log.info(msg);
+            assertTrue(msg.contains("/>"));
+        }
+    }
+
+    @Test
     public void getInstance_CsvLineParser() throws Exception {
 
         LineParser parser = LineParserFactory.getInstance("something,");

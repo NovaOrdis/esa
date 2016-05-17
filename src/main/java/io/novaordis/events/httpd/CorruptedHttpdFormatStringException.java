@@ -20,7 +20,7 @@ package io.novaordis.events.httpd;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/22/16
  */
-public class InvalidFormatStringException extends Exception {
+public class CorruptedHttpdFormatStringException extends Exception {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,20 +30,11 @@ public class InvalidFormatStringException extends Exception {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public InvalidFormatStringException() {
-        super();
-    }
-
-    public InvalidFormatStringException(String message) {
+    /**
+     * @param message human readable message, must contain the invalid token.
+     */
+    public CorruptedHttpdFormatStringException(String message) {
         super(message);
-    }
-
-    public InvalidFormatStringException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public InvalidFormatStringException(Throwable cause) {
-        super(cause);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

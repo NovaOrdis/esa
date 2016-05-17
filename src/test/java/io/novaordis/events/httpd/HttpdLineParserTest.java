@@ -311,6 +311,27 @@ public class HttpdLineParserTest extends LineParserTest {
         assertEquals(HttpdLogFormat.COMMON.toString(), p.getHttpdLogFormat().toString());
     }
 
+    // Production ------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void production_CorruptedHttpFormat() throws Exception {
+
+        String format =
+                "&quot;%I&quot; %h %u [%t] &quot;%r&quot; &quot;%q&quot; %s %b %D %{i,Business-Scenario-Start-Marker} " +
+                        "%{i,Business-Scenario-Stop-Marker} %{i,Business-Scenario-Request-Sequence-ID} " +
+                        "%{i,Business-Scenario-Iteration-ID} %{c,JSESSIONID}\"/>";
+
+        try {
+            new HttpdLineParser(format);
+            fail("should throw exception");
+        }
+        catch(CorruptedHttpdFormatStringException e) {
+            String msg = e.getMessage();
+            assertTrue(msg.contains("/>"));
+            log.info(msg);
+        }
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

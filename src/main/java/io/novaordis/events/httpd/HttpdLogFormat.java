@@ -16,6 +16,7 @@
 
 package io.novaordis.events.httpd;
 
+import io.novaordis.events.ParsingException;
 import io.novaordis.events.core.LineFormat;
 
 import java.util.Arrays;
@@ -103,8 +104,12 @@ public class HttpdLogFormat implements LineFormat {
     /**
      * HTML special characters in format specification are handled correctly, they are replaced with the equivalent
      * characters.
+     *
+     * @throws ParsingException if an unknown httpd format element is encountered right away.
+     * @throws CorruptedHttpdFormatStringException if the format string is a partially correct httpd format string but
+     *  an unknown element is encountered. The invalid token is mentioned in the human-readable error message.
      */
-    public HttpdLogFormat(String formatSpecification) throws Exception {
+    public HttpdLogFormat(String formatSpecification) throws CorruptedHttpdFormatStringException, ParsingException {
 
         if (formatSpecification == null) {
             throw new IllegalArgumentException("null format specification");

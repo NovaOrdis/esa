@@ -16,12 +16,17 @@
 
 package io.novaordis.events.httpd;
 
+import io.novaordis.events.ParsingException;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -30,6 +35,8 @@ import static org.junit.Assert.assertNull;
 public abstract class FormatStringTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(FormatStringTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -99,6 +106,38 @@ public abstract class FormatStringTest {
 
         CookieFormatString cfs = (CookieFormatString)formatStrings.get(1);
         assertEquals("Some-Cookie", cfs.getCookieName());
+    }
+
+    @Test
+    public void fromString_PartiallyCorrectFormatString() throws Exception {
+
+        try {
+
+            FormatString.fromString("%h %l %u/>");
+            fail("should throw exception");
+        }
+        catch(CorruptedHttpdFormatStringException e) {
+
+            String msg = e.getMessage();
+            assertTrue(msg.matches("invalid httpd log format token \"/>\""));
+            log.info(msg);
+        }
+    }
+
+    @Test
+    public void fromString_InvalidTokenIsTheFirstToken() throws Exception {
+
+        try {
+
+            FormatString.fromString("blah");
+            fail("should throw exception");
+        }
+        catch(ParsingException e) {
+
+            String msg = e.getMessage();
+            assertTrue(msg.matches("unknown httpd format element 'blah'"));
+            log.info(msg);
+        }
     }
 
     // parse() ---------------------------------------------------------------------------------------------------------

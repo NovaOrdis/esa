@@ -20,8 +20,8 @@ import io.novaordis.clad.UserErrorException;
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.csv.CsvLineParser;
 import io.novaordis.events.csv.InvalidFieldException;
+import io.novaordis.events.httpd.CorruptedHttpdFormatStringException;
 import io.novaordis.events.httpd.HttpdLineParser;
-import io.novaordis.events.httpd.InvalidFormatStringException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,9 +59,9 @@ public class LineParserFactory {
         try {
             return new HttpdLineParser(lineFormat);
         }
-        catch(InvalidFormatStringException ifse) {
+        catch(CorruptedHttpdFormatStringException chfse) {
 
-            throw new UserErrorException("invalid httpd line format: " + ifse.getMessage());
+            throw new UserErrorException(chfse.getMessage() + " in format specification \"" + lineFormat + "\"");
         }
         catch(Exception e) {
 

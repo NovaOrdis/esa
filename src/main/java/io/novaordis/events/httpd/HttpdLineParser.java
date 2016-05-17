@@ -41,10 +41,10 @@ public class HttpdLineParser implements LineParser {
 
     /**
      * @throws IllegalArgumentException if the given format is not a valid httpd log file format
-     * @throws InvalidFormatStringException we determined that the format specification <b>is</b> a httpd log file
-     * format but we find an incorrectly specified format string.
+     * @throws CorruptedHttpdFormatStringException - this indicates that the format is partially correct and corrupted
+     * by the introduction of a bad token we want to let the user know this. The message is human-readable.
      */
-    public HttpdLineParser(String format) throws IllegalArgumentException, InvalidFormatStringException {
+    public HttpdLineParser(String format) throws CorruptedHttpdFormatStringException, IllegalArgumentException {
 
         //
         // We attempt to build a list of HttpdFormatStrings from the given format string. If we succeed, it means
@@ -52,11 +52,16 @@ public class HttpdLineParser implements LineParser {
         //
 
         try {
+
             lineFormat = new HttpdLogFormat(format);
         }
-        catch (Exception e) {
+        //
+        // let CorruptedHttpdFormatStringException bubble up
+        //
+        catch(ParsingException e) {
+
             //
-            // invalid httpd format
+            // this can't be a httpd log format, starts with a bad token right away
             //
             throw new IllegalArgumentException("invalid httpd log format \"" + format + "\"", e);
         }

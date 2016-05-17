@@ -44,9 +44,12 @@ public interface FormatString {
 
     /**
      * @param s a multi-token format string - may contain multiple individual format strings
-     * @throws ParsingException
+     *
+     * @throws ParsingException if an unknown httpd format element is encountered right away.
+     * @throws CorruptedHttpdFormatStringException if the format string is a partially correct httpd format string but
+     *  an unknown element is encountered. The invalid token is mentioned in the human-readable error message.
      */
-    static List<FormatString> fromString(String s) throws ParsingException {
+    static List<FormatString> fromString(String s) throws CorruptedHttpdFormatStringException, ParsingException {
 
         List<FormatString> result = new ArrayList<>();
 
@@ -72,7 +75,16 @@ public interface FormatString {
                     continue;
                 }
 
-                throw new ParsingException("unknown httpd format element '" + tok + "'");
+                if (result.isEmpty()) {
+
+                    throw new ParsingException("unknown httpd format element '" + tok + "'");
+                }
+                else {
+                    //
+                    // this is a corrupted httpd format string, help the user and give as many details we can
+                    //
+                    throw new CorruptedHttpdFormatStringException("invalid httpd log format token \"" + tok + "\"");
+                }
             }
         }
 
