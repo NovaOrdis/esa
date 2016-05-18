@@ -652,6 +652,72 @@ public class BusinessScenarioTest {
         assertEquals(BusinessScenarioState.COMPLETE, bs.getState());
     }
 
+    @Test
+    public void update_EndToEnd() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+
+        //
+        // Start scenario
+        //
+
+        HttpEvent e = new HttpEvent(1L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
+        e.setRequestDuration(1L);
+        e.setStatusCode(200);
+
+        assertFalse(bs.update(e));
+
+        assertEquals(1, bs.getRequestCount());
+        assertEquals(1L, bs.getBeginTimestamp());
+        assertEquals(2L, bs.getEndTimestamp());
+        assertFalse(bs.isClosed());
+        assertEquals(BusinessScenarioState.OPEN, bs.getState());
+
+        //
+        // 200 request
+        //
+
+        HttpEvent e2 = new HttpEvent(5L);
+        e2.setRequestDuration(6L);
+        e2.setStatusCode(200);
+
+        assertFalse(bs.update(e2));
+
+        assertEquals(2, bs.getRequestCount());
+        assertEquals(11L, bs.getEndTimestamp());
+
+        //
+        // 400 request
+        //
+
+        HttpEvent e3 = new HttpEvent(10L);
+        e3.setRequestDuration(11L);
+        e3.setStatusCode(400);
+
+        assertFalse(bs.update(e3));
+
+        assertEquals(3, bs.getRequestCount());
+        assertEquals(21L, bs.getEndTimestamp());
+        assertFalse(bs.isClosed());
+
+        //
+        // Stop scenario
+        //
+
+        HttpEvent e4 = new HttpEvent(15L);
+        e4.setRequestDuration(16L);
+        e4.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
+
+        assertTrue(bs.update(e4));
+
+        assertEquals(4, bs.getRequestCount());
+        assertEquals(1L, bs.getBeginTimestamp());
+        assertEquals(31L, bs.getEndTimestamp());
+        assertTrue(bs.isClosed());
+        assertEquals(BusinessScenarioState.COMPLETE, bs.getState());
+    }
+
     // toEvent() -------------------------------------------------------------------------------------------------------
 
     @Test

@@ -129,6 +129,19 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         return getInteger(STATUS_CODE);
     }
 
+    /**
+     * Overwrites the existing value, if any.
+     *
+     * @exception IllegalArgumentException on invalid status code (smaller than 200, or larger than 599).
+     */
+    public void setStatusCode(int statusCode) {
+
+        if (statusCode < 200 || statusCode >= 600) {
+            throw new IllegalArgumentException("invalid status code " + statusCode);
+        }
+        setIntegerProperty(STATUS_CODE, statusCode);
+    }
+
     public Integer getOriginalRequestStatusCode() {
         return getInteger(ORIGINAL_REQUEST_STATUS_CODE);
     }

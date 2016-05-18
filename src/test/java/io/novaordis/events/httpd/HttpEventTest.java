@@ -20,9 +20,12 @@ import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.TimedEventTest;
 import io.novaordis.events.extensions.bscenarios.BusinessScenario;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -31,6 +34,8 @@ import static org.junit.Assert.assertNull;
 public class HttpEventTest extends TimedEventTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(HttpEventTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -178,6 +183,55 @@ public class HttpEventTest extends TimedEventTest {
 
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "something");
         assertEquals("something", e.getIterationId());
+    }
+
+    // getStatusCode()/setStatusCode() ---------------------------------------------------------------------------------
+
+    @Test
+    public void getStatusCode_setStatusCode() {
+
+        HttpEvent e = new HttpEvent(1L);
+
+        assertNull(e.getStatusCode());
+
+        e.setStatusCode(200);
+        assertEquals(200, e.getStatusCode().intValue());
+    }
+
+    @Test
+    public void setStatusCode_InvalidValue_SmallerThan200() {
+
+        HttpEvent e = new HttpEvent(1L);
+
+        try {
+
+            e.setStatusCode(199);
+            fail("should have thrown exception");
+        }
+        catch(IllegalArgumentException iae) {
+
+            String msg = iae.getMessage();
+            log.info(msg);
+            assertEquals("invalid status code 199", msg);
+        }
+    }
+
+    @Test
+    public void setStatusCode_InvalidValue_LargerThan599() {
+
+        HttpEvent e = new HttpEvent(1L);
+
+        try {
+
+            e.setStatusCode(600);
+            fail("should have thrown exception");
+        }
+        catch(IllegalArgumentException iae) {
+
+            String msg = iae.getMessage();
+            log.info(msg);
+            assertEquals("invalid status code 600", msg);
+        }
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
