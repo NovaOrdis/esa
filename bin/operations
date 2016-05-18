@@ -319,7 +319,12 @@ function compute-next-version() {
         snapshot=""
     elif [ "${mode}" = "patch" ]; then
         [ -z "${patch}" ] && patch=0
-        patch=$(expr ${patch} + 1) || exit 1
+        #
+        # if we're snapshot, keep the patch level
+        #
+        if [ -z "${snapshot}" ]; then
+            patch=$(expr ${patch} + 1) || exit 1
+        fi
         snapshot=""
     elif [ "${mode}" = "snapshot" ]; then
         if [ -z "${snapshot}" ]; then
