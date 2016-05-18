@@ -174,6 +174,7 @@ public class BusinessScenarioCommand extends CommandBase {
                             BusinessScenarioEvent.TYPE + ", " +
                             BusinessScenarioEvent.STATE + ", " +
                             BusinessScenarioEvent.REQUEST_COUNT + ", " +
+                            BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT + ", " +
                             BusinessScenarioEvent.DURATION;
 
             ((OutputFormatter) terminator.getConversionLogic()).setOutputFormat(propertiesToDisplay);
