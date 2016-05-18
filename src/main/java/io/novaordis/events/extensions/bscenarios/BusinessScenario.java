@@ -234,10 +234,9 @@ public class BusinessScenario {
             }
         }
 
-        Long requestDuration = event.getRequestDuration();
-        String requestSequenceId = event.getRequestSequenceId();
-        updateScenarioStatistics(requestTimestamp, requestDuration, requestSequenceId, iterationId);
+        updateScenarioStatistics(event);
 
+        Long requestDuration = event.getRequestDuration();
         String stopMarker = event.getRequestHeader(BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
 
         if (stopMarker != null) {
@@ -423,18 +422,23 @@ public class BusinessScenario {
     }
 
     /**
-     * @param requestDuration may be null.
-     * @param requestSequenceId the request sequence ID, may be null. For more details, see
-     *                    BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME constant definition.
-     * @param iterationId the iteration ID, may be null. For more details, see
-     *                    BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME constant definition. A business scenario
-     *                    can only exists in the context of a single iteration, so if a business scenario receives
-     *                    requests belonging to different iterations, will throw a BusinessScenarioException
      * @exception BusinessScenarioException if duplicate request sequence ID is detected, if more than on iteration ID
      * is detected.
      */
-    void updateScenarioStatistics(long requestTimestamp, Long requestDuration, String requestSequenceId,
-                                  String iterationId) throws BusinessScenarioException {
+    void updateScenarioStatistics(HttpEvent event) throws BusinessScenarioException {
+
+        Long requestDuration = event.getRequestDuration(); // may be null
+
+        // The request sequence ID, may be null. For more details, see BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME
+        // constant definition.
+        String requestSequenceId = event.getRequestSequenceId();
+
+        // May be null. For more details, see BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME constant definition. A business
+        // scenario can only exists in the context of a single iteration, so if a business scenario receives requests
+        // belonging to different iterations, will throw a BusinessScenarioException
+        String iterationId = event.getIterationId();
+
+        Long requestTimestamp = event.getTimestamp();
 
         requestCount ++;
         long rd = requestDuration == null ? 0 : requestDuration;

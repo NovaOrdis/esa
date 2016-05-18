@@ -762,9 +762,21 @@ public class BusinessScenarioTest {
         bs.setState(BusinessScenarioState.CLOSED_BY_START_MARKER);
         bs.setType("SOME-TYPE");
         bs.setBeginTimestamp(101L);
-        bs.updateScenarioStatistics(0L, 11L, null, null);
-        bs.updateScenarioStatistics(0L, null, null, null);
-        bs.updateScenarioStatistics(0L, 22L, null, null);
+
+        HttpEvent e = new HttpEvent(0L);
+        e.setRequestDuration(11L);
+
+        bs.updateScenarioStatistics(e);
+
+        HttpEvent e2 = new HttpEvent(0L);
+        assertNull(e2.getRequestDuration());
+
+        bs.updateScenarioStatistics(e2);
+
+        HttpEvent e3 = new HttpEvent(0L);
+        e3.setRequestDuration(22L);
+
+        bs.updateScenarioStatistics(e3);
 
         BusinessScenarioEvent bse = bs.toEvent();
 
