@@ -669,6 +669,7 @@ public class BusinessScenarioTest {
         assertFalse(bs.update(e));
 
         assertEquals(1, bs.getRequestCount());
+        assertEquals(1, bs.getRequestCount(200));
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(2L, bs.getEndTimestamp());
         assertFalse(bs.isClosed());
@@ -685,6 +686,7 @@ public class BusinessScenarioTest {
         assertFalse(bs.update(e2));
 
         assertEquals(2, bs.getRequestCount());
+        assertEquals(2, bs.getRequestCount(200));
         assertEquals(11L, bs.getEndTimestamp());
 
         //
@@ -698,6 +700,8 @@ public class BusinessScenarioTest {
         assertFalse(bs.update(e3));
 
         assertEquals(3, bs.getRequestCount());
+        assertEquals(2, bs.getRequestCount(200));
+        assertEquals(1, bs.getRequestCount(400));
         assertEquals(21L, bs.getEndTimestamp());
         assertFalse(bs.isClosed());
 
@@ -708,10 +712,14 @@ public class BusinessScenarioTest {
         HttpEvent e4 = new HttpEvent(15L);
         e4.setRequestDuration(16L);
         e4.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
+        e4.setStatusCode(500);
 
         assertTrue(bs.update(e4));
 
         assertEquals(4, bs.getRequestCount());
+        assertEquals(2, bs.getRequestCount(200));
+        assertEquals(1, bs.getRequestCount(400));
+        assertEquals(1, bs.getRequestCount(500));
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(31L, bs.getEndTimestamp());
         assertTrue(bs.isClosed());
@@ -927,6 +935,34 @@ public class BusinessScenarioTest {
         assertEquals(BusinessScenarioState.FAULT, bs.getState());
     }
 
+    // getRequestCount() -----------------------------------------------------------------------------------------------
+
+    @Test
+    public void getRequestCount() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+
+        assertEquals(0, bs.getRequestCount(200));
+
+        HttpEvent e = new HttpEvent(1L, 1L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
+        e.setStatusCode(200);
+
+        assertFalse(bs.update(e));
+
+        assertEquals(1, bs.getRequestCount());
+        assertEquals(1, bs.getRequestCount(200));
+        assertEquals(0, bs.getRequestCount(201));
+
+        HttpEvent e2 = new HttpEvent(2L, 2L);
+        e2.setStatusCode(201);
+
+        assertFalse(bs.update(e2));
+
+        assertEquals(2, bs.getRequestCount());
+        assertEquals(1, bs.getRequestCount(200));
+        assertEquals(1, bs.getRequestCount(201));
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

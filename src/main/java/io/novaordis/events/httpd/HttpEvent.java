@@ -82,6 +82,11 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         super(timestamp);
     }
 
+    public HttpEvent(Long timestamp, long duration) {
+        super(timestamp);
+        setRequestDuration(duration);
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     public String getRemoteHost() {
@@ -291,6 +296,11 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
     public String getRequestSequenceId() {
 
         return getRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME);
+    }
+
+    public void setRequestSequenceId(String s) {
+
+        setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, s);
     }
 
     /**

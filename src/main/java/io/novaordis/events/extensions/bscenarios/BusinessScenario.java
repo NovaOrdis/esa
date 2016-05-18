@@ -332,6 +332,23 @@ public class BusinessScenario {
         return requests.size();
     }
 
+    /**
+     * @return the count of requests that have the given status code. Note that some requests may not have any
+     * status code at all if that was not present in the HttpEvent corresponding to the request. This is not
+     * necessarily an error condition, just an incomplete data case.
+     */
+    public int getRequestCount(int statusCode) {
+
+        int c = 0;
+        for(HttpRequest r: requests) {
+            Integer sc = r.getStatusCode();
+            if (sc != null && sc == statusCode) {
+                c ++;
+            }
+        }
+        return c;
+    }
+
     public BusinessScenarioEvent toEvent() {
 
         BusinessScenarioEvent bse = new BusinessScenarioEvent(beginTimestamp);
