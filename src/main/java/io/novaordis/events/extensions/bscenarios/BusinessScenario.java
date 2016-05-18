@@ -89,21 +89,16 @@ public class BusinessScenario {
     //
     // the sum of all individual HTTP requests duration
     //
-    private long duration;
-
-    //
-    // the number of requests comprising this scenario
-    //
-    private int requestCount;
+    private long aggregatedScenarioDuration;
 
     private String jSessionId;
 
     private BusinessScenarioState state;
 
     /**
-     * The request sequence IDs seen by this scenario, in the order in which they were detected.
+     * The requests, in the order they are read from the logs and exposed to this instance.
      */
-    private List<String> requestSequenceIds;
+    private List<HttpRequest> requests;
 
     /**
      * May be null, but once it is set, it must stay the same for the duration of the business scenario, if an update
@@ -126,7 +121,7 @@ public class BusinessScenario {
 
         this.id = getNextId();
         this.state = BusinessScenarioState.NEW;
-        this.requestSequenceIds = new ArrayList<>();
+        this.requests = new ArrayList<>();
         log.debug(this + " constructed");
     }
 
@@ -330,19 +325,19 @@ public class BusinessScenario {
      * The sum of all individual HTTP requests duration, in the measure unit logs were generated with.
      */
     public long getDuration() {
-        return duration;
+        return aggregatedScenarioDuration;
     }
 
     public int getRequestCount() {
-        return requestCount;
+        return requests.size();
     }
 
     public BusinessScenarioEvent toEvent() {
 
         BusinessScenarioEvent bse = new BusinessScenarioEvent(beginTimestamp);
         bse.setLongProperty(BusinessScenarioEvent.ID, getId());
-        bse.setLongProperty(BusinessScenarioEvent.DURATION, duration);
-        bse.setIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT, requestCount);
+        bse.setLongProperty(BusinessScenarioEvent.DURATION, aggregatedScenarioDuration);
+        bse.setIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT, requests.size());
         bse.setStringProperty(BusinessScenarioEvent.TYPE, type);
         bse.setStringProperty(BusinessScenarioEvent.STATE, getState().name());
         if (jSessionId != null) {
@@ -371,16 +366,7 @@ public class BusinessScenario {
     }
 
     /**
-     * @return the request sequence IDs in the order they were received. Returns the underlying storage, so handle with
-     * care. The list may be empty but never null.
-     */
-    public List<String> getRequestSequenceIds() {
-
-        return requestSequenceIds;
-    }
-
-    /**
-     * @return the iteration ID. May be null, but once it is set, it must stay the same for the duration of the business
+     * @return the iteration ID. May be null, but once it is set, it must stay the same for the aggregatedScenarioDuration of the business
      * scenario, if an update with a different iteration ID is received, the update invocation must throw exception.
      */
     public String getIterationId() {
@@ -393,6 +379,24 @@ public class BusinessScenario {
      */
     public Long getLineNumber() {
         return lineNumber;
+    }
+
+    /**
+     * @return the request sequence IDs in the order they were received. The list may be empty but never null.
+     */
+    public List<String> getRequestSequenceIds() {
+
+        List<String> result = new ArrayList<>();
+        for(HttpRequest r: requests) {
+
+            String requestSequenceId = r.getRequestSequenceId();
+
+            if (requestSequenceId != null) {
+                result.add(requestSequenceId);
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -427,38 +431,19 @@ public class BusinessScenario {
      */
     void updateScenarioStatistics(HttpEvent event) throws BusinessScenarioException {
 
-        Long requestDuration = event.getRequestDuration(); // may be null
-
-        // The request sequence ID, may be null. For more details, see BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME
-        // constant definition.
-        String requestSequenceId = event.getRequestSequenceId();
-
-        // May be null. For more details, see BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME constant definition. A business
-        // scenario can only exists in the context of a single iteration, so if a business scenario receives requests
-        // belonging to different iterations, will throw a BusinessScenarioException
-        String iterationId = event.getIterationId();
-
         Long requestTimestamp = event.getTimestamp();
+        Long rd = event.getRequestDuration();
+        long requestDuration = rd == null ? 0 : rd;
 
-        requestCount ++;
-        long rd = requestDuration == null ? 0 : requestDuration;
-        duration += rd;
-        endTimestamp = requestTimestamp + rd;
+        updatePerRequestStatistics(event);
 
-        if (requestSequenceId != null) {
+        aggregatedScenarioDuration += requestDuration;
+        endTimestamp = requestTimestamp + requestDuration;
 
-            //
-            // check for duplicates
-            //
-            if (requestSequenceIds.contains(requestSequenceId)) {
-                throw new BusinessScenarioException(
-                        getLineNumber(),
-                        BusinessScenarioFaultType.DUPLICATE_REQUEST_SEQUENCE_ID,
-                        this + " received duplicate request sequence ID \"" + requestSequenceId + "\"");
-
-            }
-            requestSequenceIds.add(requestSequenceId);
-        }
+        // See BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME constant definition. A business scenario can only exists in
+        // the context of a single iteration, so if a business scenario receives requests belonging to different
+        // iterations, will throw a BusinessScenarioException
+        String iterationId = event.getIterationId();
 
         if (this.iterationId == null && iterationId != null)
         {
@@ -487,6 +472,36 @@ public class BusinessScenario {
 
     void setIterationId(String iterationId) {
         this.iterationId = iterationId;
+    }
+
+    /**
+     * Package protected for testing.
+     *
+     * @exception BusinessScenarioException if duplicate requestSequenceId is detected.
+     */
+    void updatePerRequestStatistics(HttpEvent event) throws BusinessScenarioException {
+
+        HttpRequest request = new HttpRequest(event);
+
+        //
+        // check for duplicates, figure out early if we've seen the same request sequence ID and throw exception
+        //
+
+        // See BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME
+        String requestSequenceId = request.getRequestSequenceId();
+        if (requestSequenceId != null) {
+
+            for(HttpRequest r: requests) {
+                if (requestSequenceId.equals(r.getRequestSequenceId())) {
+                    throw new BusinessScenarioException(
+                            getLineNumber(),
+                            BusinessScenarioFaultType.DUPLICATE_REQUEST_SEQUENCE_ID,
+                            this + " received duplicate request sequence ID \"" + requestSequenceId + "\"");
+                }
+            }
+        }
+
+        requests.add(request);
     }
 
     // Protected -------------------------------------------------------------------------------------------------------
