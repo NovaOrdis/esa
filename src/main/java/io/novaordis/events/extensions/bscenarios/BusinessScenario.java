@@ -363,6 +363,8 @@ public class BusinessScenario {
         if (iterationId != null) {
             bse.setStringProperty(BusinessScenarioEvent.ITERATION_ID, iterationId);
         }
+
+        bse.setIntegerProperty(BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT, getRequestCount(200));
         return bse;
     }
 

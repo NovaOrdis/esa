@@ -17,6 +17,8 @@
 package io.novaordis.events.extensions.bscenarios;
 
 import io.novaordis.events.core.event.GenericTimedEvent;
+import io.novaordis.events.core.event.IntegerProperty;
+import io.novaordis.events.core.event.LongProperty;
 import io.novaordis.events.core.event.StringProperty;
 
 /**
@@ -29,7 +31,11 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
 
     public static final String ID = "id";
     public static final String DURATION = "duration";
+
     public static final String REQUEST_COUNT = "request-count";
+    // the number of requests that return with 200
+    public static final String SUCCESSFUL_REQUEST_COUNT = "successful-request-count";
+
     public static final String TYPE = "type";
     public static final String STATE = "state";
     public static final String JSESSIONID = "jsessionid";
@@ -82,6 +88,49 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
         return sp == null ? null : sp.getString();
     }
 
+    /**
+     * @return null if the scenario event does not contain duration info.
+     */
+    public Long getDuration() {
+
+        LongProperty p = getLongProperty(BusinessScenarioEvent.DURATION);
+
+        if (p == null) {
+            return null;
+        }
+
+        return p.getLong();
+    }
+
+    /**
+     * @return the number of requests associated with this scenario. A scenario must have at least one request - the
+     * request that started it.
+     */
+    public int getRequestCount() {
+
+        IntegerProperty p = getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT);
+
+        if (p == null) {
+            throw new IllegalStateException(this + " does not have a request count");
+        }
+
+        return p.getInteger();
+    }
+
+    /**
+     * @return the count of requests that return with a 200 status code. It may be null, in case the status code
+     * information is not available in the original HTTP events.
+     */
+    public Integer getSuccessfulRequestCount() {
+
+        IntegerProperty p = getIntegerProperty(BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT);
+
+        if (p == null) {
+            return null;
+        }
+
+        return p.getInteger();
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

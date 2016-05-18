@@ -112,6 +112,18 @@ public class GenericEvent implements Event {
     }
 
     @Override
+    public BooleanProperty getBooleanProperty(String name) {
+
+        Property p = properties.get(name);
+
+        if (p != null && p instanceof BooleanProperty) {
+            return (BooleanProperty)p;
+        }
+
+        return null;
+    }
+
+    @Override
     public MapProperty getMapProperty(String name) {
 
         Property p = properties.get(name);
@@ -172,6 +184,7 @@ public class GenericEvent implements Event {
     public List<Property> getPropertyList() {
 
         List<Property> result = new ArrayList<>();
+        //noinspection Convert2streamapi
         for(String name: orderedPropertyNames) {
             result.add(properties.get(name));
         }
@@ -189,6 +202,11 @@ public class GenericEvent implements Event {
 
     public void setIntegerProperty(String name, int value) {
         setProperty(new IntegerProperty(name, value));
+    }
+
+    public void setBooleanProperty(String name, boolean value) {
+
+        setProperty(new BooleanProperty(name, value));
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package io.novaordis.events.extensions.bscenarios;
-
-import io.novaordis.events.httpd.HttpEvent;
+package io.novaordis.events.core.event;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 5/17/16
+ * @since 2/1/16
  */
-public class HttpRequest {
+public class BooleanProperty extends PropertyBase implements Property {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,48 +28,43 @@ public class HttpRequest {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String requestSequenceId;
-    private Integer statusCode;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    /**
-     * Builds a HTTP request representation based on a HttpEvent instance
-     */
-    public HttpRequest(HttpEvent event) {
+    public BooleanProperty(String name) {
+        this(name, true);
+    }
 
-        this.requestSequenceId = event.getRequestSequenceId();
+    public BooleanProperty(String name, Boolean value) {
+        super(name, value);
+    }
 
-        // prefer original request status code
-        this.statusCode = event.getOriginalRequestStatusCode();
+    // Property implementation -----------------------------------------------------------------------------------------
 
-        if (statusCode == null) {
-            this.statusCode = event.getStatusCode();
+    @Override
+    public Class getType() {
+        return Boolean.class;
+    }
+
+    @Override
+    public Property fromString(String s) throws IllegalArgumentException {
+
+        if (s == null) {
+            throw new IllegalArgumentException("null string");
         }
+
+        if (!"TRUE".equals(s.toUpperCase()) && !"FALSE".equals(s.toUpperCase())) {
+            throw new IllegalArgumentException("\"" + s + "\" cannot be converted to an BooleanProperty value");
+        }
+
+        boolean b = Boolean.valueOf(s);
+        return new BooleanProperty(getName(), b);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    /**
-     * @return the request sequence ID, if present in the original HttpEvent, or null otherwise
-     */
-    public String getRequestSequenceId() {
+    public Boolean getBoolean() {
 
-        return requestSequenceId;
-    }
-
-    /**
-     * @return null if no status code was present in the original HTTP event
-     */
-    public Integer getStatusCode() {
-
-        return statusCode;
-    }
-
-    @Override
-    public String toString() {
-
-        return "N/A N/A " + (statusCode == null ? "N/A" : statusCode);
+        return (Boolean)getValue();
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

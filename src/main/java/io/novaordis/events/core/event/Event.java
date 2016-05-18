@@ -59,6 +59,12 @@ public interface Event {
     IntegerProperty getIntegerProperty(String integerPropertyName);
 
     /**
+     * @return the corresponding BooleanProperty or null if there is no such BooleanProperty. Note that the method will
+     * return null if a property with the given name exists, but it is not a BooleanProperty.
+     */
+    BooleanProperty getBooleanProperty(String booleanPropertyName);
+
+    /**
      * @return the corresponding MapProperty or null if there is no such MapProperty. Note that the method will
      * return null if a property with the given name exists, but it is not a MapProperty.
      */

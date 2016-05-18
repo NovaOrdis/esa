@@ -375,10 +375,8 @@ public class BusinessScenarioCommand extends CommandBase {
 
     private void displayStatistics() {
 
-        System.out.printf("Counters\n");
-
         Set<BusinessScenarioState> bsStates = bsStats.getBusinessScenarioStates();
-        System.out.printf("       business scenarios: %d (%s)\n",
+        System.out.printf("business scenarios: %d (%s)\n",
                 bsStats.getBusinessScenarioCount(), buildStateCountComment(bsStates));
 
         //
@@ -399,19 +397,19 @@ public class BusinessScenarioCommand extends CommandBase {
         }
 
         System.out.println();
-        System.out.printf("                   faults: %d (%d different types)\n",
+        System.out.printf("            faults: %d (%d different types)\n",
                 faultStats.getFaultCount(), faultStats.getFaultTypeCount());
 
         Set<FaultType> faultTypes = faultStats.getFaultTypes();
 
         for(FaultType ft: faultTypes) {
-            System.out.printf("                             %s: %d\n", ft, faultStats.getCountPerType(ft));
+            System.out.printf("                      %s: %d\n", ft, faultStats.getCountPerType(ft));
         }
 
         System.out.println();
-        System.out.printf("             other events: %d\n", otherEventsCount);
-        System.out.printf("            HTTP requests: %d\n", httpEventCount);
-        System.out.printf("            HTTP sessions: %d\n", sessions.size());
+        System.out.printf("      other events: %d\n", otherEventsCount);
+        System.out.printf("     HTTP requests: %d\n", httpEventCount);
+        System.out.printf("     HTTP sessions: %d\n", sessions.size());
     }
 
     private void displayScenarioStatsPerState(BusinessScenarioState state) {
@@ -419,20 +417,35 @@ public class BusinessScenarioCommand extends CommandBase {
         BusinessScenarioStateStatistics s = bsStats.getBusinessScenarioStatisticsPerState(state);
 
         //
-        // there are cases when there are NO COMPLETE scenarios
+        // special handling for COMPLETE scenarios
         //
-        if (s == null) {
-            System.out.printf("                             NO COMPLETE scenarios\n");
-            return;
+
+        if (BusinessScenarioState.COMPLETE.equals(state)) {
+
+            if (s == null) {
+                System.out.printf("                      NO COMPLETE scenarios\n");
+                return;
+            }
         }
 
         long counterPerState = s.getBusinessScenarioCount();
 
         System.out.printf(
-                "                             %s: %d, duration min/avg/max: %d/%d/%d ms, reqs/scenario min/avg/max: %d/%2.2f/%d\n",
+                "                      %s: %d, duration min/avg/max: %d/%d/%d ms, reqs/scenario min/avg/max: %d/%2.2f/%d\n",
                 state.name(), counterPerState,
                 s.getMinDurationMs(), s.getAverageDurationMs(), s.getMaxDurationMs(),
                 s.getMinRequestsPerScenario(), s.getAverageRequestsPerScenario(), s.getMaxRequestsPerScenario());
+
+        //
+        // special handling for COMPLETE scenarios
+        //
+
+        if (BusinessScenarioState.COMPLETE.equals(state)) {
+
+            System.out.printf(
+                    "                        Successful COMPLETE scenarios (all requests are 200s): %d\n",
+                    s.getSuccessfulCount());
+        }
     }
 
     private String buildStateCountComment(Set<BusinessScenarioState> bsStates) {

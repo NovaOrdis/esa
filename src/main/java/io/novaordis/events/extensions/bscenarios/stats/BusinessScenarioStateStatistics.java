@@ -16,8 +16,6 @@
 
 package io.novaordis.events.extensions.bscenarios.stats;
 
-import io.novaordis.events.core.event.IntegerProperty;
-import io.novaordis.events.core.event.LongProperty;
 import io.novaordis.events.extensions.bscenarios.BusinessScenarioEvent;
 import io.novaordis.events.extensions.bscenarios.BusinessScenarioState;
 
@@ -45,12 +43,15 @@ public class BusinessScenarioStateStatistics {
     private int maxRequestsPerScenario;
     private int aggregatedRequests;
 
+    // the number of scenarios in this state, for which *all* requests are successful (status code 200)
+    private int successfulScenariosCount;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public BusinessScenarioStateStatistics(BusinessScenarioState state) {
         this.state = state;
         this.businessScenariosCount = 0L;
+        this.successfulScenariosCount = 0;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -64,8 +65,7 @@ public class BusinessScenarioStateStatistics {
 
         businessScenariosCount ++;
 
-        LongProperty p = bse.getLongProperty(BusinessScenarioEvent.DURATION);
-        Long duration = p == null ? null : p.getLong();
+        Long duration = bse.getDuration();
         if (duration != null) {
 
             if (duration > maxDurationMs) {
@@ -77,19 +77,20 @@ public class BusinessScenarioStateStatistics {
             aggregatedDurationMs += duration;
         }
 
-        IntegerProperty p2 = bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT);
-        Integer requestCount = p2 == null ? null : p2.getInteger();
-        if (requestCount != null) {
-
-            if (requestCount > maxRequestsPerScenario) {
-                maxRequestsPerScenario = requestCount;
-            }
-            if (requestCount < minRequestsPerScenario) {
-                minRequestsPerScenario = requestCount;
-            }
-            aggregatedRequests += requestCount;
+        int requestCount = bse.getRequestCount();
+        if (requestCount > maxRequestsPerScenario) {
+            maxRequestsPerScenario = requestCount;
         }
+        if (requestCount < minRequestsPerScenario) {
+            minRequestsPerScenario = requestCount;
+        }
+        aggregatedRequests += requestCount;
 
+        Integer successfulRequestCount = bse.getSuccessfulRequestCount();
+
+        if (successfulRequestCount != null && successfulRequestCount == requestCount) {
+            successfulScenariosCount ++;
+        }
     }
 
     public long getBusinessScenarioCount() {
@@ -127,6 +128,14 @@ public class BusinessScenarioStateStatistics {
     public int getMaxRequestsPerScenario() {
 
         return maxRequestsPerScenario;
+    }
+
+    /**
+     * @return the number of scenarios in this state, for which *all* requests are successful (status code 200)
+     */
+    public int getSuccessfulCount() {
+
+        return successfulScenariosCount;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

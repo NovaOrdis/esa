@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package io.novaordis.events.extensions.bscenarios;
+package io.novaordis.events.core.event;
 
-import io.novaordis.events.core.event.TimedEventTest;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 4/23/16
+ * @since 2/1/16
  */
-public class BusinessScenarioEventTest extends TimedEventTest {
+public class BooleanPropertyTest extends PropertyTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(BusinessScenarioEventTest.class);
+    private static final Logger log = LoggerFactory.getLogger(BooleanPropertyTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -41,37 +40,45 @@ public class BusinessScenarioEventTest extends TimedEventTest {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    // Overrides -------------------------------------------------------------------------------------------------------
-
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
-    public void getState_NoState() throws Exception {
+    public void value() throws Exception {
 
-        BusinessScenarioEvent bse = getEventToTest(1L);
-        assertNull(bse.getState());
+        BooleanProperty bp = new BooleanProperty("test-name", true);
+
+        assertEquals("test-name", bp.getName());
+        assertTrue((Boolean)bp.getValue());
+        assertTrue(bp.getBoolean());
+        assertEquals(Boolean.class, bp.getType());
     }
 
     @Test
-    public void getState_InvalidState() throws Exception {
+    public void fromString_InvalidValue() throws Exception {
 
-        BusinessScenarioEvent bse = getEventToTest(1L);
-        bse.setStringProperty(BusinessScenarioEvent.STATE, "I-am-pretty-sure-there-is-no-such-value-in-enum");
+        BooleanProperty bp = new BooleanProperty("test");
 
         try {
-            bse.getState();
-            fail("should have thrown exception");
+            bp.fromString("not a boolean");
+            fail("should have thrown Exception");
         }
-        catch(IllegalStateException e) {
-
-            String msg = e.getMessage();
-            log.info(msg);
-            assertTrue(msg.matches(
-                    ".* carries an invalid BusinessScenarioState value \"I-am-pretty-sure-there-is-no-such-value-in-enum\""));
-
-            Throwable t = e.getCause();
-            assertTrue(t instanceof IllegalArgumentException);
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
         }
+    }
+
+    @Test
+    public void externalizeValue_BooleanProperty() throws Exception {
+
+        BooleanProperty bp = new BooleanProperty("test-name", true);
+        assertEquals("true", bp.externalizeValue());
+    }
+
+    @Test
+    public void externalizeType_BooleanProperty() throws Exception {
+
+        BooleanProperty bp = new BooleanProperty("test-name", true);
+        assertEquals("test-name", bp.externalizeType());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -79,8 +86,14 @@ public class BusinessScenarioEventTest extends TimedEventTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected BusinessScenarioEvent getEventToTest(Long timestamp) throws Exception {
-        return new BusinessScenarioEvent(timestamp);
+    protected BooleanProperty getPropertyToTest(String name) {
+        return new BooleanProperty(name, true);
+    }
+
+    @Override
+    protected Boolean getAppropriateValueForPropertyToTest() {
+
+        return true;
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

@@ -796,6 +796,58 @@ public class BusinessScenarioTest {
         assertEquals("SOME-TYPE", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
     }
 
+    @Test
+    public void toEvent_getSuccessfulRequestCount_AllSuccessfulRequests() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+
+        //
+        // all requests are 200, so the scenario must be successful
+        //
+
+        HttpEvent e = new HttpEvent(777L, 7L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
+        e.setStatusCode(200);
+
+        assertFalse(bs.update(e));
+
+        HttpEvent e2 = new HttpEvent(888L, 8L);
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TYPE-A");
+        e2.setStatusCode(200);
+
+        assertTrue(bs.update(e2));
+
+        BusinessScenarioEvent bse = bs.toEvent();
+
+        assertEquals(2, bse.getSuccessfulRequestCount().intValue());
+    }
+
+    @Test
+    public void toEvent_getSuccessfulRequestCount_SomeRequestsNotSuccessful() throws Exception {
+
+        BusinessScenario bs = new BusinessScenario();
+
+        //
+        // some requests are not 200, so the scenario must not be successful
+        //
+
+        HttpEvent e = new HttpEvent(777L, 7L);
+        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
+        e.setStatusCode(200);
+
+        assertFalse(bs.update(e));
+
+        HttpEvent e2 = new HttpEvent(888L, 8L);
+        e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TYPE-A");
+        e2.setStatusCode(201);
+
+        assertTrue(bs.update(e2));
+
+        BusinessScenarioEvent bse = bs.toEvent();
+
+        assertEquals(1, bse.getSuccessfulRequestCount().intValue());
+    }
+
     // setType() -------------------------------------------------------------------------------------------------------
 
     @Test
