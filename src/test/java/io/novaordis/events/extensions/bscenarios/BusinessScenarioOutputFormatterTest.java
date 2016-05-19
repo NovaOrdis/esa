@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
@@ -86,6 +87,30 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
         catch(IllegalArgumentException e) {
             log.info(e.getMessage());
         }
+    }
+
+    @Test
+    public void toString_Reference() throws Exception {
+
+        BusinessScenarioOutputFormatter f = getConversionLogicToTest();
+
+        BusinessScenario bs = new BusinessScenario();
+        bs.setBeginTimestamp(1L);
+        bs.setId(2L);
+        bs.setJSessionId("test-jsession-id");
+        bs.setIterationId("test-iteration-id");
+        bs.setType("test-type");
+        bs.setState(BusinessScenarioState.COMPLETE);
+
+//                BusinessScenarioEvent.REQUEST_COUNT,
+//                BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT,
+//                BusinessScenarioEvent.DURATION,
+
+        BusinessScenarioEvent bse = bs.toEvent();
+
+        String s = f.toString(bse);
+
+        assertEquals("12/31/69 16:00:00, 2, test-jsession-id, test-iteration-id, test-type, COMPLETE, 0, 0, 0", s);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

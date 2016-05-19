@@ -428,6 +428,10 @@ public class BusinessScenario {
 
     // Package protected -----------------------------------------------------------------------------------------------
 
+    void setId(long id) {
+        this.id = id;
+    }
+
     void setType(String type) {
 
         //
