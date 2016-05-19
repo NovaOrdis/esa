@@ -42,6 +42,10 @@ public class HttpRequestResponsePair {
      */
     public HttpRequestResponsePair(HttpEvent event) {
 
+        if (event == null) {
+            return;
+        }
+
         this.requestSequenceId = event.getRequestSequenceId();
 
         // prefer original request status code
@@ -50,6 +54,11 @@ public class HttpRequestResponsePair {
         if (statusCode == null) {
             this.statusCode = event.getStatusCode();
         }
+    }
+
+    public HttpRequestResponsePair() {
+
+        this(null);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -62,12 +71,20 @@ public class HttpRequestResponsePair {
         return requestSequenceId;
     }
 
+    public void setRequestSequenceId(String s) {
+        this.requestSequenceId = s;
+    }
+
     /**
      * @return null if no status code was present in the original HTTP event
      */
     public Integer getStatusCode() {
 
         return statusCode;
+    }
+
+    public void setStatusCode(Integer i) {
+        this.statusCode = i;
     }
 
     @Override

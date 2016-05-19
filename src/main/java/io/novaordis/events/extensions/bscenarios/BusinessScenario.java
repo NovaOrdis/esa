@@ -98,7 +98,7 @@ public class BusinessScenario {
     /**
      * The requests, in the order they are read from the logs and exposed to this instance.
      */
-    private List<HttpRequestResponsePair> requests;
+    private List<HttpRequestResponsePair> requestResponsePairs;
 
     /**
      * May be null, but once it is set, it must stay the same for the duration of the business scenario, if an update
@@ -121,7 +121,7 @@ public class BusinessScenario {
 
         this.id = getNextId();
         this.state = BusinessScenarioState.NEW;
-        this.requests = new ArrayList<>();
+        this.requestResponsePairs = new ArrayList<>();
         log.debug(this + " constructed");
     }
 
@@ -329,7 +329,7 @@ public class BusinessScenario {
     }
 
     public int getRequestCount() {
-        return requests.size();
+        return requestResponsePairs.size();
     }
 
     /**
@@ -340,7 +340,7 @@ public class BusinessScenario {
     public int getRequestCount(int statusCode) {
 
         int c = 0;
-        for(HttpRequestResponsePair r: requests) {
+        for(HttpRequestResponsePair r: requestResponsePairs) {
             Integer sc = r.getStatusCode();
             if (sc != null && sc == statusCode) {
                 c ++;
@@ -354,7 +354,7 @@ public class BusinessScenario {
         BusinessScenarioEvent bse = new BusinessScenarioEvent(beginTimestamp);
         bse.setLongProperty(BusinessScenarioEvent.ID, getId());
         bse.setLongProperty(BusinessScenarioEvent.DURATION, aggregatedScenarioDuration);
-        bse.setIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT, requests.size());
+        bse.setIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT, requestResponsePairs.size());
         bse.setStringProperty(BusinessScenarioEvent.TYPE, type);
         bse.setStringProperty(BusinessScenarioEvent.STATE, getState().name());
         if (jSessionId != null) {
@@ -406,7 +406,7 @@ public class BusinessScenario {
     public List<String> getRequestSequenceIds() {
 
         List<String> result = new ArrayList<>();
-        for(HttpRequestResponsePair r: requests) {
+        for(HttpRequestResponsePair r: requestResponsePairs) {
 
             String requestSequenceId = r.getRequestSequenceId();
 
@@ -464,7 +464,7 @@ public class BusinessScenario {
         endTimestamp = requestTimestamp + requestDuration;
 
         // See BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME constant definition. A business scenario can only exists in
-        // the context of a single iteration, so if a business scenario receives requests belonging to different
+        // the context of a single iteration, so if a business scenario receives requestResponsePairs belonging to different
         // iterations, will throw a BusinessScenarioException
         String iterationId = event.getIterationId();
 
@@ -514,7 +514,7 @@ public class BusinessScenario {
         String requestSequenceId = request.getRequestSequenceId();
         if (requestSequenceId != null) {
 
-            for(HttpRequestResponsePair r: requests) {
+            for(HttpRequestResponsePair r: requestResponsePairs) {
                 if (requestSequenceId.equals(r.getRequestSequenceId())) {
                     throw new BusinessScenarioException(
                             getLineNumber(),
@@ -524,7 +524,15 @@ public class BusinessScenario {
             }
         }
 
-        requests.add(request);
+        requestResponsePairs.add(request);
+    }
+
+    List<HttpRequestResponsePair> getRequestResponsePairs() {
+        return requestResponsePairs;
+    }
+
+    void setDuration(long d) {
+        aggregatedScenarioDuration = d;
     }
 
     // Protected -------------------------------------------------------------------------------------------------------

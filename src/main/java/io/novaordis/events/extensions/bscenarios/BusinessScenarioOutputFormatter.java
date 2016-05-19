@@ -102,8 +102,10 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
         }
 
         //
+        // list the status code and the duration of the enclosed requests
         //
-        //
+
+
 
         return s;
     }

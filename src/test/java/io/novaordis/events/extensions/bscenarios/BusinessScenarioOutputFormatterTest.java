@@ -22,6 +22,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -101,16 +103,28 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
         bs.setIterationId("test-iteration-id");
         bs.setType("test-type");
         bs.setState(BusinessScenarioState.COMPLETE);
+        bs.setDuration(10L);
 
-//                BusinessScenarioEvent.REQUEST_COUNT,
-//                BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT,
-//                BusinessScenarioEvent.DURATION,
+
+        List<HttpRequestResponsePair> httpRequestResponsePairs = bs.getRequestResponsePairs();
+
+        HttpRequestResponsePair p = new HttpRequestResponsePair();
+        p.setStatusCode(200);
+        httpRequestResponsePairs.add(p);
+
+        HttpRequestResponsePair p2 = new HttpRequestResponsePair();
+        p2.setStatusCode(300);
+        httpRequestResponsePairs.add(p2);
+
+        HttpRequestResponsePair p3 = new HttpRequestResponsePair();
+        p3.setStatusCode(400);
+        httpRequestResponsePairs.add(p3);
 
         BusinessScenarioEvent bse = bs.toEvent();
 
         String s = f.toString(bse);
 
-        assertEquals("12/31/69 16:00:00, 2, test-jsession-id, test-iteration-id, test-type, COMPLETE, 0, 0, 0", s);
+        assertEquals("12/31/69 16:00:00, 2, test-jsession-id, test-iteration-id, test-type, COMPLETE, 3, 1, 10, 200, 20, 300, 30, 400, 40", s);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
