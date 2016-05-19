@@ -17,68 +17,49 @@
 package io.novaordis.events.extensions.bscenarios;
 
 import io.novaordis.events.httpd.HttpEvent;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 5/17/16
+ * @since 2/4/16
  */
-public class HttpRequest {
+public class HttpRequestResponsePairTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(HttpRequestResponsePairTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String requestSequenceId;
-    private Integer statusCode;
-
     // Constructors ----------------------------------------------------------------------------------------------------
-
-    /**
-     * Builds a HTTP request representation based on a HttpEvent instance
-     */
-    public HttpRequest(HttpEvent event) {
-
-        this.requestSequenceId = event.getRequestSequenceId();
-
-        // prefer original request status code
-        this.statusCode = event.getOriginalRequestStatusCode();
-
-        if (statusCode == null) {
-            this.statusCode = event.getStatusCode();
-        }
-    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    /**
-     * @return the request sequence ID, if present in the original HttpEvent, or null otherwise
-     */
-    public String getRequestSequenceId() {
+    @Test
+    public void constructor() throws Exception {
 
-        return requestSequenceId;
-    }
+        HttpEvent e = new HttpEvent(0L);
+        e.setRequestSequenceId("test-3432");
+        e.setStatusCode(200);
 
-    /**
-     * @return null if no status code was present in the original HTTP event
-     */
-    public Integer getStatusCode() {
-
-        return statusCode;
-    }
-
-    @Override
-    public String toString() {
-
-        return "N/A N/A " + (statusCode == null ? "N/A" : statusCode);
+        HttpRequestResponsePair r = new HttpRequestResponsePair(e);
+        assertEquals("test-3432", r.getRequestSequenceId());
+        assertEquals(200, r.getStatusCode().intValue());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
-
-    // Private ---------------------------------------------------------------------------------------------------------
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 

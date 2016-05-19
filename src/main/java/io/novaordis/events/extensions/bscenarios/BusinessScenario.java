@@ -98,7 +98,7 @@ public class BusinessScenario {
     /**
      * The requests, in the order they are read from the logs and exposed to this instance.
      */
-    private List<HttpRequest> requests;
+    private List<HttpRequestResponsePair> requests;
 
     /**
      * May be null, but once it is set, it must stay the same for the duration of the business scenario, if an update
@@ -340,7 +340,7 @@ public class BusinessScenario {
     public int getRequestCount(int statusCode) {
 
         int c = 0;
-        for(HttpRequest r: requests) {
+        for(HttpRequestResponsePair r: requests) {
             Integer sc = r.getStatusCode();
             if (sc != null && sc == statusCode) {
                 c ++;
@@ -406,7 +406,7 @@ public class BusinessScenario {
     public List<String> getRequestSequenceIds() {
 
         List<String> result = new ArrayList<>();
-        for(HttpRequest r: requests) {
+        for(HttpRequestResponsePair r: requests) {
 
             String requestSequenceId = r.getRequestSequenceId();
 
@@ -500,7 +500,7 @@ public class BusinessScenario {
      */
     void updatePerRequestStatistics(HttpEvent event) throws BusinessScenarioException {
 
-        HttpRequest request = new HttpRequest(event);
+        HttpRequestResponsePair request = new HttpRequestResponsePair(event);
 
         //
         // check for duplicates, figure out early if we've seen the same request sequence ID and throw exception
@@ -510,7 +510,7 @@ public class BusinessScenario {
         String requestSequenceId = request.getRequestSequenceId();
         if (requestSequenceId != null) {
 
-            for(HttpRequest r: requests) {
+            for(HttpRequestResponsePair r: requests) {
                 if (requestSequenceId.equals(r.getRequestSequenceId())) {
                     throw new BusinessScenarioException(
                             getLineNumber(),
