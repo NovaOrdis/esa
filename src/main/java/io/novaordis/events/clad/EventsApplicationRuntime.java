@@ -27,7 +27,7 @@ import io.novaordis.events.core.EventProcessor;
 import io.novaordis.events.core.InputStreamInitiator;
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.LineStreamParser;
-import io.novaordis.events.core.OutputFormatter;
+import io.novaordis.events.core.CsvOutputFormatter;
 import io.novaordis.events.core.OutputStreamTerminator;
 import io.novaordis.events.core.event.ByteToLineEventConverter;
 import org.apache.log4j.Logger;
@@ -123,7 +123,7 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
         terminator = new OutputStreamTerminator(
                 "Output Writer",
                 null,
-                new OutputFormatter(),
+                new CsvOutputFormatter(),
                 System.out);
 
         endOfStream = new CountDownLatch(1);

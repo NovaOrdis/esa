@@ -24,7 +24,6 @@ import io.novaordis.clad.option.BooleanOption;
 import io.novaordis.clad.option.Option;
 import io.novaordis.events.clad.EventsApplicationRuntime;
 import io.novaordis.events.core.EndOfStreamListener;
-import io.novaordis.events.core.OutputFormatter;
 import io.novaordis.events.core.Terminator;
 import io.novaordis.events.core.event.EndOfStreamEvent;
 import io.novaordis.events.core.event.Event;
@@ -166,18 +165,9 @@ public class BusinessScenarioCommand extends CommandBase {
 
             terminator.setInputQueue(terminatorQueue);
 
-            String propertiesToDisplay =
-                    "timestamp, " +
-                            BusinessScenarioEvent.ID + ", " +
-                            BusinessScenarioEvent.JSESSIONID + ", " +
-                            BusinessScenarioEvent.ITERATION_ID + ", " +
-                            BusinessScenarioEvent.TYPE + ", " +
-                            BusinessScenarioEvent.STATE + ", " +
-                            BusinessScenarioEvent.REQUEST_COUNT + ", " +
-                            BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT + ", " +
-                            BusinessScenarioEvent.DURATION;
-
-            ((OutputFormatter) terminator.getConversionLogic()).setOutputFormat(propertiesToDisplay);
+            // the output format specification is encapsulated in BusinessScenarioOutputFormatter
+            BusinessScenarioOutputFormatter bsof = new BusinessScenarioOutputFormatter();
+            terminator.setConversionLogic(bsof);
 
             //noinspection Convert2Lambda,Anonymous2MethodRef
             terminator.addEndOfStreamListener(new EndOfStreamListener() {
@@ -215,7 +205,6 @@ public class BusinessScenarioCommand extends CommandBase {
             // wait until terminator finishes its queue
             //
             rendezVous.await();
-
         }
     }
 

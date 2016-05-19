@@ -37,11 +37,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/2/16
  */
-public class OutputFormatterTest extends OutputStreamConversionLogicTest {
+public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(OutputFormatterTest.class);
+    private static final Logger log = LoggerFactory.getLogger(CsvOutputFormatterTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -56,7 +56,7 @@ public class OutputFormatterTest extends OutputStreamConversionLogicTest {
     @Test
     public void process_WeDumpTheFaultOnFaultEvent() throws Exception {
 
-        OutputFormatter c = getConversionLogicToTest();
+        CsvOutputFormatter c = getConversionLogicToTest();
 
         Event event = new FaultEvent("test message", new RuntimeException("SYNTHETIC"));
         assertTrue(c.process(event));
@@ -74,7 +74,13 @@ public class OutputFormatterTest extends OutputStreamConversionLogicTest {
     @Test
     public void process_RegularUntimedEvent_NoConfiguredOutputFormat() throws Exception {
 
-        OutputFormatter c = getConversionLogicToTest();
+        CsvOutputFormatter c = getConversionLogicToTest();
+
+        //
+        // make sure no output format is configured, the default formatter provided by the sub-class may come with
+        // an output format on its own
+        //
+        c.setOutputFormat(null);
 
         MockEvent me = new MockEvent();
 
@@ -94,7 +100,13 @@ public class OutputFormatterTest extends OutputStreamConversionLogicTest {
     @Test
     public void process_RegularTimedEvent_NoConfiguredOutputFormat() throws Exception {
 
-        OutputFormatter c = getConversionLogicToTest();
+        CsvOutputFormatter c = getConversionLogicToTest();
+
+        //
+        // make sure no output format is configured, the default formatter provided by the sub-class may come with
+        // an output format on its own
+        //
+        c.setOutputFormat(null);
 
         Date d = new SimpleDateFormat("MM/yy/dd HH:mm:ss").parse("01/16/01 01:01:01");
 
@@ -110,14 +122,14 @@ public class OutputFormatterTest extends OutputStreamConversionLogicTest {
         byte[] content = c.getBytes();
         String s = new String(content);
 
-        String expected = OutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(d) + ", C value, B value, A value\n";
+        String expected = CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(d) + ", C value, B value, A value\n";
         assertEquals(expected, s);
     }
 
     @Test
     public void process_RegularUntimedEvent_WithConfiguredOutputFormat() throws Exception {
 
-        OutputFormatter c = getConversionLogicToTest();
+        CsvOutputFormatter c = getConversionLogicToTest();
 
         c.setOutputFormat("B, no-such-property, C");
 
@@ -139,7 +151,7 @@ public class OutputFormatterTest extends OutputStreamConversionLogicTest {
     @Test
     public void process_RegularTimedEvent_WithConfiguredOutputFormat() throws Exception {
 
-        OutputFormatter c = getConversionLogicToTest();
+        CsvOutputFormatter c = getConversionLogicToTest();
 
         c.setOutputFormat("B, no-such-property, timestamp, C");
 
@@ -157,7 +169,7 @@ public class OutputFormatterTest extends OutputStreamConversionLogicTest {
         byte[] content = c.getBytes();
         String s = new String(content);
 
-        String expected = "B value, , " + OutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(d) + ", C value\n";
+        String expected = "B value, , " + CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(d) + ", C value\n";
         assertEquals(expected, s);
     }
 
@@ -166,7 +178,7 @@ public class OutputFormatterTest extends OutputStreamConversionLogicTest {
     @Test
     public void setOutputFormat_Null() throws Exception {
 
-        OutputFormatter o = getConversionLogicToTest();
+        CsvOutputFormatter o = getConversionLogicToTest();
         o.setOutputFormat(null);
         assertNull(o.getOutputFormat());
     }
@@ -174,7 +186,7 @@ public class OutputFormatterTest extends OutputStreamConversionLogicTest {
     @Test
     public void setOutputFormat_OneField() throws Exception {
 
-        OutputFormatter o = getConversionLogicToTest();
+        CsvOutputFormatter o = getConversionLogicToTest();
 
         o.setOutputFormat("a");
 
@@ -185,7 +197,7 @@ public class OutputFormatterTest extends OutputStreamConversionLogicTest {
     @Test
     public void setOutputFormat_TwoFields() throws Exception {
 
-        OutputFormatter o = getConversionLogicToTest();
+        CsvOutputFormatter o = getConversionLogicToTest();
 
         o.setOutputFormat("a,b");
 
@@ -198,9 +210,9 @@ public class OutputFormatterTest extends OutputStreamConversionLogicTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected OutputFormatter getConversionLogicToTest() throws Exception {
+    protected CsvOutputFormatter getConversionLogicToTest() throws Exception {
 
-        return new OutputFormatter();
+        return new CsvOutputFormatter();
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

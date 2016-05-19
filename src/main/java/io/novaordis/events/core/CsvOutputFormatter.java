@@ -33,10 +33,14 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
+ * The class that generically converts events into comma-separated lines containing values for the event's properties.
+ * If an output format (a list of property names) is provided externally, the formatter will only include the specified
+ * properties in the output. Otherwise, all the properties are introspected and included in the output.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
-public class OutputFormatter implements OutputStreamConversionLogic {
+public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -56,7 +60,7 @@ public class OutputFormatter implements OutputStreamConversionLogic {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public OutputFormatter() {
+    public CsvOutputFormatter() {
         sb = new StringBuilder();
         outputFormat = null;
     }

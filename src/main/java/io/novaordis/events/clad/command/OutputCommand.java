@@ -22,7 +22,7 @@ import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.clad.option.Option;
 import io.novaordis.clad.option.StringOption;
 import io.novaordis.events.clad.EventsApplicationRuntime;
-import io.novaordis.events.core.OutputFormatter;
+import io.novaordis.events.core.CsvOutputFormatter;
 import io.novaordis.events.core.OutputStreamTerminator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +75,7 @@ public class OutputCommand extends CommandBase {
 
         StringOption outputFormatOption = (StringOption)getOption(OUTPUT_FORMAT_OPTION);
         if (outputFormatOption != null) {
-            ((OutputFormatter) terminator.getConversionLogic()).setOutputFormat(outputFormatOption.getString());
+            ((CsvOutputFormatter) terminator.getConversionLogic()).setOutputFormat(outputFormatOption.getString());
         }
 
         runtime.start();
