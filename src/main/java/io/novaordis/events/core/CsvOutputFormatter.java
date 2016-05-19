@@ -61,6 +61,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public CsvOutputFormatter() {
+
         sb = new StringBuilder();
         outputFormat = null;
     }
@@ -161,6 +162,20 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
     // Protected -------------------------------------------------------------------------------------------------------
 
+    /**
+     * This method was designed to be overridden by more specialized sub-classes, if they choose so. The method
+     * receives the Event and returns a comma-separated string generated based on the sub-class instance state.
+     */
+    protected String toString(Event event) {
+
+        if (outputFormat != null) {
+            return externalizeEventInOutputFormat(outputFormat, event);
+        }
+        else {
+            return externalizeEventViaIntrospection(event);
+        }
+    }
+
     // Private ---------------------------------------------------------------------------------------------------------
 
     /**
@@ -175,25 +190,16 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
             //
 
             sb.append(event.toString()).append("\n");
-            return true;
-        }
-
-        if (outputFormat != null) {
-            return externalizeEventInOutputFormat(outputFormat, event);
         }
         else {
-            return externalizeEventViaIntrospection(event);
+            sb.append(toString(event));
         }
+        return true;
     }
 
-    /**
-     * @return true if there are bytes to be collected.
-     */
-    private boolean externalizeEventInOutputFormat(List<String> outputFormat, Event event) {
+    private String externalizeEventInOutputFormat(List<String> outputFormat, Event event) {
 
-        if (outputFormat == null) {
-            throw new IllegalArgumentException("null output format");
-        }
+        String s = "";
 
         for(Iterator<String> fni = outputFormat.iterator(); fni.hasNext(); ) {
 
@@ -204,7 +210,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
                 if (event instanceof TimedEvent) {
                     timestamp = ((TimedEvent)event).getTimestamp();
                 }
-                externalizeTimestamp(timestamp);
+                s += externalizeTimestamp(timestamp);
             }
             else {
 
@@ -214,26 +220,25 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
                     externalizedValue = p.externalizeValue();
                 }
                 if (externalizedValue == null) {
-                    sb.append(NULL_EXTERNALIZATION);
+                    s += NULL_EXTERNALIZATION;
                 }
                 else {
-                    sb.append(externalizedValue);
+                    s += externalizedValue;
                 }
             }
 
             if (fni.hasNext()) {
-                sb.append(", ");
+                s += ", ";
             }
         }
 
-        sb.append("\n");
-        return true;
+        s += "\n";
+        return s;
     }
 
-    /**
-     * @return true if there are bytes to be collected.
-     */
-    private boolean externalizeEventViaIntrospection(Event event) {
+    private String externalizeEventViaIntrospection(Event event) {
+
+        String s = "";
 
         Set<Property> properties = event.getProperties();
         List <Property> orderedProperties = new ArrayList<>(properties);
@@ -248,29 +253,29 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
             Long timestamp = ((TimedEvent)event).getTimestamp();
 
             if (timestamp == null) {
-                sb.append(NULL_EXTERNALIZATION);
+                s += NULL_EXTERNALIZATION;
             }
             else {
-                sb.append(DEFAULT_TIMESTAMP_FORMAT.format(timestamp));
+                s += DEFAULT_TIMESTAMP_FORMAT.format(timestamp);
             }
 
             if (!properties.isEmpty()) {
-                sb.append(", ");
+                s += ", ";
             }
         }
 
         for(int i = 0; i < orderedProperties.size(); i++) {
 
             Property p = orderedProperties.get(i);
-            String s = p.externalizeValue();
+            String ev = p.externalizeValue();
 
-            if (s == null) {
-                s = NULL_EXTERNALIZATION;
+            if (ev == null) {
+                ev = NULL_EXTERNALIZATION;
             }
-            sb.append(s);
+            s += ev;
 
             if (i < orderedProperties.size() - 1) {
-                sb.append(", ");
+                s += ", ";
             }
 
             //
@@ -313,17 +318,17 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
         }
 
-        sb.append("\n");
-
-        return true;
+        s += "\n";
+        return s;
     }
 
-    private void externalizeTimestamp(Long timestamp) {
+    private String externalizeTimestamp(Long timestamp) {
+
         if (timestamp == null) {
-            sb.append(NULL_EXTERNALIZATION);
+            return NULL_EXTERNALIZATION;
         }
         else {
-            sb.append(DEFAULT_TIMESTAMP_FORMAT.format(timestamp));
+            return DEFAULT_TIMESTAMP_FORMAT.format(timestamp);
         }
     }
 
