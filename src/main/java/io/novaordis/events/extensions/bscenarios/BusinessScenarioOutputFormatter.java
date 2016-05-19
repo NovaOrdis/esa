@@ -17,6 +17,11 @@
 package io.novaordis.events.extensions.bscenarios;
 
 import io.novaordis.events.core.CsvOutputFormatter;
+import io.novaordis.events.core.event.Event;
+import io.novaordis.events.core.event.Property;
+
+import java.text.Format;
+import java.text.SimpleDateFormat;
 
 /**
  * BusinessScenario-to-CSV formatting logic.
@@ -28,26 +33,27 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    public static final Format TIMESTAMP_FORMAT = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
+
     // Static ----------------------------------------------------------------------------------------------------------
+
+    private static String[] PROPERTIES_TO_DISPLAY = {
+            "timestamp",
+            BusinessScenarioEvent.ID,
+            BusinessScenarioEvent.JSESSIONID,
+            BusinessScenarioEvent.ITERATION_ID,
+            BusinessScenarioEvent.TYPE,
+            BusinessScenarioEvent.STATE,
+            BusinessScenarioEvent.REQUEST_COUNT,
+            BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT,
+            BusinessScenarioEvent.DURATION,
+    };
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public BusinessScenarioOutputFormatter() {
-
-        String propertiesToDisplay =
-                "timestamp, " +
-                        BusinessScenarioEvent.ID + ", " +
-                        BusinessScenarioEvent.JSESSIONID + ", " +
-                        BusinessScenarioEvent.ITERATION_ID + ", " +
-                        BusinessScenarioEvent.TYPE + ", " +
-                        BusinessScenarioEvent.STATE + ", " +
-                        BusinessScenarioEvent.REQUEST_COUNT + ", " +
-                        BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT + ", " +
-                        BusinessScenarioEvent.DURATION;
-
-        setOutputFormat(propertiesToDisplay);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -55,6 +61,49 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected String toString(Event event) {
+
+        if (!(event instanceof BusinessScenarioEvent)) {
+            throw new IllegalArgumentException("expected BusinessScenarioEvent, got " + event);
+        }
+
+        BusinessScenarioEvent bse = (BusinessScenarioEvent)event;
+
+        String s = "";
+
+        for(int i = 0; i < PROPERTIES_TO_DISPLAY.length; i ++) {
+
+            String propertyName = PROPERTIES_TO_DISPLAY[i];
+
+            if ("timestamp".equals(propertyName)) {
+                Long timestamp = bse.getTimestamp();
+                s += timestamp == null ? NULL_EXTERNALIZATION : TIMESTAMP_FORMAT.format(timestamp);
+            }
+            else {
+
+                Object externalizedValue = null;
+                Property p = event.getProperty(propertyName);
+                if (p != null) {
+                    externalizedValue = p.externalizeValue();
+                }
+                if (externalizedValue == null) {
+                    s += NULL_EXTERNALIZATION;
+                }
+                else {
+                    s += externalizedValue;
+                }
+            }
+
+            if (i < PROPERTIES_TO_DISPLAY.length - 1) {
+                s += ", ";
+            }
+        }
+
+        s += "\n";
+        return s;
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

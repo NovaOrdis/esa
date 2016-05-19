@@ -17,6 +17,12 @@
 package io.novaordis.events.extensions.bscenarios;
 
 import io.novaordis.events.core.CsvOutputFormatterTest;
+import io.novaordis.events.core.event.MockEvent;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -26,13 +32,61 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    private static final Logger log = LoggerFactory.getLogger(BusinessScenarioOutputFormatterTest.class);
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    // Overrides -------------------------------------------------------------------------------------------------------
+
+    @Test
+    @Override
+    public void process_RegularTimedEvent_NoConfiguredOutputFormat() {
+        // noop
+    }
+
+    @Test
+    @Override
+    public void process_RegularTimedEvent_WithConfiguredOutputFormat() {
+        // noop
+    }
+
+    @Test
+    @Override
+    public void process_RegularUntimedEvent_NoConfiguredOutputFormat() {
+        // noop
+    }
+
+    @Test
+    @Override
+    public void process_RegularUntimedEvent_WithConfiguredOutputFormat() {
+        // noop
+    }
+
+    @Test
+    @Override
+    public void process_MultipleUncollectedEventsFollowedByEndOfStream() {
+        // noop
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void toString_NotABusinessScenarioEvent() throws Exception {
+
+        BusinessScenarioOutputFormatter f = getConversionLogicToTest();
+
+        try {
+            f.toString(new MockEvent());
+            fail("should throw exception");
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
