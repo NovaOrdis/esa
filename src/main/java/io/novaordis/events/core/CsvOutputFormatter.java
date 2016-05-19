@@ -192,7 +192,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
             sb.append(event.toString()).append("\n");
         }
         else {
-            sb.append(toString(event));
+            sb.append(toString(event)).append("\n");
         }
         return true;
     }
@@ -232,7 +232,6 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
             }
         }
 
-        s += "\n";
         return s;
     }
 
@@ -318,7 +317,6 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
         }
 
-        s += "\n";
         return s;
     }
 
