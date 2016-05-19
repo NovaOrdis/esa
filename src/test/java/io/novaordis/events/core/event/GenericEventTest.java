@@ -22,6 +22,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -113,6 +114,84 @@ public class GenericEventTest extends EventTest {
         LongProperty p2 = (LongProperty)pl2.get(0);
         assertEquals("test-property", p2.getName());
         assertEquals(8L, p2.getValue());
+    }
+
+    // removeStringProperty() ------------------------------------------------------------------------------------------
+
+    @Test
+    public void removeStringProperty() throws Exception {
+
+        GenericEvent ge = getEventToTest();
+
+        ge.setStringProperty("test-name", "test-value");
+        assertEquals("test-value", ge.getStringProperty("test-name").getString());
+
+        ge.removeStringProperty("test-name");
+        assertNull(ge.getStringProperty("test-name"));
+
+        ge.removeStringProperty("test-name");
+    }
+
+    @Test
+    public void setStringProperty_Null() throws Exception {
+
+        GenericEvent ge = getEventToTest();
+
+        ge.setStringProperty("test-name", "test-value");
+        assertEquals("test-value", ge.getStringProperty("test-name").getString());
+
+        ge.setStringProperty("test-name", null);
+        assertNull(ge.getStringProperty("test-name"));
+
+        ge.setStringProperty("test-name", null);
+    }
+
+    // removeLongProperty() --------------------------------------------------------------------------------------------
+
+    @Test
+    public void removeLongProperty() throws Exception {
+
+        GenericEvent ge = getEventToTest();
+
+        ge.setLongProperty("test-name", 1L);
+        assertEquals(1L, ge.getLongProperty("test-name").getLong().longValue());
+
+        ge.removeLongProperty("test-name");
+        assertNull(ge.getLongProperty("test-name"));
+
+        ge.removeLongProperty("test-name");
+    }
+
+    // removeIntegerProperty() ------------------------------------------------------------------------------------------
+
+    @Test
+    public void removeIntegerProperty() throws Exception {
+
+        GenericEvent ge = getEventToTest();
+
+        ge.setIntegerProperty("test-name", 1);
+        assertEquals(1, ge.getIntegerProperty("test-name").getInteger().intValue());
+
+        ge.removeIntegerProperty("test-name");
+        assertNull(ge.getIntegerProperty("test-name"));
+
+        ge.removeIntegerProperty("test-name");
+    }
+
+    // removeBooleanProperty() ------------------------------------------------------------------------------------------
+
+    @Test
+    public void removeBooleanProperty() throws Exception {
+
+        GenericEvent ge = getEventToTest();
+
+        ge.setBooleanProperty("test-name", true);
+        assertTrue(ge.getBooleanProperty("test-name").getBoolean());
+
+        ge.removeBooleanProperty("test-name");
+        assertNull(ge.getBooleanProperty("test-name"));
+
+        ge.removeBooleanProperty("test-name");
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

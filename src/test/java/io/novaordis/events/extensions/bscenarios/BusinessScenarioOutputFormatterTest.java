@@ -105,7 +105,6 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
         bs.setState(BusinessScenarioState.COMPLETE);
         bs.setDuration(10L);
 
-
         List<HttpRequestResponsePair> httpRequestResponsePairs = bs.getRequestResponsePairs();
 
         HttpRequestResponsePair p = new HttpRequestResponsePair();

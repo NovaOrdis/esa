@@ -193,20 +193,53 @@ public class GenericEvent implements Event {
     }
 
     public void setStringProperty(String name, String value) {
-        setProperty(new StringProperty(name, value));
+
+        if (value == null) {
+            removeStringProperty(name);
+        }
+        else {
+            setProperty(new StringProperty(name, value));
+        }
+    }
+
+    public void removeStringProperty(String name) {
+
+        if (properties.get(name) instanceof StringProperty) {
+            properties.remove(name);
+        }
     }
 
     public void setLongProperty(String name, long value) {
         setProperty(new LongProperty(name, value));
     }
 
+    public void removeLongProperty(String name) {
+
+        if (properties.get(name) instanceof LongProperty) {
+            properties.remove(name);
+        }
+    }
+
     public void setIntegerProperty(String name, int value) {
         setProperty(new IntegerProperty(name, value));
     }
 
-    public void setBooleanProperty(String name, boolean value) {
+    public void removeIntegerProperty(String name) {
 
+        if (properties.get(name) instanceof IntegerProperty) {
+            properties.remove(name);
+        }
+    }
+
+    public void setBooleanProperty(String name, boolean value) {
         setProperty(new BooleanProperty(name, value));
+    }
+
+    public void removeBooleanProperty(String name) {
+
+        if (properties.get(name) instanceof BooleanProperty) {
+            properties.remove(name);
+        }
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
