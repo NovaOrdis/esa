@@ -57,6 +57,11 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
 
             // this is a List property, it'll generate a comma-separated list of values
             BusinessScenarioEvent.REQUEST_STATUS_CODES_PROPERTY_NAME,
+
+            //
+            // TODO if this changes, getHeader() must be updated as well, unless we implement a mechanism
+            //      that makes this automatic
+            //
     };
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -136,6 +141,27 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
 
 
         return s;
+    }
+
+    @Override
+    protected String getHeader(Event event) {
+
+        if (!(event instanceof BusinessScenarioEvent)) {
+            throw new IllegalArgumentException("expected BusinessScenarioEvent, got " + event);
+        }
+
+        BusinessScenarioEvent bse = (BusinessScenarioEvent)event;
+
+        String header =
+                "Time, Business Scenario ID, JSessionID, Iteration ID, Scenario Type, Scenario State, " +
+                        "Total Number of Requests in Scenario, Successful Requests in Scenario, " +
+                        "Scenario Duration (ms)";
+
+        //
+        // TODO k342t - figure out how to handle the fact that are multiple scenario types, each of them with a
+        //              different number of requests
+
+        return header;
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

@@ -22,9 +22,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -73,6 +77,26 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
     @Override
     public void process_MultipleUncollectedEventsFollowedByEndOfStream() {
         // noop
+    }
+
+    // header line overrides -------------------------------------------------------------------------------------------
+
+    @Test
+    @Override
+    public void outputHeader_OutputFormatSet() throws Exception {
+
+        //
+        // noop, irrelevant here
+        //
+    }
+
+    @Test
+    @Override
+    public void outputHeader_OutputFormatNotSet() throws Exception {
+
+        //
+        // noop, irrelevant here
+        //
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -129,6 +153,52 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
         String s = f.toString(bse);
 
         assertEquals("12/31/69 16:00:00, 2, test-jsession-id, test-iteration-id, test-type, COMPLETE, 3, 1, 66, 11, 22, 33, 200, 300, 400", s);
+    }
+
+    @Test
+    public void outputHeader() throws Exception {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/yy/dd HH:mm:ss");
+
+        BusinessScenarioOutputFormatter formatter = getConversionLogicToTest();
+
+        BusinessScenarioEvent bse = new BusinessScenarioEvent(dateFormat.parse("12/16/24 16:17:18").getTime());
+
+        assertTrue(formatter.process(bse));
+
+        String output = new String(formatter.getBytes());
+        assertTrue(output.startsWith("12/24/16 16:17:18,"));
+
+        //
+        // turn on header generation
+        //
+
+        formatter.setHeaderOn();
+        assertTrue(formatter.isHeaderOn());
+
+        bse = new BusinessScenarioEvent(dateFormat.parse("12/16/24 16:17:19").getTime());
+
+        assertTrue(formatter.process(bse));
+        assertFalse(formatter.isHeaderOn());
+
+        output = new String(formatter.getBytes());
+
+        StringTokenizer st = new StringTokenizer(output, "\n");
+        String header = st.nextToken();
+        assertEquals("Time, Business Scenario ID, JSessionID, Iteration ID, Scenario Type, Scenario State, Total Number of Requests in Scenario, Successful Requests in Scenario, Scenario Duration (ms)", header);
+        String firstLine = st.nextToken();
+        assertTrue(firstLine.startsWith("12/24/16 16:17:19,"));
+
+        //
+        // make sure the header generation turns off automatically
+        //
+
+        bse = new BusinessScenarioEvent(dateFormat.parse("12/16/24 16:17:20").getTime());
+
+        assertTrue(formatter.process(bse));
+
+        output = new String(formatter.getBytes());
+        assertTrue(output.startsWith("12/24/16 16:17:20,"));
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

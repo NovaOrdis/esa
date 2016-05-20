@@ -29,9 +29,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -69,6 +69,8 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
         //
 
         assertEquals(event.toString() + "\n", s);
+
+        log.debug(".");
     }
 
     @Test
@@ -205,6 +207,126 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
         assertEquals("a, b", s);
     }
 
+    // header line -----------------------------------------------------------------------------------------------------
+
+    @Test
+    public void outputHeader_OutputFormatSet() throws Exception {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/yy/dd HH:mm:ss");
+
+        CsvOutputFormatter formatter = getConversionLogicToTest();
+
+        formatter.setOutputFormat("timestamp, field-1");
+
+        Date eventTime = dateFormat.parse("01/16/01 01:01:01");
+        MockTimedEvent me = new MockTimedEvent(eventTime.getTime());
+        me.setProperty(new MockProperty("field-1", "XXX"));
+
+        assertTrue(formatter.process(me));
+
+        String output = new String(formatter.getBytes());
+
+        String expected = CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", XXX\n";
+        assertEquals(expected, output);
+
+        //
+        // turn on header generation
+        //
+
+        formatter.setHeaderOn();
+        assertTrue(formatter.isHeaderOn());
+
+        eventTime = dateFormat.parse("01/16/01 01:01:02");
+        me = new MockTimedEvent(eventTime.getTime());
+        me.setProperty(new MockProperty("field-1", "YYY"));
+
+        assertTrue(formatter.process(me));
+
+        assertFalse(formatter.isHeaderOn());
+
+        output = new String(formatter.getBytes());
+
+        expected =
+                "timestamp, field-1\n" +
+                        CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", YYY\n";
+
+        assertEquals(expected, output);
+
+        //
+        // make sure the header generation turns off automatically
+        //
+
+        eventTime = dateFormat.parse("01/16/01 01:01:03");
+        me = new MockTimedEvent(eventTime.getTime());
+        me.setProperty(new MockProperty("field-1", "ZZZ"));
+
+        assertTrue(formatter.process(me));
+
+        output = new String(formatter.getBytes());
+
+        expected = CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", ZZZ\n";
+        assertEquals(expected, output);
+    }
+
+    @Test
+    public void outputHeader_OutputFormatNotSet() throws Exception {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/yy/dd HH:mm:ss");
+
+        CsvOutputFormatter formatter = getConversionLogicToTest();
+
+        assertNull(formatter.getOutputFormat());
+
+        Date eventTime = dateFormat.parse("01/16/01 01:01:01");
+        MockTimedEvent me = new MockTimedEvent(eventTime.getTime());
+        me.setProperty(new MockProperty("field-1", "XXX"));
+
+        assertTrue(formatter.process(me));
+
+        String output = new String(formatter.getBytes());
+
+        String expected = CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", XXX\n";
+        assertEquals(expected, output);
+
+        //
+        // turn on header generation
+        //
+
+        formatter.setHeaderOn();
+        assertTrue(formatter.isHeaderOn());
+
+        eventTime = dateFormat.parse("01/16/01 01:01:02");
+        me = new MockTimedEvent(eventTime.getTime());
+        me.setProperty(new MockProperty("field-1", "YYY"));
+
+        assertTrue(formatter.process(me));
+
+        assertFalse(formatter.isHeaderOn());
+
+        output = new String(formatter.getBytes());
+
+        expected =
+                "timestamp, field-1\n" +
+                        CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", YYY\n";
+
+        assertEquals(expected, output);
+
+        //
+        // make sure the header generation turns off automatically
+        //
+
+        eventTime = dateFormat.parse("01/16/01 01:01:03");
+        me = new MockTimedEvent(eventTime.getTime());
+        me.setProperty(new MockProperty("field-1", "ZZZ"));
+
+        assertTrue(formatter.process(me));
+
+        output = new String(formatter.getBytes());
+
+        expected = CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", ZZZ\n";
+        assertEquals(expected, output);
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
@@ -214,6 +336,7 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
 
         return new CsvOutputFormatter();
     }
+
 
     // Private ---------------------------------------------------------------------------------------------------------
 

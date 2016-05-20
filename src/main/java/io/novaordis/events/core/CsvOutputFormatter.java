@@ -37,6 +37,9 @@ import java.util.StringTokenizer;
  * If an output format (a list of property names) is provided externally, the formatter will only include the specified
  * properties in the output. Otherwise, all the properties are introspected and included in the output.
  *
+ * The class contains support for generating headers. A header line is generated when the first event is received and
+ * inserted *before* the first event representation.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */
@@ -57,6 +60,8 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     private StringBuilder sb;
     private volatile boolean closed;
     private List<String> outputFormat;
+
+    private boolean headerOn;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -158,6 +163,23 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
         return s;
     }
 
+    /**
+     * Upon invocation, the formatter will output a header line when the next event is received. The setting will
+     * reset automatically and immediately after generation of the header line.
+     */
+    public void setHeaderOn() {
+
+        this.headerOn = true;
+    }
+
+    /**
+     * @return whether the next event will cause a header to be generated.
+     */
+    public boolean isHeaderOn() {
+
+        return headerOn;
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
@@ -176,12 +198,43 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
         }
     }
 
+    /**
+     * Subclasses should override this to provide custom headers. The default header is the composed of the name
+     * of the fields.
+     */
+    protected String getHeader(Event event) {
+
+        String header = getOutputFormat();
+        if (header != null) {
+            return header;
+        }
+
+        //
+        // based on the event introspection
+        //
+        return getHeaderViaIntrospection(event);
+    }
+
     // Private ---------------------------------------------------------------------------------------------------------
 
     /**
      * @return true if there are bytes to be collected.
      */
     private boolean externalizeEvent(Event event) {
+
+        if (headerOn) {
+
+            String header = getHeader(event);
+
+            if (header != null) {
+                sb.append(header).append("\n");
+            }
+
+            //
+            // automatically turn off header generation after the header is generated
+            //
+            headerOn = false;
+        }
 
         if (event instanceof FaultEvent) {
 
@@ -315,6 +368,41 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 //                    }
 //                }
 
+        }
+
+        return s;
+    }
+
+    private String getHeaderViaIntrospection(Event event) {
+
+        String s = "";
+
+        Set<Property> properties = event.getProperties();
+        List <Property> orderedProperties = new ArrayList<>(properties);
+        Collections.sort(orderedProperties);
+
+        if (event instanceof TimedEvent) {
+
+            //
+            // if it's a timed event, always start with the timestamp
+            //
+
+            s += TimedEvent.TIMESTAMP_PROPERTY_NAME;
+            if (!properties.isEmpty()) {
+                s += ", ";
+            }
+        }
+
+        for(int i = 0; i < orderedProperties.size(); i++) {
+
+            s += orderedProperties.get(i).getName();
+            if (i < orderedProperties.size() - 1) {
+                s += ", ";
+            }
+
+            //
+            // TODO Map Handling
+            //
         }
 
         return s;
