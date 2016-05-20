@@ -62,8 +62,8 @@ public interface Property extends Comparable<Property> {
     Property fromString(String s) throws IllegalArgumentException;
 
     /**
-     * @return the externalized value of the property (how it would appear in a text file) or null if the value is
-     * null.
+     * @return the externalized value of the property's value - how it would appear in a text file - or null if the
+     * value is null.
      */
     String externalizeValue();
 

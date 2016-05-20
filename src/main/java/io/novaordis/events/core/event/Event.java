@@ -71,6 +71,12 @@ public interface Event {
     MapProperty getMapProperty(String mapPropertyName);
 
     /**
+     * @return the corresponding ListProperty or null if there is no such ListProperty. Note that the method will
+     * return null if a property with the given name exists, but it is not a ListProperty.
+     */
+    ListProperty getListProperty(String listPropertyName);
+
+    /**
      * Stores the property, replacing the old one if exists.
      *
      * If it is a map and the map already exists, the contents will be merged.

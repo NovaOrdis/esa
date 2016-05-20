@@ -106,7 +106,6 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
         //
 
 
-
         return s;
     }
 

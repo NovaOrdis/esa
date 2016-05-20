@@ -16,17 +16,19 @@
 
 package io.novaordis.events.core.event;
 
+import java.text.Format;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.List;
 
 /**
- * A MapProperty encapsulates a String-Object map.
+ * A ListProperty maintains the relative order amongst a set of related Objects of the same type.
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public class MapProperty extends PropertyBase implements Property {
+public class ListProperty<V> extends PropertyBase implements Property {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -36,22 +38,67 @@ public class MapProperty extends PropertyBase implements Property {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    /**
-     * Creates a new inner map.
-     */
-    public MapProperty(String name) {
-        this(name, new HashMap<>());
+    @SafeVarargs
+    public ListProperty(String name, V... elements) {
+
+        super(name, Arrays.asList(elements));
     }
 
-    public MapProperty(String name, Map<String, Object> value) {
-        super(name, value);
+    public ListProperty(String name, List<V> elements) {
+
+        super(name, elements);
+    }
+
+    // Overrides -------------------------------------------------------------------------------------------------------
+
+    @Override
+    public String externalizeValue() {
+
+        Format format = getFormat();
+
+        if (format != null) {
+            throw new RuntimeException("externalizeValue() NOT YET IMPLEMENTED for non-null format");
+        }
+
+        List<V> value = getList();
+
+        String s = "[";
+
+        for(Iterator<V> i = value.iterator(); i.hasNext(); ) {
+
+            V v = i.next();
+            if (v instanceof String) {
+                s += "\"" + v + "\"";
+            }
+            else {
+                s += v;
+            }
+            if (i.hasNext()) {
+                s += ", ";
+            }
+        }
+
+        s += "]";
+
+        return s;
+    }
+
+    @Override
+    public void setValue(Object value) {
+
+        if (value == null) {
+            this.value = Collections.emptyList();
+        }
+        else {
+            super.setValue(value);
+        }
     }
 
     // Property implementation -----------------------------------------------------------------------------------------
 
     @Override
     public Class getType() {
-        return Map.class;
+        return List.class;
     }
 
     @Override
@@ -66,18 +113,12 @@ public class MapProperty extends PropertyBase implements Property {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
-     * @return an empty map, never null
+     * @return May return an empty list, never null.
      */
-    public Map<String, Object> getMap() {
+    public List<V> getList() {
 
         //noinspection unchecked
-        Map<String, Object> map = ( Map<String, Object>)getValue();
-
-        if (map == null) {
-            map = Collections.emptyMap();
-        }
-
-        return map;
+        return (List<V>)getValue();
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -85,6 +126,7 @@ public class MapProperty extends PropertyBase implements Property {
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
+
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 

@@ -31,9 +31,10 @@ public abstract class PropertyBase implements Property, Comparable<Property> {
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private String name;
-    private Object value;
     private MeasureUnit measureUnit;
     private Format format;
+
+    protected Object value;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 

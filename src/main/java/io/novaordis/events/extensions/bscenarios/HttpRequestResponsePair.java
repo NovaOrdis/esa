@@ -35,6 +35,9 @@ public class HttpRequestResponsePair {
     private String requestSequenceId;
     private Integer statusCode;
 
+    // null means duration was not present in the original information
+    private Long duration;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
@@ -54,6 +57,8 @@ public class HttpRequestResponsePair {
         if (statusCode == null) {
             this.statusCode = event.getStatusCode();
         }
+
+        this.duration = event.getRequestDuration();
     }
 
     public HttpRequestResponsePair() {
@@ -85,6 +90,14 @@ public class HttpRequestResponsePair {
 
     public void setStatusCode(Integer i) {
         this.statusCode = i;
+    }
+
+    /**
+     * @return may return null, which means the duration information was not available in the original request/response
+     * pair information.
+     */
+    public Long getDuration() {
+        return duration;
     }
 
     @Override

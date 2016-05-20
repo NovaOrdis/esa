@@ -41,6 +41,9 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
     public static final String JSESSIONID = "jsessionid";
     public static final String ITERATION_ID = "iteration-id";
 
+    // a List property that contains, in order, individual request durations
+    public static final String REQUEST_DURATIONS = "request-durations";
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------

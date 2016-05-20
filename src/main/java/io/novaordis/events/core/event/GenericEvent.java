@@ -136,6 +136,18 @@ public class GenericEvent implements Event {
     }
 
     @Override
+    public ListProperty getListProperty(String name) {
+
+        Property p = properties.get(name);
+
+        if (p != null && p instanceof ListProperty) {
+            return (ListProperty)p;
+        }
+
+        return null;
+    }
+
+    @Override
     public Property setProperty(Property property) {
 
         if (property == null) {
@@ -240,6 +252,15 @@ public class GenericEvent implements Event {
         if (properties.get(name) instanceof BooleanProperty) {
             properties.remove(name);
         }
+    }
+
+    public <T> void setListProperty(String name, List<T> value) {
+
+        setProperty(new ListProperty<>(name, value));
+    }
+
+    public void removeListProperty(String name) {
+        throw new RuntimeException("NOT YET IMPLEMENTED e58237");
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

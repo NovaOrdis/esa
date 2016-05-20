@@ -18,6 +18,7 @@ package io.novaordis.events.extensions.bscenarios;
 
 import io.novaordis.clad.UserErrorException;
 import io.novaordis.events.core.event.Event;
+import io.novaordis.events.core.event.ListProperty;
 import io.novaordis.events.httpd.HttpEvent;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -761,6 +762,13 @@ public class BusinessScenarioTest {
                 bse.getStringProperty(BusinessScenarioEvent.STATE).getValue());
         assertEquals("a-session", bse.getJSessionId());
         assertEquals("iteration-one", bse.getIterationId());
+
+        //noinspection unchecked
+        ListProperty<Long> requestDurationsProperty = bse.getListProperty(BusinessScenarioEvent.REQUEST_DURATIONS);
+        List<Long> requestDurations = requestDurationsProperty.getList();
+        assertEquals(2, requestDurations.size());
+        assertEquals(7L, requestDurations.get(0).longValue());
+        assertEquals(8L, requestDurations.get(1).longValue());
     }
 
     @Test

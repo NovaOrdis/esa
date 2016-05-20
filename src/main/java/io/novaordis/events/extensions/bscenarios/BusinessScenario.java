@@ -357,14 +357,20 @@ public class BusinessScenario {
         bse.setIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT, requestResponsePairs.size());
         bse.setStringProperty(BusinessScenarioEvent.TYPE, type);
         bse.setStringProperty(BusinessScenarioEvent.STATE, getState().name());
-        if (jSessionId != null) {
-            bse.setStringProperty(BusinessScenarioEvent.JSESSIONID, jSessionId);
-        }
-        if (iterationId != null) {
-            bse.setStringProperty(BusinessScenarioEvent.ITERATION_ID, iterationId);
+        bse.setStringProperty(BusinessScenarioEvent.JSESSIONID, jSessionId);
+        bse.setStringProperty(BusinessScenarioEvent.ITERATION_ID, iterationId);
+        bse.setIntegerProperty(BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT, getRequestCount(200));
+
+        if (requestResponsePairs != null && !requestResponsePairs.isEmpty()) {
+
+            List<Long> durations = new ArrayList<>();
+            for(HttpRequestResponsePair p: requestResponsePairs) {
+                durations.add(p.getDuration());
+            }
+
+            bse.setListProperty(BusinessScenarioEvent.REQUEST_DURATIONS, durations);
         }
 
-        bse.setIntegerProperty(BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT, getRequestCount(200));
         return bse;
     }
 

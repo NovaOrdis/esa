@@ -17,6 +17,8 @@
 package io.novaordis.events.core.event;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +34,8 @@ import static org.junit.Assert.assertNotNull;
 public class MapPropertyTest extends PropertyTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(MapPropertyTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -75,7 +79,11 @@ public class MapPropertyTest extends PropertyTest {
         map.put("key1", "value1");
         map.put("key2", 7);
         MapProperty mp = new MapProperty("test-name", map);
+
         String externalizedValue = mp.externalizeValue();
+
+        log.info("externalized value: " + externalizedValue);
+
         assertTrue(externalizedValue.matches("\\{.*=.*,.*=.*\\}"));
         assertTrue(externalizedValue.contains("key1=value1"));
         assertTrue(externalizedValue.contains("key2=7"));

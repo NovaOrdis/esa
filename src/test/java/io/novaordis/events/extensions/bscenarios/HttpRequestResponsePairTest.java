@@ -51,10 +51,12 @@ public class HttpRequestResponsePairTest {
         HttpEvent e = new HttpEvent(0L);
         e.setRequestSequenceId("test-3432");
         e.setStatusCode(200);
+        e.setRequestDuration(7L);
 
         HttpRequestResponsePair r = new HttpRequestResponsePair(e);
         assertEquals("test-3432", r.getRequestSequenceId());
         assertEquals(200, r.getStatusCode().intValue());
+        assertEquals(7L, r.getDuration().longValue());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
