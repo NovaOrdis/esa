@@ -1,0 +1,3 @@
+
+* Business scenarios carry statistics about individual HTTP request/responses, like duration and status code.
+  These statistics are are reported in the CSV output.
