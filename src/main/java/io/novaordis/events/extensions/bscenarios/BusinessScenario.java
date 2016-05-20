@@ -86,11 +86,6 @@ public class BusinessScenario {
     //
     private long endTimestamp;
 
-    //
-    // the sum of all individual HTTP requests duration
-    //
-    private long aggregatedScenarioDuration;
-
     private String jSessionId;
 
     private BusinessScenarioState state;
@@ -325,7 +320,18 @@ public class BusinessScenario {
      * The sum of all individual HTTP requests duration, in the measure unit logs were generated with.
      */
     public long getDuration() {
-        return aggregatedScenarioDuration;
+
+        long duration = 0L;
+
+        // always calculate by iterating over individual requests
+        for(HttpRequestResponsePair p: requestResponsePairs) {
+            Long pairDuration = p.getDuration();
+            if (pairDuration != null) {
+                duration += pairDuration;
+            }
+        }
+
+        return duration;
     }
 
     public int getRequestCount() {
@@ -353,7 +359,7 @@ public class BusinessScenario {
 
         BusinessScenarioEvent bse = new BusinessScenarioEvent(beginTimestamp);
         bse.setLongProperty(BusinessScenarioEvent.ID, getId());
-        bse.setLongProperty(BusinessScenarioEvent.DURATION, aggregatedScenarioDuration);
+        bse.setLongProperty(BusinessScenarioEvent.DURATION, getDuration());
         bse.setIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT, requestResponsePairs.size());
         bse.setStringProperty(BusinessScenarioEvent.TYPE, type);
         bse.setStringProperty(BusinessScenarioEvent.STATE, getState().name());
@@ -364,11 +370,15 @@ public class BusinessScenario {
         if (requestResponsePairs != null && !requestResponsePairs.isEmpty()) {
 
             List<Long> durations = new ArrayList<>();
+            List<Integer> statusCodes = new ArrayList<>();
+
             for(HttpRequestResponsePair p: requestResponsePairs) {
                 durations.add(p.getDuration());
+                statusCodes.add(p.getStatusCode());
             }
 
             bse.setListProperty(BusinessScenarioEvent.REQUEST_DURATIONS, durations);
+            bse.setListProperty(BusinessScenarioEvent.REQUEST_STATUS_CODES, statusCodes);
         }
 
         return bse;
@@ -460,13 +470,11 @@ public class BusinessScenario {
      */
     void updateScenarioStatistics(HttpEvent event) throws BusinessScenarioException {
 
+        updatePerRequestStatistics(event);
+
         Long requestTimestamp = event.getTimestamp();
         Long rd = event.getRequestDuration();
         long requestDuration = rd == null ? 0 : rd;
-
-        updatePerRequestStatistics(event);
-
-        aggregatedScenarioDuration += requestDuration;
         endTimestamp = requestTimestamp + requestDuration;
 
         // See BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME constant definition. A business scenario can only exists in
@@ -535,10 +543,6 @@ public class BusinessScenario {
 
     List<HttpRequestResponsePair> getRequestResponsePairs() {
         return requestResponsePairs;
-    }
-
-    void setDuration(long d) {
-        aggregatedScenarioDuration = d;
     }
 
     // Protected -------------------------------------------------------------------------------------------------------

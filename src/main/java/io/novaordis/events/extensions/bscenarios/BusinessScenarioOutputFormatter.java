@@ -18,10 +18,12 @@ package io.novaordis.events.extensions.bscenarios;
 
 import io.novaordis.events.core.CsvOutputFormatter;
 import io.novaordis.events.core.event.Event;
+import io.novaordis.events.core.event.ListProperty;
 import io.novaordis.events.core.event.Property;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * BusinessScenario-to-CSV formatting logic.
@@ -47,6 +49,12 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
             BusinessScenarioEvent.REQUEST_COUNT,
             BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT,
             BusinessScenarioEvent.DURATION,
+
+            // this is a List property, it'll generate a comma-separated list of values
+            BusinessScenarioEvent.REQUEST_DURATIONS,
+
+            // this is a List property, it'll generate a comma-separated list of values
+            BusinessScenarioEvent.REQUEST_STATUS_CODES,
     };
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -85,8 +93,27 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
 
                 Object externalizedValue = null;
                 Property p = event.getProperty(propertyName);
+
                 if (p != null) {
-                    externalizedValue = p.externalizeValue();
+
+                    if (p instanceof ListProperty) {
+                        //
+                        // for ListProperties, the externalized value is no good, create our own
+                        //
+                        externalizedValue = "";
+                        //noinspection unchecked
+                        List values = ((ListProperty)p).getList();
+                        for(int j = 0; j < values.size(); j ++) {
+                            Object v = values.get(j);
+                            s += (v == null ? NULL_EXTERNALIZATION : "" + v);
+                            if (j < values.size() - 1) {
+                                s += ", ";
+                            }
+                        }
+                    }
+                    else {
+                        externalizedValue = p.externalizeValue();
+                    }
                 }
                 if (externalizedValue == null) {
                     s += NULL_EXTERNALIZATION;

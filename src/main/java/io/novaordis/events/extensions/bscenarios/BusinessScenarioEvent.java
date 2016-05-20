@@ -44,6 +44,10 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
     // a List property that contains, in order, individual request durations
     public static final String REQUEST_DURATIONS = "request-durations";
 
+    // a List property that contains, in order, individual request status codes
+    public static final String REQUEST_STATUS_CODES = "request-status-codes";
+
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------

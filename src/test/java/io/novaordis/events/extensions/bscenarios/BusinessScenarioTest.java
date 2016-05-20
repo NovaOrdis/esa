@@ -673,6 +673,7 @@ public class BusinessScenarioTest {
         assertEquals(1, bs.getRequestCount(200));
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(2L, bs.getEndTimestamp());
+        assertEquals(1L, bs.getDuration());
         assertFalse(bs.isClosed());
         assertEquals(BusinessScenarioState.OPEN, bs.getState());
 
@@ -688,6 +689,7 @@ public class BusinessScenarioTest {
 
         assertEquals(2, bs.getRequestCount());
         assertEquals(2, bs.getRequestCount(200));
+        assertEquals(7L, bs.getDuration());
         assertEquals(11L, bs.getEndTimestamp());
 
         //
@@ -704,6 +706,7 @@ public class BusinessScenarioTest {
         assertEquals(2, bs.getRequestCount(200));
         assertEquals(1, bs.getRequestCount(400));
         assertEquals(21L, bs.getEndTimestamp());
+        assertEquals(18L, bs.getDuration());
         assertFalse(bs.isClosed());
 
         //
@@ -723,6 +726,7 @@ public class BusinessScenarioTest {
         assertEquals(1, bs.getRequestCount(500));
         assertEquals(1L, bs.getBeginTimestamp());
         assertEquals(31L, bs.getEndTimestamp());
+        assertEquals(34L, bs.getDuration());
         assertTrue(bs.isClosed());
         assertEquals(BusinessScenarioState.COMPLETE, bs.getState());
     }
@@ -739,6 +743,7 @@ public class BusinessScenarioTest {
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "iteration-one");
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "a-session");
         e.setRequestDuration(7L);
+        e.setStatusCode(200);
 
         assertFalse(bs.update(e));
 
@@ -747,6 +752,7 @@ public class BusinessScenarioTest {
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TYPE-A");
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "iteration-one");
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "a-session");
+        e2.setStatusCode(300);
 
         assertTrue(bs.update(e2));
 
@@ -769,6 +775,13 @@ public class BusinessScenarioTest {
         assertEquals(2, requestDurations.size());
         assertEquals(7L, requestDurations.get(0).longValue());
         assertEquals(8L, requestDurations.get(1).longValue());
+
+        //noinspection unchecked
+        ListProperty<Integer> requestStatusCodeProperty = bse.getListProperty(BusinessScenarioEvent.REQUEST_STATUS_CODES);
+        List<Integer> requestStatusCodes = requestStatusCodeProperty.getList();
+        assertEquals(2, requestStatusCodes.size());
+        assertEquals(200, requestStatusCodes.get(0).intValue());
+        assertEquals(300, requestStatusCodes.get(1).intValue());
     }
 
     @Test
