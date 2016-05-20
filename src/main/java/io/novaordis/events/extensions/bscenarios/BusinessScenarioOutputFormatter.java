@@ -154,7 +154,7 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
 
         String header =
                 "Time, Business Scenario ID, JSessionID, Iteration ID, Scenario Type, Scenario State, " +
-                        "Total Number of Requests in Scenario, Successful Requests in Scenario, " +
+                        "Requests in Scenario, Successful Requests in Scenario, " +
                         "Scenario Duration (ms)";
 
         //

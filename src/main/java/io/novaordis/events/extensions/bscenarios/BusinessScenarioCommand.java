@@ -167,6 +167,12 @@ public class BusinessScenarioCommand extends CommandBase {
 
             // the output format specification is encapsulated in BusinessScenarioOutputFormatter
             BusinessScenarioOutputFormatter bsof = new BusinessScenarioOutputFormatter();
+
+            //
+            // generate headers
+            //
+            bsof.setHeaderOn();
+
             terminator.setConversionLogic(bsof);
 
             //noinspection Convert2Lambda,Anonymous2MethodRef

@@ -185,7 +185,7 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
 
         StringTokenizer st = new StringTokenizer(output, "\n");
         String header = st.nextToken();
-        assertEquals("Time, Business Scenario ID, JSessionID, Iteration ID, Scenario Type, Scenario State, Total Number of Requests in Scenario, Successful Requests in Scenario, Scenario Duration (ms)", header);
+        assertEquals("Time, Business Scenario ID, JSessionID, Iteration ID, Scenario Type, Scenario State, Requests in Scenario, Successful Requests in Scenario, Scenario Duration (ms)", header);
         String firstLine = st.nextToken();
         assertTrue(firstLine.startsWith("12/24/16 16:17:19,"));
 
