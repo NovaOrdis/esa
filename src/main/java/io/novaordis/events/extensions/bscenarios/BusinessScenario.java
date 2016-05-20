@@ -358,14 +358,14 @@ public class BusinessScenario {
     public BusinessScenarioEvent toEvent() {
 
         BusinessScenarioEvent bse = new BusinessScenarioEvent(beginTimestamp);
-        bse.setLongProperty(BusinessScenarioEvent.ID, getId());
-        bse.setLongProperty(BusinessScenarioEvent.DURATION, getDuration());
-        bse.setIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT, requestResponsePairs.size());
-        bse.setStringProperty(BusinessScenarioEvent.TYPE, type);
-        bse.setStringProperty(BusinessScenarioEvent.STATE, getState().name());
-        bse.setStringProperty(BusinessScenarioEvent.JSESSIONID, jSessionId);
-        bse.setStringProperty(BusinessScenarioEvent.ITERATION_ID, iterationId);
-        bse.setIntegerProperty(BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT, getRequestCount(200));
+        bse.setLongProperty(BusinessScenarioEvent.ID_PROPERTY_NAME, getId());
+        bse.setLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME, getDuration());
+        bse.setIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME, requestResponsePairs.size());
+        bse.setStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME, type);
+        bse.setStringProperty(BusinessScenarioEvent.STATE_PROPERTY_NAME, getState().name());
+        bse.setStringProperty(BusinessScenarioEvent.JSESSIONID_PROPERTY_NAME, jSessionId);
+        bse.setStringProperty(BusinessScenarioEvent.ITERATION_ID_PROPERTY_NAME, iterationId);
+        bse.setIntegerProperty(BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT_PROPERTY_NAME, getRequestCount(200));
 
         if (requestResponsePairs != null && !requestResponsePairs.isEmpty()) {
 
@@ -377,8 +377,8 @@ public class BusinessScenario {
                 statusCodes.add(p.getStatusCode());
             }
 
-            bse.setListProperty(BusinessScenarioEvent.REQUEST_DURATIONS, durations);
-            bse.setListProperty(BusinessScenarioEvent.REQUEST_STATUS_CODES, statusCodes);
+            bse.setListProperty(BusinessScenarioEvent.REQUEST_DURATIONS_PROPERTY_NAME, durations);
+            bse.setListProperty(BusinessScenarioEvent.REQUEST_STATUS_CODES_PROPERTY_NAME, statusCodes);
         }
 
         return bse;

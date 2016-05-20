@@ -761,23 +761,23 @@ public class BusinessScenarioTest {
         BusinessScenarioEvent bse = bs.toEvent();
 
         assertEquals(777L, bse.getTimestamp().longValue());
-        assertEquals(15L, bse.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
-        assertEquals(2, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
-        assertEquals("TYPE-A", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
+        assertEquals(15L, bse.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
+        assertEquals(2, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
+        assertEquals("TYPE-A", bse.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getValue());
         assertEquals(BusinessScenarioState.COMPLETE.name(),
-                bse.getStringProperty(BusinessScenarioEvent.STATE).getValue());
+                bse.getStringProperty(BusinessScenarioEvent.STATE_PROPERTY_NAME).getValue());
         assertEquals("a-session", bse.getJSessionId());
         assertEquals("iteration-one", bse.getIterationId());
 
         //noinspection unchecked
-        ListProperty<Long> requestDurationsProperty = bse.getListProperty(BusinessScenarioEvent.REQUEST_DURATIONS);
+        ListProperty<Long> requestDurationsProperty = bse.getListProperty(BusinessScenarioEvent.REQUEST_DURATIONS_PROPERTY_NAME);
         List<Long> requestDurations = requestDurationsProperty.getList();
         assertEquals(2, requestDurations.size());
         assertEquals(7L, requestDurations.get(0).longValue());
         assertEquals(8L, requestDurations.get(1).longValue());
 
         //noinspection unchecked
-        ListProperty<Integer> requestStatusCodeProperty = bse.getListProperty(BusinessScenarioEvent.REQUEST_STATUS_CODES);
+        ListProperty<Integer> requestStatusCodeProperty = bse.getListProperty(BusinessScenarioEvent.REQUEST_STATUS_CODES_PROPERTY_NAME);
         List<Integer> requestStatusCodes = requestStatusCodeProperty.getList();
         assertEquals(2, requestStatusCodes.size());
         assertEquals(200, requestStatusCodes.get(0).intValue());
@@ -810,11 +810,11 @@ public class BusinessScenarioTest {
         BusinessScenarioEvent bse = bs.toEvent();
 
         assertEquals(BusinessScenarioState.CLOSED_BY_START_MARKER.name(),
-                bse.getStringProperty(BusinessScenarioEvent.STATE).getString());
+                bse.getStringProperty(BusinessScenarioEvent.STATE_PROPERTY_NAME).getString());
         assertEquals(101L, bse.getTimestamp().longValue());
-        assertEquals(33L, bse.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
-        assertEquals(3, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
-        assertEquals("SOME-TYPE", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
+        assertEquals(33L, bse.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
+        assertEquals(3, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
+        assertEquals("SOME-TYPE", bse.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getValue());
     }
 
     @Test

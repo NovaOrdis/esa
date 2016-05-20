@@ -56,7 +56,7 @@ public class BusinessScenarioEventTest extends TimedEventTest {
     public void getState_InvalidState() throws Exception {
 
         BusinessScenarioEvent bse = getEventToTest(1L);
-        bse.setStringProperty(BusinessScenarioEvent.STATE, "I-am-pretty-sure-there-is-no-such-value-in-enum");
+        bse.setStringProperty(BusinessScenarioEvent.STATE_PROPERTY_NAME, "I-am-pretty-sure-there-is-no-such-value-in-enum");
 
         try {
             bse.getState();

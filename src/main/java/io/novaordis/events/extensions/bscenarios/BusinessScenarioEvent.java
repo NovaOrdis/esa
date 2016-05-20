@@ -29,24 +29,24 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final String ID = "id";
-    public static final String DURATION = "duration";
+    public static final String ID_PROPERTY_NAME = "id";
+    public static final String DURATION_PROPERTY_NAME = "duration";
 
-    public static final String REQUEST_COUNT = "request-count";
+    public static final String REQUEST_COUNT_PROPERTY_NAME = "request-count";
+
     // the number of requests that return with 200
-    public static final String SUCCESSFUL_REQUEST_COUNT = "successful-request-count";
+    public static final String SUCCESSFUL_REQUEST_COUNT_PROPERTY_NAME = "successful-request-count";
 
-    public static final String TYPE = "type";
-    public static final String STATE = "state";
-    public static final String JSESSIONID = "jsessionid";
-    public static final String ITERATION_ID = "iteration-id";
+    public static final String TYPE_PROPERTY_NAME = "type";
+    public static final String STATE_PROPERTY_NAME = "state";
+    public static final String JSESSIONID_PROPERTY_NAME = "jsessionid";
+    public static final String ITERATION_ID_PROPERTY_NAME = "iteration-id";
 
     // a List property that contains, in order, individual request durations
-    public static final String REQUEST_DURATIONS = "request-durations";
+    public static final String REQUEST_DURATIONS_PROPERTY_NAME = "request-durations";
 
     // a List property that contains, in order, individual request status codes
-    public static final String REQUEST_STATUS_CODES = "request-status-codes";
-
+    public static final String REQUEST_STATUS_CODES_PROPERTY_NAME = "request-status-codes";
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
      */
     public BusinessScenarioState getState() {
 
-        StringProperty sp = getStringProperty(BusinessScenarioEvent.STATE);
+        StringProperty sp = getStringProperty(BusinessScenarioEvent.STATE_PROPERTY_NAME);
         String s = sp == null ? null : sp.getString();
 
         if (s == null) {
@@ -85,13 +85,13 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
 
     public String getJSessionId() {
 
-        StringProperty sp = getStringProperty(BusinessScenarioEvent.JSESSIONID);
+        StringProperty sp = getStringProperty(BusinessScenarioEvent.JSESSIONID_PROPERTY_NAME);
         return sp == null ? null : sp.getString();
     }
 
     public String getIterationId() {
 
-        StringProperty sp = getStringProperty(BusinessScenarioEvent.ITERATION_ID);
+        StringProperty sp = getStringProperty(BusinessScenarioEvent.ITERATION_ID_PROPERTY_NAME);
         return sp == null ? null : sp.getString();
     }
 
@@ -100,7 +100,7 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
      */
     public Long getDuration() {
 
-        LongProperty p = getLongProperty(BusinessScenarioEvent.DURATION);
+        LongProperty p = getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME);
 
         if (p == null) {
             return null;
@@ -115,7 +115,7 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
      */
     public int getRequestCount() {
 
-        IntegerProperty p = getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT);
+        IntegerProperty p = getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME);
 
         if (p == null) {
             throw new IllegalStateException(this + " does not have a request count");
@@ -130,7 +130,7 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
      */
     public Integer getSuccessfulRequestCount() {
 
-        IntegerProperty p = getIntegerProperty(BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT);
+        IntegerProperty p = getIntegerProperty(BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT_PROPERTY_NAME);
 
         if (p == null) {
             return null;

@@ -205,7 +205,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
             String fieldName = fni.next();
 
-            if ("timestamp".equals(fieldName)) {
+            if (TimedEvent.TIMESTAMP_PROPERTY_NAME.equals(fieldName)) {
                 Long timestamp = null;
                 if (event instanceof TimedEvent) {
                     timestamp = ((TimedEvent)event).getTimestamp();

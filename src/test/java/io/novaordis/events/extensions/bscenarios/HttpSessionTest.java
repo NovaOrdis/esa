@@ -100,9 +100,9 @@ public class HttpSessionTest {
         assertEquals(1, events2.size());
         BusinessScenarioEvent bse = (BusinessScenarioEvent)events2.get(0);
 
-        assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
-        assertEquals(2, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
-        assertEquals(30L, bse.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
+        assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getValue());
+        assertEquals(2, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
+        assertEquals(30L, bse.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
         assertEquals(7L, bse.getTimestamp().longValue());
     }
 
@@ -183,10 +183,10 @@ public class HttpSessionTest {
 
         BusinessScenarioEvent bse = (BusinessScenarioEvent)re.get(0);
 
-        assertEquals(3, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
-        assertEquals(3L, bse.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
+        assertEquals(3, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
+        assertEquals(3L, bse.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
         assertEquals(10L, bse.getTimestamp().longValue());
-        assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE).getString());
+        assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getString());
 
         //
         // successive scenario
@@ -224,10 +224,10 @@ public class HttpSessionTest {
 
         BusinessScenarioEvent bse2 = (BusinessScenarioEvent)re.get(0);
 
-        assertEquals(2, bse2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
-        assertEquals(2, bse2.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
+        assertEquals(2, bse2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
+        assertEquals(2, bse2.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
         assertEquals(40L, bse2.getTimestamp().longValue());
-        assertEquals("scenario-2", bse2.getStringProperty(BusinessScenarioEvent.TYPE).getString());
+        assertEquals("scenario-2", bse2.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getString());
 
         assertEquals(5, s.getRequestsProcessedBySessionCount());
     }
@@ -257,9 +257,9 @@ public class HttpSessionTest {
 
         BusinessScenarioEvent bse = (BusinessScenarioEvent)re.get(0);
 
-        assertEquals(2, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
-        assertEquals(2, bse.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
-        assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE).getString());
+        assertEquals(2, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
+        assertEquals(2, bse.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
+        assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getString());
     }
 
     @Test
@@ -338,9 +338,9 @@ public class HttpSessionTest {
         assertEquals(1, events.size());
         BusinessScenarioEvent bse = (BusinessScenarioEvent)events.get(0);
 
-        assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
-        assertEquals(1, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
-        assertEquals(10L, bse.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
+        assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getValue());
+        assertEquals(1, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
+        assertEquals(10L, bse.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
         assertEquals(7L, bse.getTimestamp().longValue());
 
         HttpEvent e2 = new HttpEvent(30L);
@@ -359,9 +359,9 @@ public class HttpSessionTest {
         assertEquals(1, events.size());
         BusinessScenarioEvent bse2 = (BusinessScenarioEvent)events.get(0);
 
-        assertEquals("scenario-1", bse2.getStringProperty(BusinessScenarioEvent.TYPE).getValue());
-        assertEquals(3, bse2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
-        assertEquals(90L, bse2.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
+        assertEquals("scenario-1", bse2.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getValue());
+        assertEquals(3, bse2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
+        assertEquals(90L, bse2.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
         assertEquals(20L, bse2.getTimestamp().longValue());
     }
 

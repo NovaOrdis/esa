@@ -20,6 +20,7 @@ import io.novaordis.events.core.CsvOutputFormatter;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.ListProperty;
 import io.novaordis.events.core.event.Property;
+import io.novaordis.events.core.event.TimedEvent;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -40,21 +41,22 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
     // Static ----------------------------------------------------------------------------------------------------------
 
     private static String[] PROPERTIES_TO_DISPLAY = {
-            "timestamp",
-            BusinessScenarioEvent.ID,
-            BusinessScenarioEvent.JSESSIONID,
-            BusinessScenarioEvent.ITERATION_ID,
-            BusinessScenarioEvent.TYPE,
-            BusinessScenarioEvent.STATE,
-            BusinessScenarioEvent.REQUEST_COUNT,
-            BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT,
-            BusinessScenarioEvent.DURATION,
+
+            TimedEvent.TIMESTAMP_PROPERTY_NAME,
+            BusinessScenarioEvent.ID_PROPERTY_NAME,
+            BusinessScenarioEvent.JSESSIONID_PROPERTY_NAME,
+            BusinessScenarioEvent.ITERATION_ID_PROPERTY_NAME,
+            BusinessScenarioEvent.TYPE_PROPERTY_NAME,
+            BusinessScenarioEvent.STATE_PROPERTY_NAME,
+            BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME,
+            BusinessScenarioEvent.SUCCESSFUL_REQUEST_COUNT_PROPERTY_NAME,
+            BusinessScenarioEvent.DURATION_PROPERTY_NAME,
 
             // this is a List property, it'll generate a comma-separated list of values
-            BusinessScenarioEvent.REQUEST_DURATIONS,
+            BusinessScenarioEvent.REQUEST_DURATIONS_PROPERTY_NAME,
 
             // this is a List property, it'll generate a comma-separated list of values
-            BusinessScenarioEvent.REQUEST_STATUS_CODES,
+            BusinessScenarioEvent.REQUEST_STATUS_CODES_PROPERTY_NAME,
     };
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -85,7 +87,7 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
 
             String propertyName = PROPERTIES_TO_DISPLAY[i];
 
-            if ("timestamp".equals(propertyName)) {
+            if (TimedEvent.TIMESTAMP_PROPERTY_NAME.equals(propertyName)) {
                 Long timestamp = bse.getTimestamp();
                 s += timestamp == null ? NULL_EXTERNALIZATION : TIMESTAMP_FORMAT.format(timestamp);
             }

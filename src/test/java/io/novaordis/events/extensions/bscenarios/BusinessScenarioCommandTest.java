@@ -81,7 +81,7 @@ public class BusinessScenarioCommandTest {
         assertEquals(1, events.size());
         BusinessScenarioEvent bse = (BusinessScenarioEvent)events.get(0);
         assertEquals(BusinessScenarioState.COMPLETE.name(),
-                bse.getStringProperty(BusinessScenarioEvent.STATE).getString());
+                bse.getStringProperty(BusinessScenarioEvent.STATE_PROPERTY_NAME).getString());
 
 
         HttpEvent e3 = new HttpEvent(30L);
@@ -97,10 +97,10 @@ public class BusinessScenarioCommandTest {
 
         BusinessScenarioEvent bse2 = (BusinessScenarioEvent)output.get(0);
         assertEquals(BusinessScenarioState.INCOMPLETE.name(),
-                bse2.getStringProperty(BusinessScenarioEvent.STATE).getString());
-        assertEquals(7L, bse2.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
-        assertEquals(1, bse2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
-        assertEquals("scenario-2", bse2.getStringProperty(BusinessScenarioEvent.TYPE).getString());
+                bse2.getStringProperty(BusinessScenarioEvent.STATE_PROPERTY_NAME).getString());
+        assertEquals(7L, bse2.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
+        assertEquals(1, bse2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
+        assertEquals("scenario-2", bse2.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getString());
 
         EndOfStreamEvent eose = (EndOfStreamEvent)output.get(1);
         assertNotNull(eose);
@@ -161,10 +161,10 @@ public class BusinessScenarioCommandTest {
         BusinessScenarioEvent bse = (BusinessScenarioEvent)events.get(0);
         assertNotNull(bse);
 
-        IntegerProperty ip = bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT);
+        IntegerProperty ip = bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME);
         assertEquals(3, ip.getInteger().intValue());
 
-        LongProperty lp = bse.getLongProperty(BusinessScenarioEvent.DURATION);
+        LongProperty lp = bse.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME);
         assertEquals(3, lp.getLong().longValue());
     }
 
@@ -243,11 +243,11 @@ public class BusinessScenarioCommandTest {
         assertEquals(1, re3.size());
         BusinessScenarioEvent bs2 = (BusinessScenarioEvent)re3.get(0);
 
-        assertEquals(6L, bs.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
-        assertEquals(3, bs.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
+        assertEquals(6L, bs.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
+        assertEquals(3, bs.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
 
-        assertEquals(60L, bs2.getLongProperty(BusinessScenarioEvent.DURATION).getLong().longValue());
-        assertEquals(3, bs2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT).getInteger().intValue());
+        assertEquals(60L, bs2.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
+        assertEquals(3, bs2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
