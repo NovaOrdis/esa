@@ -42,15 +42,20 @@ public interface ParameterizedFormatString extends FormatString {
             throw new IllegalArgumentException("'" + tokens + "' contains spaces and it should not");
         }
 
-        if (tokens.startsWith(RequestHeaderFormatString.PREFIX)) {
+        // TODO inefficient, we do matching twice, once here and once inside the instance. Refactor.
+
+        if (tokens.startsWith(RequestHeaderFormatString.PREFIX) ||
+                RequestHeaderFormatString.ALTERNATIVE_FORMAT_PATTERN.matcher(tokens).matches()) {
 
             return new RequestHeaderFormatString(tokens);
         }
-        else if (tokens.startsWith(ResponseHeaderFormatString.PREFIX)) {
+        else if (tokens.startsWith(ResponseHeaderFormatString.PREFIX) ||
+                ResponseHeaderFormatString.ALTERNATIVE_FORMAT_PATTERN.matcher(tokens).matches()) {
 
             return new ResponseHeaderFormatString(tokens);
         }
-        else if (tokens.startsWith(CookieFormatString.PREFIX)) {
+        else if (tokens.startsWith(CookieFormatString.PREFIX) ||
+                CookieFormatString.ALTERNATIVE_FORMAT_PATTERN.matcher(tokens).matches()) {
 
             return new CookieFormatString(tokens);
         }

@@ -19,6 +19,9 @@ package io.novaordis.events.httpd;
 import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.ParsingException;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
@@ -34,9 +37,10 @@ abstract class ParameterizedFormatStringBase implements ParameterizedFormatStrin
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
-     * @param formatStringLiteral - we expect a parameterized format string specification (%{i,Some-Header} or
-     *                            %{o,Some-Header}) to start the given string, but it is acceptable that other format
-     *                            strings follow, without any intermediary space. They will be ignored.
+     * @param formatStringLiteral - we expect a parameterized format string specification (%{i,Some-Header},
+     *                            %{Some-Header}i, %{o,Some-Header} or %{Some-Header}o) to start the given string, but
+     *                            it is acceptable that other format strings follow, without any intermediary space.
+     *                            They will be ignored.
      *
      * @throws IllegalArgumentException if the literal does not match the expected pattern.
      */
@@ -99,7 +103,15 @@ abstract class ParameterizedFormatStringBase implements ParameterizedFormatStrin
 
     // Protected -------------------------------------------------------------------------------------------------------
 
+    /**
+     * "%{i," for the %{i,Something} format.
+     */
     protected abstract String getPrefix();
+
+    /**
+     * "%{.+}i" for the %{Something}i format.
+     */
+    protected abstract Pattern getAlternateFormatPattern();
 
     protected abstract String getHttpEventMapName();
 
@@ -111,21 +123,41 @@ abstract class ParameterizedFormatStringBase implements ParameterizedFormatStrin
             throw new IllegalArgumentException("null format string literal");
         }
 
+        Matcher matcher;
+        String parameter;
         String prefix = getPrefix();
 
-        if (!formatStringLiteral.startsWith(prefix)) {
-            throw new IllegalArgumentException("'" + formatStringLiteral + "' does not start with '" + prefix + "'");
+        if (formatStringLiteral.startsWith(prefix)) {
+
+            //
+            // %{i,Some-Header} format
+            //
+
+            formatStringLiteral = formatStringLiteral.substring(prefix.length());
+
+            int i = formatStringLiteral.indexOf('}');
+
+            if (i == -1) {
+                throw new IllegalArgumentException("'" + formatStringLiteral + "' does not end with '}'");
+            }
+
+            parameter = formatStringLiteral.substring(0, i);
+
+        }
+        else if ((matcher = getAlternateFormatPattern().matcher(formatStringLiteral)).find()) {
+
+            //
+            // %{Some-Header}i format
+            //
+
+            parameter = matcher.group(1);
+        }
+        else {
+
+            throw new IllegalArgumentException("'" + formatStringLiteral +
+                    "' cannot be parsed into a parameterized format string");
         }
 
-        formatStringLiteral = formatStringLiteral.substring(prefix.length());
-
-        int i = formatStringLiteral.indexOf('}');
-
-        if (i == -1) {
-            throw new IllegalArgumentException("'" + formatStringLiteral + "' does not end with '}'");
-        }
-
-        String parameter = formatStringLiteral.substring(0, i);
         setParameter(parameter);
     }
 

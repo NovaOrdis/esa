@@ -16,6 +16,8 @@
 
 package io.novaordis.events.httpd;
 
+import java.util.regex.Pattern;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
@@ -24,7 +26,8 @@ public class ResponseHeaderFormatString extends ParameterizedFormatStringBase im
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final String PREFIX = "%{o,";
+    public static final String PREFIX = "%{o,"; // handles this format %{o,Something}
+    public static final Pattern ALTERNATIVE_FORMAT_PATTERN = Pattern.compile("%\\{(.+)\\}o"); // handles this format %{Something}o
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -70,6 +73,11 @@ public class ResponseHeaderFormatString extends ParameterizedFormatStringBase im
     @Override
     protected String getPrefix() {
         return PREFIX;
+    }
+
+    @Override
+    protected Pattern getAlternateFormatPattern() {
+        return ALTERNATIVE_FORMAT_PATTERN;
     }
 
     @Override

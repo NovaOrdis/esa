@@ -67,6 +67,19 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
         assertEquals("Test-Header", i.getHeaderName());
     }
 
+    //
+    // Alternative format: %{Referer}i
+    //
+
+    @Test
+    public void parameterizedFormatFromString_RequestHeader_AlternativeFormat() throws Exception {
+
+        ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{Test-Header}i");
+        assertNotNull(pfs);
+        RequestHeaderFormatString i = (RequestHeaderFormatString)pfs;
+        assertEquals("Test-Header", i.getHeaderName());
+    }
+
     @Test
     public void parameterizedFormatFromString_ResponseHeader() throws Exception {
 
@@ -77,9 +90,27 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
     }
 
     @Test
+    public void parameterizedFormatFromString_ResponseHeader_AlternativeFormat() throws Exception {
+
+        ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{Test-Header}o");
+        assertNotNull(pfs);
+        ResponseHeaderFormatString o = (ResponseHeaderFormatString)pfs;
+        assertEquals("Test-Header", o.getHeaderName());
+    }
+
+    @Test
     public void parameterizedFormatFromString_Cookie() throws Exception {
 
         ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{c,something}");
+        assertNotNull(pfs);
+        CookieFormatString o = (CookieFormatString)pfs;
+        assertEquals("something", o.getCookieName());
+    }
+
+    @Test
+    public void parameterizedFormatFromString_Cookie_AlternativeFormat() throws Exception {
+
+        ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{something}c");
         assertNotNull(pfs);
         CookieFormatString o = (CookieFormatString)pfs;
         assertEquals("something", o.getCookieName());
@@ -106,7 +137,7 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
         catch(IllegalArgumentException iae) {
             String msg = iae.getMessage();
             log.info(msg);
-            assertTrue(msg.contains("does not start with"));
+            assertTrue(msg.contains("cannot be parsed into a parameterized format string"));
         }
     }
 

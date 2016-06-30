@@ -16,6 +16,8 @@
 
 package io.novaordis.events.httpd;
 
+import java.util.regex.Pattern;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
@@ -24,7 +26,8 @@ public class CookieFormatString extends ParameterizedFormatStringBase implements
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final String PREFIX = "%{c,";
+    public static final String PREFIX = "%{c,"; // handles this format %{c,Something}
+    public static final Pattern ALTERNATIVE_FORMAT_PATTERN = Pattern.compile("%\\{(.+)\\}c"); // handles this format %{Something}c
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -70,6 +73,11 @@ public class CookieFormatString extends ParameterizedFormatStringBase implements
     @Override
     protected String getPrefix() {
         return PREFIX;
+    }
+
+    @Override
+    protected Pattern getAlternateFormatPattern() {
+        return ALTERNATIVE_FORMAT_PATTERN;
     }
 
     @Override
