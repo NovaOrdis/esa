@@ -45,6 +45,14 @@ public class RequestHeaderFormatStringTest extends ParameterizedFormatStringTest
     }
 
     @Test
+    public void getLiteral_AlternativeFormat() throws Exception {
+
+        RequestHeaderFormatString i = new RequestHeaderFormatString("%{Test-Request-Header}i");
+
+        assertEquals("%{Test-Request-Header}i", i.getLiteral());
+    }
+
+    @Test
     public void literalStartsWithHeaderSpecificationButAlsoContainsSomethingElse() throws Exception {
 
         RequestHeaderFormatString i = new RequestHeaderFormatString("%{i,Test-Request-Header}blah");

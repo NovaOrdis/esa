@@ -51,12 +51,6 @@ public class CookieFormatString extends ParameterizedFormatStringBase implements
     // ParameterizedFormatString implementation ------------------------------------------------------------------------
 
     @Override
-    public String getLiteral() {
-
-        return PREFIX + cookieName + "}";
-    }
-
-    @Override
     public String getParameter() {
 
         return cookieName;
@@ -90,12 +84,6 @@ public class CookieFormatString extends ParameterizedFormatStringBase implements
 
     public String getCookieName() {
         return cookieName;
-    }
-
-    @Override
-    public String toString() {
-
-        return getLiteral();
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

@@ -34,6 +34,8 @@ abstract class ParameterizedFormatStringBase implements ParameterizedFormatStrin
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private String literal;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
@@ -97,7 +99,19 @@ abstract class ParameterizedFormatStringBase implements ParameterizedFormatStrin
         return result;
     }
 
+    @Override
+    public String getLiteral() {
+
+        return literal;
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
+
+    @Override
+    public String toString() {
+
+        return getLiteral();
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
@@ -142,6 +156,7 @@ abstract class ParameterizedFormatStringBase implements ParameterizedFormatStrin
             }
 
             parameter = formatStringLiteral.substring(0, i);
+            this.literal = "%{" + getPrefix().charAt(2)+ "," + parameter + "}";
 
         }
         else if ((matcher = getAlternateFormatPattern().matcher(formatStringLiteral)).find()) {
@@ -151,6 +166,7 @@ abstract class ParameterizedFormatStringBase implements ParameterizedFormatStrin
             //
 
             parameter = matcher.group(1);
+            this.literal = "%{" + parameter + "}" + getPrefix().charAt(2);
         }
         else {
 

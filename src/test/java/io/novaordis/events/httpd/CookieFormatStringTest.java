@@ -45,6 +45,15 @@ public class CookieFormatStringTest extends ParameterizedFormatStringTest {
     }
 
     @Test
+    public void getLiteral_AlternativeFormat() throws Exception {
+
+        CookieFormatString i = new CookieFormatString("%{something}c");
+
+        assertEquals("%{something}c", i.getLiteral());
+    }
+
+
+    @Test
     public void literalStartsWithCookieSpecificationButAlsoContainsSomethingElse() throws Exception {
 
         CookieFormatString i = new CookieFormatString("%{c,something}blah");

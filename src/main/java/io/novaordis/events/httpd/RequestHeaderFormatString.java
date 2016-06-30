@@ -51,12 +51,6 @@ public class RequestHeaderFormatString extends ParameterizedFormatStringBase imp
     // ParameterizedFormatString implementation ------------------------------------------------------------------------
 
     @Override
-    public String getLiteral() {
-
-        return PREFIX + requestHeaderName + "}";
-    }
-
-    @Override
     public void setParameter(String parameter) {
 
         requestHeaderName = parameter;
