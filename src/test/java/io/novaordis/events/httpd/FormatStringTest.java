@@ -17,7 +17,11 @@
 package io.novaordis.events.httpd;
 
 import io.novaordis.events.ParsingException;
+import io.novaordis.events.core.event.DoubleProperty;
+import io.novaordis.events.core.event.LongProperty;
+import io.novaordis.events.core.event.MeasureUnit;
 import io.novaordis.events.core.event.StringProperty;
+import io.novaordis.events.core.event.TimeMeasureUnit;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,6 +184,44 @@ public abstract class FormatStringTest {
         assertEquals("blah", p.getValue());
     }
 
+    @Test
+    public void fromString_S() throws Exception {
+
+        List<FormatString> formats = FormatString.fromString("%S");
+
+        assertEquals(1, formats.size());
+        FormatString fs = formats.get(0);
+
+        assertEquals("%S", fs.getLiteral());
+        assertEquals(123L, fs.parse("123"));
+        assertEquals(Long.class, fs.getType());
+        assertFalse(fs.isLeftEnclosure());
+        assertFalse(fs.isRightEnclosure());
+        assertNull(fs.getMatchingEnclosure());
+        LongProperty p = (LongProperty)fs.toProperty(123L);
+        assertEquals(HttpEvent.BYTES_TRANSFERRED, p.getName());
+        assertEquals(123L, p.getValue());
+    }
+
+    @Test
+    public void fromString_T() throws Exception {
+
+        List<FormatString> formats = FormatString.fromString("%T");
+
+        assertEquals(1, formats.size());
+        FormatString fs = formats.get(0);
+
+        assertEquals("%T", fs.getLiteral());
+        assertEquals(0.001d, ((Double)fs.parse("0.001")).doubleValue(), 0.0001);
+        assertEquals(Double.class, fs.getType());
+        assertFalse(fs.isLeftEnclosure());
+        assertFalse(fs.isRightEnclosure());
+        assertNull(fs.getMatchingEnclosure());
+        DoubleProperty p = (DoubleProperty)fs.toProperty(0.01);
+        assertEquals(HttpEvent.REQUEST_DURATION, p.getName());
+        assertEquals(0.01d, ((Double)p.getValue()).doubleValue(), 0.0001);
+        assertEquals(TimeMeasureUnit.SECOND, p.getMeasureUnit());
+    }
 
     // parse() ---------------------------------------------------------------------------------------------------------
 

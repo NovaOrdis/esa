@@ -122,7 +122,9 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
         BusinessScenarioOutputFormatter f = getConversionLogicToTest();
 
         BusinessScenario bs = new BusinessScenario();
-        bs.setBeginTimestamp(1L);
+
+        long beginTimestamp = 1L;
+        bs.setBeginTimestamp(beginTimestamp);
         bs.setId(2L);
         bs.setJSessionId("test-jsession-id");
         bs.setIterationId("test-iteration-id");
@@ -152,7 +154,9 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
 
         String s = f.toString(bse);
 
-        assertEquals("12/31/69 16:00:00, 2, test-jsession-id, test-iteration-id, test-type, COMPLETE, 3, 1, 66, 11, 22, 33, 200, 300, 400", s);
+        // depending on where the test is run, the hour may be different
+        String bts = BusinessScenarioOutputFormatter.TIMESTAMP_FORMAT.format(beginTimestamp);
+        assertEquals(bts + ", 2, test-jsession-id, test-iteration-id, test-type, COMPLETE, 3, 1, 66, 11, 22, 33, 200, 300, 400", s);
     }
 
     @Test

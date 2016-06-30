@@ -93,7 +93,7 @@ public enum FormatStrings implements FormatString {
     STATUS_CODE("%>s", Integer.class, HttpEvent.STATUS_CODE),
 
     //
-    // Response entity body size. Stored as Long.
+    // Response entity body size. Does not include headers. Stored as Long.
     //
     RESPONSE_ENTITY_BODY_SIZE("%b", Long.class, HttpEvent.RESPONSE_ENTITY_BODY_SIZE, MemoryMeasureUnit.BYTE),
 
@@ -112,6 +112,11 @@ public enum FormatStrings implements FormatString {
     REQUEST_PROCESSING_TIME_MS("%D", Long.class, HttpEvent.REQUEST_DURATION, TimeMeasureUnit.MILLISECOND),
 
     //
+    // The time taken to serve the request, in seconds.
+    //
+    REQUEST_PROCESSING_TIME_S("%T", Double.class, HttpEvent.REQUEST_DURATION, TimeMeasureUnit.SECOND),
+
+    //
     // Local IP address
     //
     LOCAL_IP_ADDRESS("%A", String.class, HttpEvent.LOCAL_IP_ADDRESS),
@@ -119,7 +124,12 @@ public enum FormatStrings implements FormatString {
     //
     // Local server name
     //
-    LOCAL_SERVER_NAME("%v", String.class, HttpEvent.LOCAL_SERVER_NAME);
+    LOCAL_SERVER_NAME("%v", String.class, HttpEvent.LOCAL_SERVER_NAME),
+
+    //
+    // Bytes transferred (received and sent), including request and headers. Stored as Long.
+    //
+    BYTES_TRANSFERRED("%S", Long.class, HttpEvent.BYTES_TRANSFERRED, MemoryMeasureUnit.BYTE);
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -243,12 +253,24 @@ public enum FormatStrings implements FormatString {
         }
 
         if (Long.class.equals(type)) {
+
             try {
                 return new Long(logStringRepresentation);
             }
             catch(Exception e) {
                 throw new ParsingException(
                         this + " string representation \"" + logStringRepresentation + "\" is not a valid long", e);
+            }
+        }
+
+        if (Double.class.equals(type)) {
+
+            try {
+                return new Double(logStringRepresentation);
+            }
+            catch(Exception e) {
+                throw new ParsingException(
+                        this + " string representation \"" + logStringRepresentation + "\" is not a valid double", e);
             }
         }
 

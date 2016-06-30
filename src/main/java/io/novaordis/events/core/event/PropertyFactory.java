@@ -60,6 +60,15 @@ public class PropertyFactory {
 
             result = new LongProperty(name, (Long)value);
         }
+        else if(Double.class.equals(type)) {
+
+            if (value != null && !(value instanceof Double)) {
+                throw new IllegalArgumentException(
+                        "cannot create a " + type + " property with a " + value.getClass().getSimpleName() + " value");
+            }
+
+            result = new DoubleProperty(name, (Double)value);
+        }
         else if(Map.class.equals(type)) {
 
             if (value != null && !(value instanceof Map)) {

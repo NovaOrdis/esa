@@ -46,10 +46,14 @@ httpd Input Format
   Quotes need to be escaped: \"%r\". HTTP special characters can also be used (&quot;).
 
   %A - The local IP address.
-  %t - Time the request was received, in the format [18/Sep/2011:19:18:28 -0400]. The last number
-       indicates the timezone offset from GMT. Usually declared between brackets.
+  %b - Response entity body size. Stored as long.
+  %D - The time taken to serve the request. WildFly logs the time in milliseconds for %D, while
+       Apache httpd logs the time in microseconds for the same %D.
   %h - Remote host name or IP address. Will log the IP address if HostnameLookups is set to Off,
        which is the default.
+  %I - The name of the thread processing the request. Note that this is actually the WildFly
+       convention, not Apache httpd convention (Apache httpd logs "bytes received, including
+       request and headers" for %I)
   %l - Remote logname from identd (if supplied).
   %u - Remote user if the request was authenticated. May be irrelevant if return status (%s) is
        401 (unauthorized).
@@ -60,12 +64,10 @@ httpd Input Format
        as integer.
   %>s - The status code of the final request (whether was internally redirected or not). Stored as
        integer.
-  %b - Response entity body size. Stored as long.
-  %I - The name of the thread processing the request. Note that this is actually the WildFly
-       convention, not Apache httpd convention (Apache httpd logs "bytes received, including
-       request and headers" for %I)
-  %D - The time taken to serve the request. WildFly logs the time in milliseconds for %D, while
-       Apache httpd logs the time in microseconds for the same %D.
+  %S - Bytes transferred (received and sent), including request and headers.
+  %t - Time the request was received, in the format [18/Sep/2011:19:18:28 -0400]. The last number
+       indicates the timezone offset from GMT. Usually declared between brackets.
+  %T - Time taken to process the request, in seconds.
   %v - The local server name.
 
 CSV Input Format

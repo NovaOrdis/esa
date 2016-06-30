@@ -52,13 +52,14 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
     public static final String REMOTE_LOGNAME = "remote-logname";
     public static final String REMOTE_USER = "remote-user";
     public static final String RESPONSE_ENTITY_BODY_SIZE = "response-body-size";
-    public static final String REQUEST_DURATION = "request-duration";
+    public static final String REQUEST_DURATION = "request-duration"; // note that it could be expressed in ms or secs
     public static final String QUERY = "query";
     public static final String REQUEST_HEADERS = "request-headers";
     public static final String RESPONSE_HEADERS = "response-headers";
     public static final String COOKIES = "cookies";
     public static final String LOCAL_IP_ADDRESS = "local-ip-address";
     public static final String LOCAL_SERVER_NAME = "local-server-name";
+    public static final String BYTES_TRANSFERRED = "bytes-transferred";
 
     public static final String JSESSIONID_COOKIE_KEY = "JSESSIONID";
 

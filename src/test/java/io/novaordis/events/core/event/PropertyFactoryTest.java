@@ -141,6 +141,37 @@ public class PropertyFactoryTest {
     }
 
     @Test
+    public void createInstance_Double() throws Exception {
+
+        DoubleProperty dp = (DoubleProperty)PropertyFactory.createInstance("test", Double.class, 1d, null);
+
+        assertEquals("test", dp.getName());
+        assertEquals(Double.class, dp.getType());
+        assertEquals(1L, dp.getDouble().doubleValue(), 0.0001);
+    }
+
+    @Test
+    public void createInstance_Double_Null() throws Exception {
+
+        DoubleProperty dp = (DoubleProperty)PropertyFactory.createInstance("test", Double.class, null, null);
+
+        assertEquals("test", dp.getName());
+        assertEquals(Double.class, dp.getType());
+        assertNull(dp.getDouble());
+    }
+
+    @Test
+    public void createInstance_Double_TypeMismatch() throws Exception {
+
+        try {
+            PropertyFactory.createInstance("test", Double.class, "1", null);
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
+    }
+
+    @Test
     public void createInstance_Map() throws Exception {
 
         Map<String, String> map = new HashMap<>();
