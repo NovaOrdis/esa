@@ -77,7 +77,14 @@ public class HttpdLogFormat implements LineFormat {
 
     // Static ----------------------------------------------------------------------------------------------------------
 
+    /**
+     * @exception IllegalArgumentException on null argument.
+     */
     public static String replaceSpecialHTMLCharacters(String s) {
+
+        if (s == null) {
+            throw new IllegalArgumentException("null format specification");
+        }
 
         return s.replaceAll("&quot;", "\"");
     }
@@ -97,8 +104,7 @@ public class HttpdLogFormat implements LineFormat {
      */
     public HttpdLogFormat(FormatString... formatStrings) throws IllegalArgumentException {
 
-        checkBalancedQuotes(formatStrings);
-        this.formatStrings = Arrays.asList(formatStrings);
+        this(Arrays.asList(formatStrings));
     }
 
     /**
@@ -111,13 +117,27 @@ public class HttpdLogFormat implements LineFormat {
      */
     public HttpdLogFormat(String formatSpecification) throws CorruptedHttpdFormatStringException, ParsingException {
 
-        if (formatSpecification == null) {
-            throw new IllegalArgumentException("null format specification");
+        this(FormatString.fromString(HttpdLogFormat.replaceSpecialHTMLCharacters(formatSpecification)));
+    }
+
+    /**
+     * @param formatStrings duplicate format elements are acceptable. Quotes (FormatStrings.DOUBLE_QUOTES and
+     *                       FormatStrings.SINGLE_QUOTE), if present, must always be balanced, or the constructor
+     *                       will throw an exception.
+     *
+     * @exception IllegalArgumentException on unbalanced quotes
+     */
+    public HttpdLogFormat(List<FormatString> formatStrings) {
+
+        if (formatStrings == null) {
+            throw new IllegalArgumentException("null format string list");
         }
 
-        formatSpecification = HttpdLogFormat.replaceSpecialHTMLCharacters(formatSpecification);
-        this.formatStrings = FormatString.fromString(formatSpecification);
+        checkBalancedQuotes(formatStrings);
+        this.formatStrings = formatStrings;
     }
+
+    // Public ----------------------------------------------------------------------------------------------------------
 
     /**
      * @return the list of format elements, in order. For performance reasons, the implementations could return the
@@ -127,8 +147,6 @@ public class HttpdLogFormat implements LineFormat {
     public List<FormatString> getFormatStrings() {
         return formatStrings;
     }
-
-    // Public ----------------------------------------------------------------------------------------------------------
 
     @Override
     public String toString() {
@@ -157,7 +175,7 @@ public class HttpdLogFormat implements LineFormat {
     /**
      * @throws IllegalArgumentException on unbalanced quotes.
      */
-    private static void checkBalancedQuotes(FormatString[] elements) throws IllegalArgumentException {
+    private static void checkBalancedQuotes(List<FormatString> elements) throws IllegalArgumentException {
 
         boolean openSingleQuote = false;
         boolean openDoubleQuote = false;
