@@ -17,6 +17,7 @@
 package io.novaordis.events.httpd;
 
 import io.novaordis.events.ParsingException;
+import io.novaordis.events.core.event.StringProperty;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -138,6 +140,25 @@ public abstract class FormatStringTest {
             assertTrue(msg.matches("unknown httpd format element 'blah'"));
             log.info(msg);
         }
+    }
+
+    @Test
+    public void fromString_A() throws Exception {
+
+        List<FormatString> formats = FormatString.fromString("%A");
+
+        assertEquals(1, formats.size());
+        FormatString fs = formats.get(0);
+
+        assertEquals("%A", fs.getLiteral());
+        assertEquals("10.72.42.58", fs.parse("10.72.42.58"));
+        assertEquals(String.class, fs.getType());
+        assertFalse(fs.isLeftEnclosure());
+        assertFalse(fs.isRightEnclosure());
+        assertNull(fs.getMatchingEnclosure());
+        StringProperty p = (StringProperty)fs.toProperty("blah");
+        assertEquals(HttpEvent.LOCAL_IP_ADDRESS, p.getName());
+        assertEquals("blah", p.getValue());
     }
 
     // parse() ---------------------------------------------------------------------------------------------------------

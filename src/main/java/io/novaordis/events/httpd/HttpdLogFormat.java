@@ -133,6 +133,10 @@ public class HttpdLogFormat implements LineFormat {
     @Override
     public String toString() {
 
+        if (formatStrings == null) {
+            return "null formatStrings";
+        }
+
         String s = "";
 
         for(Iterator<FormatString> i = formatStrings.iterator(); i.hasNext(); ) {

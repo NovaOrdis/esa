@@ -109,7 +109,12 @@ public enum FormatStrings implements FormatString {
     // The time taken to serve the request. WildFly logs the time in milliseconds for %D, while Apache httpd logs the
     // time in microseconds for the same %D.
     //
-    REQUEST_PROCESSING_TIME_MS("%D", Long.class, HttpEvent.REQUEST_DURATION, TimeMeasureUnit.MILLISECOND);
+    REQUEST_PROCESSING_TIME_MS("%D", Long.class, HttpEvent.REQUEST_DURATION, TimeMeasureUnit.MILLISECOND),
+
+    //
+    // Local IP address
+    //
+    LOCAL_IP_ADDRESS("%A", String.class, HttpEvent.LOCAL_IP_ADDRESS);
 
     // Constants -------------------------------------------------------------------------------------------------------
 

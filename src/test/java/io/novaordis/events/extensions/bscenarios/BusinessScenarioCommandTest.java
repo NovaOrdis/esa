@@ -250,6 +250,87 @@ public class BusinessScenarioCommandTest {
         assertEquals(3, bs2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
     }
 
+    @Test
+    public void endToEnd_TwoSuccessiveScenarios() throws Exception {
+
+        BusinessScenarioCommand c = new BusinessScenarioCommand();
+
+        throw new RuntimeException("RETURN HERE");
+
+//        HttpEvent e = new HttpEvent(1L);
+//        assertNull(e.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY));
+//        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
+//        e.setRequestUri("/test/A");
+//        e.setLongProperty(HttpEvent.REQUEST_DURATION, 1L);
+//
+//        List<Event> re = c.processHttpEvent(e);
+//
+//        assertEquals(1, re.size());
+//        FaultEvent fe = (FaultEvent)re.get(0);
+//        log.info((fe).getMessage());
+//
+//        e = new HttpEvent(2L);
+//        e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "cookie-001");
+//        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
+//        e.setRequestUri("/test/A");
+//        e.setLongProperty(HttpEvent.REQUEST_DURATION, 1L);
+//
+//        re = c.processHttpEvent(e);
+//        assertTrue(re.isEmpty());
+//
+//        e = new HttpEvent(3L);
+//        e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "cookie-002");
+//        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
+//        e.setRequestUri("/test/A");
+//        e.setLongProperty(HttpEvent.REQUEST_DURATION, 10L);
+//
+//        re = c.processHttpEvent(e);
+//        assertTrue(re.isEmpty());
+//
+//        e = new HttpEvent(4L);
+//        e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "cookie-001");
+//        e.setRequestUri("/test/B");
+//        e.setLongProperty(HttpEvent.REQUEST_DURATION, 2L);
+//
+//        re = c.processHttpEvent(e);
+//        assertTrue(re.isEmpty());
+//
+//        e = new HttpEvent(5L);
+//        e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "cookie-002");
+//        e.setRequestUri("/test/B");
+//        e.setLongProperty(HttpEvent.REQUEST_DURATION, 20L);
+//
+//        re = c.processHttpEvent(e);
+//        assertTrue(re.isEmpty());
+//
+//        e = new HttpEvent(6L);
+//        e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "cookie-001");
+//        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
+//        e.setRequestUri("/test/C");
+//        e.setLongProperty(HttpEvent.REQUEST_DURATION, 3L);
+//
+//        List<Event> re2 = c.processHttpEvent(e);
+//        assertEquals(1, re2.size());
+//        BusinessScenarioEvent bs = (BusinessScenarioEvent)re2.get(0);
+//
+//        e = new HttpEvent(7L);
+//        e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "cookie-002");
+//        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
+//        e.setRequestUri("/test/C");
+//        e.setLongProperty(HttpEvent.REQUEST_DURATION, 30L);
+//
+//        List<Event> re3 = c.processHttpEvent(e);
+//        assertEquals(1, re3.size());
+//        BusinessScenarioEvent bs2 = (BusinessScenarioEvent)re3.get(0);
+//
+//        assertEquals(6L, bs.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
+//        assertEquals(3, bs.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
+//
+//        assertEquals(60L, bs2.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
+//        assertEquals(3, bs2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
+    }
+
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
