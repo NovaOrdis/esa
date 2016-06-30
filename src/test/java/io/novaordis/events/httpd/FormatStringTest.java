@@ -161,6 +161,26 @@ public abstract class FormatStringTest {
         assertEquals("blah", p.getValue());
     }
 
+    @Test
+    public void fromString_v() throws Exception {
+
+        List<FormatString> formats = FormatString.fromString("%v");
+
+        assertEquals(1, formats.size());
+        FormatString fs = formats.get(0);
+
+        assertEquals("%v", fs.getLiteral());
+        assertEquals("some.local.server.name", fs.parse("some.local.server.name"));
+        assertEquals(String.class, fs.getType());
+        assertFalse(fs.isLeftEnclosure());
+        assertFalse(fs.isRightEnclosure());
+        assertNull(fs.getMatchingEnclosure());
+        StringProperty p = (StringProperty)fs.toProperty("blah");
+        assertEquals(HttpEvent.LOCAL_SERVER_NAME, p.getName());
+        assertEquals("blah", p.getValue());
+    }
+
+
     // parse() ---------------------------------------------------------------------------------------------------------
 
     @Test

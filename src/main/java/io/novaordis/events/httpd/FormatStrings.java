@@ -114,7 +114,12 @@ public enum FormatStrings implements FormatString {
     //
     // Local IP address
     //
-    LOCAL_IP_ADDRESS("%A", String.class, HttpEvent.LOCAL_IP_ADDRESS);
+    LOCAL_IP_ADDRESS("%A", String.class, HttpEvent.LOCAL_IP_ADDRESS),
+
+    //
+    // Local server name
+    //
+    LOCAL_SERVER_NAME("%v", String.class, HttpEvent.LOCAL_SERVER_NAME);
 
     // Constants -------------------------------------------------------------------------------------------------------
 

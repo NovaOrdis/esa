@@ -66,6 +66,7 @@ httpd Input Format
        request and headers" for %I)
   %D - The time taken to serve the request. WildFly logs the time in milliseconds for %D, while
        Apache httpd logs the time in microseconds for the same %D.
+  %v - The local server name.
 
 CSV Input Format
 
