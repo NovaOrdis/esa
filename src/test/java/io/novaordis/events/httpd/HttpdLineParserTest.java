@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -85,7 +86,7 @@ public class HttpdLineParserTest extends LineParserTest {
         assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(6));
     }
 
-    // parse() ---------------------------------------------------------------------------------------------------------
+    // parseLine() -----------------------------------------------------------------------------------------------------
 
     @Test
     public void emptyEnclosure_Brackets() throws Exception {
@@ -263,6 +264,45 @@ public class HttpdLineParserTest extends LineParserTest {
 
         HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
         assertEquals("GET /test.gif HTTP/1.1", e.getFirstRequestLine());
+    }
+
+    //
+    // timestamp with and without brackets
+    //
+
+    @Test
+    public void timestamp_FormatStringHasExplicitBrackets() throws Exception {
+
+        HttpdLineParser parser = new HttpdLineParser(
+                FormatStrings.OPENING_BRACKET,
+                FormatStrings.TIMESTAMP,
+                FormatStrings.CLOSING_BRACKET);
+
+        String line = "[20/Jun/2016:00:00:00 -0400]";
+
+        HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
+
+        Date expected = FormatStrings.TIMESTAMP_FORMAT.parse(line.substring(1, line.length() - 1));
+
+        Long timestamp = e.getTimestamp();
+
+        assertEquals(expected.getTime(), timestamp.longValue());
+    }
+
+    @Test
+    public void timestamp_FormatStringHasNoExplicitBrackets() throws Exception {
+
+        HttpdLineParser parser = new HttpdLineParser(FormatStrings.TIMESTAMP);
+
+        String line = "[20/Jun/2016:00:00:00 -0400]";
+
+        HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
+
+        Date expected = FormatStrings.TIMESTAMP_FORMAT.parse(line.substring(1, line.length() - 1));
+
+        Long timestamp = e.getTimestamp();
+
+        assertEquals(expected.getTime(), timestamp.longValue());
     }
 
     // testing together with the owner LineStreamParser ----------------------------------------------------------------

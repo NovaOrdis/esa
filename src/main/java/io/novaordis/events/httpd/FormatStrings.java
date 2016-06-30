@@ -69,7 +69,7 @@ public enum FormatStrings implements FormatString {
     // Time the request was received, in the format [18/Sep/2011:19:18:28 -0400]. The last number indicates the timezone
     // offset from GMT
     //
-    TIMESTAMP("%t", Date.class, TIMESTAMP_FORMAT),
+    TIMESTAMP("%t", Date.class, TIMESTAMP_FORMAT, TIMESTAMP_FORMAT_STRING),
 
     //
     // The query string, excluding the '?' character. Usually enclosed in quotes.
@@ -140,6 +140,8 @@ public enum FormatStrings implements FormatString {
     private String literal;
     private Class type;
     private Format format;
+    private String formatStringRepresentation; // if present, makes the info and error messages more user friendly
+                                               // if not present, format.toString() should be used.
 
     // the corresponding HttpEvent property name
     private String propertyName;
@@ -158,28 +160,33 @@ public enum FormatStrings implements FormatString {
 
     /**
      * @param format an optional Format (can be null) which specifies the string representation format.
+     * @param formatStringRepresentation - if present, makes the info and error messages more user friendly, if not
+     *                                   present, format.toString() should be used. null is therefore acceptable.
      */
-    FormatStrings(String literal, Class type, Format format) {
+    FormatStrings(String literal, Class type, Format format, String formatStringRepresentation) {
 
-        this(literal, type, format, null);
+        this(literal, type, format, formatStringRepresentation, null);
     }
 
     FormatStrings(String literal, Class type, String propertyName) {
 
-        this(literal, type, null, propertyName);
+        this(literal, type, null, null, propertyName);
     }
 
     FormatStrings(String literal, Class type, String propertyName, Class propertyType) {
 
-        this(literal, type, null, propertyName, propertyType, null);
+        this(literal, type, null, null, propertyName, propertyType, null);
     }
 
     /**
      * Using this constructor implies that the FormatString type coincides with the corresponding property type.
+     *
+     * @param formatStringRepresentation - if present, makes the info and error messages more user friendly, if not
+     *                                   present, format.toString() should be used. null is therefore acceptable.
      */
-    FormatStrings(String literal, Class type, Format format, String propertyName) {
+    FormatStrings(String literal, Class type, Format format, String formatStringRepresentation, String propertyName) {
 
-        this(literal, type, format, propertyName, type);
+        this(literal, type, format, formatStringRepresentation, propertyName, type);
     }
 
     /**
@@ -187,19 +194,30 @@ public enum FormatStrings implements FormatString {
      */
     FormatStrings(String literal, Class type, String propertyName, MeasureUnit mu) {
 
-        this(literal, type, null, propertyName, type, mu);
+        this(literal, type, null, null, propertyName, type, mu);
     }
 
-    FormatStrings(String literal, Class type, Format format, String propertyName, Class propertyType) {
+    /**
+     * @param formatStringRepresentation - if present, makes the info and error messages more user friendly, if not
+     *                                   present, format.toString() should be used. null is therefore acceptable.
+     */
+    FormatStrings(String literal, Class type, Format format, String formatStringRepresentation, String propertyName,
+                  Class propertyType) {
 
-        this(literal, type, format, propertyName, propertyType, null);
+        this(literal, type, format, formatStringRepresentation, propertyName, propertyType, null);
     }
 
-    FormatStrings(String literal, Class type, Format format, String propertyName, Class propertyType, MeasureUnit mu) {
+    /**
+     * @param formatStringRepresentation - if present, makes the info and error messages more user friendly, if not
+     *                                   present, format.toString() should be used. null is therefore acceptable.
+     */
+    FormatStrings(String literal, Class type, Format format, String formatStringRepresentation, String propertyName,
+                  Class propertyType, MeasureUnit mu) {
 
         this.literal = literal;
         this.type = type;
         this.format = format;
+        this.formatStringRepresentation = formatStringRepresentation;
         this.propertyName = propertyName;
         this.propertyType = propertyType;
         this.measureUnit = mu;
@@ -237,7 +255,10 @@ public enum FormatStrings implements FormatString {
             catch(ParseException e) {
                 throw new ParsingException(
                         this + " string representation \"" + logStringRepresentation +
-                                "\" does not match the expected format " + format, e);
+                                "\" does not match the expected format " +
+                                (formatStringRepresentation != null ?
+                                        "\"" + formatStringRepresentation + "\"" :
+                                        format.toString()), e);
             }
         }
 

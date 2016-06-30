@@ -65,8 +65,11 @@ httpd Input Format
   %>s - The status code of the final request (whether was internally redirected or not). Stored as
        integer.
   %S - Bytes transferred (received and sent), including request and headers.
-  %t - Time the request was received, in the format [18/Sep/2011:19:18:28 -0400]. The last number
-       indicates the timezone offset from GMT. Usually declared between brackets.
+  %t - Time the request was received, in the format [18/Sep/2015:19:18:28 -0400]. The last number
+       indicates the timezone offset from GMT. Usually the timestamp format specification is
+       explicitly declared between brackets, but if the brackets are not present in the log format
+       specification, they are implied: WildFly will enclose the generated timestamp between
+       brackets.
   %T - Time taken to process the request, in seconds.
   %v - The local server name.
 

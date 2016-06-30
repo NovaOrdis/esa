@@ -19,7 +19,6 @@ package io.novaordis.events.httpd;
 import io.novaordis.events.ParsingException;
 import io.novaordis.events.core.event.DoubleProperty;
 import io.novaordis.events.core.event.LongProperty;
-import io.novaordis.events.core.event.MeasureUnit;
 import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.events.core.event.TimeMeasureUnit;
 import org.junit.Test;
