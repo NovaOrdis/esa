@@ -54,7 +54,8 @@ abstract class ParameterizedFormatStringBase implements ParameterizedFormatStrin
     // ParameterizedFormatString implementation ------------------------------------------------------------------------
 
     @Override
-    public Object parse(String logStringRepresentation) throws ParsingException {
+    public Object parse(String logStringRepresentation, Long lineNumber, Integer positionInLine)
+            throws ParsingException {
 
         if (logStringRepresentation == null ||
                 logStringRepresentation.length() == 0 ||

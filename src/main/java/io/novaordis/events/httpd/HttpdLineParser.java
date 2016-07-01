@@ -159,7 +159,7 @@ public class HttpdLineParser implements LineParser {
 
             Token token = nextToken(line, cursor, crt, expectedRightEnclosure);
 
-            Object o = crt.parse(token.getValue());
+            Object o = crt.parse(token.getValue(), lineNumber, cursor);
             logLine.setLogValue(crt, o);
 
             cursor = token.getCursor();

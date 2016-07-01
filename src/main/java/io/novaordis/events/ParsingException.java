@@ -28,25 +28,57 @@ public class ParsingException extends Exception {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private Long lineNumber;
+    private Integer positionInLine;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public ParsingException() {
-        super();
+        this(null, null, null, null);
     }
 
     public ParsingException(String message) {
-        super(message);
+        this(message, null, null, null);
     }
 
     public ParsingException(String message, Throwable cause) {
-        super(message, cause);
+        this(message, cause, null, null);
     }
 
     public ParsingException(Throwable cause) {
-        super(cause);
+        this(null, cause, null, null);
     }
 
+    /**
+     * @param lineNumber the line number of the line that generated the parsing exception. Null is acceptable if the
+     *                   line number is not known.
+     * @param positionInLine the position in line where the parsing exception occurred. Null is acceptable if the
+     *                       position is not known.
+     */
+    public ParsingException(String message, Throwable cause, Long lineNumber, Integer positionInLine) {
+        super(message, cause);
+        this.lineNumber = lineNumber;
+        this.positionInLine = positionInLine;
+    }
+
+
     // Public ----------------------------------------------------------------------------------------------------------
+
+    /**
+     * @return the line number of the line that generated the parsing error, or null if that is not available
+     */
+    public Long getLineNumber() {
+
+        return lineNumber;
+    }
+
+    /**
+     * @return the position in line where the cause of the parsing exception can be found, or null if the position is
+     * not available
+     */
+    public Integer getPositionInLine() {
+        return positionInLine;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

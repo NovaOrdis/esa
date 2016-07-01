@@ -101,11 +101,15 @@ public interface FormatString {
     /**
      * Turns a string representation of the format element, as read from the log, into a typed value.
      *
+     * @param lineNumber the current line number. Null is acceptable, if the line number is not available.
+     * @param positionInLine the position in line. Null is acceptable, if the position is not available.
+     *
+     *
      * @return a typed value, never null.
      *
      * @throws ParsingException if the string representation does not match the format element.
      */
-    Object parse(String logStringRepresentation) throws ParsingException;
+    Object parse(String logStringRepresentation, Long lineNumber, Integer positionInLine) throws ParsingException;
 
     /**
      * @return the type of the values maintained for this format element.

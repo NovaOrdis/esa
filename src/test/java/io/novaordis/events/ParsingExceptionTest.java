@@ -45,6 +45,8 @@ public class ParsingExceptionTest {
         ParsingException e = new ParsingException();
         assertNull(e.getCause());
         assertNull(e.getMessage());
+        assertNull(e.getLineNumber());
+        assertNull(e.getPositionInLine());
     }
 
     @Test
@@ -53,8 +55,20 @@ public class ParsingExceptionTest {
         //noinspection ThrowableInstanceNeverThrown
         ParsingException e = new ParsingException(new RuntimeException());
         assertTrue(e.getCause() instanceof RuntimeException);
-        assertEquals("java.lang.RuntimeException", e.getMessage());
+        assertNull(e.getMessage());
     }
+
+    @Test
+    public void constructor5() throws Exception {
+
+        //noinspection ThrowableInstanceNeverThrown
+        ParsingException e = new ParsingException("something", new RuntimeException(), 101L, 11);
+        assertTrue(e.getCause() instanceof RuntimeException);
+        assertEquals("something", e.getMessage());
+        assertEquals(101L, e.getLineNumber().longValue());
+        assertEquals(11, e.getPositionInLine().intValue());
+    }
+
 
     // Package protected -----------------------------------------------------------------------------------------------
 

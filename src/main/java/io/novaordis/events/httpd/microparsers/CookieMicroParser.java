@@ -43,7 +43,7 @@ public class CookieMicroParser {
     public static final Pattern[] COOKIE_PATTERNS = new Pattern[] {
 
             // "cookie1=value1; cookie2=value2; cookie3=value3 "
-            Pattern.compile("^([\\w\\.]+=[^; ]+; )*([\\w\\.]+=[^; ]+ {0,1})")
+            Pattern.compile("^([\\w\\.]+=[^;]+; )*([\\w\\.]+=[^; ]+ {0,1})")
     };
 
     // Static ----------------------------------------------------------------------------------------------------------

@@ -175,7 +175,7 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
 
         ParameterizedFormatString pfs = getFormatStringToTest();
 
-        String s = (String)pfs.parse("something");
+        String s = (String)pfs.parse("something", null, null);
         assertEquals("something", s);
     }
 

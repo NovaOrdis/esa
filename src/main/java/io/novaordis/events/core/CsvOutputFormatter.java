@@ -16,6 +16,7 @@
 
 package io.novaordis.events.core;
 
+import io.novaordis.events.ParsingException;
 import io.novaordis.events.core.event.EndOfStreamEvent;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
@@ -242,7 +243,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
             // TODO we may want to consider to send the fault events to stderr so we don't interfere with stdout
             //
 
-            sb.append(event.toString()).append("\n");
+            sb.append(externalizeFault((FaultEvent)event)).append("\n");
         }
         else {
             sb.append(toString(event)).append("\n");
@@ -416,6 +417,48 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
         else {
             return DEFAULT_TIMESTAMP_FORMAT.format(timestamp);
         }
+    }
+
+    private String externalizeFault(FaultEvent f) {
+
+        String s = "";
+
+        //
+        // make parsing errors easy to read
+        //
+
+        Throwable cause = f.getCause();
+
+        if (cause instanceof ParsingException) {
+
+            s = "parsing error";
+
+            ParsingException pe = (ParsingException)cause;
+            Long lineNumber = pe.getLineNumber();
+
+            if (lineNumber != null) {
+                s += " at line " + lineNumber;
+            }
+
+            Integer position = pe.getPositionInLine();
+
+            if (position != null) {
+
+                s += ", position " + position;
+            }
+
+            s += ": " + pe.getMessage();
+        }
+        else {
+
+            //
+            // default to toString()
+            //
+
+            s = f.toString();
+        }
+
+        return s;
     }
 
     // Inner classes ---------------------------------------------------------------------------------------------------

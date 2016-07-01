@@ -104,6 +104,18 @@ public class CookieMicroParserTest {
         assertEquals(-1, result);
     }
 
+    @Test
+    public void production2() throws Exception {
+
+
+        String line = "Expires=Thu, 01-Jan-1970 00:00:10 GMT; something=something-else";
+
+        int startFrom = 0;
+
+        int result = CookieMicroParser.identifyEnd(line, startFrom);
+        assertEquals(-1 , result);
+    }
+
     // isCookieRequestHeader() -----------------------------------------------------------------------------------------
 
     @Test

@@ -154,7 +154,7 @@ public abstract class FormatStringTest {
         FormatString fs = formats.get(0);
 
         assertEquals("%A", fs.getLiteral());
-        assertEquals("10.72.42.58", fs.parse("10.72.42.58"));
+        assertEquals("10.72.42.58", fs.parse("10.72.42.58", null, null));
         assertEquals(String.class, fs.getType());
         assertFalse(fs.isLeftEnclosure());
         assertFalse(fs.isRightEnclosure());
@@ -173,7 +173,7 @@ public abstract class FormatStringTest {
         FormatString fs = formats.get(0);
 
         assertEquals("%v", fs.getLiteral());
-        assertEquals("some.local.server.name", fs.parse("some.local.server.name"));
+        assertEquals("some.local.server.name", fs.parse("some.local.server.name", null, null));
         assertEquals(String.class, fs.getType());
         assertFalse(fs.isLeftEnclosure());
         assertFalse(fs.isRightEnclosure());
@@ -192,7 +192,7 @@ public abstract class FormatStringTest {
         FormatString fs = formats.get(0);
 
         assertEquals("%S", fs.getLiteral());
-        assertEquals(123L, fs.parse("123"));
+        assertEquals(123L, fs.parse("123", null, null));
         assertEquals(Long.class, fs.getType());
         assertFalse(fs.isLeftEnclosure());
         assertFalse(fs.isRightEnclosure());
@@ -211,7 +211,7 @@ public abstract class FormatStringTest {
         FormatString fs = formats.get(0);
 
         assertEquals("%T", fs.getLiteral());
-        assertEquals(0.001d, ((Double)fs.parse("0.001")).doubleValue(), 0.0001);
+        assertEquals(0.001d, ((Double)fs.parse("0.001", null, null)).doubleValue(), 0.0001);
         assertEquals(Double.class, fs.getType());
         assertFalse(fs.isLeftEnclosure());
         assertFalse(fs.isRightEnclosure());
@@ -229,7 +229,7 @@ public abstract class FormatStringTest {
 
         FormatString fs = getFormatStringToTest();
 
-        assertNull(fs.parse("-"));
+        assertNull(fs.parse("-", null, null));
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

@@ -53,7 +53,8 @@ public class MockFormatString implements FormatString {
     }
 
     @Override
-    public Object parse(String logStringRepresentation) throws ParsingException {
+    public Object parse(String logStringRepresentation, Long lineNumber, Integer positionInLine)
+            throws ParsingException {
         throw new RuntimeException("parse() NOT YET IMPLEMENTED");
     }
 

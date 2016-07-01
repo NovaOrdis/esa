@@ -102,8 +102,8 @@ public class FormatStringsTest extends FormatStringTest {
 
         FormatString e = FormatStrings.REMOTE_HOST;
         assertEquals("%h", e.getLiteral());
-        assertEquals("127.0.0.1", e.parse("127.0.0.1"));
-        assertNull(e.parse("-"));
+        assertEquals("127.0.0.1", e.parse("127.0.0.1", null, null));
+        assertNull(e.parse("-", null, null));
 
         assertFalse(e.isLeftEnclosure());
         assertFalse(e.isRightEnclosure());
@@ -119,8 +119,8 @@ public class FormatStringsTest extends FormatStringTest {
 
         FormatString e = FormatStrings.REMOTE_LOGNAME;
         assertEquals("%l", e.getLiteral());
-        assertEquals("blah", e.parse("blah"));
-        assertNull(e.parse("-"));
+        assertEquals("blah", e.parse("blah", null, null));
+        assertNull(e.parse("-", null, null));
 
         assertFalse(e.isLeftEnclosure());
         assertFalse(e.isRightEnclosure());
@@ -136,8 +136,8 @@ public class FormatStringsTest extends FormatStringTest {
 
         FormatString e = FormatStrings.REMOTE_USER;
         assertEquals("%u", e.getLiteral());
-        assertEquals("blah", e.parse("blah"));
-        assertNull(e.parse("-"));
+        assertEquals("blah", e.parse("blah", null, null));
+        assertNull(e.parse("-", null, null));
 
         assertFalse(e.isLeftEnclosure());
         assertFalse(e.isRightEnclosure());
@@ -153,9 +153,9 @@ public class FormatStringsTest extends FormatStringTest {
 
         FormatString e = FormatStrings.TIMESTAMP;
         assertEquals("%t", e.getLiteral());
-        Date d = (Date)e.parse("18/Sep/2016:19:18:28 -0400");
+        Date d = (Date)e.parse("18/Sep/2016:19:18:28 -0400", null, null);
         assertEquals(TestDate.create("09/18/16 19:18:28 -0400"), d);
-        assertNull(e.parse("-"));
+        assertNull(e.parse("-", null, null));
 
         assertFalse(e.isLeftEnclosure());
         assertFalse(e.isRightEnclosure());
@@ -167,7 +167,7 @@ public class FormatStringsTest extends FormatStringTest {
 
         FormatString e = FormatStrings.TIMESTAMP;
         try {
-            e.parse("something that is not a date");
+            e.parse("something that is not a date", null, null);
             fail("should have thrown exception");
         }
         catch(ParsingException pe) {
@@ -182,10 +182,10 @@ public class FormatStringsTest extends FormatStringTest {
 
         FormatString e = FormatStrings.ORIGINAL_REQUEST_STATUS_CODE;
         assertEquals("%s", e.getLiteral());
-        Integer i = (Integer)e.parse("200");
+        Integer i = (Integer)e.parse("200", null, null);
         assertNotNull(i);
         assertEquals(200, i.intValue());
-        assertNull(e.parse("-"));
+        assertNull(e.parse("-", null, null));
 
         assertFalse(e.isLeftEnclosure());
         assertFalse(e.isRightEnclosure());
@@ -201,10 +201,10 @@ public class FormatStringsTest extends FormatStringTest {
 
         FormatString e = FormatStrings.STATUS_CODE;
         assertEquals("%>s", e.getLiteral());
-        Integer i = (Integer)e.parse("400");
+        Integer i = (Integer)e.parse("400", null, null);
         assertNotNull(i);
         assertEquals(400, i.intValue());
-        assertNull(e.parse("-"));
+        assertNull(e.parse("-", null, null));
 
         assertFalse(e.isLeftEnclosure());
         assertFalse(e.isRightEnclosure());
@@ -220,10 +220,10 @@ public class FormatStringsTest extends FormatStringTest {
 
         FormatString e = FormatStrings.RESPONSE_ENTITY_BODY_SIZE;
         assertEquals("%b", e.getLiteral());
-        Long l = (Long)e.parse("12345");
+        Long l = (Long)e.parse("12345", null, null);
         assertNotNull(l);
         assertEquals(12345L, l.longValue());
-        assertNull(e.parse("-"));
+        assertNull(e.parse("-", null, null));
 
         assertFalse(e.isLeftEnclosure());
         assertFalse(e.isRightEnclosure());
@@ -241,9 +241,9 @@ public class FormatStringsTest extends FormatStringTest {
 
         FormatString e = FormatStrings.THREAD_NAME;
         assertEquals("%I", e.getLiteral());
-        String s = (String)e.parse("some thread name");
+        String s = (String)e.parse("some thread name", null, null);
         assertEquals("some thread name", s);
-        assertNull(e.parse("-"));
+        assertNull(e.parse("-", null, null));
 
         assertFalse(e.isLeftEnclosure());
         assertFalse(e.isRightEnclosure());
@@ -259,10 +259,10 @@ public class FormatStringsTest extends FormatStringTest {
 
         FormatString e = FormatStrings.REQUEST_PROCESSING_TIME_MS;
         assertEquals("%D", e.getLiteral());
-        Long l = (Long)e.parse("12345");
+        Long l = (Long)e.parse("12345", null, null);
         assertNotNull(l);
         assertEquals(12345L, l.longValue());
-        assertNull(e.parse("-"));
+        assertNull(e.parse("-", null, null));
 
         assertFalse(e.isLeftEnclosure());
         assertFalse(e.isRightEnclosure());
@@ -279,10 +279,10 @@ public class FormatStringsTest extends FormatStringTest {
 
         FormatString e = FormatStrings.QUERY_STRING;
         assertEquals("%q", e.getLiteral());
-        String s = (String)e.parse("attr1=val1&attr2=Val2&attr3=1&attr4=1.1");
+        String s = (String)e.parse("attr1=val1&attr2=Val2&attr3=1&attr4=1.1", null, null);
         assertNotNull(s);
         assertEquals("attr1=val1&attr2=Val2&attr3=1&attr4=1.1", s);
-        assertNull(e.parse("-"));
+        assertNull(e.parse("-", null, null));
 
         assertFalse(e.isLeftEnclosure());
         assertFalse(e.isRightEnclosure());

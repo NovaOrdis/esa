@@ -232,7 +232,8 @@ public enum FormatStrings implements FormatString {
     }
 
     @Override
-    public Object parse(String logStringRepresentation) throws ParsingException {
+    public Object parse(String logStringRepresentation, Long lineNumber, Integer positionInLine)
+            throws ParsingException {
 
         if ("-".equals(logStringRepresentation)) {
             return null;
@@ -259,7 +260,7 @@ public enum FormatStrings implements FormatString {
                                 "\" does not match the expected format " +
                                 (formatStringRepresentation != null ?
                                         "\"" + formatStringRepresentation + "\"" :
-                                        format.toString()), e);
+                                        format.toString()), e, lineNumber, positionInLine);
             }
         }
 
@@ -270,7 +271,8 @@ public enum FormatStrings implements FormatString {
             }
             catch(Exception e) {
                 throw new ParsingException(
-                        this + " string representation \"" + logStringRepresentation + "\" is not a valid integer", e);
+                        this + " string representation \"" + logStringRepresentation + "\" is not a valid integer", e,
+                        lineNumber, positionInLine);
             }
         }
 
@@ -281,7 +283,8 @@ public enum FormatStrings implements FormatString {
             }
             catch(Exception e) {
                 throw new ParsingException(
-                        this + " string representation \"" + logStringRepresentation + "\" is not a valid long", e);
+                        this + " string representation \"" + logStringRepresentation + "\" is not a valid long", e,
+                        lineNumber, positionInLine);
             }
         }
 
@@ -292,7 +295,8 @@ public enum FormatStrings implements FormatString {
             }
             catch(Exception e) {
                 throw new ParsingException(
-                        this + " string representation \"" + logStringRepresentation + "\" is not a valid double", e);
+                        this + " string representation \"" + logStringRepresentation + "\" is not a valid double", e,
+                        lineNumber, positionInLine);
             }
         }
 
