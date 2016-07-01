@@ -387,6 +387,33 @@ public class HttpdLineParserTest extends LineParserTest {
         assertEquals(14, token.getCursor());
     }
 
+    @Test
+    public void nextToken_FirstRequestLine_NoQuotes() throws Exception {
+
+        String line = "blah GET /account/login?something=something_else&other_thing=true HTTP/1.1 blah";
+        int cursor = 5;
+        FormatString crt = FormatStrings.FIRST_REQUEST_LINE;
+
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, crt, null);
+
+        assertEquals("GET /account/login?something=something_else&other_thing=true HTTP/1.1", token.getValue());
+        assertEquals(75, token.getCursor());
+    }
+
+    @Test
+    public void nextToken_FirstRequestLine_Quotes() throws Exception {
+
+        String line = "blah \"GET /account/login?something=something_else&other_thing=true HTTP/1.1\" blah";
+        int cursor = 6;
+        FormatString crt = FormatStrings.FIRST_REQUEST_LINE;
+        FormatString expectedRightEnclosure = FormatStrings.DOUBLE_QUOTES;
+
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, crt, expectedRightEnclosure);
+
+        assertEquals("GET /account/login?something=something_else&other_thing=true HTTP/1.1", token.getValue());
+        assertEquals(75, token.getCursor());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

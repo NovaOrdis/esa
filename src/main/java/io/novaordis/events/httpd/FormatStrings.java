@@ -77,8 +77,9 @@ public enum FormatStrings implements FormatString {
     QUERY_STRING("%q", String.class, HttpEvent.QUERY, Map.class),
 
     //
-    // First line of request. Note that the first line is enclosed in quotes, you must explicitly specify the
-    // DOUBLE_QUOTES or SINGLE_QUOTE format element.
+    // First line of request. Note that the first line may be optionally enclosed in quotes, where FIRST_REQUEST_LINE
+    // format string is is bordered by DOUBLE_QUOTES or SINGLE_QUOTE elements, or not. The parser will know how to
+    // handle both situations.
     //
     FIRST_REQUEST_LINE("%r", String.class),
 

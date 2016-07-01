@@ -177,15 +177,62 @@ public class HttpdLineParser implements LineParser {
     protected static Token nextToken(String line, int cursor, FormatString crt, FormatString expectedRightEnclosure)
             throws ParsingException {
 
-        char closingChar = expectedRightEnclosure != null ? expectedRightEnclosure.getLiteral().charAt(0) : ' ';
+        //
+        // the situation when the current token is enclosed by quotes is handled by the above layer, and we
+        // need to align by handling with priority a non-null expectedRightEnclosure
+        //
 
-        // find the next closing element or the next gap
+        int i;
 
-        int i = line.indexOf(closingChar, cursor);
+        //
+        // find the next closing element, the next pattern or the next gap
+        //
+
+        if (expectedRightEnclosure != null) {
+
+            char closingChar = expectedRightEnclosure.getLiteral().charAt(0);
+            i = line.indexOf(closingChar, cursor);
+
+        }
+        else if (FormatStrings.FIRST_REQUEST_LINE.equals(crt)) {
+
+            //
+            // no quotes, and the first line has multiple spaces
+            //
+
+            int methodPathGap = line.indexOf(' ', cursor);
+
+            if (methodPathGap == -1) {
+                throw new ParsingException(
+                        "expected space between HTTP method and path for the first request line not found, line: \"" +
+                                line + "\"");
+            }
+
+            int pathHttpVersionGap = line.indexOf(' ',  methodPathGap + 1);
+
+            if (pathHttpVersionGap == -1) {
+                throw new ParsingException(
+                        "expected space between path and HTTP version for the first request line not found, line: \"" +
+                                line + "\"");
+            }
+
+            i = line.indexOf(' ', pathHttpVersionGap + 1);
+        }
+        else {
+
+            //
+            // the current token is ended by a space
+            //
+
+            i = line.indexOf(' ', cursor);
+        }
+
         i = i == -1 ? line.length() : i;
         String value = line.substring(cursor, i);
 
+        //
         // advance the cursor to the next non-blank character
+        //
         while(i < line.length() && line.charAt(i) == ' ') { i++; }
 
         return new Token(i, value);
