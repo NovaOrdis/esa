@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-package io.novaordis.events.httpd;
+package io.novaordis.events.httpd.microparsers;
 
+import io.novaordis.events.ParsingException;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 2/4/16
+ * @since 6/30/16
  */
-public class RequestHeaderFormatStringTest extends ParameterizedFormatStringTest {
+public class FirstRequestLineMicroParserTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(FirstRequestLineMicroParserTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -37,54 +44,47 @@ public class RequestHeaderFormatStringTest extends ParameterizedFormatStringTest
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
-    public void getLiteral() throws Exception {
+    public void identifyEnd() throws Exception {
 
-        RequestHeaderFormatString i = new RequestHeaderFormatString("%{i,Test-Request-Header}");
+        String line = "GET / HTTP/1.1 something else";
+        int startFrom = 0;
 
-        assertEquals("%{i,Test-Request-Header}", i.getLiteral());
+        int result = FirstRequestLineMicroParser.identifyEnd(line, startFrom);
+        assertEquals(14, result);
     }
 
     @Test
-    public void getLiteral_AlternativeFormat() throws Exception {
+    public void identifyEnd_EndOfLine() throws Exception {
 
-        RequestHeaderFormatString i = new RequestHeaderFormatString("%{Test-Request-Header}i");
+        String line = "GET / HTTP/1.1";
+        int startFrom = 0;
 
-        assertEquals("%{Test-Request-Header}i", i.getLiteral());
+        int result = FirstRequestLineMicroParser.identifyEnd(line, startFrom);
+        assertEquals(-1, result);
     }
 
     @Test
-    public void literalStartsWithHeaderSpecificationButAlsoContainsSomethingElse() throws Exception {
+    public void identifyEnd_parsingFailure() throws Exception {
 
-        RequestHeaderFormatString i = new RequestHeaderFormatString("%{i,Test-Request-Header}blah");
+        String line = "blah";
+        int startFrom = -1;
 
-        assertEquals("%{i,Test-Request-Header}", i.getLiteral());
-    }
+        try {
 
-    // capitalization --------------------------------------------------------------------------------------------------
+            FirstRequestLineMicroParser.identifyEnd(line, startFrom);
+            fail("should have thrown exception");
+        }
+        catch(ParsingException e) {
 
-    @Test
-    public void capitalization() throws Exception {
-
-        RequestHeaderFormatString i = new RequestHeaderFormatString("%{i,Something}");
-        assertEquals("Something", i.getHeaderName());
-
-        RequestHeaderFormatString i2 = new RequestHeaderFormatString("%{i,SoMeThInG}");
-        assertEquals("SoMeThInG", i2.getHeaderName());
+            String msg = e.getMessage();
+            log.info(msg);
+            assertTrue(msg.contains("not found"));
+        }
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
-
-    @Override
-    protected RequestHeaderFormatString getFormatStringToTest(String s) {
-
-        if (s == null) {
-            s = "%{i,Test-Request-Header}";
-        }
-
-        return new RequestHeaderFormatString(s);
-    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

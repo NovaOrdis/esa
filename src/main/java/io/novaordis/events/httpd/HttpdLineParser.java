@@ -20,6 +20,8 @@ import io.novaordis.events.ParsingException;
 import io.novaordis.events.core.LineFormat;
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.event.Event;
+import io.novaordis.events.httpd.microparsers.FirstRequestLineMicroParser;
+import io.novaordis.events.httpd.microparsers.UserAgentMicroParser;
 
 import java.util.List;
 
@@ -98,13 +100,13 @@ public class HttpdLineParser implements LineParser {
         // parsing code with matching against the aggregated pattern (TODO: evaluate this later)
         //
 
-        List<FormatString> fes = lineFormat.getFormatStrings();
+        List<FormatString> formatStrings = lineFormat.getFormatStrings();
 
         char c;
         int cursor = 0;
         FormatString expectedRightEnclosure = null;
 
-        for(FormatString fs : fes) {
+        for(FormatString crt : formatStrings) {
 
             if (expectedRightEnclosure != null) {
 
@@ -112,11 +114,11 @@ public class HttpdLineParser implements LineParser {
                 // we only accept just zero or one intermediary format element while waiting for an enclosure to close
                 //
 
-                if (fs.equals(expectedRightEnclosure)) {
+                if (crt.equals(expectedRightEnclosure)) {
                     // empty enclosure or consumed enclosure, advance the cursor and continue
                     while(line.charAt(cursor) == ' ') { cursor++; }
-                    if ((c = line.charAt(cursor)) != fs.getLiteral().charAt(0)) {
-                        throw new ParsingException("expecting " + fs + " but got " + c);
+                    if ((c = line.charAt(cursor)) != crt.getLiteral().charAt(0)) {
+                        throw new ParsingException("expecting " + crt + " but got " + c);
                     }
                     cursor++;
                     while(cursor < line.length() && line.charAt(cursor) == ' ') { cursor++; }
@@ -128,15 +130,15 @@ public class HttpdLineParser implements LineParser {
                 // at this point, we'll parse the enclosed element below
                 //
             }
-            else if (fs.isLeftEnclosure()) {
-                expectedRightEnclosure = fs.getMatchingEnclosure();
+            else if (crt.isLeftEnclosure()) {
+                expectedRightEnclosure = crt.getMatchingEnclosure();
 
                 // advance the cursor until the first non-blank character and make sure it's the expected left enclosure
                 // format element
 
                 while(line.charAt(cursor) == ' ') { cursor++; }
-                if ((c = line.charAt(cursor)) != fs.getLiteral().charAt(0)) {
-                    throw new ParsingException("expecting " + fs + " but got '" + c + "'");
+                if ((c = line.charAt(cursor)) != crt.getLiteral().charAt(0)) {
+                    throw new ParsingException("expecting " + crt + " but got '" + c + "'");
                 }
                 cursor++;
 
@@ -147,10 +149,10 @@ public class HttpdLineParser implements LineParser {
                 continue;
             }
 
-            Token token = nextToken(line, cursor, fs, expectedRightEnclosure);
+            Token token = nextToken(line, cursor, crt, expectedRightEnclosure);
 
-            Object o = fs.parse(token.getValue());
-            logLine.setLogValue(fs, o);
+            Object o = crt.parse(token.getValue());
+            logLine.setLogValue(crt, o);
 
             cursor = token.getCursor();
         }
@@ -196,27 +198,11 @@ public class HttpdLineParser implements LineParser {
         }
         else if (FormatStrings.FIRST_REQUEST_LINE.equals(crt)) {
 
-            //
-            // no quotes, and the first line has multiple spaces
-            //
+            i = FirstRequestLineMicroParser.identifyEnd(line, cursor);
+        }
+        else if (UserAgentMicroParser.isUserAgentRequestHeader(crt)) {
 
-            int methodPathGap = line.indexOf(' ', cursor);
-
-            if (methodPathGap == -1) {
-                throw new ParsingException(
-                        "expected space between HTTP method and path for the first request line not found, line: \"" +
-                                line + "\"");
-            }
-
-            int pathHttpVersionGap = line.indexOf(' ',  methodPathGap + 1);
-
-            if (pathHttpVersionGap == -1) {
-                throw new ParsingException(
-                        "expected space between path and HTTP version for the first request line not found, line: \"" +
-                                line + "\"");
-            }
-
-            i = line.indexOf(' ', pathHttpVersionGap + 1);
+            i = UserAgentMicroParser.identifyEnd(line, cursor);
         }
         else {
 
@@ -264,6 +250,11 @@ public class HttpdLineParser implements LineParser {
 
         public String getValue() {
             return value;
+        }
+
+        @Override
+        public String toString() {
+            return cursor + ":" + value;
         }
     }
 }

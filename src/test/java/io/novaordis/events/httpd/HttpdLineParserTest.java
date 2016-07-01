@@ -414,6 +414,19 @@ public class HttpdLineParserTest extends LineParserTest {
         assertEquals(75, token.getCursor());
     }
 
+    @Test
+    public void nextToken_UserAgent_NoQuotes() throws Exception {
+
+        String line = "blah Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; .NET CLR 1.1.4322) blah";
+        int cursor = 5;
+        FormatString userAgent = FormatString.fromString("%{User-Agent}i").get(0);
+
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, userAgent, null);
+
+        assertEquals("Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; .NET CLR 1.1.4322)", token.getValue());
+        assertEquals(75, token.getCursor());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

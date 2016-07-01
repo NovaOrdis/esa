@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -255,7 +256,7 @@ public class BusinessScenarioCommandTest {
 
         BusinessScenarioCommand c = new BusinessScenarioCommand();
 
-        throw new RuntimeException("RETURN HERE");
+        fail("RETURN HERE");
 
 //        HttpEvent e = new HttpEvent(1L);
 //        assertNull(e.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY));

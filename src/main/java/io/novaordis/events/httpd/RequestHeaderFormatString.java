@@ -82,6 +82,9 @@ public class RequestHeaderFormatString extends ParameterizedFormatStringBase imp
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    /**
+     * @return the header name as read from the format string, maintaining the original capitalization.
+     */
     public String getHeaderName() {
         return requestHeaderName;
     }
