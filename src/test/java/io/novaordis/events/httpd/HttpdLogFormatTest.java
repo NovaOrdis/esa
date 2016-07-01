@@ -175,6 +175,51 @@ public class HttpdLogFormatTest extends LineFormatTest {
         }
     }
 
+    @Test
+    public void constructor_BracketsAroundTimestampAreImplied() throws Exception {
+
+        HttpdLogFormat f = new HttpdLogFormat(FormatStrings.TIMESTAMP);
+
+        List<FormatString> fs = f.getFormatStrings();
+        assertEquals(3, fs.size());
+
+        assertEquals(FormatStrings.OPENING_BRACKET, fs.get(0));
+        assertEquals(FormatStrings.TIMESTAMP, fs.get(1));
+        assertEquals(FormatStrings.CLOSING_BRACKET, fs.get(2));
+    }
+
+    @Test
+    public void constructor_BracketsAroundTimestampAreImplied_2() throws Exception {
+
+        HttpdLogFormat f = new HttpdLogFormat(
+                FormatStrings.LOCAL_SERVER_NAME,
+                FormatStrings.TIMESTAMP,
+                FormatStrings.LOCAL_IP_ADDRESS);
+
+        List<FormatString> fs = f.getFormatStrings();
+        assertEquals(5, fs.size());
+
+        assertEquals(FormatStrings.LOCAL_SERVER_NAME, fs.get(0));
+        assertEquals(FormatStrings.OPENING_BRACKET, fs.get(1));
+        assertEquals(FormatStrings.TIMESTAMP, fs.get(2));
+        assertEquals(FormatStrings.CLOSING_BRACKET, fs.get(3));
+        assertEquals(FormatStrings.LOCAL_IP_ADDRESS, fs.get(4));
+    }
+
+    @Test
+    public void constructor_BracketsAroundTimestampAreImplied_ParsingSpecificationFromString() throws Exception {
+
+        HttpdLogFormat f = new HttpdLogFormat("%t");
+
+        List<FormatString> fs = f.getFormatStrings();
+        assertEquals(3, fs.size());
+
+        assertEquals(FormatStrings.OPENING_BRACKET, fs.get(0));
+        assertEquals(FormatStrings.TIMESTAMP, fs.get(1));
+        assertEquals(FormatStrings.CLOSING_BRACKET, fs.get(2));
+    }
+
+
     // getFormatStrings() ----------------------------------------------------------------------------------------------
 
     @Test

@@ -19,6 +19,7 @@ package io.novaordis.events.httpd;
 import io.novaordis.events.ParsingException;
 import io.novaordis.events.core.LineFormat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -134,7 +135,9 @@ public class HttpdLogFormat implements LineFormat {
         }
 
         checkBalancedQuotes(formatStrings);
-        this.formatStrings = formatStrings;
+
+        // this is where we add implied brackets, etc.
+        this.formatStrings = postProcess(formatStrings);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -201,6 +204,52 @@ public class HttpdLogFormat implements LineFormat {
     }
 
     // Private ---------------------------------------------------------------------------------------------------------
+
+    /**
+     * This is where we add implied brackets, etc. The list is already supposed to be semantically correct (balanced
+     * quotes, etc.)
+     */
+    private List<FormatString> postProcess(List<FormatString> formatStrings) {
+
+        if (formatStrings == null) {
+            throw new IllegalArgumentException("null format string list");
+        }
+
+        List<FormatString> result = new ArrayList<>();
+
+        //noinspection Convert2streamapi
+        for(FormatString fs: formatStrings) {
+
+            if (FormatStrings.TIMESTAMP.equals(fs)) {
+
+                //
+                // check whether we're enclosed by brackets
+                //
+
+                if (result.isEmpty() || !result.get(result.size() - 1).equals(FormatStrings.OPENING_BRACKET)) {
+                    result.add(FormatStrings.OPENING_BRACKET);
+                }
+
+                result.add(fs);
+                result.add(FormatStrings.CLOSING_BRACKET);
+            }
+            else if (FormatStrings.CLOSING_BRACKET.equals(fs)) {
+
+                //
+                // only add it if it's not already present
+                //
+
+                if (result.get(result.size() - 1).equals(FormatStrings.CLOSING_BRACKET)) {
+                    continue;
+                }
+            }
+            else {
+                result.add(fs);
+            }
+        }
+
+        return result;
+    }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 
