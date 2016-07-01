@@ -104,7 +104,7 @@ public class HttpdLineParser implements LineParser {
         int cursor = 0;
         FormatString expectedRightEnclosure = null;
 
-        for(FormatString fe: fes) {
+        for(FormatString fs : fes) {
 
             if (expectedRightEnclosure != null) {
 
@@ -112,11 +112,11 @@ public class HttpdLineParser implements LineParser {
                 // we only accept just zero or one intermediary format element while waiting for an enclosure to close
                 //
 
-                if (fe.equals(expectedRightEnclosure)) {
+                if (fs.equals(expectedRightEnclosure)) {
                     // empty enclosure or consumed enclosure, advance the cursor and continue
                     while(line.charAt(cursor) == ' ') { cursor++; }
-                    if ((c = line.charAt(cursor)) != fe.getLiteral().charAt(0)) {
-                        throw new ParsingException("expecting " + fe + " but got " + c);
+                    if ((c = line.charAt(cursor)) != fs.getLiteral().charAt(0)) {
+                        throw new ParsingException("expecting " + fs + " but got " + c);
                     }
                     cursor++;
                     while(cursor < line.length() && line.charAt(cursor) == ' ') { cursor++; }
@@ -128,15 +128,15 @@ public class HttpdLineParser implements LineParser {
                 // at this point, we'll parse the enclosed element below
                 //
             }
-            else if (fe.isLeftEnclosure()) {
-                expectedRightEnclosure = fe.getMatchingEnclosure();
+            else if (fs.isLeftEnclosure()) {
+                expectedRightEnclosure = fs.getMatchingEnclosure();
 
                 // advance the cursor until the first non-blank character and make sure it's the expected left enclosure
                 // format element
 
                 while(line.charAt(cursor) == ' ') { cursor++; }
-                if ((c = line.charAt(cursor)) != fe.getLiteral().charAt(0)) {
-                    throw new ParsingException("expecting " + fe + " but got '" + c + "'");
+                if ((c = line.charAt(cursor)) != fs.getLiteral().charAt(0)) {
+                    throw new ParsingException("expecting " + fs + " but got '" + c + "'");
                 }
                 cursor++;
 
@@ -147,19 +147,12 @@ public class HttpdLineParser implements LineParser {
                 continue;
             }
 
-            char closingChar = expectedRightEnclosure != null ? expectedRightEnclosure.getLiteral().charAt(0) : ' ';
+            Token token = nextToken(line, cursor, fs, expectedRightEnclosure);
 
-            // find the next closing element or the next gap
+            Object o = fs.parse(token.getValue());
+            logLine.setLogValue(fs, o);
 
-            int i = line.indexOf(closingChar, cursor);
-            i = i == -1 ? line.length() : i;
-            String value = line.substring(cursor, i);
-            Object o = fe.parse(value);
-            logLine.setLogValue(fe, o);
-
-            // advance the cursor to the next non-blank character
-            while(i < line.length() && line.charAt(i) == ' ') { i++; }
-            cursor = i;
+            cursor = token.getCursor();
         }
 
         return logLine.toEvent();
@@ -181,8 +174,49 @@ public class HttpdLineParser implements LineParser {
 
     // Protected -------------------------------------------------------------------------------------------------------
 
+    protected static Token nextToken(String line, int cursor, FormatString crt, FormatString expectedRightEnclosure)
+            throws ParsingException {
+
+        char closingChar = expectedRightEnclosure != null ? expectedRightEnclosure.getLiteral().charAt(0) : ' ';
+
+        // find the next closing element or the next gap
+
+        int i = line.indexOf(closingChar, cursor);
+        i = i == -1 ? line.length() : i;
+        String value = line.substring(cursor, i);
+
+        // advance the cursor to the next non-blank character
+        while(i < line.length() && line.charAt(i) == ' ') { i++; }
+
+        return new Token(i, value);
+    }
+
     // Private ---------------------------------------------------------------------------------------------------------
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 
+    /**
+     * Bundles together a string token and an int cursor value. Package protected for testing.
+     */
+    static class Token {
+
+        private int cursor;
+        private String value; // may contain spaces
+
+        /**
+         * @param value may contain spaces.
+         */
+        public Token(int cursor, String value) {
+            this.cursor = cursor;
+            this.value = value;
+        }
+
+        public int getCursor() {
+            return cursor;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 }

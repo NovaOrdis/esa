@@ -372,6 +372,21 @@ public class HttpdLineParserTest extends LineParserTest {
         }
     }
 
+    // nextToken() -----------------------------------------------------------------------------------------------------
+
+    @Test
+    public void nextToken() throws Exception {
+
+        String line = "blah blah.com blah blah";
+        int cursor = 5;
+        FormatString crt = FormatStrings.LOCAL_SERVER_NAME;
+
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, crt, null);
+
+        assertEquals("blah.com", token.getValue());
+        assertEquals(14, token.getCursor());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
