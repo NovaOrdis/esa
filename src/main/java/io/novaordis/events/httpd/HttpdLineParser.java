@@ -91,6 +91,13 @@ public class HttpdLineParser implements LineParser {
     @Override
     public Event parseLine(long lineNumber, String line) throws ParsingException {
 
+        //
+        // we ignore empty lines
+        //
+        if (line == null || line.trim().length() == 0) {
+            return null;
+        }
+
         HttpdLogLine logLine = new HttpdLogLine();
 
         logLine.setLineNumber(lineNumber);

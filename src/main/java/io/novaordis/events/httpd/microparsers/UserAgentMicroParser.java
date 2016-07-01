@@ -43,7 +43,7 @@ public class UserAgentMicroParser {
     public static final Pattern[] USER_AGENT_PATTERNS = new Pattern[] {
 
             // "Mozilla/4.0 (compatible; MSIE 8.0; ...; ...; ...) Firefox/3.0.11 ..."
-            Pattern.compile("^(\\w+/[\\d\\.]+ (\\(.+\\)){0,1} {0,1})+")
+            Pattern.compile("^(\\w+/[\\d\\.]+ (\\([^\\)]+\\)){0,1} {0,1})+")
     };
 
     // Static ----------------------------------------------------------------------------------------------------------

@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -51,6 +52,19 @@ public abstract class LineParserTest {
         assertFalse(e instanceof FaultEvent);
 
         assertEquals(7L, e.getLongProperty(Event.LINE_NUMBER_PROPERTY_NAME).getLong().longValue());
+    }
+
+    @Test
+    public void emptyLine() throws Exception {
+
+        String format = getValidFormatForLineParserToTest();
+        LineParser lp = getLineParserToTest(format);
+
+        //
+        // test behavior on empty lines - the default is to ignore them and return null
+        //
+        Event e = lp.parseLine(10L, "");
+        assertNull(e);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

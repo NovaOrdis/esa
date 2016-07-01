@@ -90,8 +90,18 @@ public class CookieMicroParserTest {
 
             String msg = e.getMessage();
             log.info(msg);
-            assertTrue(msg.startsWith("no known Cookie pattern identified starting with position"));
+            assertTrue(msg.startsWith("no known Cookie pattern \"blah"));
         }
+    }
+
+    @Test
+    public void production() throws Exception {
+
+        String line = "something.somethingelse=value1";
+        int startFrom = 0;
+
+        int result = CookieMicroParser.identifyEnd(line, startFrom);
+        assertEquals(-1, result);
     }
 
     // isCookieRequestHeader() -----------------------------------------------------------------------------------------

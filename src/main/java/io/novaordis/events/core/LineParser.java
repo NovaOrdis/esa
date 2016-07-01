@@ -20,7 +20,8 @@ import io.novaordis.events.ParsingException;
 import io.novaordis.events.core.event.Event;
 
 /**
- * A line parser gets a line (as String) and turns it into an Event.
+ * A line parser gets a line (as String) and turns it into an Event or a null (which mean that the parser willingly
+ * and legally ignores the line).
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/5/16
@@ -33,6 +34,9 @@ public interface LineParser {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    /**
+     * @return null values are valid, if a parser returns null it means that it willingly ignores that line.
+     */
     Event parseLine(long lineNumber, String line) throws ParsingException;
 
     LineFormat getLineFormat();

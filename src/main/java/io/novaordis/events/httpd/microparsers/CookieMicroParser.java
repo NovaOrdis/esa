@@ -43,7 +43,7 @@ public class CookieMicroParser {
     public static final Pattern[] COOKIE_PATTERNS = new Pattern[] {
 
             // "cookie1=value1; cookie2=value2; cookie3=value3 "
-            Pattern.compile("^(\\w+=[^; ]+; )*(\\w+=[^; ]+ {0,1})")
+            Pattern.compile("^([\\w\\.]+=[^; ]+; )*([\\w\\.]+=[^; ]+ {0,1})")
     };
 
     // Static ----------------------------------------------------------------------------------------------------------
@@ -90,9 +90,7 @@ public class CookieMicroParser {
             }
         }
 
-        throw new ParsingException(
-                "no known Cookie pattern identified starting with position " +
-                        startFrom + " on line \"" + line + "\"");
+        throw new ParsingException("no known Cookie pattern \"" + line.substring(startFrom) + "\"");
     }
 
     // TODO identical with UserAgentMicroParser.isUserAgentRequestHeader()

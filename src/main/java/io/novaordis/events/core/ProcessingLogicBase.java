@@ -68,7 +68,8 @@ public abstract class ProcessingLogicBase implements ProcessingLogic {
             Event outputEvent = processInternal(e);
 
             //
-            // protection agains subclasses returning null here, only add if not null
+            // protection against subclasses returning null here, only add if not null; a null coming from a
+            // subclass at this point usually means "I am ignoring this event"
             //
             if (outputEvent != null) {
                 eventBuffer.add(outputEvent);

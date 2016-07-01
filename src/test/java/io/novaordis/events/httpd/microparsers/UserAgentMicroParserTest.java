@@ -103,6 +103,16 @@ public class UserAgentMicroParserTest {
         assertEquals(value.length() - " something".length(), result);
     }
 
+    @Test
+    public void production2() throws Exception {
+
+        String value =
+                "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36 something";
+        int result = UserAgentMicroParser.identifyEnd(value, 0);
+        assertEquals(value.length() - " something".length(), result);
+    }
+
+
     // isUserAgentRequestHeader() --------------------------------------------------------------------------------------
 
     @Test

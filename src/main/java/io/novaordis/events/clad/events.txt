@@ -3,7 +3,7 @@ events ${version}
 
 Reads, parses and processes timed event series.
 
-Syntax:
+Syntax: ------------------------------------------------------------------------------------------
 
     events < input-file.log <input-format-spec> <command> <command-options>
 
@@ -11,8 +11,7 @@ The input format  must be  specified either on command line,  in  an auxiliary f
 configuration file. For more details, see the "Input Format" section. More details about commands
 and their options are available in the "Commands" section.
 
-
-Commands:
+Commands: ----------------------------------------------------------------------------------------
 
 @COMMANDS@
 To get more details on a specific command, run:
@@ -20,7 +19,7 @@ To get more details on a specific command, run:
     events --help <command-name>
 
 
-Input Formats:
+Input Formats: -----------------------------------------------------------------------------------
 
 The input stream format is required. It can be specified either on command line with:
 

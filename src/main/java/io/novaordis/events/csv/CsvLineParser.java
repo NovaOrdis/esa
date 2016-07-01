@@ -96,6 +96,13 @@ public class CsvLineParser implements LineParser {
     @Override
     public Event parseLine(long lineNumber, String line) throws ParsingException {
 
+        //
+        // we ignore empty lines
+        //
+        if (line == null || line.trim().length() == 0) {
+            return null;
+        }
+
         Event event;
 
         if (timestampFieldIndex >= 0) {
