@@ -427,6 +427,47 @@ public class HttpdLineParserTest extends LineParserTest {
         assertEquals(75, token.getCursor());
     }
 
+    @Test
+    public void nextToken_UserAgent_Quotes() throws Exception {
+
+        String line = "blah \"Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; .NET CLR 1.1.4322)\" blah";
+        int cursor = 6;
+        FormatString expectedRightEnclosure = FormatStrings.DOUBLE_QUOTES;
+        FormatString userAgent = FormatString.fromString("%{User-Agent}i").get(0);
+
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, userAgent, expectedRightEnclosure);
+
+        assertEquals("Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; .NET CLR 1.1.4322)", token.getValue());
+        assertEquals(75, token.getCursor());
+    }
+
+    @Test
+    public void nextToken_Cookie_NoQuotes() throws Exception {
+
+        String line = "blah cookie1=value1=something; cookie2=value2; cookie3=value3 blah";
+        int cursor = 5;
+        FormatString cookie = FormatString.fromString("%{Cookie}i").get(0);
+
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, cookie, null);
+
+        assertEquals("cookie1=value1=something; cookie2=value2; cookie3=value3", token.getValue());
+        assertEquals(62, token.getCursor());
+    }
+
+    @Test
+    public void nextToken_Cookie_Quotes() throws Exception {
+
+        String line = "blah \"cookie1=value1=something; cookie2=value2; cookie3=value3\" blah";
+        int cursor = 6;
+        FormatString expectedRightEnclosure = FormatStrings.DOUBLE_QUOTES;
+        FormatString cookie = FormatString.fromString("%{Cookie}i").get(0);
+
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, cookie, expectedRightEnclosure);
+
+        assertEquals("cookie1=value1=something; cookie2=value2; cookie3=value3", token.getValue());
+        assertEquals(62, token.getCursor());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

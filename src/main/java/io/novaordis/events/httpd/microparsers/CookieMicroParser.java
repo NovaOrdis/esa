@@ -30,20 +30,20 @@ import java.util.regex.Pattern;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 6/30/16
  */
-public class UserAgentMicroParser {
+public class CookieMicroParser {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final String HEADER_NAME = "User-Agent";
+    public static final String HEADER_NAME = "Cookie";
 
     //
     // Known user agent patterns
     //
 
-    public static final Pattern[] USER_AGENT_PATTERNS = new Pattern[] {
+    public static final Pattern[] COOKIE_PATTERNS = new Pattern[] {
 
-            // "Mozilla/4.0 (compatible; MSIE 8.0; ...; ...; ...) Firefox/3.0.11 ..."
-            Pattern.compile("^(\\w+/[\\d\\.]+ (\\(.+\\)){0,1} {0,1})+")
+            // "cookie1=value1; cookie2=value2; cookie3=value3 "
+            Pattern.compile("^(\\w+=[^; ]+; )*(\\w+=[^; ]+ {0,1})")
     };
 
     // Static ----------------------------------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ public class UserAgentMicroParser {
 
         String interestingSection = line.substring(startFrom);
 
-        for(Pattern p: USER_AGENT_PATTERNS) {
+        for(Pattern p: COOKIE_PATTERNS) {
 
             Matcher m = p.matcher(interestingSection);
 
@@ -91,12 +91,12 @@ public class UserAgentMicroParser {
         }
 
         throw new ParsingException(
-                "no known User-Agent pattern identified starting with position " +
+                "no known Cookie pattern identified starting with position " +
                         startFrom + " on line \"" + line + "\"");
     }
 
-    // TODO identical with CookieMicroParser.isCookieRequestHeader()
-    public static boolean isUserAgentRequestHeader(FormatString fs) {
+    // TODO identical with UserAgentMicroParser.isUserAgentRequestHeader()
+    public static boolean isCookieRequestHeader(FormatString fs) {
 
         if (fs == null) {
             return false;
@@ -114,7 +114,7 @@ public class UserAgentMicroParser {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    private UserAgentMicroParser() {
+    private CookieMicroParser() {
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
