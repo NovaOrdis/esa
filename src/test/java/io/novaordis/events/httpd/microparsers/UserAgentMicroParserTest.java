@@ -94,6 +94,15 @@ public class UserAgentMicroParserTest {
         }
     }
 
+    @Test
+    public void production() throws Exception {
+
+        String value = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 something";
+
+        int result = UserAgentMicroParser.identifyEnd(value, 0);
+        assertEquals(value.length() - " something".length(), result);
+    }
+
     // isUserAgentRequestHeader() --------------------------------------------------------------------------------------
 
     @Test
