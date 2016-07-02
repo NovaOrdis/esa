@@ -133,11 +133,26 @@ public class UserAgentParserTest {
     @Test
     public void production5() throws Exception {
 
-        String value =  "Mozilla_CA/4.79 [en] (X11; U; Linux 2.4.18-3d_epoll i686)";
+        String value = "Mozilla_CA/4.79 [en] (X11; U; Linux 2.4.18-3d_epoll i686)";
         int result = UserAgentParser.identifyEnd(value, 0, null);
         assertEquals(-1, result);
     }
 
+    @Test
+    public void production6() throws Exception {
+
+        String value = "Mozilla/5.0 (BlackBerry; U; BlackBerry 9900; en-US) AppleWebKit/534.11+ (KHTML, like Gecko) Version/7.1.0.74 Mobile Safari/534.11+";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(-1, result);
+    }
+
+    @Test
+    public void production7() throws Exception {
+
+        String value = "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3_2 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8H7 Safari/6533.18.5";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(-1, result);
+    }
 
     // isUserAgentRequestHeader() --------------------------------------------------------------------------------------
 
