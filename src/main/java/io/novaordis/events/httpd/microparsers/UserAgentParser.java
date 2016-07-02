@@ -42,6 +42,13 @@ public class UserAgentParser {
 
     public static final Pattern[] USER_AGENT_PATTERNS = new Pattern[] {
 
+            //
+            // order is important, do not modify
+            //
+
+            // "Mozilla/5.0 (...) like Gecko"
+            Pattern.compile("^\\w+/[\\d\\.]+ \\(.+\\) like Gecko"),
+
             // "Mozilla/4.0 (compatible; MSIE 8.0; ...; ...; ...) Firefox/3.0.11 ..."
             Pattern.compile("^(\\w+/[\\d\\.]+ (\\([^\\)]+\\)){0,1} {0,1})+"),
 
