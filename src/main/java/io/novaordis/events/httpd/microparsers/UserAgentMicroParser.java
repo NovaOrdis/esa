@@ -95,7 +95,6 @@ public class UserAgentMicroParser {
                         startFrom + " on line \"" + line + "\"");
     }
 
-    // TODO identical with CookieMicroParser.isCookieRequestHeader()
     public static boolean isUserAgentRequestHeader(FormatString fs) {
 
         if (fs == null) {

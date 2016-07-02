@@ -381,7 +381,7 @@ public class HttpdLineParserTest extends LineParserTest {
         int cursor = 5;
         FormatString crt = FormatStrings.LOCAL_SERVER_NAME;
 
-        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, crt, null);
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, crt, null, null);
 
         assertEquals("blah.com", token.getValue());
         assertEquals(14, token.getCursor());
@@ -394,7 +394,7 @@ public class HttpdLineParserTest extends LineParserTest {
         int cursor = 5;
         FormatString crt = FormatStrings.FIRST_REQUEST_LINE;
 
-        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, crt, null);
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, crt, null, null);
 
         assertEquals("GET /account/login?something=something_else&other_thing=true HTTP/1.1", token.getValue());
         assertEquals(75, token.getCursor());
@@ -408,7 +408,7 @@ public class HttpdLineParserTest extends LineParserTest {
         FormatString crt = FormatStrings.FIRST_REQUEST_LINE;
         FormatString expectedRightEnclosure = FormatStrings.DOUBLE_QUOTES;
 
-        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, crt, expectedRightEnclosure);
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, crt, expectedRightEnclosure, null);
 
         assertEquals("GET /account/login?something=something_else&other_thing=true HTTP/1.1", token.getValue());
         assertEquals(75, token.getCursor());
@@ -421,7 +421,7 @@ public class HttpdLineParserTest extends LineParserTest {
         int cursor = 5;
         FormatString userAgent = FormatString.fromString("%{User-Agent}i").get(0);
 
-        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, userAgent, null);
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, userAgent, null, null);
 
         assertEquals("Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; .NET CLR 1.1.4322)", token.getValue());
         assertEquals(75, token.getCursor());
@@ -435,7 +435,7 @@ public class HttpdLineParserTest extends LineParserTest {
         FormatString expectedRightEnclosure = FormatStrings.DOUBLE_QUOTES;
         FormatString userAgent = FormatString.fromString("%{User-Agent}i").get(0);
 
-        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, userAgent, expectedRightEnclosure);
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, userAgent, expectedRightEnclosure, null);
 
         assertEquals("Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; .NET CLR 1.1.4322)", token.getValue());
         assertEquals(75, token.getCursor());
@@ -444,13 +444,13 @@ public class HttpdLineParserTest extends LineParserTest {
     @Test
     public void nextToken_Cookie_NoQuotes() throws Exception {
 
-        String line = "blah cookie1=value1=something; cookie2=value2; cookie3=value3 blah";
+        String line = "blah cookie1=value1.something; cookie2=value2; cookie3=value3 blah";
         int cursor = 5;
         FormatString cookie = FormatString.fromString("%{Cookie}i").get(0);
 
-        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, cookie, null);
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, cookie, null, null);
 
-        assertEquals("cookie1=value1=something; cookie2=value2; cookie3=value3", token.getValue());
+        assertEquals("cookie1=value1.something; cookie2=value2; cookie3=value3", token.getValue());
         assertEquals(62, token.getCursor());
     }
 
@@ -462,7 +462,7 @@ public class HttpdLineParserTest extends LineParserTest {
         FormatString expectedRightEnclosure = FormatStrings.DOUBLE_QUOTES;
         FormatString cookie = FormatString.fromString("%{Cookie}i").get(0);
 
-        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, cookie, expectedRightEnclosure);
+        HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, cookie, expectedRightEnclosure, null);
 
         assertEquals("cookie1=value1=something; cookie2=value2; cookie3=value3", token.getValue());
         assertEquals(62, token.getCursor());

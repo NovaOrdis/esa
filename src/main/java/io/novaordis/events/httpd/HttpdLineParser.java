@@ -20,7 +20,7 @@ import io.novaordis.events.ParsingException;
 import io.novaordis.events.core.LineFormat;
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.event.Event;
-import io.novaordis.events.httpd.microparsers.CookieMicroParser;
+import io.novaordis.events.httpd.microparsers.cookie.CookieMicroParser;
 import io.novaordis.events.httpd.microparsers.FirstRequestLineMicroParser;
 import io.novaordis.events.httpd.microparsers.UserAgentMicroParser;
 
@@ -116,7 +116,7 @@ public class HttpdLineParser implements LineParser {
 
         for(FormatString crt : formatStrings) {
 
-            if (expectedRightEnclosure != null) {
+             if (expectedRightEnclosure != null) {
 
                 //
                 // we only accept just zero or one intermediary format element while waiting for an enclosure to close
@@ -157,7 +157,7 @@ public class HttpdLineParser implements LineParser {
                 continue;
             }
 
-            Token token = nextToken(line, cursor, crt, expectedRightEnclosure);
+            Token token = nextToken(line, cursor, crt, expectedRightEnclosure, lineNumber);
 
             Object o = crt.parse(token.getValue(), lineNumber, cursor);
             logLine.setLogValue(crt, o);
@@ -184,7 +184,8 @@ public class HttpdLineParser implements LineParser {
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    protected static Token nextToken(String line, int cursor, FormatString crt, FormatString expectedRightEnclosure)
+    protected static Token nextToken(String line, int cursor, FormatString crt,
+                                     FormatString expectedRightEnclosure, Long lineNumber)
             throws ParsingException {
 
         //
@@ -214,7 +215,7 @@ public class HttpdLineParser implements LineParser {
         }
         else if (CookieMicroParser.isCookieRequestHeader(crt)) {
 
-            i = CookieMicroParser.identifyEnd(line, cursor);
+            i = CookieMicroParser.identifyEnd(line, cursor, lineNumber);
         }
         else {
 

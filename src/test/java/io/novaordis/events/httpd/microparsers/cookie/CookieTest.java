@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package io.novaordis.events.httpd.microparsers;
+package io.novaordis.events.httpd.microparsers.cookie;
 
 import io.novaordis.events.ParsingException;
-import io.novaordis.events.httpd.FormatString;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,13 +27,14 @@ import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 6/30/16
+ * @since 7/1/16
  */
-public class CookieMicroParserTest {
+public class CookieTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(CookieMicroParserTest.class);
+    private static final Logger log = LoggerFactory.getLogger(CookieTest.class);
+
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -45,84 +45,54 @@ public class CookieMicroParserTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
-    public void identifyEnd() throws Exception {
-
-        String line = "cookie1=value1; cookie2=value2; cookie3=value3 blah";
-        int startFrom = 0;
-
-        int result = CookieMicroParser.identifyEnd(line, startFrom);
-        assertEquals(46, result);
-    }
-
-    @Test
-    public void identifyEnd2() throws Exception {
-
-        String line = "cookie1=value1 blah";
-        int startFrom = 0;
-
-        int result = CookieMicroParser.identifyEnd(line, startFrom);
-        assertEquals(14, result);
-    }
-
-
-    @Test
-    public void identifyEnd_EndOfLine() throws Exception {
-
-        String line = "cookie1=value1; cookie2=value2; cookie3=value3";
-        int startFrom = 0;
-
-        int result = CookieMicroParser.identifyEnd(line, startFrom);
-        assertEquals(-1, result);
-    }
-
-    @Test
-    public void identifyEnd_parsingFailure() throws Exception {
-
-        String line = "blah";
-        int startFrom = 0;
+    public void noSemiColonsAcceptedInLogRepresentation() throws Exception {
 
         try {
 
-            CookieMicroParser.identifyEnd(line, startFrom);
+            new Cookie("something;somethingelse", null);
             fail("should have thrown exception");
         }
-        catch(ParsingException e) {
+        catch (IllegalArgumentException e) {
 
             String msg = e.getMessage();
             log.info(msg);
-            assertTrue(msg.startsWith("no known Cookie pattern \"blah"));
         }
     }
 
     @Test
-    public void production() throws Exception {
+    public void noEqualSignInCookieString() throws Exception {
 
-        String line = "something.somethingelse=value1";
-        int startFrom = 0;
+        try {
 
-        int result = CookieMicroParser.identifyEnd(line, startFrom);
-        assertEquals(-1, result);
+            new Cookie("blah", 7L);
+            fail("should have thrown exception");
+        }
+        catch (ParsingException e) {
+
+            String msg = e.getMessage();
+            log.info(msg);
+            assertTrue(msg.startsWith("no cookie identified"));
+            assertEquals(7L, e.getLineNumber().longValue());
+        }
+    }
+
+
+    // getLiteral() ----------------------------------------------------------------------------------------------------
+
+    @Test
+    public void getLiteral_LeadingSpaces() throws Exception {
+
+        String literal = "    a=b";
+        Cookie c = new Cookie(literal, null);
+        assertEquals(literal, c.getLiteral());
     }
 
     @Test
-    public void production2() throws Exception {
+    public void getLiteral_TrailingSpaces() throws Exception {
 
-
-        String line = "Expires=Thu, 01-Jan-1970 00:00:10 GMT; something=something-else";
-
-        int startFrom = 0;
-
-        int result = CookieMicroParser.identifyEnd(line, startFrom);
-        assertEquals(-1 , result);
-    }
-
-    // isCookieRequestHeader() -----------------------------------------------------------------------------------------
-
-    @Test
-    public void isCookieRequestHeader() throws Exception {
-
-        FormatString fs = FormatString.fromString("%{Cookie}i").get(0);
-        assertTrue(CookieMicroParser.isCookieRequestHeader(fs));
+        String literal = "a=b   ";
+        Cookie c = new Cookie(literal, null);
+        assertEquals(literal, c.getLiteral());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

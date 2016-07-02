@@ -55,6 +55,24 @@ public class ParsingException extends Exception {
      * @param positionInLine the position in line where the parsing exception occurred. Null is acceptable if the
      *                       position is not known.
      */
+    public ParsingException(String message, Long lineNumber, Integer positionInLine) {
+        this(message, null, lineNumber, positionInLine);
+    }
+
+    /**
+     * @param lineNumber the line number of the line that generated the parsing exception. Null is acceptable if the
+     *                   line number is not known.
+     */
+    public ParsingException(String message, Long lineNumber) {
+        this(message, null, lineNumber, null);
+    }
+
+    /**
+     * @param lineNumber the line number of the line that generated the parsing exception. Null is acceptable if the
+     *                   line number is not known.
+     * @param positionInLine the position in line where the parsing exception occurred. Null is acceptable if the
+     *                       position is not known.
+     */
     public ParsingException(String message, Throwable cause, Long lineNumber, Integer positionInLine) {
         super(message, cause);
         this.lineNumber = lineNumber;
