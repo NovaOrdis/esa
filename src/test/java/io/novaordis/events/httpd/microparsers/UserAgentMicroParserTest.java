@@ -50,7 +50,7 @@ public class UserAgentMicroParserTest {
         String line = "Mozilla/4.0 (compatible; MSIE 8.0) blah";
         int startFrom = 0;
 
-        int result = UserAgentMicroParser.identifyEnd(line, startFrom);
+        int result = UserAgentMicroParser.identifyEnd(line, startFrom, null);
         assertEquals(34, result);
     }
 
@@ -61,7 +61,7 @@ public class UserAgentMicroParserTest {
                 "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; .NET CLR 1.1.4322; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729) blah";
         int startFrom = 0;
 
-        int result = UserAgentMicroParser.identifyEnd(line, startFrom);
+        int result = UserAgentMicroParser.identifyEnd(line, startFrom, null);
         assertEquals(133, result);
     }
 
@@ -71,7 +71,7 @@ public class UserAgentMicroParserTest {
         String line = "Mozilla/4.0 (compatible; MSIE 8.0)";
         int startFrom = 0;
 
-        int result = UserAgentMicroParser.identifyEnd(line, startFrom);
+        int result = UserAgentMicroParser.identifyEnd(line, startFrom, null);
         assertEquals(-1, result);
     }
 
@@ -83,14 +83,16 @@ public class UserAgentMicroParserTest {
 
         try {
 
-            UserAgentMicroParser.identifyEnd(line, startFrom);
+            UserAgentMicroParser.identifyEnd(line, startFrom, 7L);
             fail("should have thrown exception");
         }
         catch(ParsingException e) {
 
             String msg = e.getMessage();
             log.info(msg);
-            assertTrue(msg.startsWith("no known User-Agent pattern identified starting with position"));
+            assertTrue(msg.startsWith("no known User-Agent pattern identified"));
+            assertEquals(7L, e.getLineNumber().longValue());
+            assertEquals(0, e.getPositionInLine().intValue());
         }
     }
 
@@ -99,7 +101,7 @@ public class UserAgentMicroParserTest {
 
         String value = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.11) Gecko/2009060215 Firefox/3.0.11 something";
 
-        int result = UserAgentMicroParser.identifyEnd(value, 0);
+        int result = UserAgentMicroParser.identifyEnd(value, 0, null);
         assertEquals(value.length() - " something".length(), result);
     }
 
@@ -108,10 +110,17 @@ public class UserAgentMicroParserTest {
 
         String value =
                 "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36 something";
-        int result = UserAgentMicroParser.identifyEnd(value, 0);
+        int result = UserAgentMicroParser.identifyEnd(value, 0, null);
         assertEquals(value.length() - " something".length(), result);
     }
 
+    @Test
+    public void production3() throws Exception {
+
+        String value =  "Java/1.7.0_51 ";
+        int result = UserAgentMicroParser.identifyEnd(value, 0, null);
+        assertEquals(13, result);
+    }
 
     // isUserAgentRequestHeader() --------------------------------------------------------------------------------------
 
