@@ -130,6 +130,15 @@ public class UserAgentParserTest {
         assertEquals(-1, result);
     }
 
+    @Test
+    public void production5() throws Exception {
+
+        String value =  "Mozilla_CA/4.79 [en] (X11; U; Linux 2.4.18-3d_epoll i686)";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(-1, result);
+    }
+
+
     // isUserAgentRequestHeader() --------------------------------------------------------------------------------------
 
     @Test
