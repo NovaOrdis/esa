@@ -20,9 +20,9 @@ import io.novaordis.events.ParsingException;
 import io.novaordis.events.core.LineFormat;
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.event.Event;
-import io.novaordis.events.httpd.microparsers.cookie.CookieMicroParser;
-import io.novaordis.events.httpd.microparsers.FirstRequestLineMicroParser;
-import io.novaordis.events.httpd.microparsers.UserAgentMicroParser;
+import io.novaordis.events.httpd.microparsers.cookie.CookieParser;
+import io.novaordis.events.httpd.microparsers.FirstRequestLineParser;
+import io.novaordis.events.httpd.microparsers.UserAgentParser;
 
 import java.util.List;
 
@@ -207,15 +207,15 @@ public class HttpdLineParser implements LineParser {
         }
         else if (HttpdFormatStrings.FIRST_REQUEST_LINE.equals(crt)) {
 
-            i = FirstRequestLineMicroParser.identifyEnd(line, cursor);
+            i = FirstRequestLineParser.identifyEnd(line, cursor);
         }
-        else if (UserAgentMicroParser.isUserAgentRequestHeader(crt)) {
+        else if (UserAgentParser.isUserAgentRequestHeader(crt)) {
 
-            i = UserAgentMicroParser.identifyEnd(line, cursor, lineNumber);
+            i = UserAgentParser.identifyEnd(line, cursor, lineNumber);
         }
-        else if (CookieMicroParser.isCookieRequestHeader(crt)) {
+        else if (CookieParser.isCookieRequestHeader(crt)) {
 
-            i = CookieMicroParser.identifyEnd(line, cursor, lineNumber);
+            i = CookieParser.identifyEnd(line, cursor, lineNumber);
         }
         else {
 

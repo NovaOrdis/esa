@@ -29,11 +29,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 6/30/16
  */
-public class FirstRequestLineMicroParserTest {
+public class FirstRequestLineParserTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(FirstRequestLineMicroParserTest.class);
+    private static final Logger log = LoggerFactory.getLogger(FirstRequestLineParserTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ public class FirstRequestLineMicroParserTest {
         String line = "GET / HTTP/1.1 something else";
         int startFrom = 0;
 
-        int result = FirstRequestLineMicroParser.identifyEnd(line, startFrom);
+        int result = FirstRequestLineParser.identifyEnd(line, startFrom);
         assertEquals(14, result);
     }
 
@@ -59,7 +59,7 @@ public class FirstRequestLineMicroParserTest {
         String line = "GET / HTTP/1.1";
         int startFrom = 0;
 
-        int result = FirstRequestLineMicroParser.identifyEnd(line, startFrom);
+        int result = FirstRequestLineParser.identifyEnd(line, startFrom);
         assertEquals(-1, result);
     }
 
@@ -71,7 +71,7 @@ public class FirstRequestLineMicroParserTest {
 
         try {
 
-            FirstRequestLineMicroParser.identifyEnd(line, startFrom);
+            FirstRequestLineParser.identifyEnd(line, startFrom);
             fail("should have thrown exception");
         }
         catch(ParsingException e) {

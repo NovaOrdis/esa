@@ -30,11 +30,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 6/30/16
  */
-public class CookieMicroParserTest {
+public class CookieParserTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(CookieMicroParserTest.class);
+    private static final Logger log = LoggerFactory.getLogger(CookieParserTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -51,7 +51,7 @@ public class CookieMicroParserTest {
 
         int startFrom = 0;
 
-        int result = CookieMicroParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null);
 
         assertEquals(46, result);
     }
@@ -62,7 +62,7 @@ public class CookieMicroParserTest {
         String line = "something - something else";
 
         int startFrom = 10;
-        int result = CookieMicroParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null);
         assertEquals(11 , result);
     }
 
@@ -73,7 +73,7 @@ public class CookieMicroParserTest {
 
         int startFrom = 5;
 
-        int result = CookieMicroParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null);
 
         assertEquals(13, result);
     }
@@ -84,7 +84,7 @@ public class CookieMicroParserTest {
         String line = "cookie1=value1 blah";
         int startFrom = 0;
 
-        int result = CookieMicroParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null);
         assertEquals(14, result);
     }
 
@@ -94,7 +94,7 @@ public class CookieMicroParserTest {
         String line = "cookie1=value1; cookie2=value2; cookie3=value3";
         int startFrom = 0;
 
-        int result = CookieMicroParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null);
         assertEquals(-1, result);
     }
 
@@ -106,7 +106,7 @@ public class CookieMicroParserTest {
 
         try {
 
-            CookieMicroParser.identifyEnd(line, startFrom, 7L);
+            CookieParser.identifyEnd(line, startFrom, 7L);
             fail("should have thrown exception");
         }
         catch(ParsingException e) {
@@ -125,7 +125,7 @@ public class CookieMicroParserTest {
         String line = "something.somethingelse=value1";
 
         int startFrom = 0;
-        int result = CookieMicroParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null);
         assertEquals(-1, result);
     }
 
@@ -135,7 +135,7 @@ public class CookieMicroParserTest {
         String line = "Expires=Thu, 01-Jan-1970 00:00:10 GMT; something=something-else";
 
         int startFrom = 0;
-        int result = CookieMicroParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null);
         assertEquals(-1 , result);
     }
 
@@ -145,7 +145,7 @@ public class CookieMicroParserTest {
         String line = "Secure,online_uid=121212; something=something-else";
 
         int startFrom = 0;
-        int result = CookieMicroParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null);
         assertEquals(-1 , result);
     }
 
@@ -155,7 +155,7 @@ public class CookieMicroParserTest {
         String line = "A=B; C=D E=F";
 
         int startFrom = 0;
-        int result = CookieMicroParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null);
         assertEquals(8 , result);
     }
 
@@ -165,7 +165,7 @@ public class CookieMicroParserTest {
         String line = "A=B; C=D NewField=Value; something=something";
 
         int startFrom = 0;
-        int result = CookieMicroParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null);
         assertEquals(8 , result);
     }
 
@@ -175,7 +175,7 @@ public class CookieMicroParserTest {
         String line = "Path=/,SignedIn=1; Domain=.example.com";
 
         int startFrom = 0;
-        int result = CookieMicroParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null);
         assertEquals(-1 , result);
     }
 
@@ -187,7 +187,7 @@ public class CookieMicroParserTest {
         //
         // first space after the first equal sign
         //
-        int i = CookieMicroParser.identifyEndOfTheCookieSeries(" A=B C", 0, null);
+        int i = CookieParser.identifyEndOfTheCookieSeries(" A=B C", 0, null);
         assertEquals(4, i);
     }
 
@@ -196,7 +196,7 @@ public class CookieMicroParserTest {
 
         try {
 
-            CookieMicroParser.identifyEndOfTheCookieSeries(" blah", 0, 7L);
+            CookieParser.identifyEndOfTheCookieSeries(" blah", 0, 7L);
             fail("should have thrown exception");
         }
         catch(ParsingException e) {
@@ -211,7 +211,7 @@ public class CookieMicroParserTest {
     @Test
     public void identifyEndOfTheCookieSeries_NoSpaceAfterTheEqualSign() throws Exception {
 
-        int i = CookieMicroParser.identifyEndOfTheCookieSeries(" A=B", 0, null);
+        int i = CookieParser.identifyEndOfTheCookieSeries(" A=B", 0, null);
         assertEquals(-1, i);
     }
 
@@ -220,14 +220,14 @@ public class CookieMicroParserTest {
     @Test
     public void identifyBoundaryBetweenSeries() throws Exception {
 
-        int i = CookieMicroParser.identifyBoundaryBetweenSeries(" C=D NewField=Value");
+        int i = CookieParser.identifyBoundaryBetweenSeries(" C=D NewField=Value");
         assertEquals(4, i);
     }
 
     @Test
     public void identifyBoundaryBetweenSeries_NoBoundary() throws Exception {
 
-        int i = CookieMicroParser.identifyBoundaryBetweenSeries(" A=B blah blah");
+        int i = CookieParser.identifyBoundaryBetweenSeries(" A=B blah blah");
         assertEquals(-1, i);
     }
 
@@ -237,7 +237,7 @@ public class CookieMicroParserTest {
     public void isCookieRequestHeader() throws Exception {
 
         HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
-        assertTrue(CookieMicroParser.isCookieRequestHeader(fs));
+        assertTrue(CookieParser.isCookieRequestHeader(fs));
     }
 
     @Test
@@ -247,7 +247,7 @@ public class CookieMicroParserTest {
         // we also use the Cookie micro parser for Set-Cookie response headers values
         //
         HttpdFormatString fs = HttpdFormatString.fromString("%{SET-COOKIE}o").get(0);
-        assertTrue(CookieMicroParser.isCookieRequestHeader(fs));
+        assertTrue(CookieParser.isCookieRequestHeader(fs));
     }
 
     @Test
@@ -257,7 +257,7 @@ public class CookieMicroParserTest {
         // we also use the Cookie micro parser for Set-Cookie response headers values
         //
         HttpdFormatString fs = HttpdFormatString.fromString("%{Set-Cookie}o").get(0);
-        assertTrue(CookieMicroParser.isCookieRequestHeader(fs));
+        assertTrue(CookieParser.isCookieRequestHeader(fs));
     }
 
 

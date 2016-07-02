@@ -17,11 +17,6 @@
 package io.novaordis.events.httpd.microparsers;
 
 import io.novaordis.events.ParsingException;
-import io.novaordis.events.httpd.HttpdFormatString;
-import io.novaordis.events.httpd.RequestHeaderHttpdFormatString;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A micro-parser is useful for particular fields that contain spaces and that were written in the log without being
@@ -30,25 +25,9 @@ import java.util.regex.Pattern;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 6/30/16
  */
-public class UserAgentMicroParser {
+public class FirstRequestLineParser {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final String HEADER_NAME = "User-Agent";
-
-    //
-    // Known user agent patterns
-    //
-
-    public static final Pattern[] USER_AGENT_PATTERNS = new Pattern[] {
-
-            // "Mozilla/4.0 (compatible; MSIE 8.0; ...; ...; ...) Firefox/3.0.11 ..."
-            Pattern.compile("^(\\w+/[\\d\\.]+ (\\([^\\)]+\\)){0,1} {0,1})+"),
-
-            // Java/1.7.0_51
-            Pattern.compile("^\\w+/[\\d\\._]+"),
-
-    };
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -58,64 +37,40 @@ public class UserAgentMicroParser {
      *
      * @return the index of the character immediately following the field. The character could be a space. If the
      * line ends, -1 is returned.
-     *
-     * @exception  ParsingException if no known pattern was identified
      */
-    public static int identifyEnd(String line, int startFrom, Long lineNumber) throws ParsingException {
+    public static int identifyEnd(String line, int startFrom) throws ParsingException {
 
         //
-        // no quotes, and the value includes multiple spaces
+        // no quotes, and the first line has multiple spaces
         //
 
-        String interestingSection = line.substring(startFrom);
+        int methodPathGap = line.indexOf(' ', startFrom);
 
-        for(Pattern p: USER_AGENT_PATTERNS) {
-
-            Matcher m = p.matcher(interestingSection);
-
-            if (m.find()) {
-
-                int end = startFrom + m.end();
-
-                if (end >= line.length()) {
-
-                    return -1;
-                }
-
-                //
-                // the regular expression catches the trailing space, if present; to maintain the method's semantics
-                // we "decrement" the end if this is the case
-                //
-                if (line.charAt(end - 1) == ' ') {
-                    end --;
-                }
-
-                return end;
-            }
+        if (methodPathGap == -1) {
+            throw new ParsingException(
+                    "expected space between HTTP method and path for the first request line not found, log line: \"" +
+                            line + "\"");
         }
 
-        throw new ParsingException("no known User-Agent pattern identified", lineNumber, startFrom);
-    }
+        int pathHttpVersionGap = line.indexOf(' ',  methodPathGap + 1);
 
-    public static boolean isUserAgentRequestHeader(HttpdFormatString fs) {
-
-        if (fs == null) {
-            return false;
+        if (pathHttpVersionGap == -1) {
+            throw new ParsingException(
+                    "expected space between path and HTTP version for the first request line not found, log line: \"" +
+                            line + "\"");
         }
 
-        if (!(fs instanceof RequestHeaderHttpdFormatString)) {
-            return false;
-        }
-
-        RequestHeaderHttpdFormatString rhfs = (RequestHeaderHttpdFormatString)fs;
-        return HEADER_NAME.equalsIgnoreCase(rhfs.getHeaderName());
+        //
+        // if the line ends, we return -1
+        //
+        return line.indexOf(' ', pathHttpVersionGap + 1);
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    private UserAgentMicroParser() {
+    private FirstRequestLineParser() {
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

@@ -31,7 +31,7 @@ import java.util.List;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 6/30/16
  */
-public class CookieMicroParser {
+public class CookieParser {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -155,7 +155,7 @@ public class CookieMicroParser {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    private CookieMicroParser() {
+    private CookieParser() {
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
