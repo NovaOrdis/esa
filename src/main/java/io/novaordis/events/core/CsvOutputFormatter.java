@@ -48,7 +48,8 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final DateFormat DEFAULT_TIMESTAMP_FORMAT = new SimpleDateFormat("yy/MM/dd HH:mm:ss");
+    // MM/dd/yy HH:mm:ss is the default time format so it works straight away with Excel
+    public static final DateFormat DEFAULT_TIMESTAMP_FORMAT = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
 
     public static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 
