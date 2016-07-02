@@ -42,7 +42,8 @@ Examples:
 
 httpd Input Format
 
-  Quotes need to be escaped: \"%r\". HTTP special characters can also be used (&quot;).
+  When specified on command line, quotes need to be escaped: \"%r\". When specified in a format
+  file, quotes do need to be escaped. HTTP special characters can also be used (&quot;).
 
   %A - The local IP address.
   %b - Response entity body size. Stored as long.
@@ -71,6 +72,11 @@ httpd Input Format
        brackets.
   %T - Time taken to process the request, in seconds.
   %v - The local server name.
+
+  The parser can be instructed to drop the log values for certain fields, by using the %?
+  format string:
+
+  %? - Instructs the parser to ignore (drop) the corresponding value.
 
 CSV Input Format
 

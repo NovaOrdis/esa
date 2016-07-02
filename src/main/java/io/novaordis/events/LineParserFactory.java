@@ -48,6 +48,8 @@ public class LineParserFactory {
      */
     public static LineParser getInstance(String lineFormat) throws UserErrorException {
 
+        log.debug("attempting to locate a parser that understands the given load format ...");
+
         if (lineFormat == null) {
             throw new IllegalArgumentException("null line format");
         }
@@ -57,6 +59,7 @@ public class LineParserFactory {
         //
 
         try {
+
             return new HttpdLineParser(lineFormat);
         }
         catch(CorruptedHttpdFormatStringException chfse) {

@@ -213,7 +213,7 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
 
             br = new BufferedReader(new FileReader(file));
             inputFormatSpec = br.readLine();
-            log.debug("format specification from file " + fileName + ": " + inputFormatSpec);
+            log.debug("format specification loaded from file " + fileName + ": " + inputFormatSpec);
             return inputFormatSpec;
         }
         catch (Exception e) {

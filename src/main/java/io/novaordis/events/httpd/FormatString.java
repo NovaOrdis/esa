@@ -18,6 +18,7 @@ package io.novaordis.events.httpd;
 
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.ParsingException;
+import org.slf4j.Logger;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -37,6 +38,8 @@ public interface FormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    Logger log = org.slf4j.LoggerFactory.getLogger(FormatString.class);
+
     String TIMESTAMP_FORMAT_STRING = "dd/MMM/yyyy:HH:mm:ss Z";
     DateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(TIMESTAMP_FORMAT_STRING);
 
@@ -50,6 +53,8 @@ public interface FormatString {
      *  an unknown element is encountered. The invalid token is mentioned in the human-readable error message.
      */
     static List<FormatString> fromString(String s) throws CorruptedHttpdFormatStringException, ParsingException {
+
+        log.debug("attempting to produce a FormatString list from \"" + s + "\"");
 
         List<FormatString> result = new ArrayList<>();
 
