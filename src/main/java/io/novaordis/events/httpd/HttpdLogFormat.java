@@ -37,17 +37,17 @@ public class HttpdLogFormat implements LineFormat {
     // %r %l %u [%t] "%r" %>s %b
 
     public static final HttpdLogFormat COMMON = new HttpdLogFormat(
-            FormatStrings.REMOTE_HOST,
-            FormatStrings.REMOTE_LOGNAME,
-            FormatStrings.REMOTE_USER,
-            FormatStrings.OPENING_BRACKET,
-            FormatStrings.TIMESTAMP,
-            FormatStrings.CLOSING_BRACKET,
-            FormatStrings.DOUBLE_QUOTES,
-            FormatStrings.FIRST_REQUEST_LINE,
-            FormatStrings.DOUBLE_QUOTES,
-            FormatStrings.STATUS_CODE,
-            FormatStrings.RESPONSE_ENTITY_BODY_SIZE);
+            HttpdFormatStrings.REMOTE_HOST,
+            HttpdFormatStrings.REMOTE_LOGNAME,
+            HttpdFormatStrings.REMOTE_USER,
+            HttpdFormatStrings.OPENING_BRACKET,
+            HttpdFormatStrings.TIMESTAMP,
+            HttpdFormatStrings.CLOSING_BRACKET,
+            HttpdFormatStrings.DOUBLE_QUOTES,
+            HttpdFormatStrings.FIRST_REQUEST_LINE,
+            HttpdFormatStrings.DOUBLE_QUOTES,
+            HttpdFormatStrings.STATUS_CODE,
+            HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE);
 
     // this is a pattern used for performance, it contains thread names and request durations and it does not log
     // remote logname, which is useless anyway. For WildFly, this is the pattern:
@@ -58,23 +58,23 @@ public class HttpdLogFormat implements LineFormat {
     //
     // "thread name" remote-host remote-user [timestamp] "first request line" status-code response-body-size request-duration-ms
     public static final HttpdLogFormat PERFORMANCE_ANALYSIS = new HttpdLogFormat(
-            FormatStrings.DOUBLE_QUOTES,
-            FormatStrings.THREAD_NAME,
-            FormatStrings.DOUBLE_QUOTES,
-            FormatStrings.REMOTE_HOST,
-            FormatStrings.REMOTE_USER,
-            FormatStrings.OPENING_BRACKET,
-            FormatStrings.TIMESTAMP,
-            FormatStrings.CLOSING_BRACKET,
-            FormatStrings.DOUBLE_QUOTES,
-            FormatStrings.FIRST_REQUEST_LINE,
-            FormatStrings.DOUBLE_QUOTES,
-            FormatStrings.DOUBLE_QUOTES,
-            FormatStrings.QUERY_STRING,
-            FormatStrings.DOUBLE_QUOTES,
-            FormatStrings.ORIGINAL_REQUEST_STATUS_CODE,
-            FormatStrings.RESPONSE_ENTITY_BODY_SIZE,
-            FormatStrings.REQUEST_PROCESSING_TIME_MS);
+            HttpdFormatStrings.DOUBLE_QUOTES,
+            HttpdFormatStrings.THREAD_NAME,
+            HttpdFormatStrings.DOUBLE_QUOTES,
+            HttpdFormatStrings.REMOTE_HOST,
+            HttpdFormatStrings.REMOTE_USER,
+            HttpdFormatStrings.OPENING_BRACKET,
+            HttpdFormatStrings.TIMESTAMP,
+            HttpdFormatStrings.CLOSING_BRACKET,
+            HttpdFormatStrings.DOUBLE_QUOTES,
+            HttpdFormatStrings.FIRST_REQUEST_LINE,
+            HttpdFormatStrings.DOUBLE_QUOTES,
+            HttpdFormatStrings.DOUBLE_QUOTES,
+            HttpdFormatStrings.QUERY_STRING,
+            HttpdFormatStrings.DOUBLE_QUOTES,
+            HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE,
+            HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE,
+            HttpdFormatStrings.REQUEST_PROCESSING_TIME_MS);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -92,20 +92,20 @@ public class HttpdLogFormat implements LineFormat {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private List<FormatString> formatStrings;
+    private List<HttpdFormatString> httpdFormatStrings;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
-     * @param formatStrings duplicate format elements are acceptable. Quotes (FormatStrings.DOUBLE_QUOTES and
-     *                       FormatStrings.SINGLE_QUOTE), if present, must always be balanced, or the constructor
+     * @param httpdFormatStrings duplicate format elements are acceptable. Quotes (HttpdFormatStrings.DOUBLE_QUOTES and
+     *                       HttpdFormatStrings.SINGLE_QUOTE), if present, must always be balanced, or the constructor
      *                       will throw an exception.
      *
      * @exception IllegalArgumentException on unbalanced quotes
      */
-    public HttpdLogFormat(FormatString... formatStrings) throws IllegalArgumentException {
+    public HttpdLogFormat(HttpdFormatString... httpdFormatStrings) throws IllegalArgumentException {
 
-        this(Arrays.asList(formatStrings));
+        this(Arrays.asList(httpdFormatStrings));
     }
 
     /**
@@ -118,26 +118,26 @@ public class HttpdLogFormat implements LineFormat {
      */
     public HttpdLogFormat(String formatSpecification) throws CorruptedHttpdFormatStringException, ParsingException {
 
-        this(FormatString.fromString(HttpdLogFormat.replaceSpecialHTMLCharacters(formatSpecification)));
+        this(HttpdFormatString.fromString(HttpdLogFormat.replaceSpecialHTMLCharacters(formatSpecification)));
     }
 
     /**
-     * @param formatStrings duplicate format elements are acceptable. Quotes (FormatStrings.DOUBLE_QUOTES and
-     *                       FormatStrings.SINGLE_QUOTE), if present, must always be balanced, or the constructor
+     * @param httpdFormatStrings duplicate format elements are acceptable. Quotes (HttpdFormatStrings.DOUBLE_QUOTES and
+     *                       HttpdFormatStrings.SINGLE_QUOTE), if present, must always be balanced, or the constructor
      *                       will throw an exception.
      *
      * @exception IllegalArgumentException on unbalanced quotes
      */
-    public HttpdLogFormat(List<FormatString> formatStrings) {
+    public HttpdLogFormat(List<HttpdFormatString> httpdFormatStrings) {
 
-        if (formatStrings == null) {
+        if (httpdFormatStrings == null) {
             throw new IllegalArgumentException("null format string list");
         }
 
-        checkBalancedQuotes(formatStrings);
+        checkBalancedQuotes(httpdFormatStrings);
 
         // this is where we add implied brackets, etc.
-        this.formatStrings = postProcess(formatStrings);
+        this.httpdFormatStrings = postProcess(httpdFormatStrings);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -147,20 +147,20 @@ public class HttpdLogFormat implements LineFormat {
      * underlying storage. It may or may be not mutable, depending on the implementation's decision. It's probably
      * safest to assume it's mutable - but consult the implementation's documentation for more details.
      */
-    public List<FormatString> getFormatStrings() {
-        return formatStrings;
+    public List<HttpdFormatString> getHttpdFormatStrings() {
+        return httpdFormatStrings;
     }
 
     @Override
     public String toString() {
 
-        if (formatStrings == null) {
-            return "null formatStrings";
+        if (httpdFormatStrings == null) {
+            return "null httpdFormatStrings";
         }
 
         String s = "";
 
-        for(Iterator<FormatString> i = formatStrings.iterator(); i.hasNext(); ) {
+        for(Iterator<HttpdFormatString> i = httpdFormatStrings.iterator(); i.hasNext(); ) {
 
             s += i.next().getLiteral();
             if (i.hasNext()) {
@@ -178,18 +178,18 @@ public class HttpdLogFormat implements LineFormat {
     /**
      * @throws IllegalArgumentException on unbalanced quotes.
      */
-    private static void checkBalancedQuotes(List<FormatString> elements) throws IllegalArgumentException {
+    private static void checkBalancedQuotes(List<HttpdFormatString> elements) throws IllegalArgumentException {
 
         boolean openSingleQuote = false;
         boolean openDoubleQuote = false;
 
-        for(FormatString e: elements) {
+        for(HttpdFormatString e: elements) {
 
-            if (FormatStrings.DOUBLE_QUOTES.equals(e)) {
+            if (HttpdFormatStrings.DOUBLE_QUOTES.equals(e)) {
                 openDoubleQuote = !openDoubleQuote;
             }
 
-            if (FormatStrings.SINGLE_QUOTE.equals(e)) {
+            if (HttpdFormatStrings.SINGLE_QUOTE.equals(e)) {
                 openSingleQuote = !openSingleQuote;
             }
         }
@@ -209,37 +209,37 @@ public class HttpdLogFormat implements LineFormat {
      * This is where we add implied brackets, etc. The list is already supposed to be semantically correct (balanced
      * quotes, etc.)
      */
-    private List<FormatString> postProcess(List<FormatString> formatStrings) {
+    private List<HttpdFormatString> postProcess(List<HttpdFormatString> httpdFormatStrings) {
 
-        if (formatStrings == null) {
+        if (httpdFormatStrings == null) {
             throw new IllegalArgumentException("null format string list");
         }
 
-        List<FormatString> result = new ArrayList<>();
+        List<HttpdFormatString> result = new ArrayList<>();
 
         //noinspection Convert2streamapi
-        for(FormatString fs: formatStrings) {
+        for(HttpdFormatString fs: httpdFormatStrings) {
 
-            if (FormatStrings.TIMESTAMP.equals(fs)) {
+            if (HttpdFormatStrings.TIMESTAMP.equals(fs)) {
 
                 //
                 // check whether we're enclosed by brackets
                 //
 
-                if (result.isEmpty() || !result.get(result.size() - 1).equals(FormatStrings.OPENING_BRACKET)) {
-                    result.add(FormatStrings.OPENING_BRACKET);
+                if (result.isEmpty() || !result.get(result.size() - 1).equals(HttpdFormatStrings.OPENING_BRACKET)) {
+                    result.add(HttpdFormatStrings.OPENING_BRACKET);
                 }
 
                 result.add(fs);
-                result.add(FormatStrings.CLOSING_BRACKET);
+                result.add(HttpdFormatStrings.CLOSING_BRACKET);
             }
-            else if (FormatStrings.CLOSING_BRACKET.equals(fs)) {
+            else if (HttpdFormatStrings.CLOSING_BRACKET.equals(fs)) {
 
                 //
                 // only add it if it's not already present
                 //
 
-                if (result.get(result.size() - 1).equals(FormatStrings.CLOSING_BRACKET)) {
+                if (result.get(result.size() - 1).equals(HttpdFormatStrings.CLOSING_BRACKET)) {
                     continue;
                 }
             }

@@ -65,7 +65,7 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(FormatString.TIMESTAMP_FORMAT_STRING);
+    private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(HttpdFormatString.TIMESTAMP_FORMAT_STRING);
 
     private static String formatTimestamp(long timestamp) {
 

@@ -41,7 +41,7 @@ public class HttpdLogLine {
 
     private long lineNumber;
 
-    private Map<FormatString, Object> values;
+    private Map<HttpdFormatString, Object> values;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -64,20 +64,20 @@ public class HttpdLogLine {
      * @return the value corresponding to the specified format element or null if there is no corresponding value
      * in the log event ("-" in the httpd logs, or whether the log format does contain the given format element.
      */
-    public Object getLogValue(FormatString e) {
+    public Object getLogValue(HttpdFormatString e) {
 
         return values.get(e);
     }
 
     /**
-     * @param value the value associated with the given FormatStrings in the log entry corresponding to this event. Can
+     * @param value the value associated with the given HttpdFormatStrings in the log entry corresponding to this event. Can
      *              be null, and this has the semantics of "erasing" the old value, if any.
      *
      * @return the previous value, if any, or null
      *
      * @exception IllegalArgumentException if the value's type does not match the format element.
      */
-    public Object setLogValue(FormatString e, Object value) {
+    public Object setLogValue(HttpdFormatString e, Object value) {
 
         if (value == null) {
             return values.remove(e);
@@ -88,7 +88,7 @@ public class HttpdLogLine {
                     "type mismatch, " + value.getClass() + " \"" + value + "\" is not a valid type for " + e);
         }
 
-        if (FormatStrings.TIMESTAMP.equals(e)) {
+        if (HttpdFormatStrings.TIMESTAMP.equals(e)) {
 
             // we convert timestamp from Date to Long
             Date timestamp = (Date)value;
@@ -99,80 +99,80 @@ public class HttpdLogLine {
     }
 
     /**
-     * @return the FormatStrings this httpd log line has values for.
+     * @return the HttpdFormatStrings this httpd log line has values for.
      */
-    public Set<FormatString> getFormatStrings() {
+    public Set<HttpdFormatString> getFormatStrings() {
 
         return values.keySet();
     }
 
     public Long getTimestamp() {
-        return (Long)getLogValue(FormatStrings.TIMESTAMP);
+        return (Long)getLogValue(HttpdFormatStrings.TIMESTAMP);
     }
 
     /**
-     * @see FormatStrings#REMOTE_HOST
+     * @see HttpdFormatStrings#REMOTE_HOST
      *
      * @return may return null
      */
     public String getRemoteHost() {
-        return (String) getLogValue(FormatStrings.REMOTE_HOST);
+        return (String) getLogValue(HttpdFormatStrings.REMOTE_HOST);
     }
 
     /**
-     * @see FormatStrings#REMOTE_LOGNAME
+     * @see HttpdFormatStrings#REMOTE_LOGNAME
      *
      * @return may return null
      */
     public String getRemoteLogname() {
-        return (String) getLogValue(FormatStrings.REMOTE_LOGNAME);
+        return (String) getLogValue(HttpdFormatStrings.REMOTE_LOGNAME);
     }
 
     public String getRemoteUser() {
-        return (String) getLogValue(FormatStrings.REMOTE_USER);
+        return (String) getLogValue(HttpdFormatStrings.REMOTE_USER);
     }
 
     public String getFirstRequestLine() {
-        return (String) getLogValue(FormatStrings.FIRST_REQUEST_LINE);
+        return (String) getLogValue(HttpdFormatStrings.FIRST_REQUEST_LINE);
     }
 
     public String getQueryString() {
-        return (String) getLogValue(FormatStrings.QUERY_STRING);
+        return (String) getLogValue(HttpdFormatStrings.QUERY_STRING);
     }
 
     /**
      * @return may return null.
      */
     public Integer getStatusCode() {
-        return (Integer) getLogValue(FormatStrings.STATUS_CODE);
+        return (Integer) getLogValue(HttpdFormatStrings.STATUS_CODE);
     }
 
     /**
      * @return may return null.
      */
     public Integer getOriginalRequestStatusCode() {
-        return (Integer) getLogValue(FormatStrings.ORIGINAL_REQUEST_STATUS_CODE);
+        return (Integer) getLogValue(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE);
     }
 
     /**
      * @return may return null.
      */
     public Long getResponseEntityBodySize() {
-        return (Long) getLogValue(FormatStrings.RESPONSE_ENTITY_BODY_SIZE);
+        return (Long) getLogValue(HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE);
     }
 
     /**
      * @return may return null.
      */
     public String getThreadName() {
-        return (String) getLogValue(FormatStrings.THREAD_NAME);
+        return (String) getLogValue(HttpdFormatStrings.THREAD_NAME);
     }
 
     /**
      * @return may return null.
      */
     public Long getRequestProcessingTimeMs() {
-        return (Long) getLogValue(FormatStrings.REQUEST_PROCESSING_TIME_MS);
+        return (Long) getLogValue(HttpdFormatStrings.REQUEST_PROCESSING_TIME_MS);
     }
 
     /**
@@ -199,18 +199,18 @@ public class HttpdLogLine {
             httpEvent.setLongProperty(Event.LINE_NUMBER_PROPERTY_NAME, lineNumber);
         }
 
-        Set<FormatString> formatStrings = getFormatStrings();
+        Set<HttpdFormatString> httpdFormatStrings = getFormatStrings();
 
-        for(FormatString fs: formatStrings) {
+        for(HttpdFormatString fs: httpdFormatStrings) {
 
-            if (FormatStrings.TIMESTAMP.equals(fs)) {
+            if (HttpdFormatStrings.TIMESTAMP.equals(fs)) {
                 // already handled
                 continue;
             }
 
-            if (FormatStrings.FIRST_REQUEST_LINE.equals(fs)) {
+            if (HttpdFormatStrings.FIRST_REQUEST_LINE.equals(fs)) {
 
-                String s = (String)getLogValue(FormatStrings.FIRST_REQUEST_LINE);
+                String s = (String)getLogValue(HttpdFormatStrings.FIRST_REQUEST_LINE);
                 if (s == null) {
                     continue;
                 }
@@ -237,7 +237,7 @@ public class HttpdLogLine {
     public String toString() {
 
         Long timestamp = getTimestamp();
-        String ts = timestamp == null ? "-" : FormatString.TIMESTAMP_FORMAT.format(timestamp);
+        String ts = timestamp == null ? "-" : HttpdFormatString.TIMESTAMP_FORMAT.format(timestamp);
         String rls = getFirstRequestLine();
         rls = rls == null ? "-" : rls;
         Integer rsc = getOriginalRequestStatusCode();

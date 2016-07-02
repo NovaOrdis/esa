@@ -17,7 +17,7 @@
 package io.novaordis.events.httpd.microparsers.cookie;
 
 import io.novaordis.events.ParsingException;
-import io.novaordis.events.httpd.FormatString;
+import io.novaordis.events.httpd.HttpdFormatString;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -236,7 +236,7 @@ public class CookieMicroParserTest {
     @Test
     public void isCookieRequestHeader() throws Exception {
 
-        FormatString fs = FormatString.fromString("%{Cookie}i").get(0);
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
         assertTrue(CookieMicroParser.isCookieRequestHeader(fs));
     }
 
@@ -246,7 +246,7 @@ public class CookieMicroParserTest {
         //
         // we also use the Cookie micro parser for Set-Cookie response headers values
         //
-        FormatString fs = FormatString.fromString("%{SET-COOKIE}o").get(0);
+        HttpdFormatString fs = HttpdFormatString.fromString("%{SET-COOKIE}o").get(0);
         assertTrue(CookieMicroParser.isCookieRequestHeader(fs));
     }
 
@@ -256,7 +256,7 @@ public class CookieMicroParserTest {
         //
         // we also use the Cookie micro parser for Set-Cookie response headers values
         //
-        FormatString fs = FormatString.fromString("%{Set-Cookie}o").get(0);
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Set-Cookie}o").get(0);
         assertTrue(CookieMicroParser.isCookieRequestHeader(fs));
     }
 

@@ -22,47 +22,47 @@ import java.util.regex.Pattern;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
  */
-public class ResponseHeaderFormatString extends ParameterizedFormatStringBase implements ParameterizedFormatString {
+public class RequestHeaderHttpdFormatString extends ParameterizedHttpdFormatStringBase implements ParameterizedHttpdFormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    public static final String PREFIX = "%{o,"; // handles this format %{o,Something}
-    public static final Pattern ALTERNATIVE_FORMAT_PATTERN = Pattern.compile("%\\{(.+)\\}o"); // handles this format %{Something}o
+    public static final String PREFIX = "%{i,"; // handles this format %{i,Something}
+    public static final Pattern ALTERNATIVE_FORMAT_PATTERN = Pattern.compile("%\\{(.+)\\}i"); // handles this format %{Something}i
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String responseHeaderName;
+    private String requestHeaderName;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
-     * @param formatStringLiteral - we expect a cookie format specification (%{o,Some-Header}) to start the given
+     * @param formatStringLiteral - we expect a cookie format specification (%{i,Some-Header}) to start the given
      *                            string, but it is acceptable that other format strings follow, without any
      *                            intermediary space. They will be ignored.
      *
      * @throws IllegalArgumentException if the literal does not match the expected pattern.
      */
-    public ResponseHeaderFormatString(String formatStringLiteral) throws IllegalArgumentException {
+    public RequestHeaderHttpdFormatString(String formatStringLiteral) throws IllegalArgumentException {
         super(formatStringLiteral);
     }
 
-    // ParameterizedFormatString implementation ------------------------------------------------------------------------
-
-    @Override
-    public String getParameter() {
-
-        return responseHeaderName;
-    }
+    // ParameterizedHttpdFormatString implementation ------------------------------------------------------------------------
 
     @Override
     public void setParameter(String parameter) {
 
-        responseHeaderName = parameter;
+        requestHeaderName = parameter;
     }
 
-    // ParameterizedFormatStringBase overrides -------------------------------------------------------------------------
+    @Override
+    public String getParameter() {
+
+        return requestHeaderName;
+    }
+
+    // ParameterizedHttpdFormatStringBase overrides -------------------------------------------------------------------------
 
     @Override
     protected String getPrefix() {
@@ -77,13 +77,16 @@ public class ResponseHeaderFormatString extends ParameterizedFormatStringBase im
     @Override
     protected String getHttpEventMapName() {
 
-        return HttpEvent.RESPONSE_HEADERS;
+        return HttpEvent.REQUEST_HEADERS;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    /**
+     * @return the header name as read from the format string, maintaining the original capitalization.
+     */
     public String getHeaderName() {
-        return responseHeaderName;
+        return requestHeaderName;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

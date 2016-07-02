@@ -17,8 +17,8 @@
 package io.novaordis.events.httpd.microparsers.cookie;
 
 import io.novaordis.events.ParsingException;
-import io.novaordis.events.httpd.FormatString;
-import io.novaordis.events.httpd.ParameterizedFormatString;
+import io.novaordis.events.httpd.HttpdFormatString;
+import io.novaordis.events.httpd.ParameterizedHttpdFormatString;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -136,17 +136,17 @@ public class CookieMicroParser {
         return nextTokenStartIndex;
     }
 
-    public static boolean isCookieRequestHeader(FormatString fs) {
+    public static boolean isCookieRequestHeader(HttpdFormatString fs) {
 
         if (fs == null) {
             return false;
         }
 
-        if (!(fs instanceof ParameterizedFormatString)) {
+        if (!(fs instanceof ParameterizedHttpdFormatString)) {
             return false;
         }
 
-        ParameterizedFormatString pfs = (ParameterizedFormatString)fs;
+        ParameterizedHttpdFormatString pfs = (ParameterizedHttpdFormatString)fs;
         String parameterName = pfs.getParameter();
         return "Cookie".equalsIgnoreCase(parameterName) || "Set-Cookie".equalsIgnoreCase(parameterName);
     }

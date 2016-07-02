@@ -54,7 +54,7 @@ public abstract class FormatStringTest {
     @Test
     public void fromString() throws Exception {
 
-        List<FormatString> formats = FormatString.fromString("%h %l %u [ %t ] \"%D\" %>s %s \" %D \"");
+        List<HttpdFormatString> formats = HttpdFormatString.fromString("%h %l %u [ %t ] \"%D\" %>s %s \" %D \"");
 
         assertEquals(14, formats.size());
     }
@@ -62,54 +62,54 @@ public abstract class FormatStringTest {
     @Test
     public void fromString_COMMON() throws Exception {
 
-        List<FormatString> formats = FormatString.fromString("%h %l %u [ %t ] \"%r\" %>s %b ");
+        List<HttpdFormatString> formats = HttpdFormatString.fromString("%h %l %u [ %t ] \"%r\" %>s %b ");
 
         assertEquals(11, formats.size());
 
-        assertEquals(FormatStrings.REMOTE_HOST, formats.get(0));
-        assertEquals(FormatStrings.REMOTE_LOGNAME, formats.get(1));
-        assertEquals(FormatStrings.REMOTE_USER, formats.get(2));
-        assertEquals(FormatStrings.OPENING_BRACKET, formats.get(3));
-        assertEquals(FormatStrings.TIMESTAMP, formats.get(4));
-        assertEquals(FormatStrings.CLOSING_BRACKET, formats.get(5));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formats.get(6));
-        assertEquals(FormatStrings.FIRST_REQUEST_LINE, formats.get(7));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formats.get(8));
-        assertEquals(FormatStrings.STATUS_CODE, formats.get(9));
-        assertEquals(FormatStrings.RESPONSE_ENTITY_BODY_SIZE, formats.get(10));
+        assertEquals(HttpdFormatStrings.REMOTE_HOST, formats.get(0));
+        assertEquals(HttpdFormatStrings.REMOTE_LOGNAME, formats.get(1));
+        assertEquals(HttpdFormatStrings.REMOTE_USER, formats.get(2));
+        assertEquals(HttpdFormatStrings.OPENING_BRACKET, formats.get(3));
+        assertEquals(HttpdFormatStrings.TIMESTAMP, formats.get(4));
+        assertEquals(HttpdFormatStrings.CLOSING_BRACKET, formats.get(5));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, formats.get(6));
+        assertEquals(HttpdFormatStrings.FIRST_REQUEST_LINE, formats.get(7));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, formats.get(8));
+        assertEquals(HttpdFormatStrings.STATUS_CODE, formats.get(9));
+        assertEquals(HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE, formats.get(10));
     }
 
     @Test
     public void fromString_PERFORMANCE_ANALYSIS() throws Exception {
 
-        List<FormatString> formats = FormatString.fromString("\"%I\" %h %u [%t] \"%r\" %s %b %D");
+        List<HttpdFormatString> formats = HttpdFormatString.fromString("\"%I\" %h %u [%t] \"%r\" %s %b %D");
 
         assertEquals(14, formats.size());
 
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formats.get(0));
-        assertEquals(FormatStrings.THREAD_NAME, formats.get(1));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formats.get(2));
-        assertEquals(FormatStrings.REMOTE_HOST, formats.get(3));
-        assertEquals(FormatStrings.REMOTE_USER, formats.get(4));
-        assertEquals(FormatStrings.OPENING_BRACKET, formats.get(5));
-        assertEquals(FormatStrings.TIMESTAMP, formats.get(6));
-        assertEquals(FormatStrings.CLOSING_BRACKET, formats.get(7));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formats.get(8));
-        assertEquals(FormatStrings.FIRST_REQUEST_LINE, formats.get(9));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formats.get(10));
-        assertEquals(FormatStrings.ORIGINAL_REQUEST_STATUS_CODE, formats.get(11));
-        assertEquals(FormatStrings.RESPONSE_ENTITY_BODY_SIZE, formats.get(12));
-        assertEquals(FormatStrings.REQUEST_PROCESSING_TIME_MS, formats.get(13));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, formats.get(0));
+        assertEquals(HttpdFormatStrings.THREAD_NAME, formats.get(1));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, formats.get(2));
+        assertEquals(HttpdFormatStrings.REMOTE_HOST, formats.get(3));
+        assertEquals(HttpdFormatStrings.REMOTE_USER, formats.get(4));
+        assertEquals(HttpdFormatStrings.OPENING_BRACKET, formats.get(5));
+        assertEquals(HttpdFormatStrings.TIMESTAMP, formats.get(6));
+        assertEquals(HttpdFormatStrings.CLOSING_BRACKET, formats.get(7));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, formats.get(8));
+        assertEquals(HttpdFormatStrings.FIRST_REQUEST_LINE, formats.get(9));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, formats.get(10));
+        assertEquals(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE, formats.get(11));
+        assertEquals(HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE, formats.get(12));
+        assertEquals(HttpdFormatStrings.REQUEST_PROCESSING_TIME_MS, formats.get(13));
     }
 
     @Test
     public void fromString_QuotedParameterizedFormatString() throws Exception {
 
-        List<FormatString> formatStrings = FormatString.fromString("\"%{c,Some-Cookie}\"");
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(0));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(2));
+        List<HttpdFormatString> httpdFormatStrings = HttpdFormatString.fromString("\"%{c,Some-Cookie}\"");
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(0));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(2));
 
-        CookieFormatString cfs = (CookieFormatString)formatStrings.get(1);
+        CookieHttpdFormatString cfs = (CookieHttpdFormatString) httpdFormatStrings.get(1);
         assertEquals("Some-Cookie", cfs.getCookieName());
     }
 
@@ -118,7 +118,7 @@ public abstract class FormatStringTest {
 
         try {
 
-            FormatString.fromString("%h %l %u/>");
+            HttpdFormatString.fromString("%h %l %u/>");
             fail("should throw exception");
         }
         catch(CorruptedHttpdFormatStringException e) {
@@ -134,7 +134,7 @@ public abstract class FormatStringTest {
 
         try {
 
-            FormatString.fromString("blah");
+            HttpdFormatString.fromString("blah");
             fail("should throw exception");
         }
         catch(ParsingException e) {
@@ -148,10 +148,10 @@ public abstract class FormatStringTest {
     @Test
     public void fromString_A() throws Exception {
 
-        List<FormatString> formats = FormatString.fromString("%A");
+        List<HttpdFormatString> formats = HttpdFormatString.fromString("%A");
 
         assertEquals(1, formats.size());
-        FormatString fs = formats.get(0);
+        HttpdFormatString fs = formats.get(0);
 
         assertEquals("%A", fs.getLiteral());
         assertEquals("10.72.42.58", fs.parse("10.72.42.58", null, null));
@@ -167,10 +167,10 @@ public abstract class FormatStringTest {
     @Test
     public void fromString_v() throws Exception {
 
-        List<FormatString> formats = FormatString.fromString("%v");
+        List<HttpdFormatString> formats = HttpdFormatString.fromString("%v");
 
         assertEquals(1, formats.size());
-        FormatString fs = formats.get(0);
+        HttpdFormatString fs = formats.get(0);
 
         assertEquals("%v", fs.getLiteral());
         assertEquals("some.local.server.name", fs.parse("some.local.server.name", null, null));
@@ -186,10 +186,10 @@ public abstract class FormatStringTest {
     @Test
     public void fromString_S() throws Exception {
 
-        List<FormatString> formats = FormatString.fromString("%S");
+        List<HttpdFormatString> formats = HttpdFormatString.fromString("%S");
 
         assertEquals(1, formats.size());
-        FormatString fs = formats.get(0);
+        HttpdFormatString fs = formats.get(0);
 
         assertEquals("%S", fs.getLiteral());
         assertEquals(123L, fs.parse("123", null, null));
@@ -205,10 +205,10 @@ public abstract class FormatStringTest {
     @Test
     public void fromString_T() throws Exception {
 
-        List<FormatString> formats = FormatString.fromString("%T");
+        List<HttpdFormatString> formats = HttpdFormatString.fromString("%T");
 
         assertEquals(1, formats.size());
-        FormatString fs = formats.get(0);
+        HttpdFormatString fs = formats.get(0);
 
         assertEquals("%T", fs.getLiteral());
         assertEquals(0.001d, ((Double)fs.parse("0.001", null, null)).doubleValue(), 0.0001);
@@ -227,7 +227,7 @@ public abstract class FormatStringTest {
     @Test
     public void parse_Dash() throws Exception {
 
-        FormatString fs = getFormatStringToTest();
+        HttpdFormatString fs = getFormatStringToTest();
 
         assertNull(fs.parse("-", null, null));
     }
@@ -236,7 +236,7 @@ public abstract class FormatStringTest {
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    protected abstract FormatString getFormatStringToTest();
+    protected abstract HttpdFormatString getFormatStringToTest();
 
     // Private ---------------------------------------------------------------------------------------------------------
 

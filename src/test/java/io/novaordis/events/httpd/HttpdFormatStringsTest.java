@@ -43,11 +43,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class FormatStringsTest extends FormatStringTest {
+public class HttpdFormatStringsTest extends FormatStringTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(FormatStringsTest.class);
+    private static final Logger log = LoggerFactory.getLogger(HttpdFormatStringsTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -60,47 +60,47 @@ public class FormatStringsTest extends FormatStringTest {
     @Test
     public void doubleQuotes() throws Exception {
 
-        FormatString e = FormatStrings.DOUBLE_QUOTES;
+        HttpdFormatString e = HttpdFormatStrings.DOUBLE_QUOTES;
         assertTrue(e.isLeftEnclosure());
         assertTrue(e.isRightEnclosure());
-        assertEquals(FormatStrings.DOUBLE_QUOTES, e.getMatchingEnclosure());
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, e.getMatchingEnclosure());
         assertNull(e.toProperty("does not matter"));
     }
 
     @Test
     public void singleQuote() throws Exception {
 
-        FormatString e = FormatStrings.SINGLE_QUOTE;
+        HttpdFormatString e = HttpdFormatStrings.SINGLE_QUOTE;
         assertTrue(e.isLeftEnclosure());
         assertTrue(e.isRightEnclosure());
-        assertEquals(FormatStrings.SINGLE_QUOTE, e.getMatchingEnclosure());
+        assertEquals(HttpdFormatStrings.SINGLE_QUOTE, e.getMatchingEnclosure());
         assertNull(e.toProperty("does not matter"));
     }
 
     @Test
     public void openingBracket() throws Exception {
 
-        FormatString e = FormatStrings.OPENING_BRACKET;
+        HttpdFormatString e = HttpdFormatStrings.OPENING_BRACKET;
         assertTrue(e.isLeftEnclosure());
         assertFalse(e.isRightEnclosure());
-        assertEquals(FormatStrings.CLOSING_BRACKET, e.getMatchingEnclosure());
+        assertEquals(HttpdFormatStrings.CLOSING_BRACKET, e.getMatchingEnclosure());
         assertNull(e.toProperty("does not matter"));
     }
 
     @Test
     public void closingBracket() throws Exception {
 
-        FormatString e = FormatStrings.CLOSING_BRACKET;
+        HttpdFormatString e = HttpdFormatStrings.CLOSING_BRACKET;
         assertFalse(e.isLeftEnclosure());
         assertTrue(e.isRightEnclosure());
-        assertEquals(FormatStrings.OPENING_BRACKET, e.getMatchingEnclosure());
+        assertEquals(HttpdFormatStrings.OPENING_BRACKET, e.getMatchingEnclosure());
         assertNull(e.toProperty("does not matter"));
     }
 
     @Test
     public void remoteHost() throws Exception {
 
-        FormatString e = FormatStrings.REMOTE_HOST;
+        HttpdFormatString e = HttpdFormatStrings.REMOTE_HOST;
         assertEquals("%h", e.getLiteral());
         assertEquals("127.0.0.1", e.parse("127.0.0.1", null, null));
         assertNull(e.parse("-", null, null));
@@ -117,7 +117,7 @@ public class FormatStringsTest extends FormatStringTest {
     @Test
     public void remoteLogname() throws Exception {
 
-        FormatString e = FormatStrings.REMOTE_LOGNAME;
+        HttpdFormatString e = HttpdFormatStrings.REMOTE_LOGNAME;
         assertEquals("%l", e.getLiteral());
         assertEquals("blah", e.parse("blah", null, null));
         assertNull(e.parse("-", null, null));
@@ -134,7 +134,7 @@ public class FormatStringsTest extends FormatStringTest {
     @Test
     public void remoteUser() throws Exception {
 
-        FormatString e = FormatStrings.REMOTE_USER;
+        HttpdFormatString e = HttpdFormatStrings.REMOTE_USER;
         assertEquals("%u", e.getLiteral());
         assertEquals("blah", e.parse("blah", null, null));
         assertNull(e.parse("-", null, null));
@@ -151,7 +151,7 @@ public class FormatStringsTest extends FormatStringTest {
     @Test
     public void timestamp() throws Exception {
 
-        FormatString e = FormatStrings.TIMESTAMP;
+        HttpdFormatString e = HttpdFormatStrings.TIMESTAMP;
         assertEquals("%t", e.getLiteral());
         Date d = (Date)e.parse("18/Sep/2016:19:18:28 -0400", null, null);
         assertEquals(TestDate.create("09/18/16 19:18:28 -0400"), d);
@@ -165,7 +165,7 @@ public class FormatStringsTest extends FormatStringTest {
     @Test
     public void timestamp_InvalidStringRepresentationFormat() throws Exception {
 
-        FormatString e = FormatStrings.TIMESTAMP;
+        HttpdFormatString e = HttpdFormatStrings.TIMESTAMP;
         try {
             e.parse("something that is not a date", null, null);
             fail("should have thrown exception");
@@ -180,7 +180,7 @@ public class FormatStringsTest extends FormatStringTest {
     @Test
     public void originalRequestStatusCode() throws Exception {
 
-        FormatString e = FormatStrings.ORIGINAL_REQUEST_STATUS_CODE;
+        HttpdFormatString e = HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE;
         assertEquals("%s", e.getLiteral());
         Integer i = (Integer)e.parse("200", null, null);
         assertNotNull(i);
@@ -199,7 +199,7 @@ public class FormatStringsTest extends FormatStringTest {
     @Test
     public void statusCode() throws Exception {
 
-        FormatString e = FormatStrings.STATUS_CODE;
+        HttpdFormatString e = HttpdFormatStrings.STATUS_CODE;
         assertEquals("%>s", e.getLiteral());
         Integer i = (Integer)e.parse("400", null, null);
         assertNotNull(i);
@@ -218,7 +218,7 @@ public class FormatStringsTest extends FormatStringTest {
     @Test
     public void responseEntityBodySize() throws Exception {
 
-        FormatString e = FormatStrings.RESPONSE_ENTITY_BODY_SIZE;
+        HttpdFormatString e = HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE;
         assertEquals("%b", e.getLiteral());
         Long l = (Long)e.parse("12345", null, null);
         assertNotNull(l);
@@ -239,7 +239,7 @@ public class FormatStringsTest extends FormatStringTest {
     @Test
     public void threadName() throws Exception {
 
-        FormatString e = FormatStrings.THREAD_NAME;
+        HttpdFormatString e = HttpdFormatStrings.THREAD_NAME;
         assertEquals("%I", e.getLiteral());
         String s = (String)e.parse("some thread name", null, null);
         assertEquals("some thread name", s);
@@ -257,7 +257,7 @@ public class FormatStringsTest extends FormatStringTest {
     @Test
     public void requestProcessingTimeMs() throws Exception {
 
-        FormatString e = FormatStrings.REQUEST_PROCESSING_TIME_MS;
+        HttpdFormatString e = HttpdFormatStrings.REQUEST_PROCESSING_TIME_MS;
         assertEquals("%D", e.getLiteral());
         Long l = (Long)e.parse("12345", null, null);
         assertNotNull(l);
@@ -277,7 +277,7 @@ public class FormatStringsTest extends FormatStringTest {
     @Test
     public void queryString() throws Exception {
 
-        FormatString e = FormatStrings.QUERY_STRING;
+        HttpdFormatString e = HttpdFormatStrings.QUERY_STRING;
         assertEquals("%q", e.getLiteral());
         String s = (String)e.parse("attr1=val1&attr2=Val2&attr3=1&attr4=1.1", null, null);
         assertNotNull(s);
@@ -307,9 +307,9 @@ public class FormatStringsTest extends FormatStringTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected FormatStrings getFormatStringToTest()  {
+    protected HttpdFormatStrings getFormatStringToTest()  {
 
-        return FormatStrings.REMOTE_HOST;
+        return HttpdFormatStrings.REMOTE_HOST;
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

@@ -17,8 +17,8 @@
 package io.novaordis.events.httpd.microparsers;
 
 import io.novaordis.events.ParsingException;
-import io.novaordis.events.httpd.FormatString;
-import io.novaordis.events.httpd.RequestHeaderFormatString;
+import io.novaordis.events.httpd.HttpdFormatString;
+import io.novaordis.events.httpd.RequestHeaderHttpdFormatString;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -95,17 +95,17 @@ public class UserAgentMicroParser {
                         startFrom + " on line \"" + line + "\"");
     }
 
-    public static boolean isUserAgentRequestHeader(FormatString fs) {
+    public static boolean isUserAgentRequestHeader(HttpdFormatString fs) {
 
         if (fs == null) {
             return false;
         }
 
-        if (!(fs instanceof RequestHeaderFormatString)) {
+        if (!(fs instanceof RequestHeaderHttpdFormatString)) {
             return false;
         }
 
-        RequestHeaderFormatString rhfs = (RequestHeaderFormatString)fs;
+        RequestHeaderHttpdFormatString rhfs = (RequestHeaderHttpdFormatString)fs;
         return HEADER_NAME.equalsIgnoreCase(rhfs.getHeaderName());
     }
 

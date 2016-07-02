@@ -17,7 +17,7 @@
 package io.novaordis.events.httpd.microparsers;
 
 import io.novaordis.events.ParsingException;
-import io.novaordis.events.httpd.FormatString;
+import io.novaordis.events.httpd.HttpdFormatString;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,7 +118,7 @@ public class UserAgentMicroParserTest {
     @Test
     public void isUserAgentRequestHeader() throws Exception {
 
-        FormatString fs = FormatString.fromString("%{User-Agent}i").get(0);
+        HttpdFormatString fs = HttpdFormatString.fromString("%{User-Agent}i").get(0);
         assertTrue(UserAgentMicroParser.isUserAgentRequestHeader(fs));
     }
 

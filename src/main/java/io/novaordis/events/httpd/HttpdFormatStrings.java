@@ -33,7 +33,7 @@ import java.util.Map;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/22/16
  */
-public enum FormatStrings implements FormatString {
+public enum HttpdFormatStrings implements HttpdFormatString {
 
     //
     // a double quote, if present, must always be balanced, otherwise the format will throw an exception when
@@ -154,7 +154,7 @@ public enum FormatStrings implements FormatString {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    FormatStrings(String literal, Class type) {
+    HttpdFormatStrings(String literal, Class type) {
 
         this(literal, type, null, null, null, null);
     }
@@ -164,36 +164,36 @@ public enum FormatStrings implements FormatString {
      * @param formatStringRepresentation - if present, makes the info and error messages more user friendly, if not
      *                                   present, format.toString() should be used. null is therefore acceptable.
      */
-    FormatStrings(String literal, Class type, Format format, String formatStringRepresentation) {
+    HttpdFormatStrings(String literal, Class type, Format format, String formatStringRepresentation) {
 
         this(literal, type, format, formatStringRepresentation, null);
     }
 
-    FormatStrings(String literal, Class type, String propertyName) {
+    HttpdFormatStrings(String literal, Class type, String propertyName) {
 
         this(literal, type, null, null, propertyName);
     }
 
-    FormatStrings(String literal, Class type, String propertyName, Class propertyType) {
+    HttpdFormatStrings(String literal, Class type, String propertyName, Class propertyType) {
 
         this(literal, type, null, null, propertyName, propertyType, null);
     }
 
     /**
-     * Using this constructor implies that the FormatString type coincides with the corresponding property type.
+     * Using this constructor implies that the HttpdFormatString type coincides with the corresponding property type.
      *
      * @param formatStringRepresentation - if present, makes the info and error messages more user friendly, if not
      *                                   present, format.toString() should be used. null is therefore acceptable.
      */
-    FormatStrings(String literal, Class type, Format format, String formatStringRepresentation, String propertyName) {
+    HttpdFormatStrings(String literal, Class type, Format format, String formatStringRepresentation, String propertyName) {
 
         this(literal, type, format, formatStringRepresentation, propertyName, type);
     }
 
     /**
-     * Using this constructor implies that the FormatString type coincides with the corresponding property type.
+     * Using this constructor implies that the HttpdFormatString type coincides with the corresponding property type.
      */
-    FormatStrings(String literal, Class type, String propertyName, MeasureUnit mu) {
+    HttpdFormatStrings(String literal, Class type, String propertyName, MeasureUnit mu) {
 
         this(literal, type, null, null, propertyName, type, mu);
     }
@@ -202,8 +202,8 @@ public enum FormatStrings implements FormatString {
      * @param formatStringRepresentation - if present, makes the info and error messages more user friendly, if not
      *                                   present, format.toString() should be used. null is therefore acceptable.
      */
-    FormatStrings(String literal, Class type, Format format, String formatStringRepresentation, String propertyName,
-                  Class propertyType) {
+    HttpdFormatStrings(String literal, Class type, Format format, String formatStringRepresentation, String propertyName,
+                       Class propertyType) {
 
         this(literal, type, format, formatStringRepresentation, propertyName, propertyType, null);
     }
@@ -212,8 +212,8 @@ public enum FormatStrings implements FormatString {
      * @param formatStringRepresentation - if present, makes the info and error messages more user friendly, if not
      *                                   present, format.toString() should be used. null is therefore acceptable.
      */
-    FormatStrings(String literal, Class type, Format format, String formatStringRepresentation, String propertyName,
-                  Class propertyType, MeasureUnit mu) {
+    HttpdFormatStrings(String literal, Class type, Format format, String formatStringRepresentation, String propertyName,
+                       Class propertyType, MeasureUnit mu) {
 
         this.literal = literal;
         this.type = type;
@@ -224,7 +224,7 @@ public enum FormatStrings implements FormatString {
         this.measureUnit = mu;
     }
 
-    // FormatStrings implementation ------------------------------------------------------------------------------------
+    // HttpdFormatStrings implementation ------------------------------------------------------------------------------------
 
     @Override
     public String getLiteral() {
@@ -322,7 +322,7 @@ public enum FormatStrings implements FormatString {
     }
 
     @Override
-    public FormatString getMatchingEnclosure() {
+    public HttpdFormatString getMatchingEnclosure() {
 
         if (DOUBLE_QUOTES.equals(this)) {
             return DOUBLE_QUOTES;

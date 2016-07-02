@@ -75,15 +75,15 @@ public class HttpdLineParserTest extends LineParserTest {
 
         HttpdLogFormat f = p.getHttpdLogFormat();
 
-        List<FormatString> formatStrings = f.getFormatStrings();
-        assertEquals(7, formatStrings.size());
-        assertEquals(FormatStrings.OPENING_BRACKET, formatStrings.get(0));
-        assertEquals(FormatStrings.TIMESTAMP, formatStrings.get(1));
-        assertEquals(FormatStrings.CLOSING_BRACKET, formatStrings.get(2));
-        assertEquals(FormatStrings.REMOTE_HOST, formatStrings.get(3));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(4));
-        assertEquals("Some-Cookie", ((CookieFormatString)formatStrings.get(5)).getCookieName());
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(6));
+        List<HttpdFormatString> httpdFormatStrings = f.getHttpdFormatStrings();
+        assertEquals(7, httpdFormatStrings.size());
+        assertEquals(HttpdFormatStrings.OPENING_BRACKET, httpdFormatStrings.get(0));
+        assertEquals(HttpdFormatStrings.TIMESTAMP, httpdFormatStrings.get(1));
+        assertEquals(HttpdFormatStrings.CLOSING_BRACKET, httpdFormatStrings.get(2));
+        assertEquals(HttpdFormatStrings.REMOTE_HOST, httpdFormatStrings.get(3));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(4));
+        assertEquals("Some-Cookie", ((CookieHttpdFormatString) httpdFormatStrings.get(5)).getCookieName());
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(6));
     }
 
     // parseLine() -----------------------------------------------------------------------------------------------------
@@ -156,16 +156,16 @@ public class HttpdLineParserTest extends LineParserTest {
         String line = "127.0.0.1 bob [10/Oct/2016:13:55:36 -0700] \"GET /test.gif HTTP/1.1\" 200 2326";
 
         HttpdLogFormat format = new HttpdLogFormat(
-                FormatStrings.REMOTE_HOST,
-                FormatStrings.REMOTE_USER,
-                FormatStrings.OPENING_BRACKET,
-                FormatStrings.TIMESTAMP,
-                FormatStrings.CLOSING_BRACKET,
-                FormatStrings.DOUBLE_QUOTES,
-                FormatStrings.FIRST_REQUEST_LINE,
-                FormatStrings.DOUBLE_QUOTES,
-                FormatStrings.STATUS_CODE,
-                FormatStrings.RESPONSE_ENTITY_BODY_SIZE);
+                HttpdFormatStrings.REMOTE_HOST,
+                HttpdFormatStrings.REMOTE_USER,
+                HttpdFormatStrings.OPENING_BRACKET,
+                HttpdFormatStrings.TIMESTAMP,
+                HttpdFormatStrings.CLOSING_BRACKET,
+                HttpdFormatStrings.DOUBLE_QUOTES,
+                HttpdFormatStrings.FIRST_REQUEST_LINE,
+                HttpdFormatStrings.DOUBLE_QUOTES,
+                HttpdFormatStrings.STATUS_CODE,
+                HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE);
 
         HttpdLineParser parser = new HttpdLineParser(format);
 
@@ -212,7 +212,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         String line = "default task-1 127.0.0.1";
 
-        HttpdLineParser parser = new HttpdLineParser(FormatStrings.THREAD_NAME, FormatStrings.REMOTE_HOST);
+        HttpdLineParser parser = new HttpdLineParser(HttpdFormatStrings.THREAD_NAME, HttpdFormatStrings.REMOTE_HOST);
 
         HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
 
@@ -242,7 +242,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         String line = "127.0.0.1 bob 200 2326";
 
-        HttpdLineParser parser = new HttpdLineParser(FormatStrings.REMOTE_HOST);
+        HttpdLineParser parser = new HttpdLineParser(HttpdFormatStrings.REMOTE_HOST);
 
         HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
 
@@ -258,9 +258,9 @@ public class HttpdLineParserTest extends LineParserTest {
         String line = "'GET /test.gif HTTP/1.1'";
 
         HttpdLineParser parser = new HttpdLineParser(
-                FormatStrings.SINGLE_QUOTE,
-                FormatStrings.FIRST_REQUEST_LINE,
-                FormatStrings.SINGLE_QUOTE);
+                HttpdFormatStrings.SINGLE_QUOTE,
+                HttpdFormatStrings.FIRST_REQUEST_LINE,
+                HttpdFormatStrings.SINGLE_QUOTE);
 
         HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
         assertEquals("GET /test.gif HTTP/1.1", e.getFirstRequestLine());
@@ -274,15 +274,15 @@ public class HttpdLineParserTest extends LineParserTest {
     public void timestamp_FormatStringHasExplicitBrackets() throws Exception {
 
         HttpdLineParser parser = new HttpdLineParser(
-                FormatStrings.OPENING_BRACKET,
-                FormatStrings.TIMESTAMP,
-                FormatStrings.CLOSING_BRACKET);
+                HttpdFormatStrings.OPENING_BRACKET,
+                HttpdFormatStrings.TIMESTAMP,
+                HttpdFormatStrings.CLOSING_BRACKET);
 
         String line = "[20/Jun/2016:00:00:00 -0400]";
 
         HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
 
-        Date expected = FormatStrings.TIMESTAMP_FORMAT.parse(line.substring(1, line.length() - 1));
+        Date expected = HttpdFormatStrings.TIMESTAMP_FORMAT.parse(line.substring(1, line.length() - 1));
 
         Long timestamp = e.getTimestamp();
 
@@ -292,13 +292,13 @@ public class HttpdLineParserTest extends LineParserTest {
     @Test
     public void timestamp_FormatStringHasNoExplicitBrackets() throws Exception {
 
-        HttpdLineParser parser = new HttpdLineParser(FormatStrings.TIMESTAMP);
+        HttpdLineParser parser = new HttpdLineParser(HttpdFormatStrings.TIMESTAMP);
 
         String line = "[20/Jun/2016:00:00:00 -0400]";
 
         HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
 
-        Date expected = FormatStrings.TIMESTAMP_FORMAT.parse(line.substring(1, line.length() - 1));
+        Date expected = HttpdFormatStrings.TIMESTAMP_FORMAT.parse(line.substring(1, line.length() - 1));
 
         Long timestamp = e.getTimestamp();
 
@@ -379,7 +379,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         String line = "blah blah.com blah blah";
         int cursor = 5;
-        FormatString crt = FormatStrings.LOCAL_SERVER_NAME;
+        HttpdFormatString crt = HttpdFormatStrings.LOCAL_SERVER_NAME;
 
         HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, crt, null, null);
 
@@ -392,7 +392,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         String line = "blah GET /account/login?something=something_else&other_thing=true HTTP/1.1 blah";
         int cursor = 5;
-        FormatString crt = FormatStrings.FIRST_REQUEST_LINE;
+        HttpdFormatString crt = HttpdFormatStrings.FIRST_REQUEST_LINE;
 
         HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, crt, null, null);
 
@@ -405,8 +405,8 @@ public class HttpdLineParserTest extends LineParserTest {
 
         String line = "blah \"GET /account/login?something=something_else&other_thing=true HTTP/1.1\" blah";
         int cursor = 6;
-        FormatString crt = FormatStrings.FIRST_REQUEST_LINE;
-        FormatString expectedRightEnclosure = FormatStrings.DOUBLE_QUOTES;
+        HttpdFormatString crt = HttpdFormatStrings.FIRST_REQUEST_LINE;
+        HttpdFormatString expectedRightEnclosure = HttpdFormatStrings.DOUBLE_QUOTES;
 
         HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, crt, expectedRightEnclosure, null);
 
@@ -419,7 +419,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         String line = "blah Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; .NET CLR 1.1.4322) blah";
         int cursor = 5;
-        FormatString userAgent = FormatString.fromString("%{User-Agent}i").get(0);
+        HttpdFormatString userAgent = HttpdFormatString.fromString("%{User-Agent}i").get(0);
 
         HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, userAgent, null, null);
 
@@ -432,8 +432,8 @@ public class HttpdLineParserTest extends LineParserTest {
 
         String line = "blah \"Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; .NET CLR 1.1.4322)\" blah";
         int cursor = 6;
-        FormatString expectedRightEnclosure = FormatStrings.DOUBLE_QUOTES;
-        FormatString userAgent = FormatString.fromString("%{User-Agent}i").get(0);
+        HttpdFormatString expectedRightEnclosure = HttpdFormatStrings.DOUBLE_QUOTES;
+        HttpdFormatString userAgent = HttpdFormatString.fromString("%{User-Agent}i").get(0);
 
         HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, userAgent, expectedRightEnclosure, null);
 
@@ -446,7 +446,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         String line = "blah cookie1=value1.something; cookie2=value2; cookie3=value3 blah";
         int cursor = 5;
-        FormatString cookie = FormatString.fromString("%{Cookie}i").get(0);
+        HttpdFormatString cookie = HttpdFormatString.fromString("%{Cookie}i").get(0);
 
         HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, cookie, null, null);
 
@@ -459,8 +459,8 @@ public class HttpdLineParserTest extends LineParserTest {
 
         String line = "blah \"cookie1=value1=something; cookie2=value2; cookie3=value3\" blah";
         int cursor = 6;
-        FormatString expectedRightEnclosure = FormatStrings.DOUBLE_QUOTES;
-        FormatString cookie = FormatString.fromString("%{Cookie}i").get(0);
+        HttpdFormatString expectedRightEnclosure = HttpdFormatStrings.DOUBLE_QUOTES;
+        HttpdFormatString cookie = HttpdFormatString.fromString("%{Cookie}i").get(0);
 
         HttpdLineParser.Token token = HttpdLineParser.nextToken(line, cursor, cookie, expectedRightEnclosure, null);
 
@@ -481,7 +481,7 @@ public class HttpdLineParserTest extends LineParserTest {
     @Override
     protected String getValidFormatForLineParserToTest() throws Exception {
 
-        return FormatStrings.REMOTE_HOST.getLiteral();
+        return HttpdFormatStrings.REMOTE_HOST.getLiteral();
     }
 
     @Override

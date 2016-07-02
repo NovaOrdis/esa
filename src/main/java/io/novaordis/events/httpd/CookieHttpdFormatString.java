@@ -16,74 +16,75 @@
 
 package io.novaordis.events.httpd;
 
-import io.novaordis.events.core.event.Property;
-import io.novaordis.events.ParsingException;
+import java.util.regex.Pattern;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/22/16
+ * @since 2/4/16
  */
-public class MockFormatString implements FormatString {
+public class CookieHttpdFormatString extends ParameterizedHttpdFormatStringBase implements ParameterizedHttpdFormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    public static final String PREFIX = "%{c,"; // handles this format %{c,Something}
+    public static final Pattern ALTERNATIVE_FORMAT_PATTERN = Pattern.compile("%\\{(.+)\\}c"); // handles this format %{Something}c
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String literal;
-    private Class type;
+    private String cookieName;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public MockFormatString(String literal) {
-        this(literal, null);
+    /**
+     * @param formatStringLiteral - we expect a cookie format specification (%{c,Some-Cookie}) to start the given
+     *                            string, but it is acceptable that other format strings follow, without any
+     *                            intermediary space. They will be ignored.
+     *
+     * @throws IllegalArgumentException if the literal does not match the expected pattern.
+     */
+    public CookieHttpdFormatString(String formatStringLiteral) throws IllegalArgumentException {
+        super(formatStringLiteral);
     }
 
-    public MockFormatString(String literal, Class type) {
-        this.literal = literal;
-        this.type = type;
-    }
-
-    // FormatStrings implementation ------------------------------------------------------------------------------------
+    // ParameterizedHttpdFormatString implementation ------------------------------------------------------------------------
 
     @Override
-    public String getLiteral() {
-        return literal;
-    }
+    public String getParameter() {
 
-    @Override
-    public Object parse(String logStringRepresentation, Long lineNumber, Integer positionInLine)
-            throws ParsingException {
-        throw new RuntimeException("parse() NOT YET IMPLEMENTED");
+        return cookieName;
     }
 
     @Override
-    public Class getType() {
-        return type;
+    public void setParameter(String parameter) {
+
+        cookieName = parameter;
+    }
+
+    // ParameterizedHttpdFormatStringBase overrides -------------------------------------------------------------------------
+
+    @Override
+    protected String getPrefix() {
+        return PREFIX;
     }
 
     @Override
-    public boolean isLeftEnclosure() {
-        throw new RuntimeException("isLeftEnclosure() NOT YET IMPLEMENTED");
+    protected Pattern getAlternateFormatPattern() {
+        return ALTERNATIVE_FORMAT_PATTERN;
     }
 
     @Override
-    public boolean isRightEnclosure() {
-        throw new RuntimeException("isRightEnclosure() NOT YET IMPLEMENTED");
-    }
+    protected String getHttpEventMapName() {
 
-    @Override
-    public FormatString getMatchingEnclosure() {
-        throw new RuntimeException("getMatchingEnclosure() NOT YET IMPLEMENTED");
-    }
-
-    @Override
-    public Property toProperty(Object value) {
-        throw new RuntimeException("toProperty() NOT YET IMPLEMENTED");
+        return HttpEvent.COOKIES;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public String getCookieName() {
+        return cookieName;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

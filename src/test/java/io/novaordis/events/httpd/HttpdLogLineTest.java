@@ -57,7 +57,7 @@ public class HttpdLogLineTest {
         HttpdLogLine e = new HttpdLogLine();
 
         //noinspection Convert2Lambda
-        Object value = e.getLogValue(new MockFormatString("no-such-format-element"));
+        Object value = e.getLogValue(new MockHttpdFormatString("no-such-format-element"));
 
         assertNull(value);
     }
@@ -67,7 +67,7 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        MockFormatString formatElement = new MockFormatString("LONG_MOCK", Long.class);
+        MockHttpdFormatString formatElement = new MockHttpdFormatString("LONG_MOCK", Long.class);
 
         Object old = e.setLogValue(formatElement, 1L);
         assertNull(old);
@@ -79,9 +79,9 @@ public class HttpdLogLineTest {
 
         assertEquals(2L, e.getLogValue(formatElement));
 
-        Set<FormatString> formatStrings = e.getFormatStrings();
-        assertEquals(1, formatStrings.size());
-        assertEquals(formatElement, formatStrings.iterator().next());
+        Set<HttpdFormatString> httpdFormatStrings = e.getFormatStrings();
+        assertEquals(1, httpdFormatStrings.size());
+        assertEquals(formatElement, httpdFormatStrings.iterator().next());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        MockFormatString formatElement = new MockFormatString("LONG_MOCK", Long.class);
+        MockHttpdFormatString formatElement = new MockHttpdFormatString("LONG_MOCK", Long.class);
 
         Object old = e.setLogValue(formatElement, null);
         assertNull(old);
@@ -110,7 +110,7 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        MockFormatString formatElement = new MockFormatString("LONG_MOCK", Long.class);
+        MockHttpdFormatString formatElement = new MockHttpdFormatString("LONG_MOCK", Long.class);
 
         try {
             e.setLogValue(formatElement, "this should cause failure");
@@ -128,17 +128,17 @@ public class HttpdLogLineTest {
 
         assertNull(e.getTimestamp());
 
-        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
 
         assertEquals(1L, e.getTimestamp().longValue());
 
-        e.setLogValue(FormatStrings.TIMESTAMP, new Date(2L));
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(2L));
 
         assertEquals(2L, e.getTimestamp().longValue());
 
-        Set<FormatString> formatStrings = e.getFormatStrings();
-        assertEquals(1, formatStrings.size());
-        assertEquals(FormatStrings.TIMESTAMP, formatStrings.iterator().next());
+        Set<HttpdFormatString> httpdFormatStrings = e.getFormatStrings();
+        assertEquals(1, httpdFormatStrings.size());
+        assertEquals(HttpdFormatStrings.TIMESTAMP, httpdFormatStrings.iterator().next());
     }
 
     // setLineNumber() -------------------------------------------------------------------------------------------------
@@ -168,7 +168,7 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
 
         HttpEvent event = e.toEvent();
 
@@ -182,10 +182,10 @@ public class HttpdLogLineTest {
 
         e.setLineNumber(7L);
 
-        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
-        e.setLogValue(FormatStrings.FIRST_REQUEST_LINE, "PUT /test/ HTTP/1.1");
-        e.setLogValue(FormatStrings.ORIGINAL_REQUEST_STATUS_CODE, 404);
-        e.setLogValue(FormatStrings.THREAD_NAME, "some thread name XXX-100");
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(HttpdFormatStrings.FIRST_REQUEST_LINE, "PUT /test/ HTTP/1.1");
+        e.setLogValue(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE, 404);
+        e.setLogValue(HttpdFormatStrings.THREAD_NAME, "some thread name XXX-100");
 
         HttpEvent event = e.toEvent();
 
@@ -206,8 +206,8 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
-        e.setLogValue(FormatStrings.STATUS_CODE, 200);
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(HttpdFormatStrings.STATUS_CODE, 200);
 
         HttpEvent event = e.toEvent();
 
@@ -219,9 +219,9 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
-        e.setLogValue(FormatStrings.ORIGINAL_REQUEST_STATUS_CODE, 301);
-        e.setLogValue(FormatStrings.STATUS_CODE, 302);
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE, 301);
+        e.setLogValue(HttpdFormatStrings.STATUS_CODE, 302);
 
         HttpEvent event = e.toEvent();
 
@@ -235,8 +235,8 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
-        e.setLogValue(new RequestHeaderFormatString("%{i,Test-Header}"), "header value");
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(new RequestHeaderHttpdFormatString("%{i,Test-Header}"), "header value");
 
         HttpEvent event = e.toEvent();
 
@@ -254,9 +254,9 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
-        e.setLogValue(new RequestHeaderFormatString("%{i,Test-Header}"), "header value");
-        e.setLogValue(new RequestHeaderFormatString("%{i,Another-Test-Header}"), "header value 2");
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(new RequestHeaderHttpdFormatString("%{i,Test-Header}"), "header value");
+        e.setLogValue(new RequestHeaderHttpdFormatString("%{i,Another-Test-Header}"), "header value 2");
 
         HttpEvent event = e.toEvent();
 
@@ -275,8 +275,8 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
-        e.setLogValue(new CookieFormatString("%{c,TestCookie}"), "test-cookie-value");
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(new CookieHttpdFormatString("%{c,TestCookie}"), "test-cookie-value");
 
         HttpEvent event = e.toEvent();
 
@@ -294,9 +294,9 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(FormatStrings.TIMESTAMP, new Date(1L));
-        e.setLogValue(new CookieFormatString("%{c,TestCookie}"), "test-cookie-value");
-        e.setLogValue(new CookieFormatString("%{c,AnotherTestCookie}"), "another-test-cookie-value");
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        e.setLogValue(new CookieHttpdFormatString("%{c,TestCookie}"), "test-cookie-value");
+        e.setLogValue(new CookieHttpdFormatString("%{c,AnotherTestCookie}"), "another-test-cookie-value");
 
         HttpEvent event = e.toEvent();
 

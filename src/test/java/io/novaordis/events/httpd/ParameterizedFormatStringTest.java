@@ -50,7 +50,7 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
     public void parameterizedFormatFromString_StringContainsSpaces() throws Exception {
 
         try {
-            ParameterizedFormatString.parameterizedFormatFromString("this string contains spaces");
+            ParameterizedHttpdFormatString.parameterizedFormatFromString("this string contains spaces");
             fail("should throw exception");
         }
         catch(IllegalArgumentException e) {
@@ -61,9 +61,9 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
     @Test
     public void parameterizedFormatFromString_RequestHeader() throws Exception {
 
-        ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{i,Test-Header}");
+        ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString("%{i,Test-Header}");
         assertNotNull(pfs);
-        RequestHeaderFormatString i = (RequestHeaderFormatString)pfs;
+        RequestHeaderHttpdFormatString i = (RequestHeaderHttpdFormatString)pfs;
         assertEquals("Test-Header", i.getHeaderName());
     }
 
@@ -74,54 +74,54 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
     @Test
     public void parameterizedFormatFromString_RequestHeader_AlternativeFormat() throws Exception {
 
-        ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{Test-Header}i");
+        ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString("%{Test-Header}i");
         assertNotNull(pfs);
-        RequestHeaderFormatString i = (RequestHeaderFormatString)pfs;
+        RequestHeaderHttpdFormatString i = (RequestHeaderHttpdFormatString)pfs;
         assertEquals("Test-Header", i.getHeaderName());
     }
 
     @Test
     public void parameterizedFormatFromString_ResponseHeader() throws Exception {
 
-        ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{o,Test-Header}");
+        ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString("%{o,Test-Header}");
         assertNotNull(pfs);
-        ResponseHeaderFormatString o = (ResponseHeaderFormatString)pfs;
+        ResponseHeaderHttpdFormatString o = (ResponseHeaderHttpdFormatString)pfs;
         assertEquals("Test-Header", o.getHeaderName());
     }
 
     @Test
     public void parameterizedFormatFromString_ResponseHeader_AlternativeFormat() throws Exception {
 
-        ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{Test-Header}o");
+        ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString("%{Test-Header}o");
         assertNotNull(pfs);
-        ResponseHeaderFormatString o = (ResponseHeaderFormatString)pfs;
+        ResponseHeaderHttpdFormatString o = (ResponseHeaderHttpdFormatString)pfs;
         assertEquals("Test-Header", o.getHeaderName());
     }
 
     @Test
     public void parameterizedFormatFromString_Cookie() throws Exception {
 
-        ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{c,something}");
+        ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString("%{c,something}");
         assertNotNull(pfs);
-        CookieFormatString o = (CookieFormatString)pfs;
+        CookieHttpdFormatString o = (CookieHttpdFormatString)pfs;
         assertEquals("something", o.getCookieName());
     }
 
     @Test
     public void parameterizedFormatFromString_Cookie_AlternativeFormat() throws Exception {
 
-        ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{something}c");
+        ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString("%{something}c");
         assertNotNull(pfs);
-        CookieFormatString o = (CookieFormatString)pfs;
+        CookieHttpdFormatString o = (CookieHttpdFormatString)pfs;
         assertEquals("something", o.getCookieName());
     }
 
     @Test
     public void parameterizedFormatFromString_ParameterizedFormatStringFollowedByQuote() throws Exception {
 
-        ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString("%{c,something}\"");
+        ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString("%{c,something}\"");
         assertNotNull(pfs);
-        CookieFormatString o = (CookieFormatString)pfs;
+        CookieHttpdFormatString o = (CookieHttpdFormatString)pfs;
         assertEquals("something", o.getCookieName());
     }
 
@@ -144,9 +144,9 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
     @Test
     public void constructor_LiteralDoesNotEndWithPrefix() throws Exception {
 
-        ParameterizedFormatString civilian = getFormatStringToTest();
+        ParameterizedHttpdFormatString civilian = getFormatStringToTest();
 
-        String doesNotEndWithBrace = ((ParameterizedFormatStringBase)civilian).getPrefix() + "something";
+        String doesNotEndWithBrace = ((ParameterizedHttpdFormatStringBase)civilian).getPrefix() + "something";
 
         try {
             getFormatStringToTest(doesNotEndWithBrace);
@@ -164,7 +164,7 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
     @Test
     public void getType() throws Exception {
 
-        ParameterizedFormatString pfs = getFormatStringToTest();
+        ParameterizedHttpdFormatString pfs = getFormatStringToTest();
         assertEquals(String.class, pfs.getType());
     }
 
@@ -173,7 +173,7 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
     @Test
     public void parse() throws Exception {
 
-        ParameterizedFormatString pfs = getFormatStringToTest();
+        ParameterizedHttpdFormatString pfs = getFormatStringToTest();
 
         String s = (String)pfs.parse("something", null, null);
         assertEquals("something", s);
@@ -184,11 +184,11 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
     @Test
     public void toProperty() throws Exception {
 
-        ParameterizedFormatString pfs = getFormatStringToTest();
+        ParameterizedHttpdFormatString pfs = getFormatStringToTest();
 
         MapProperty mapProperty = (MapProperty)pfs.toProperty("something");
 
-        assertEquals(((ParameterizedFormatStringBase)pfs).getHttpEventMapName(), mapProperty.getName());
+        assertEquals(((ParameterizedHttpdFormatStringBase)pfs).getHttpEventMapName(), mapProperty.getName());
         Map<String, Object> map = mapProperty.getMap();
         assertEquals(1, map.size());
         assertEquals("something", map.get(pfs.getParameter()));
@@ -199,11 +199,11 @@ public abstract class ParameterizedFormatStringTest extends FormatStringTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected ParameterizedFormatString getFormatStringToTest() {
+    protected ParameterizedHttpdFormatString getFormatStringToTest() {
         return getFormatStringToTest(null);
     }
 
-    protected abstract ParameterizedFormatString getFormatStringToTest(String literal);
+    protected abstract ParameterizedHttpdFormatString getFormatStringToTest(String literal);
 
     // Private ---------------------------------------------------------------------------------------------------------
 

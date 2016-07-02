@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
  */
-public class CookieFormatStringTest extends ParameterizedFormatStringTest {
+public class CookieHttpdFormatStringTest extends ParameterizedFormatStringTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -39,7 +39,7 @@ public class CookieFormatStringTest extends ParameterizedFormatStringTest {
     @Test
     public void getLiteral() throws Exception {
 
-        CookieFormatString i = new CookieFormatString("%{c,something}");
+        CookieHttpdFormatString i = new CookieHttpdFormatString("%{c,something}");
 
         assertEquals("%{c,something}", i.getLiteral());
     }
@@ -47,7 +47,7 @@ public class CookieFormatStringTest extends ParameterizedFormatStringTest {
     @Test
     public void getLiteral_AlternativeFormat() throws Exception {
 
-        CookieFormatString i = new CookieFormatString("%{something}c");
+        CookieHttpdFormatString i = new CookieHttpdFormatString("%{something}c");
 
         assertEquals("%{something}c", i.getLiteral());
     }
@@ -56,7 +56,7 @@ public class CookieFormatStringTest extends ParameterizedFormatStringTest {
     @Test
     public void literalStartsWithCookieSpecificationButAlsoContainsSomethingElse() throws Exception {
 
-        CookieFormatString i = new CookieFormatString("%{c,something}blah");
+        CookieHttpdFormatString i = new CookieHttpdFormatString("%{c,something}blah");
 
         assertEquals("%{c,something}", i.getLiteral());
     }
@@ -66,13 +66,13 @@ public class CookieFormatStringTest extends ParameterizedFormatStringTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected CookieFormatString getFormatStringToTest(String s) {
+    protected CookieHttpdFormatString getFormatStringToTest(String s) {
 
         if (s == null) {
             s = "%{c,something}";
         }
 
-        return new CookieFormatString(s);
+        return new CookieHttpdFormatString(s);
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

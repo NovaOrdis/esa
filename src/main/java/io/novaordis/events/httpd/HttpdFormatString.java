@@ -34,11 +34,11 @@ import java.util.StringTokenizer;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/22/16
  */
-public interface FormatString {
+public interface HttpdFormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    Logger log = org.slf4j.LoggerFactory.getLogger(FormatString.class);
+    Logger log = org.slf4j.LoggerFactory.getLogger(HttpdFormatString.class);
 
     String TIMESTAMP_FORMAT_STRING = "dd/MMM/yyyy:HH:mm:ss Z";
     DateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(TIMESTAMP_FORMAT_STRING);
@@ -52,11 +52,11 @@ public interface FormatString {
      * @throws CorruptedHttpdFormatStringException if the format string is a partially correct httpd format string but
      *  an unknown element is encountered. The invalid token is mentioned in the human-readable error message.
      */
-    static List<FormatString> fromString(String s) throws CorruptedHttpdFormatStringException, ParsingException {
+    static List<HttpdFormatString> fromString(String s) throws CorruptedHttpdFormatStringException, ParsingException {
 
-        log.debug("attempting to produce a FormatString list from \"" + s + "\"");
+        log.debug("attempting to produce a HttpdFormatString list from \"" + s + "\"");
 
-        List<FormatString> result = new ArrayList<>();
+        List<HttpdFormatString> result = new ArrayList<>();
 
         for(StringTokenizer st = new StringTokenizer(s, " "); st.hasMoreTokens(); ) {
 
@@ -64,7 +64,7 @@ public interface FormatString {
 
             token: while(tok.length() > 0) {
 
-                for(FormatString fs: FormatStrings.values()) {
+                for(HttpdFormatString fs: HttpdFormatStrings.values()) {
                     if (tok.startsWith(fs.getLiteral())) {
                         result.add(fs);
                         tok = tok.substring(fs.getLiteral().length());
@@ -73,7 +73,7 @@ public interface FormatString {
                 }
 
                 // try known parameterized format strings
-                ParameterizedFormatString pfs = ParameterizedFormatString.parameterizedFormatFromString(tok);
+                ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString(tok);
                 if (pfs != null) {
                     result.add(pfs);
                     tok = tok.substring(pfs.getLiteral().length());
@@ -138,10 +138,10 @@ public interface FormatString {
      * are a left brace, left brace if we are a right brace, double quotes if we are double quotes, single quote if
      * we are a single quote. Return null if this element is not an enclosure.
      */
-    FormatString getMatchingEnclosure();
+    HttpdFormatString getMatchingEnclosure();
 
     /**
-     * @return may return null if conversion is not possible (the value is null, the FormatString - double quotes -
+     * @return may return null if conversion is not possible (the value is null, the HttpdFormatString - double quotes -
      * cannot generate a property, etc.)
      */
     Property toProperty(Object value);

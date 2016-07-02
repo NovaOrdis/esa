@@ -75,9 +75,9 @@ public class HttpdLineParser implements LineParser {
         this.lineFormat = format;
     }
 
-    public HttpdLineParser(FormatString... formatStrings) throws IllegalArgumentException {
+    public HttpdLineParser(HttpdFormatString... httpdFormatStrings) throws IllegalArgumentException {
 
-        this.lineFormat = new HttpdLogFormat(formatStrings);
+        this.lineFormat = new HttpdLogFormat(httpdFormatStrings);
     }
 
     // LineParser implementation ---------------------------------------------------------------------------------------
@@ -108,13 +108,13 @@ public class HttpdLineParser implements LineParser {
         // parsing code with matching against the aggregated pattern (TODO: evaluate this later)
         //
 
-        List<FormatString> formatStrings = lineFormat.getFormatStrings();
+        List<HttpdFormatString> httpdFormatStrings = lineFormat.getHttpdFormatStrings();
 
         char c;
         int cursor = 0;
-        FormatString expectedRightEnclosure = null;
+        HttpdFormatString expectedRightEnclosure = null;
 
-        for(FormatString crt : formatStrings) {
+        for(HttpdFormatString crt : httpdFormatStrings) {
 
              if (expectedRightEnclosure != null) {
 
@@ -184,8 +184,8 @@ public class HttpdLineParser implements LineParser {
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    protected static Token nextToken(String line, int cursor, FormatString crt,
-                                     FormatString expectedRightEnclosure, Long lineNumber)
+    protected static Token nextToken(String line, int cursor, HttpdFormatString crt,
+                                     HttpdFormatString expectedRightEnclosure, Long lineNumber)
             throws ParsingException {
 
         //
@@ -205,7 +205,7 @@ public class HttpdLineParser implements LineParser {
             i = line.indexOf(closingChar, cursor);
 
         }
-        else if (FormatStrings.FIRST_REQUEST_LINE.equals(crt)) {
+        else if (HttpdFormatStrings.FIRST_REQUEST_LINE.equals(crt)) {
 
             i = FirstRequestLineMicroParser.identifyEnd(line, cursor);
         }

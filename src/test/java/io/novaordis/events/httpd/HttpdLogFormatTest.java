@@ -52,12 +52,12 @@ public class HttpdLogFormatTest extends LineFormatTest {
     public void constructor() throws Exception {
 
         // duplicate format elements - this should be acceptable
-        HttpdLogFormat f = new HttpdLogFormat(FormatStrings.REMOTE_HOST, FormatStrings.REMOTE_HOST);
+        HttpdLogFormat f = new HttpdLogFormat(HttpdFormatStrings.REMOTE_HOST, HttpdFormatStrings.REMOTE_HOST);
 
-        List<FormatString> formatStrings = f.getFormatStrings();
-        assertEquals(2, formatStrings.size());
-        assertEquals(FormatStrings.REMOTE_HOST, formatStrings.get(0));
-        assertEquals(FormatStrings.REMOTE_HOST, formatStrings.get(1));
+        List<HttpdFormatString> httpdFormatStrings = f.getHttpdFormatStrings();
+        assertEquals(2, httpdFormatStrings.size());
+        assertEquals(HttpdFormatStrings.REMOTE_HOST, httpdFormatStrings.get(0));
+        assertEquals(HttpdFormatStrings.REMOTE_HOST, httpdFormatStrings.get(1));
     }
 
     @Test
@@ -66,19 +66,19 @@ public class HttpdLogFormatTest extends LineFormatTest {
         String s = HttpdLogFormat.COMMON.toString();
         HttpdLogFormat f = new HttpdLogFormat(s);
 
-        List<FormatString> formatStrings = f.getFormatStrings();
+        List<HttpdFormatString> httpdFormatStrings = f.getHttpdFormatStrings();
 
-        assertEquals(FormatStrings.REMOTE_HOST, formatStrings.get(0));
-        assertEquals(FormatStrings.REMOTE_LOGNAME, formatStrings.get(1));
-        assertEquals(FormatStrings.REMOTE_USER, formatStrings.get(2));
-        assertEquals(FormatStrings.OPENING_BRACKET, formatStrings.get(3));
-        assertEquals(FormatStrings.TIMESTAMP, formatStrings.get(4));
-        assertEquals(FormatStrings.CLOSING_BRACKET, formatStrings.get(5));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(6));
-        assertEquals(FormatStrings.FIRST_REQUEST_LINE, formatStrings.get(7));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(8));
-        assertEquals(FormatStrings.STATUS_CODE, formatStrings.get(9));
-        assertEquals(FormatStrings.RESPONSE_ENTITY_BODY_SIZE, formatStrings.get(10));
+        assertEquals(HttpdFormatStrings.REMOTE_HOST, httpdFormatStrings.get(0));
+        assertEquals(HttpdFormatStrings.REMOTE_LOGNAME, httpdFormatStrings.get(1));
+        assertEquals(HttpdFormatStrings.REMOTE_USER, httpdFormatStrings.get(2));
+        assertEquals(HttpdFormatStrings.OPENING_BRACKET, httpdFormatStrings.get(3));
+        assertEquals(HttpdFormatStrings.TIMESTAMP, httpdFormatStrings.get(4));
+        assertEquals(HttpdFormatStrings.CLOSING_BRACKET, httpdFormatStrings.get(5));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(6));
+        assertEquals(HttpdFormatStrings.FIRST_REQUEST_LINE, httpdFormatStrings.get(7));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(8));
+        assertEquals(HttpdFormatStrings.STATUS_CODE, httpdFormatStrings.get(9));
+        assertEquals(HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE, httpdFormatStrings.get(10));
     }
 
     @Test
@@ -87,25 +87,25 @@ public class HttpdLogFormatTest extends LineFormatTest {
         String s = HttpdLogFormat.PERFORMANCE_ANALYSIS.toString();
         HttpdLogFormat f = new HttpdLogFormat(s);
 
-        List<FormatString> formatStrings = f.getFormatStrings();
+        List<HttpdFormatString> httpdFormatStrings = f.getHttpdFormatStrings();
 
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(0));
-        assertEquals(FormatStrings.THREAD_NAME, formatStrings.get(1));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(2));
-        assertEquals(FormatStrings.REMOTE_HOST, formatStrings.get(3));
-        assertEquals(FormatStrings.REMOTE_USER, formatStrings.get(4));
-        assertEquals(FormatStrings.OPENING_BRACKET, formatStrings.get(5));
-        assertEquals(FormatStrings.TIMESTAMP, formatStrings.get(6));
-        assertEquals(FormatStrings.CLOSING_BRACKET, formatStrings.get(7));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(8));
-        assertEquals(FormatStrings.FIRST_REQUEST_LINE, formatStrings.get(9));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(10));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(11));
-        assertEquals(FormatStrings.QUERY_STRING, formatStrings.get(12));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(13));
-        assertEquals(FormatStrings.ORIGINAL_REQUEST_STATUS_CODE, formatStrings.get(14));
-        assertEquals(FormatStrings.RESPONSE_ENTITY_BODY_SIZE, formatStrings.get(15));
-        assertEquals(FormatStrings.REQUEST_PROCESSING_TIME_MS, formatStrings.get(16));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(0));
+        assertEquals(HttpdFormatStrings.THREAD_NAME, httpdFormatStrings.get(1));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(2));
+        assertEquals(HttpdFormatStrings.REMOTE_HOST, httpdFormatStrings.get(3));
+        assertEquals(HttpdFormatStrings.REMOTE_USER, httpdFormatStrings.get(4));
+        assertEquals(HttpdFormatStrings.OPENING_BRACKET, httpdFormatStrings.get(5));
+        assertEquals(HttpdFormatStrings.TIMESTAMP, httpdFormatStrings.get(6));
+        assertEquals(HttpdFormatStrings.CLOSING_BRACKET, httpdFormatStrings.get(7));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(8));
+        assertEquals(HttpdFormatStrings.FIRST_REQUEST_LINE, httpdFormatStrings.get(9));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(10));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(11));
+        assertEquals(HttpdFormatStrings.QUERY_STRING, httpdFormatStrings.get(12));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(13));
+        assertEquals(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE, httpdFormatStrings.get(14));
+        assertEquals(HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE, httpdFormatStrings.get(15));
+        assertEquals(HttpdFormatStrings.REQUEST_PROCESSING_TIME_MS, httpdFormatStrings.get(16));
     }
 
     @Test
@@ -115,32 +115,32 @@ public class HttpdLogFormatTest extends LineFormatTest {
 
         HttpdLogFormat f = new HttpdLogFormat(s);
 
-        List<FormatString> formatStrings = f.getFormatStrings();
+        List<HttpdFormatString> httpdFormatStrings = f.getHttpdFormatStrings();
 
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(0));
-        assertEquals(FormatStrings.THREAD_NAME, formatStrings.get(1));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(2));
-        assertEquals(FormatStrings.REMOTE_HOST, formatStrings.get(3));
-        assertEquals(FormatStrings.REMOTE_USER, formatStrings.get(4));
-        assertEquals(FormatStrings.OPENING_BRACKET, formatStrings.get(5));
-        assertEquals(FormatStrings.TIMESTAMP, formatStrings.get(6));
-        assertEquals(FormatStrings.CLOSING_BRACKET, formatStrings.get(7));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(8));
-        assertEquals(FormatStrings.FIRST_REQUEST_LINE, formatStrings.get(9));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(10));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(11));
-        assertEquals(FormatStrings.QUERY_STRING, formatStrings.get(12));
-        assertEquals(FormatStrings.DOUBLE_QUOTES, formatStrings.get(13));
-        assertEquals(FormatStrings.ORIGINAL_REQUEST_STATUS_CODE, formatStrings.get(14));
-        assertEquals(FormatStrings.RESPONSE_ENTITY_BODY_SIZE, formatStrings.get(15));
-        assertEquals(FormatStrings.REQUEST_PROCESSING_TIME_MS, formatStrings.get(16));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(0));
+        assertEquals(HttpdFormatStrings.THREAD_NAME, httpdFormatStrings.get(1));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(2));
+        assertEquals(HttpdFormatStrings.REMOTE_HOST, httpdFormatStrings.get(3));
+        assertEquals(HttpdFormatStrings.REMOTE_USER, httpdFormatStrings.get(4));
+        assertEquals(HttpdFormatStrings.OPENING_BRACKET, httpdFormatStrings.get(5));
+        assertEquals(HttpdFormatStrings.TIMESTAMP, httpdFormatStrings.get(6));
+        assertEquals(HttpdFormatStrings.CLOSING_BRACKET, httpdFormatStrings.get(7));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(8));
+        assertEquals(HttpdFormatStrings.FIRST_REQUEST_LINE, httpdFormatStrings.get(9));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(10));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(11));
+        assertEquals(HttpdFormatStrings.QUERY_STRING, httpdFormatStrings.get(12));
+        assertEquals(HttpdFormatStrings.DOUBLE_QUOTES, httpdFormatStrings.get(13));
+        assertEquals(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE, httpdFormatStrings.get(14));
+        assertEquals(HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE, httpdFormatStrings.get(15));
+        assertEquals(HttpdFormatStrings.REQUEST_PROCESSING_TIME_MS, httpdFormatStrings.get(16));
     }
 
     @Test
     public void unbalancedDoubleQuotes() throws Exception {
 
         try {
-            new HttpdLogFormat(FormatStrings.DOUBLE_QUOTES);
+            new HttpdLogFormat(HttpdFormatStrings.DOUBLE_QUOTES);
             fail("should have thrown exception");
         }
         catch(IllegalArgumentException e) {
@@ -153,9 +153,9 @@ public class HttpdLogFormatTest extends LineFormatTest {
 
         try {
             new HttpdLogFormat(
-                    FormatStrings.REMOTE_HOST,
-                    FormatStrings.DOUBLE_QUOTES,
-                    FormatStrings.TIMESTAMP);
+                    HttpdFormatStrings.REMOTE_HOST,
+                    HttpdFormatStrings.DOUBLE_QUOTES,
+                    HttpdFormatStrings.TIMESTAMP);
             fail("should have thrown exception");
         }
         catch(IllegalArgumentException e) {
@@ -167,7 +167,7 @@ public class HttpdLogFormatTest extends LineFormatTest {
     public void unbalancedSingleQuotes() throws Exception {
 
         try {
-            new HttpdLogFormat(FormatStrings.SINGLE_QUOTE);
+            new HttpdLogFormat(HttpdFormatStrings.SINGLE_QUOTE);
             fail("should have thrown exception");
         }
         catch(IllegalArgumentException e) {
@@ -178,32 +178,32 @@ public class HttpdLogFormatTest extends LineFormatTest {
     @Test
     public void constructor_BracketsAroundTimestampAreImplied() throws Exception {
 
-        HttpdLogFormat f = new HttpdLogFormat(FormatStrings.TIMESTAMP);
+        HttpdLogFormat f = new HttpdLogFormat(HttpdFormatStrings.TIMESTAMP);
 
-        List<FormatString> fs = f.getFormatStrings();
+        List<HttpdFormatString> fs = f.getHttpdFormatStrings();
         assertEquals(3, fs.size());
 
-        assertEquals(FormatStrings.OPENING_BRACKET, fs.get(0));
-        assertEquals(FormatStrings.TIMESTAMP, fs.get(1));
-        assertEquals(FormatStrings.CLOSING_BRACKET, fs.get(2));
+        assertEquals(HttpdFormatStrings.OPENING_BRACKET, fs.get(0));
+        assertEquals(HttpdFormatStrings.TIMESTAMP, fs.get(1));
+        assertEquals(HttpdFormatStrings.CLOSING_BRACKET, fs.get(2));
     }
 
     @Test
     public void constructor_BracketsAroundTimestampAreImplied_2() throws Exception {
 
         HttpdLogFormat f = new HttpdLogFormat(
-                FormatStrings.LOCAL_SERVER_NAME,
-                FormatStrings.TIMESTAMP,
-                FormatStrings.LOCAL_IP_ADDRESS);
+                HttpdFormatStrings.LOCAL_SERVER_NAME,
+                HttpdFormatStrings.TIMESTAMP,
+                HttpdFormatStrings.LOCAL_IP_ADDRESS);
 
-        List<FormatString> fs = f.getFormatStrings();
+        List<HttpdFormatString> fs = f.getHttpdFormatStrings();
         assertEquals(5, fs.size());
 
-        assertEquals(FormatStrings.LOCAL_SERVER_NAME, fs.get(0));
-        assertEquals(FormatStrings.OPENING_BRACKET, fs.get(1));
-        assertEquals(FormatStrings.TIMESTAMP, fs.get(2));
-        assertEquals(FormatStrings.CLOSING_BRACKET, fs.get(3));
-        assertEquals(FormatStrings.LOCAL_IP_ADDRESS, fs.get(4));
+        assertEquals(HttpdFormatStrings.LOCAL_SERVER_NAME, fs.get(0));
+        assertEquals(HttpdFormatStrings.OPENING_BRACKET, fs.get(1));
+        assertEquals(HttpdFormatStrings.TIMESTAMP, fs.get(2));
+        assertEquals(HttpdFormatStrings.CLOSING_BRACKET, fs.get(3));
+        assertEquals(HttpdFormatStrings.LOCAL_IP_ADDRESS, fs.get(4));
     }
 
     @Test
@@ -211,26 +211,26 @@ public class HttpdLogFormatTest extends LineFormatTest {
 
         HttpdLogFormat f = new HttpdLogFormat("%t");
 
-        List<FormatString> fs = f.getFormatStrings();
+        List<HttpdFormatString> fs = f.getHttpdFormatStrings();
         assertEquals(3, fs.size());
 
-        assertEquals(FormatStrings.OPENING_BRACKET, fs.get(0));
-        assertEquals(FormatStrings.TIMESTAMP, fs.get(1));
-        assertEquals(FormatStrings.CLOSING_BRACKET, fs.get(2));
+        assertEquals(HttpdFormatStrings.OPENING_BRACKET, fs.get(0));
+        assertEquals(HttpdFormatStrings.TIMESTAMP, fs.get(1));
+        assertEquals(HttpdFormatStrings.CLOSING_BRACKET, fs.get(2));
     }
 
 
-    // getFormatStrings() ----------------------------------------------------------------------------------------------
+    // getHttpdFormatStrings() ----------------------------------------------------------------------------------------------
 
     @Test
     public void getFormatStrings_ReturnsTheUnderlyingStorage() throws Exception {
 
-        FormatString fs = new MockFormatString("A");
-        FormatString fs2 = new MockFormatString("b");
+        HttpdFormatString fs = new MockHttpdFormatString("A");
+        HttpdFormatString fs2 = new MockHttpdFormatString("b");
 
         HttpdLogFormat logFormat = new HttpdLogFormat(fs, fs2);
 
-        List<FormatString> fes = logFormat.getFormatStrings();
+        List<HttpdFormatString> fes = logFormat.getHttpdFormatStrings();
 
         assertEquals(2, fes.size());
         assertEquals(fs, fes.get(0));
@@ -239,7 +239,7 @@ public class HttpdLogFormatTest extends LineFormatTest {
         // test mutability
         fes.set(0, null);
 
-        List<FormatString> fes2 = logFormat.getFormatStrings();
+        List<HttpdFormatString> fes2 = logFormat.getHttpdFormatStrings();
 
         assertEquals(2, fes2.size());
         assertNull(fes.get(0));

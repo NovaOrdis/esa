@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
  */
-abstract class ParameterizedFormatStringBase implements ParameterizedFormatString {
+abstract class ParameterizedHttpdFormatStringBase implements ParameterizedHttpdFormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -46,12 +46,12 @@ abstract class ParameterizedFormatStringBase implements ParameterizedFormatStrin
      *
      * @throws IllegalArgumentException if the literal does not match the expected pattern.
      */
-    protected ParameterizedFormatStringBase(String formatStringLiteral) throws IllegalArgumentException {
+    protected ParameterizedHttpdFormatStringBase(String formatStringLiteral) throws IllegalArgumentException {
 
         parseInternal(formatStringLiteral);
     }
 
-    // ParameterizedFormatString implementation ------------------------------------------------------------------------
+    // ParameterizedHttpdFormatString implementation ------------------------------------------------------------------------
 
     @Override
     public Object parse(String logStringRepresentation, Long lineNumber, Integer positionInLine)
@@ -82,7 +82,7 @@ abstract class ParameterizedFormatStringBase implements ParameterizedFormatStrin
     }
 
     @Override
-    public FormatString getMatchingEnclosure() {
+    public HttpdFormatString getMatchingEnclosure() {
         return null;
     }
 

@@ -32,7 +32,7 @@ import io.novaordis.events.core.event.FaultType;
 import io.novaordis.events.extensions.bscenarios.stats.BusinessScenarioStateStatistics;
 import io.novaordis.events.extensions.bscenarios.stats.BusinessScenarioStatistics;
 import io.novaordis.events.extensions.bscenarios.stats.FaultStatistics;
-import io.novaordis.events.httpd.FormatString;
+import io.novaordis.events.httpd.HttpdFormatString;
 import io.novaordis.events.httpd.HttpEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,7 @@ public class BusinessScenarioCommand extends CommandBase {
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(FormatString.TIMESTAMP_FORMAT_STRING);
+    private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(HttpdFormatString.TIMESTAMP_FORMAT_STRING);
 
     public static String formatTimestamp(long timestamp) {
 

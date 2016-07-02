@@ -22,8 +22,8 @@ import io.novaordis.events.core.LineParser;
 import io.novaordis.events.csv.CsvFormat;
 import io.novaordis.events.csv.CsvLineParser;
 import io.novaordis.events.csv.Field;
-import io.novaordis.events.httpd.FormatString;
-import io.novaordis.events.httpd.FormatStrings;
+import io.novaordis.events.httpd.HttpdFormatString;
+import io.novaordis.events.httpd.HttpdFormatStrings;
 import io.novaordis.events.httpd.HttpdLineParser;
 import io.novaordis.events.httpd.HttpdLogFormat;
 import org.junit.Test;
@@ -81,12 +81,12 @@ public class LineParserFactoryTest {
         HttpdLineParser httpdLineParser = (HttpdLineParser)parser;
         LineFormat f = httpdLineParser.getLineFormat();
         HttpdLogFormat httpdLogFormat = (HttpdLogFormat)f;
-        List<FormatString> formatStrings = httpdLogFormat.getFormatStrings();
-        assertEquals(4, formatStrings.size());
-        assertEquals(FormatStrings.OPENING_BRACKET, formatStrings.get(0));
-        assertEquals(FormatStrings.TIMESTAMP, formatStrings.get(1));
-        assertEquals(FormatStrings.CLOSING_BRACKET, formatStrings.get(2));
-        assertEquals(FormatStrings.REMOTE_HOST, formatStrings.get(3));
+        List<HttpdFormatString> httpdFormatStrings = httpdLogFormat.getHttpdFormatStrings();
+        assertEquals(4, httpdFormatStrings.size());
+        assertEquals(HttpdFormatStrings.OPENING_BRACKET, httpdFormatStrings.get(0));
+        assertEquals(HttpdFormatStrings.TIMESTAMP, httpdFormatStrings.get(1));
+        assertEquals(HttpdFormatStrings.CLOSING_BRACKET, httpdFormatStrings.get(2));
+        assertEquals(HttpdFormatStrings.REMOTE_HOST, httpdFormatStrings.get(3));
     }
 
     @Test

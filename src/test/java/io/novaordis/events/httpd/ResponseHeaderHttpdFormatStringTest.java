@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
  */
-public class RequestHeaderFormatStringTest extends ParameterizedFormatStringTest {
+public class ResponseHeaderHttpdFormatStringTest extends ParameterizedFormatStringTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -39,37 +39,25 @@ public class RequestHeaderFormatStringTest extends ParameterizedFormatStringTest
     @Test
     public void getLiteral() throws Exception {
 
-        RequestHeaderFormatString i = new RequestHeaderFormatString("%{i,Test-Request-Header}");
+        ResponseHeaderHttpdFormatString i = new ResponseHeaderHttpdFormatString("%{o,Test-Response-Header}");
 
-        assertEquals("%{i,Test-Request-Header}", i.getLiteral());
+        assertEquals("%{o,Test-Response-Header}", i.getLiteral());
     }
 
     @Test
     public void getLiteral_AlternativeFormat() throws Exception {
 
-        RequestHeaderFormatString i = new RequestHeaderFormatString("%{Test-Request-Header}i");
+        ResponseHeaderHttpdFormatString i = new ResponseHeaderHttpdFormatString("%{Test-Response-Header}o");
 
-        assertEquals("%{Test-Request-Header}i", i.getLiteral());
+        assertEquals("%{Test-Response-Header}o", i.getLiteral());
     }
 
     @Test
     public void literalStartsWithHeaderSpecificationButAlsoContainsSomethingElse() throws Exception {
 
-        RequestHeaderFormatString i = new RequestHeaderFormatString("%{i,Test-Request-Header}blah");
+        ResponseHeaderHttpdFormatString i = new ResponseHeaderHttpdFormatString("%{o,Test-Response-Header}blah");
 
-        assertEquals("%{i,Test-Request-Header}", i.getLiteral());
-    }
-
-    // capitalization --------------------------------------------------------------------------------------------------
-
-    @Test
-    public void capitalization() throws Exception {
-
-        RequestHeaderFormatString i = new RequestHeaderFormatString("%{i,Something}");
-        assertEquals("Something", i.getHeaderName());
-
-        RequestHeaderFormatString i2 = new RequestHeaderFormatString("%{i,SoMeThInG}");
-        assertEquals("SoMeThInG", i2.getHeaderName());
+        assertEquals("%{o,Test-Response-Header}", i.getLiteral());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -77,13 +65,13 @@ public class RequestHeaderFormatStringTest extends ParameterizedFormatStringTest
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected RequestHeaderFormatString getFormatStringToTest(String s) {
+    protected ResponseHeaderHttpdFormatString getFormatStringToTest(String s) {
 
         if (s == null) {
-            s = "%{i,Test-Request-Header}";
+            s = "%{o,Test-Response-Header}";
         }
 
-        return new RequestHeaderFormatString(s);
+        return new ResponseHeaderHttpdFormatString(s);
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

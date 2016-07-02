@@ -23,7 +23,7 @@ package io.novaordis.events.httpd;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/3/16
  */
-public interface ParameterizedFormatString extends FormatString {
+public interface ParameterizedHttpdFormatString extends HttpdFormatString {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -33,10 +33,10 @@ public interface ParameterizedFormatString extends FormatString {
      * @param tokens - we expect a parameterized format string to start the given string, but it is possible that other
      *               format strings follow, without any intermediary space. The "tokens" string must not include spaces.
      *
-     * @return null if no known parameterized format string matches, or a valid ParameterizedFormatString instance if
+     * @return null if no known parameterized format string matches, or a valid ParameterizedHttpdFormatString instance if
      * the literal representation of that parameterized format string was found <b>at the beginning</b> of the argument.
      */
-    static ParameterizedFormatString parameterizedFormatFromString(String tokens) {
+    static ParameterizedHttpdFormatString parameterizedFormatFromString(String tokens) {
 
         if (tokens.contains(" ")) {
             throw new IllegalArgumentException("'" + tokens + "' contains spaces and it should not");
@@ -44,20 +44,20 @@ public interface ParameterizedFormatString extends FormatString {
 
         // TODO inefficient, we do matching twice, once here and once inside the instance. Refactor.
 
-        if (tokens.startsWith(RequestHeaderFormatString.PREFIX) ||
-                RequestHeaderFormatString.ALTERNATIVE_FORMAT_PATTERN.matcher(tokens).matches()) {
+        if (tokens.startsWith(RequestHeaderHttpdFormatString.PREFIX) ||
+                RequestHeaderHttpdFormatString.ALTERNATIVE_FORMAT_PATTERN.matcher(tokens).matches()) {
 
-            return new RequestHeaderFormatString(tokens);
+            return new RequestHeaderHttpdFormatString(tokens);
         }
-        else if (tokens.startsWith(ResponseHeaderFormatString.PREFIX) ||
-                ResponseHeaderFormatString.ALTERNATIVE_FORMAT_PATTERN.matcher(tokens).matches()) {
+        else if (tokens.startsWith(ResponseHeaderHttpdFormatString.PREFIX) ||
+                ResponseHeaderHttpdFormatString.ALTERNATIVE_FORMAT_PATTERN.matcher(tokens).matches()) {
 
-            return new ResponseHeaderFormatString(tokens);
+            return new ResponseHeaderHttpdFormatString(tokens);
         }
-        else if (tokens.startsWith(CookieFormatString.PREFIX) ||
-                CookieFormatString.ALTERNATIVE_FORMAT_PATTERN.matcher(tokens).matches()) {
+        else if (tokens.startsWith(CookieHttpdFormatString.PREFIX) ||
+                CookieHttpdFormatString.ALTERNATIVE_FORMAT_PATTERN.matcher(tokens).matches()) {
 
-            return new CookieFormatString(tokens);
+            return new CookieHttpdFormatString(tokens);
         }
 
         return null;
@@ -66,7 +66,7 @@ public interface ParameterizedFormatString extends FormatString {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
-     * @see ParameterizedFormatString#getParameter()
+     * @see ParameterizedHttpdFormatString#getParameter()
      */
     void setParameter(String parameter);
 
