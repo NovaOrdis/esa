@@ -50,6 +50,15 @@ public class CookieMicroParser {
      */
     public static int identifyEnd(String line, int startFrom, Long lineNumber) throws ParsingException {
 
+        //
+        // easy way out, no value
+        //
+
+        if ("- ".equals(line.substring(startFrom, startFrom + 2))) {
+
+            return startFrom + 1;
+        }
+
         List<Cookie> cookies = new ArrayList<>();
 
         //noinspection UnnecessaryLocalVariable

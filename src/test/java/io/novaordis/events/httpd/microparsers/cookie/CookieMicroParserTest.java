@@ -57,6 +57,16 @@ public class CookieMicroParserTest {
     }
 
     @Test
+    public void identifyEnd_NoValue() throws Exception {
+
+        String line = "something - something else";
+
+        int startFrom = 10;
+        int result = CookieMicroParser.identifyEnd(line, startFrom, null);
+        assertEquals(11 , result);
+    }
+
+    @Test
     public void identifyEnd_LeadingString() throws Exception {
 
         String line = "blah A=B; C=D blah";
