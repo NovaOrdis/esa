@@ -32,7 +32,7 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/4/16
  */
-public abstract class ParameterizedFormatStringTest extends FormatStringTest {
+public abstract class ParameterizedFormatStringTest extends HttpdFormatStringTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 

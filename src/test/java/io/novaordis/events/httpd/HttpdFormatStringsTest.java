@@ -43,7 +43,7 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/21/16
  */
-public class HttpdFormatStringsTest extends FormatStringTest {
+public class HttpdFormatStringsTest extends HttpdFormatStringTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -300,6 +300,19 @@ public class HttpdFormatStringsTest extends FormatStringTest {
         assertEquals("1", queryAttributes.get("attr3"));
         assertEquals("1.1", queryAttributes.get("attr4"));
         assertNull(property.getMeasureUnit());
+    }
+
+    @Test
+    public void ignore() throws Exception {
+
+        HttpdFormatString e = HttpdFormatStrings.IGNORE;
+        assertEquals("%?", e.getLiteral());
+        assertNull(e.parse("-", null, null));
+        assertNull(e.parse("something", null, null));
+
+        assertFalse(e.isLeftEnclosure());
+        assertFalse(e.isRightEnclosure());
+        assertNull(e.getMatchingEnclosure());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

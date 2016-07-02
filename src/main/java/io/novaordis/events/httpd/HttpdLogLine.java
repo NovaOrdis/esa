@@ -80,6 +80,10 @@ public class HttpdLogLine {
     public Object setLogValue(HttpdFormatString e, Object value) {
 
         if (value == null) {
+
+            //
+            // this work fell for IGNORE, it is simply removed when it does not exist, meaning ... ignored
+            //
             return values.remove(e);
         }
 

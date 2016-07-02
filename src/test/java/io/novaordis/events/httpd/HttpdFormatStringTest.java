@@ -37,11 +37,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/22/16
  */
-public abstract class FormatStringTest {
+public abstract class HttpdFormatStringTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(FormatStringTest.class);
+    private static final Logger log = LoggerFactory.getLogger(HttpdFormatStringTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -220,6 +220,23 @@ public abstract class FormatStringTest {
         assertEquals(HttpEvent.REQUEST_DURATION, p.getName());
         assertEquals(0.01d, ((Double)p.getValue()).doubleValue(), 0.0001);
         assertEquals(TimeMeasureUnit.SECOND, p.getMeasureUnit());
+    }
+
+    @Test
+    public void fromString_Ignore() throws Exception {
+
+        List<HttpdFormatString> formats = HttpdFormatString.fromString("%?");
+
+        assertEquals(1, formats.size());
+        HttpdFormatString fs = formats.get(0);
+
+        assertEquals("%?", fs.getLiteral());
+        assertNull(fs.parse("something", null, null));
+        assertEquals(String.class, fs.getType());
+        assertFalse(fs.isLeftEnclosure());
+        assertFalse(fs.isRightEnclosure());
+        assertNull(fs.getMatchingEnclosure());
+        assertNull(fs.toProperty("something"));
     }
 
     // parse() ---------------------------------------------------------------------------------------------------------

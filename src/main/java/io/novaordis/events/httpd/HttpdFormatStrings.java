@@ -130,7 +130,13 @@ public enum HttpdFormatStrings implements HttpdFormatString {
     //
     // Bytes transferred (received and sent), including request and headers. Stored as Long.
     //
-    BYTES_TRANSFERRED("%S", Long.class, HttpEvent.BYTES_TRANSFERRED, MemoryMeasureUnit.BYTE);
+    BYTES_TRANSFERRED("%S", Long.class, HttpEvent.BYTES_TRANSFERRED, MemoryMeasureUnit.BYTE),
+
+    //
+    // Ignore - drop whatever is logged on this position
+    //
+    IGNORE("%?", String.class, null);
+
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -234,6 +240,10 @@ public enum HttpdFormatStrings implements HttpdFormatString {
     @Override
     public Object parse(String logStringRepresentation, Long lineNumber, Integer positionInLine)
             throws ParsingException {
+
+        if (this.equals(IGNORE)) {
+            return null;
+        }
 
         if ("-".equals(logStringRepresentation)) {
             return null;
