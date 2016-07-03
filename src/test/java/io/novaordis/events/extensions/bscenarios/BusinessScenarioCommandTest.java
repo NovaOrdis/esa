@@ -251,13 +251,15 @@ public class BusinessScenarioCommandTest {
         assertEquals(3, bs2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
     }
 
-    @Test
-    public void endToEnd_TwoSuccessiveScenarios() throws Exception {
+    //
+    // TODO N7aq32 RETURN HERE
+    //
 
-        BusinessScenarioCommand c = new BusinessScenarioCommand();
-
-        fail("RETURN HERE");
-
+//    @Test
+//    public void endToEnd_TwoSuccessiveScenarios() throws Exception {
+//
+//        BusinessScenarioCommand c = new BusinessScenarioCommand();
+//
 //        HttpEvent e = new HttpEvent(1L);
 //        assertNull(e.getCookie(HttpEvent.JSESSIONID_COOKIE_KEY));
 //        e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
@@ -329,7 +331,7 @@ public class BusinessScenarioCommandTest {
 //
 //        assertEquals(60L, bs2.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
 //        assertEquals(3, bs2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
-    }
+//    }
 
 
     // Package protected -----------------------------------------------------------------------------------------------
