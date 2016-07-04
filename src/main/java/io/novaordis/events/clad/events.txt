@@ -5,7 +5,7 @@ Reads, parses and processes timed event series.
 
 Syntax: ------------------------------------------------------------------------------------------
 
-    events < input-file.log <input-format-spec> <command> <command-options>
+    events < input-file.log [global-options] <input-format-spec> <command> [command-options]
 
 The input format  must be  specified either on command line,  in  an auxiliary file  or  in the
 configuration file. For more details, see the "Input Format" section. More details about commands
@@ -20,11 +20,25 @@ To get more details on a specific command, run:
 
 Global Options: ----------------------------------------------------------------------------------
 
+Global options apply to all commands.
+
  --ignore-faults - by default, all faults (input lines that cannot be parsed into events) being
      detected are reported at stdout interspersed with the regular output. This mode is useful
      when inspecting data, as any input errors are quickly made obvious. In order to suppress
      fault reporting, use "--ignore-faults".
 
+ --from=<from-timestamp>. If specified, all events preceding <from-timestamp> will be discarded
+     and not sent to the command. For more details on the timestamp syntax, see the "Timestamps"
+     section.
+
+ --to=<to-timestamp>. If specified, all events preceding <from-timestamp> will be discarded
+     and not sent to the command.
+
+Timestamps: --------------------------------------------------------------------------------------
+
+The default timestamp format is "MM/dd/yy HH:mm:ss" ("07/25/16 14:00:00"). No quotation marks are
+necessary around the timestamp, the parser expects the space between the date and the time
+sections and knows how to handle with it withoug quotes.
 
 Input Formats: -----------------------------------------------------------------------------------
 
@@ -93,7 +107,7 @@ strings. The general syntax is:
 
   <field-name>(<type>[:format])
 
-Examples:
+Examples: ----------------------------------------------------------------------------------------
 
   path - the content of the field be read verbatim and handled as string.
 

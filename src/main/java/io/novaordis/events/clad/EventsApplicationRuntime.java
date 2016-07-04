@@ -22,6 +22,7 @@ import io.novaordis.clad.UserErrorException;
 import io.novaordis.clad.option.BooleanOption;
 import io.novaordis.clad.option.Option;
 import io.novaordis.clad.option.StringOption;
+import io.novaordis.clad.option.TimestampOption;
 import io.novaordis.events.LineParserFactory;
 import io.novaordis.events.clad.command.OutputCommand;
 import io.novaordis.events.core.EventProcessor;
@@ -36,7 +37,9 @@ import org.apache.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
@@ -62,6 +65,18 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
     // @see CsvOutputFormatter#isIgnoreFaults()
     //
     public static final BooleanOption IGNORE_FAULTS_OPTION = new BooleanOption("ignore-faults");
+
+    //
+    // If present, the application discards all events preceding the value of the option FROM_OPTION and does not
+    // send them to the command.
+    //
+    public static final TimestampOption FROM_OPTION = new TimestampOption("from");
+
+    //
+    // If present, the application discards all events succeeding the value of the option FROM_OPTION and does not
+    // send them to the command.
+    //
+    public static final TimestampOption TO_OPTION = new TimestampOption("to");
 
     static {
 
@@ -99,7 +114,10 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
     @Override
     public Set<Option> optionalGlobalOptions() {
 
-        return Collections.singleton(IGNORE_FAULTS_OPTION);
+        return new HashSet<>((Arrays.asList(
+                IGNORE_FAULTS_OPTION,
+                FROM_OPTION,
+                TO_OPTION)));
     }
 
     @Override
