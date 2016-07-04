@@ -19,6 +19,7 @@ package io.novaordis.events.clad;
 import io.novaordis.clad.application.ApplicationRuntimeBase;
 import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.clad.UserErrorException;
+import io.novaordis.clad.option.BooleanOption;
 import io.novaordis.clad.option.Option;
 import io.novaordis.clad.option.StringOption;
 import io.novaordis.events.LineParserFactory;
@@ -55,6 +56,13 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
     public static final StringOption INPUT_FORMAT_OPTION = new StringOption('i', "input-format");
     public static final StringOption INPUT_FORMAT_FILE_OPTION = new StringOption("input-format-file");
 
+    //
+    // Configure the application to simply drop parsing errors instead of sending them to output
+    //
+    // @see CsvOutputFormatter#isIgnoreFaults()
+    //
+    public static final BooleanOption IGNORE_FAULTS_OPTION = new BooleanOption("ignore-faults");
+
     static {
 
         //
@@ -90,7 +98,8 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
 
     @Override
     public Set<Option> optionalGlobalOptions() {
-        return Collections.emptySet();
+
+        return Collections.singleton(IGNORE_FAULTS_OPTION);
     }
 
     @Override
@@ -193,7 +202,6 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
         //
         // try --input-format-file
         //
-
 
         if (inputFormatFile == null) {
 

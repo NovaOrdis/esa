@@ -18,6 +18,13 @@ To get more details on a specific command, run:
 
     events --help <command-name>
 
+Global Options: ----------------------------------------------------------------------------------
+
+ --ignore-faults - by default, all faults (input lines that cannot be parsed into events) being
+     detected are reported at stdout interspersed with the regular output. This mode is useful
+     when inspecting data, as any input errors are quickly made obvious. In order to suppress
+     fault reporting, use "--ignore-faults".
+
 
 Input Formats: -----------------------------------------------------------------------------------
 

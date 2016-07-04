@@ -249,6 +249,10 @@ public enum HttpdFormatStrings implements HttpdFormatString {
             return null;
         }
 
+        if (logStringRepresentation.trim().length() == 0) {
+            throw new ParsingException("empty string passed as a value for " + this, lineNumber, positionInLine);
+        }
+
         if (String.class.equals(type)) {
             return logStringRepresentation;
         }

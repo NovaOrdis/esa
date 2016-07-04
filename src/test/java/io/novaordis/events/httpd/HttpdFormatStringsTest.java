@@ -115,6 +115,25 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
     }
 
     @Test
+    public void remoteHost_EmptyString() throws Exception {
+
+        HttpdFormatString e = HttpdFormatStrings.REMOTE_HOST;
+
+        try {
+            e.parse("", 7L, 11);
+            fail("should have thrown exception");
+        }
+        catch(ParsingException pe) {
+
+            String msg = pe.getMessage();
+            log.info(msg);
+            assertEquals(7L, pe.getLineNumber().longValue());
+            assertEquals(11, pe.getPositionInLine().intValue());
+            assertTrue(msg.contains("empty string"));
+        }
+    }
+
+    @Test
     public void remoteLogname() throws Exception {
 
         HttpdFormatString e = HttpdFormatStrings.REMOTE_LOGNAME;
@@ -129,6 +148,25 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
         StringProperty property = (StringProperty)e.toProperty("something");
         assertEquals(HttpEvent.REMOTE_LOGNAME, property.getName());
         assertEquals("something", property.getString());
+    }
+
+    @Test
+    public void remoteLogname_EmptyString() throws Exception {
+
+        HttpdFormatString e = HttpdFormatStrings.REMOTE_LOGNAME;
+
+        try {
+            e.parse("", 7L, 11);
+            fail("should have thrown exception");
+        }
+        catch(ParsingException pe) {
+
+            String msg = pe.getMessage();
+            log.info(msg);
+            assertEquals(7L, pe.getLineNumber().longValue());
+            assertEquals(11, pe.getPositionInLine().intValue());
+            assertTrue(msg.contains("empty string"));
+        }
     }
 
     @Test
@@ -149,6 +187,25 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
     }
 
     @Test
+    public void remoteUser_EmptyString() throws Exception {
+
+        HttpdFormatString e = HttpdFormatStrings.REMOTE_USER;
+
+        try {
+            e.parse("", 7L, 11);
+            fail("should have thrown exception");
+        }
+        catch(ParsingException pe) {
+
+            String msg = pe.getMessage();
+            log.info(msg);
+            assertEquals(7L, pe.getLineNumber().longValue());
+            assertEquals(11, pe.getPositionInLine().intValue());
+            assertTrue(msg.contains("empty string"));
+        }
+    }
+
+    @Test
     public void timestamp() throws Exception {
 
         HttpdFormatString e = HttpdFormatStrings.TIMESTAMP;
@@ -160,6 +217,25 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
         assertFalse(e.isLeftEnclosure());
         assertFalse(e.isRightEnclosure());
         assertNull(e.getMatchingEnclosure());
+    }
+
+    @Test
+    public void timestamp_EmptyString() throws Exception {
+
+        HttpdFormatString e = HttpdFormatStrings.TIMESTAMP;
+
+        try {
+            e.parse("", 7L, 11);
+            fail("should have thrown exception");
+        }
+        catch(ParsingException pe) {
+
+            String msg = pe.getMessage();
+            log.info(msg);
+            assertEquals(7L, pe.getLineNumber().longValue());
+            assertEquals(11, pe.getPositionInLine().intValue());
+            assertTrue(msg.contains("empty string"));
+        }
     }
 
     @Test
@@ -197,6 +273,25 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
     }
 
     @Test
+    public void originalRequestStatusCode_EmptyString() throws Exception {
+
+        HttpdFormatString e = HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE;
+
+        try {
+            e.parse("", 7L, 11);
+            fail("should have thrown exception");
+        }
+        catch(ParsingException pe) {
+
+            String msg = pe.getMessage();
+            log.info(msg);
+            assertEquals(7L, pe.getLineNumber().longValue());
+            assertEquals(11, pe.getPositionInLine().intValue());
+            assertTrue(msg.contains("empty string"));
+        }
+    }
+
+    @Test
     public void statusCode() throws Exception {
 
         HttpdFormatString e = HttpdFormatStrings.STATUS_CODE;
@@ -213,6 +308,25 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
         IntegerProperty property = (IntegerProperty)e.toProperty(402);
         assertEquals(HttpEvent.STATUS_CODE, property.getName());
         assertEquals(402, property.getInteger().intValue());
+    }
+
+    @Test
+    public void statusCode_EmptyString() throws Exception {
+
+        HttpdFormatString e = HttpdFormatStrings.STATUS_CODE;
+
+        try {
+            e.parse("", 7L, 11);
+            fail("should have thrown exception");
+        }
+        catch(ParsingException pe) {
+
+            String msg = pe.getMessage();
+            log.info(msg);
+            assertEquals(7L, pe.getLineNumber().longValue());
+            assertEquals(11, pe.getPositionInLine().intValue());
+            assertTrue(msg.contains("empty string"));
+        }
     }
 
     @Test
@@ -237,6 +351,25 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
     }
 
     @Test
+    public void responseEntityBodySIze_EmptyString() throws Exception {
+
+        HttpdFormatString e = HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE;
+
+        try {
+            e.parse("", 7L, 11);
+            fail("should have thrown exception");
+        }
+        catch(ParsingException pe) {
+
+            String msg = pe.getMessage();
+            log.info(msg);
+            assertEquals(7L, pe.getLineNumber().longValue());
+            assertEquals(11, pe.getPositionInLine().intValue());
+            assertTrue(msg.contains("empty string"));
+        }
+    }
+
+    @Test
     public void threadName() throws Exception {
 
         HttpdFormatString e = HttpdFormatStrings.THREAD_NAME;
@@ -252,6 +385,25 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
         StringProperty property = (StringProperty)e.toProperty("Thread 001");
         assertEquals(HttpEvent.THREAD_NAME, property.getName());
         assertEquals("Thread 001", property.getString());
+    }
+
+    @Test
+    public void threadName_EmptyString() throws Exception {
+
+        HttpdFormatString e = HttpdFormatStrings.THREAD_NAME;
+
+        try {
+            e.parse("", 7L, 11);
+            fail("should have thrown exception");
+        }
+        catch(ParsingException pe) {
+
+            String msg = pe.getMessage();
+            log.info(msg);
+            assertEquals(7L, pe.getLineNumber().longValue());
+            assertEquals(11, pe.getPositionInLine().intValue());
+            assertTrue(msg.contains("empty string"));
+        }
     }
 
     @Test
@@ -272,6 +424,25 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
         assertEquals(HttpEvent.REQUEST_DURATION, property.getName());
         assertEquals(1L, property.getLong().longValue());
         assertEquals(TimeMeasureUnit.MILLISECOND, property.getMeasureUnit());
+    }
+
+    @Test
+    public void requestProcessingTimeMs_EmptyString() throws Exception {
+
+        HttpdFormatString e = HttpdFormatStrings.REQUEST_PROCESSING_TIME_MS;
+
+        try {
+            e.parse("", 7L, 11);
+            fail("should have thrown exception");
+        }
+        catch(ParsingException pe) {
+
+            String msg = pe.getMessage();
+            log.info(msg);
+            assertEquals(7L, pe.getLineNumber().longValue());
+            assertEquals(11, pe.getPositionInLine().intValue());
+            assertTrue(msg.contains("empty string"));
+        }
     }
 
     @Test
@@ -300,6 +471,25 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
         assertEquals("1", queryAttributes.get("attr3"));
         assertEquals("1.1", queryAttributes.get("attr4"));
         assertNull(property.getMeasureUnit());
+    }
+
+    @Test
+    public void queryString_EmptyString() throws Exception {
+
+        HttpdFormatString e = HttpdFormatStrings.QUERY_STRING;
+
+        try {
+            e.parse("", 7L, 11);
+            fail("should have thrown exception");
+        }
+        catch(ParsingException pe) {
+
+            String msg = pe.getMessage();
+            log.info(msg);
+            assertEquals(7L, pe.getLineNumber().longValue());
+            assertEquals(11, pe.getPositionInLine().intValue());
+            assertTrue(msg.contains("empty string"));
+        }
     }
 
     @Test

@@ -19,6 +19,7 @@ package io.novaordis.events.clad.command;
 import io.novaordis.clad.application.ApplicationRuntime;
 import io.novaordis.clad.command.CommandBase;
 import io.novaordis.clad.configuration.Configuration;
+import io.novaordis.clad.option.BooleanOption;
 import io.novaordis.clad.option.Option;
 import io.novaordis.clad.option.StringOption;
 import io.novaordis.events.clad.EventsApplicationRuntime;
@@ -74,8 +75,12 @@ public class OutputCommand extends CommandBase {
         terminator.setInputQueue(runtime.getEventProcessor().getOutputQueue());
 
         StringOption outputFormatOption = (StringOption)getOption(OUTPUT_FORMAT_OPTION);
+        BooleanOption bo = (BooleanOption)configuration.getGlobalOption(EventsApplicationRuntime.IGNORE_FAULTS_OPTION);
+
         if (outputFormatOption != null) {
-            ((CsvOutputFormatter) terminator.getConversionLogic()).setOutputFormat(outputFormatOption.getString());
+            CsvOutputFormatter csvOutputFormatter = (CsvOutputFormatter)terminator.getConversionLogic();
+            csvOutputFormatter.setOutputFormat(outputFormatOption.getString());
+            csvOutputFormatter.setIgnoreFaults(bo != null && bo.getValue());
         }
 
         runtime.start();

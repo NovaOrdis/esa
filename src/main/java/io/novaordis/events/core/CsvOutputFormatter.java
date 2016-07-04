@@ -65,6 +65,8 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
     private boolean headerOn;
 
+    private boolean ignoreFaults;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public CsvOutputFormatter() {
@@ -182,6 +184,21 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
         return headerOn;
     }
 
+    public void setIgnoreFaults(boolean b) {
+        this.ignoreFaults = b;
+    }
+
+    /**
+     * @return false if this formatted DOES NOT ignore faults, but renders them as it receives them. Return
+     * <tt>true</tt> if this format will simply discard the faults. Faults are controlled by the "--ignore-faults"
+     * global option.
+     *
+     * @see io.novaordis.events.clad.EventsApplicationRuntime#IGNORE_FAULTS_OPTION
+     */
+    public boolean isIgnoreFaults() {
+        return ignoreFaults;
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
@@ -243,6 +260,12 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
             //
             // TODO we may want to consider to send the fault events to stderr so we don't interfere with stdout
             //
+
+            if (isIgnoreFaults()) {
+
+                // we drop the fault - we simply ignore it
+                return false;
+            }
 
             sb.append(externalizeFault((FaultEvent)event)).append("\n");
         }
@@ -420,7 +443,15 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
         }
     }
 
+    /**
+     * @return a String representing the fault, to be sent to output, or null if the formatter was configured to ignore
+     * Faults.
+     */
     private String externalizeFault(FaultEvent f) {
+
+        if (isIgnoreFaults()) {
+            return null;
+        }
 
         String s = "";
 

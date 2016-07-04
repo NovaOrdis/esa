@@ -104,7 +104,9 @@ public interface HttpdFormatString {
     String getLiteral();
 
     /**
-     * Turns a string representation of the format element, as read from the log, into a typed value.
+     * Turns a string representation of the format element, as read from the log, into a typed value. The only valid
+     * "no value" representation is "-". A string comprising of spaces, or an empty string should trigger a
+     * ParsingException.
      *
      * @param lineNumber the current line number. Null is acceptable, if the line number is not available.
      * @param positionInLine the position in line. Null is acceptable, if the position is not available.

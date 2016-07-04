@@ -39,10 +39,8 @@ import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,7 +58,6 @@ public class BusinessScenarioCommand extends CommandBase {
 
     private static final Logger log = LoggerFactory.getLogger(BusinessScenarioCommand.class);
 
-    private static final BooleanOption IGNORE_FAULTS_OPTION = new BooleanOption("ignore-faults");
     private static final BooleanOption STATS_OPTION = new BooleanOption("stats");
 
     // Static ----------------------------------------------------------------------------------------------------------
@@ -124,7 +121,7 @@ public class BusinessScenarioCommand extends CommandBase {
     @Override
     public Set<Option> optionalOptions() {
 
-        return new HashSet<>(Arrays.asList(IGNORE_FAULTS_OPTION, STATS_OPTION));
+        return Collections.singleton(STATS_OPTION);
     }
 
     /**
@@ -135,15 +132,7 @@ public class BusinessScenarioCommand extends CommandBase {
 
         super.configure(from, commandLineArguments);
 
-        BooleanOption o = (BooleanOption)getOption(IGNORE_FAULTS_OPTION);
-
-        if (o != null) {
-            ignoreFaults = o.getValue();
-        }
-
-        log.debug(this + "'s ignoreFaults set to " + ignoreFaults);
-
-        o = (BooleanOption)getOption(STATS_OPTION);
+        BooleanOption o = (BooleanOption)getOption(STATS_OPTION);
 
         if (o != null) {
             statsOnly = o.getValue();
@@ -155,7 +144,15 @@ public class BusinessScenarioCommand extends CommandBase {
     @Override
     public void execute(Configuration configuration, ApplicationRuntime r) throws Exception {
 
-        EventsApplicationRuntime runtime = (EventsApplicationRuntime) r;
+        EventsApplicationRuntime runtime = (EventsApplicationRuntime)r;
+
+        //
+        // transfer interesting global options values
+        //
+
+        Option ignoreFaultsOption = configuration.getGlobalOption(EventsApplicationRuntime.IGNORE_FAULTS_OPTION);
+        this.ignoreFaults = ignoreFaultsOption != null && ((BooleanOption)ignoreFaultsOption).getValue();
+        log.debug(this + "'s ignoreFaults set to " + ignoreFaults);
 
         Terminator terminator = runtime.getTerminator();
 

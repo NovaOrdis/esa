@@ -23,9 +23,3 @@ Example:
 Business Scenario Command Options:
 
     --stats - Generate a brief summary (counts, failure types, etc.), instead of a CSV series.
-
-    --ignore-faults - By default, all faults (invalid HTTP requests) that are detected are
-      reported at stdout interspersed with business scenario output. This mode is useful when
-      inspecting data, as any errors in the input file are quickly made obvious. In order to
-      suppress fault output, use "--ignore-faults".
-
