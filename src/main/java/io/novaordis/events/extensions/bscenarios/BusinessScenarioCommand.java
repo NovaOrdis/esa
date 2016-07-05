@@ -183,7 +183,7 @@ public class BusinessScenarioCommand extends CommandBase {
 
         runtime.start();
 
-        BlockingQueue<Event> httpRequestQueue = runtime.getEventProcessor().getOutputQueue();
+        BlockingQueue<Event> httpRequestQueue = runtime.getLastEventProcessor().getOutputQueue();
 
         boolean incomingStreamOpen = true;
 

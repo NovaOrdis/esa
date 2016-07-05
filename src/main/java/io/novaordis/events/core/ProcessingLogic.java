@@ -63,7 +63,7 @@ public interface ProcessingLogic {
      *
      * @exception ClosedException thrown by the logic after receiving an EndOfStreamEvent.
      */
-    boolean process(Event e) throws ClosedException;;
+    boolean process(Event e) throws ClosedException;
 
     /**
      * Retrieves and at the same time removes from the instance any available Events.

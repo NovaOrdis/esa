@@ -17,7 +17,9 @@
 package io.novaordis.events;
 
 import io.novaordis.clad.UserErrorException;
+import io.novaordis.events.core.LineFormat;
 import io.novaordis.events.core.LineParser;
+import io.novaordis.events.core.event.Event;
 import io.novaordis.events.csv.CsvLineParser;
 import io.novaordis.events.csv.InvalidFieldException;
 import io.novaordis.events.httpd.CorruptedHttpdFormatStringException;
@@ -52,6 +54,24 @@ public class LineParserFactory {
 
         if (lineFormat == null) {
             throw new IllegalArgumentException("null line format");
+        }
+
+        if ("mock".equalsIgnoreCase(lineFormat)) {
+
+            //
+            // for testing
+            //
+            return new LineParser() {
+                @Override
+                public Event parseLine(long lineNumber, String line) throws ParsingException {
+                    throw new RuntimeException("\"mock\" LineParser parseLine() invoked");
+                }
+
+                @Override
+                public LineFormat getLineFormat() {
+                    throw new RuntimeException("\"mock\" LineParser getLineFormat() invoked");
+                }
+            };
         }
 
         //

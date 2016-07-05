@@ -25,12 +25,14 @@ import io.novaordis.clad.option.StringOption;
 import io.novaordis.clad.option.TimestampOption;
 import io.novaordis.events.LineParserFactory;
 import io.novaordis.events.clad.command.OutputCommand;
+import io.novaordis.events.core.EventFilter;
 import io.novaordis.events.core.EventProcessor;
 import io.novaordis.events.core.InputStreamInitiator;
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.LineStreamParser;
 import io.novaordis.events.core.CsvOutputFormatter;
 import io.novaordis.events.core.OutputStreamTerminator;
+import io.novaordis.events.core.ProcessingLogic;
 import io.novaordis.events.core.event.ByteToLineEventConverter;
 import org.apache.log4j.Logger;
 
@@ -45,6 +47,18 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 
 /**
+ * Lifecycle:
+ *
+ * 1. Constructed with EventsApplicationRuntime.class.newInstance()
+ *
+ * 2. init(configuration) is invoked.
+ *
+ * 3. command.execute(Configuration, runtime instance)
+ *
+ * For more details see:
+ *
+ * @see io.novaordis.clad.CommandLineApplication
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/27/16
  */
@@ -93,6 +107,10 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
 
     private InputStreamInitiator initiator;
     private EventProcessor parser;
+
+    // may be null if there are no filtering options
+    private EventProcessor filter;
+
     private OutputStreamTerminator terminator;
     private CountDownLatch endOfStream;
 
@@ -147,6 +165,21 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
                 new LineStreamParser(lineParser),
                 new ArrayBlockingQueue<>(QUEUE_SIZE));
 
+        //
+        // if there are filtering options, create and wire a filter, otherwise connect the parser directly
+        // into the terminator
+        //
+        ProcessingLogic eventFilter = EventFilter.buildInstance(configuration);
+
+        if (eventFilter != null) {
+
+            filter = new EventProcessor(
+                    "Event Filter",
+                    parser.getOutputQueue(),
+                    eventFilter,
+                    new ArrayBlockingQueue<>(QUEUE_SIZE));
+        }
+
         terminator = new OutputStreamTerminator(
                 "Output Writer",
                 null,
@@ -163,7 +196,16 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
         return terminator;
     }
 
-    public EventProcessor getEventProcessor() {
+    /**
+     * @return the last event processor from the pipeline, which is the component whose output queue must be wired
+     * into the terminator.
+     */
+    public EventProcessor getLastEventProcessor() {
+
+        if (filter != null) {
+            return filter;
+        }
+
         return parser;
     }
 
@@ -171,6 +213,11 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
 
         initiator.start();
         parser.start();
+
+        if (filter != null) {
+            filter.start();
+        }
+
         terminator.start();
     }
 

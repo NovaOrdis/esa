@@ -72,7 +72,7 @@ public class OutputCommand extends CommandBase {
         //
 
         OutputStreamTerminator terminator = runtime.getTerminator();
-        terminator.setInputQueue(runtime.getEventProcessor().getOutputQueue());
+        terminator.setInputQueue(runtime.getLastEventProcessor().getOutputQueue());
 
         StringOption outputFormatOption = (StringOption)getOption(OUTPUT_FORMAT_OPTION);
         BooleanOption bo = (BooleanOption)configuration.getGlobalOption(EventsApplicationRuntime.IGNORE_FAULTS_OPTION);

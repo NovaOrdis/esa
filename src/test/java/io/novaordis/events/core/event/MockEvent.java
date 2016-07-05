@@ -17,6 +17,10 @@
 package io.novaordis.events.core.event;
 
 /**
+ * For mock timed events see:
+ *
+ * @see MockTimedEvent
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
  */

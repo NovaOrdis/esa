@@ -66,7 +66,7 @@ public class DescribeCommand extends CommandBase {
         runtime.getTerminator().disable();
         runtime.start();
 
-        BlockingQueue<Event> inputQueue = runtime.getEventProcessor().getOutputQueue();
+        BlockingQueue<Event> inputQueue = runtime.getLastEventProcessor().getOutputQueue();
 
         for(;;) {
 

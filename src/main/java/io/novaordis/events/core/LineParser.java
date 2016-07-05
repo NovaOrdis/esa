@@ -35,7 +35,7 @@ public interface LineParser {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
-     * @return null values are valid, if a parser returns null it means that it willingly ignores that line.
+     * @return if a parser returns null it means that it willingly ignores that line.
      */
     Event parseLine(long lineNumber, String line) throws ParsingException;
 

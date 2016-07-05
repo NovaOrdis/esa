@@ -46,13 +46,13 @@ public class MockEventsApplicationRuntime extends EventsApplicationRuntime {
     }
 
     @Override
-    public EventProcessor getEventProcessor() {
+    public EventProcessor getLastEventProcessor() {
 
         if (mockEventProcessor != null) {
             return mockEventProcessor;
         }
 
-        return super.getEventProcessor();
+        return super.getLastEventProcessor();
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

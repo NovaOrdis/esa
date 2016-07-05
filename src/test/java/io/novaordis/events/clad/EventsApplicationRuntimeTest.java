@@ -18,6 +18,10 @@ package io.novaordis.events.clad;
 
 import io.novaordis.clad.UserErrorException;
 import io.novaordis.clad.option.StringOption;
+import io.novaordis.clad.option.TimestampOption;
+import io.novaordis.events.core.EventFilter;
+import io.novaordis.events.core.EventProcessor;
+import io.novaordis.events.core.LineStreamParser;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,6 +145,36 @@ public class EventsApplicationRuntimeTest {
             String msg = e.getMessage();
             log.info(msg);
         }
+    }
+
+    // getLastEventProcessor() -----------------------------------------------------------------------------------------
+
+    @Test
+    public void getLastEventProcessor_NoFilters() throws Exception {
+
+        EventsApplicationRuntime r = new EventsApplicationRuntime();
+        MockConfiguration mc = new MockConfiguration();
+        mc.addGlobalOption(new StringOption('i', null, "mock"));
+
+        r.init(mc);
+
+        EventProcessor ep = r.getLastEventProcessor();
+        assertTrue(ep.getProcessingLogic() instanceof LineStreamParser);
+    }
+
+    @Test
+    public void getLastEventProcessor_WithFilters() throws Exception {
+
+        EventsApplicationRuntime r = new EventsApplicationRuntime();
+
+        MockConfiguration mc = new MockConfiguration();
+        mc.addGlobalOption(new StringOption('i', null, "mock"));
+        mc.addGlobalOption(new TimestampOption(null, "from", "00:00:00"));
+
+        r.init(mc);
+
+        EventProcessor ep = r.getLastEventProcessor();
+        assertTrue(ep.getProcessingLogic() instanceof EventFilter);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

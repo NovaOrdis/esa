@@ -14,28 +14,53 @@
  * limitations under the License.
  */
 
-package io.novaordis.events.core.event;
+package io.novaordis.events.core;
+
+import io.novaordis.clad.configuration.Configuration;
+import io.novaordis.clad.option.TimestampOption;
+import io.novaordis.events.core.event.Event;
 
 /**
- * For mock untimed events see:
- *
- * @see MockEvent
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/24/16
+ * @since 7/5/16
  */
-public class MockTimedEvent extends GenericTimedEvent {
+public class EventFilter extends ProcessingLogicBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
+    /**
+     * The class is its own factory. We don't use the constructor because there are situation when the filter cannot
+     * be built based on configuration.
+     *
+     * @return an EventFilter instance if configuration contains the right options, or null if no related options
+     * are found.
+     */
+    public static EventFilter buildInstance(Configuration configuration) {
+
+        EventFilter eventFilter = null;
+
+        TimestampOption from = (TimestampOption)configuration.getGlobalOption(new TimestampOption("from"));
+        TimestampOption to = (TimestampOption)configuration.getGlobalOption(new TimestampOption("to"));
+
+        if (from != null || to != null) {
+
+            eventFilter = new EventFilter();
+        }
+
+        return eventFilter;
+    }
+
     // Attributes ------------------------------------------------------------------------------------------------------
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public MockTimedEvent(Long timestamp) {
-        super(timestamp);
+    // ProcessingLogicBase overrides -----------------------------------------------------------------------------------
+
+    @Override
+    protected Event processInternal(Event e) throws Exception {
+        throw new RuntimeException("processInternal() NOT YET IMPLEMENTED");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

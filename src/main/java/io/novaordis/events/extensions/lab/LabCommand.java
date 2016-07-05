@@ -50,7 +50,7 @@ public class LabCommand extends CommandBase {
 
         EventsApplicationRuntime runtime = (EventsApplicationRuntime)r;
         runtime.getTerminator().disable();
-        BlockingQueue<Event> queue = runtime.getEventProcessor().getOutputQueue();
+        BlockingQueue<Event> queue = runtime.getLastEventProcessor().getOutputQueue();
 
         runtime.start();
 
