@@ -166,6 +166,9 @@ while [ "$1" != "" ]; do
         else
             # quoted string that contains spaces, escape inner quotes, in case they exist
             escaped_inner_quotes=${1//\"/\\\"}
+            #
+            # for long form options, the option AND the argument is quoted. We rely on this behavior, do not change.
+            #
             args="${args} \"${escaped_inner_quotes}\""
         fi
     fi

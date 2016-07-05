@@ -38,7 +38,12 @@ Timestamps: --------------------------------------------------------------------
 
 The default timestamp format is "MM/dd/yy HH:mm:ss" ("07/25/16 14:00:00"). No quotation marks are
 necessary around the timestamp, the parser expects the space between the date and the time
-sections and knows how to handle with it withoug quotes.
+sections and knows how to handle with it without quotes. However, quotes are handled correctly if
+present. The following forms are equivalent:
+
+    --from=07/25/16 14:00:00
+
+    --from="07/25/16 14:00:00"
 
 Input Formats: -----------------------------------------------------------------------------------
 
