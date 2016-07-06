@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -72,6 +73,39 @@ public class EventFilterTest extends ProcessingLogicTest {
         assertNull(e.processInternal(me));
     }
 
+    @Test
+    public void buildInstance_From() throws Exception {
+
+        MockConfiguration mc = new MockConfiguration();
+        mc.addGlobalOption(new TimestampOption(null, "from", "11:11:11"));
+
+        EventFilter e = EventFilter.buildInstance(mc);
+        assertNotNull(e);
+
+        long t = e.getFromTimestampMs();
+        assertEquals(TimestampOption.DEFAULT_RELATIVE_FORMAT.parse("11:11:11").getTime(), t);
+
+        t = e.getToTimestampMs();
+        assertEquals(-1L, t);
+    }
+
+    @Test
+    public void buildInstance_Tom() throws Exception {
+
+        MockConfiguration mc = new MockConfiguration();
+        mc.addGlobalOption(new TimestampOption(null, "to", "01/01/16 12:12:12"));
+
+        EventFilter e = EventFilter.buildInstance(mc);
+
+        assertNotNull(e);
+
+        long t = e.getFromTimestampMs();
+        assertEquals(-1L, t);
+
+        t = e.getToTimestampMs();
+        assertEquals(TimestampOption.DEFAULT_FULL_FORMAT.parse("01/01/16 12:12:12").getTime(), t);
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
@@ -79,13 +113,15 @@ public class EventFilterTest extends ProcessingLogicTest {
     @Override
     protected EventFilter getProcessingLogicToTest() throws Exception {
 
-        return new EventFilter();
+        MockConfiguration mc = new MockConfiguration();
+        mc.addGlobalOption(new TimestampOption(null, "from", "01/01/01 00:00:00"));
+        return EventFilter.buildInstance(mc);
     }
 
     @Override
     protected Event getInputEventRelevantToProcessingLogic() throws Exception {
 
-        return new MockEvent();
+        return new MockTimedEvent(TimestampOption.DEFAULT_FULL_FORMAT.parse("01/01/01 00:00:01").getTime());
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

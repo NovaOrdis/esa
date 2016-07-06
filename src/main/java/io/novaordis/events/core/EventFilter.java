@@ -19,6 +19,9 @@ package io.novaordis.events.core;
 import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.clad.option.TimestampOption;
 import io.novaordis.events.core.event.Event;
+import io.novaordis.events.core.event.TimedEvent;
+
+import java.util.Date;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -36,34 +39,142 @@ public class EventFilter extends ProcessingLogicBase {
      *
      * @return an EventFilter instance if configuration contains the right options, or null if no related options
      * are found.
+     *
+     * @throws IllegalArgumentException if the configuration options are improperly configured or invalid.
      */
     public static EventFilter buildInstance(Configuration configuration) {
 
-        EventFilter eventFilter = null;
+        try {
 
-        TimestampOption from = (TimestampOption)configuration.getGlobalOption(new TimestampOption("from"));
-        TimestampOption to = (TimestampOption)configuration.getGlobalOption(new TimestampOption("to"));
-
-        if (from != null || to != null) {
-
-            eventFilter = new EventFilter();
+            return new EventFilter(configuration);
         }
-
-        return eventFilter;
+        catch(NoFiltersException e) {
+            // that's fine
+            return null;
+        }
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private long from;
+    private boolean fromRelative;
+    private long to;
+    private boolean toRelative;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    /**
+     * @throws NoFiltersException if the configuration does not contains any declared filters.
+     * @throws IllegalArgumentException if the configuration options are improperly configured or invalid.
+     */
+    private EventFilter(Configuration configuration) throws NoFiltersException {
+
+        TimestampOption from = (TimestampOption)configuration.getGlobalOption(new TimestampOption("from"));
+        TimestampOption to = (TimestampOption)configuration.getGlobalOption(new TimestampOption("to"));
+
+        if (from == null && to == null) {
+            throw new NoFiltersException();
+        }
+
+        if (from == null) {
+
+            this.from = -1L;
+        }
+        else {
+
+            Date d = from.getValue();
+
+            if (d == null) {
+                throw new IllegalArgumentException("\"from\" option contains a null timestamp");
+            }
+
+            this.from = d.getTime();
+            this.fromRelative = from.isRelative();
+        }
+
+        if (to == null) {
+
+            this.to = -1L;
+        }
+        else {
+
+            Date d = to.getValue();
+
+            if (d == null) {
+                throw new IllegalArgumentException("\"to\" option contains a null timestamp");
+            }
+
+            this.to = d.getTime();
+            this.toRelative = to.isRelative();
+        }
+    }
 
     // ProcessingLogicBase overrides -----------------------------------------------------------------------------------
 
     @Override
     protected Event processInternal(Event e) throws Exception {
-        throw new RuntimeException("processInternal() NOT YET IMPLEMENTED");
+
+        Long timestamp = null;
+
+        if (e instanceof TimedEvent) {
+            TimedEvent te = (TimedEvent)e;
+            timestamp = te.getTimestamp();
+        }
+
+        if (from > -1) {
+
+            if (timestamp == null) {
+                //
+                // we have a "from" filter but not an event timestamp, the event does not match
+                //
+                return null;
+            }
+
+            if (timestamp < from) {
+                //
+                // we have a timestamp but falls ahead of the threshold
+                //
+                return null;
+            }
+        }
+
+        if (to > -1) {
+
+            if (timestamp == null) {
+                //
+                // we have a "to" filter but not an event timestamp, the event does not match
+                //
+                return null;
+            }
+
+            if (timestamp > to) {
+                //
+                // we have a timestamp but falls after the threshold
+                //
+                return null;
+            }
+        }
+
+        return e;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    /**
+     * May return -1 if it was not configured.
+     */
+    public long getFromTimestampMs() {
+
+        return from;
+    }
+
+    /**
+     * May return -1 if it was not configured.
+     */
+    public long getToTimestampMs() {
+
+        return to;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
