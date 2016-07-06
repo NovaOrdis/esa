@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -104,6 +105,91 @@ public class EventFilterTest extends ProcessingLogicTest {
 
         t = e.getToTimestampMs();
         assertEquals(TimestampOption.DEFAULT_FULL_FORMAT.parse("01/01/16 12:12:12").getTime(), t);
+    }
+
+    //
+    // Relative timestamp filter tests ---------------------------------------------------------------------------------
+    //
+
+    @Test
+    public void relativeTimestamps() throws Exception {
+
+        MockConfiguration mc = new MockConfiguration();
+        mc.addGlobalOption(new TimestampOption("from", "01:00:00"));
+        mc.addGlobalOption(new TimestampOption("to", "02:00:00"));
+        EventFilter e = EventFilter.buildInstance(mc);
+        assertNotNull(e);
+
+        Event result;
+        MockTimedEvent mte;
+
+        //
+        // the first event sent into the filter calibrates the filter, but it does not match the filter
+        //
+
+        mte = new MockTimedEvent(TimestampOption.DEFAULT_FULL_FORMAT.parse("01/01/16 00:00:00").getTime());
+        result = e.processInternal(mte);
+        assertNull(result);
+
+        //
+        // the next three events match the filter
+        //
+
+        mte = new MockTimedEvent(TimestampOption.DEFAULT_FULL_FORMAT.parse("01/01/16 01:00:00").getTime());
+        result = e.processInternal(mte);
+        assertEquals(result, mte);
+
+        mte = new MockTimedEvent(TimestampOption.DEFAULT_FULL_FORMAT.parse("01/01/16 01:30:00").getTime());
+        result = e.processInternal(mte);
+        assertEquals(result, mte);
+
+        mte = new MockTimedEvent(TimestampOption.DEFAULT_FULL_FORMAT.parse("01/01/16 02:00:00").getTime());
+        result = e.processInternal(mte);
+        assertEquals(result, mte);
+
+        //
+        // this event does not match the filter
+        //
+
+        mte = new MockTimedEvent(TimestampOption.DEFAULT_FULL_FORMAT.parse("01/01/16 02:00:01").getTime());
+        result = e.processInternal(mte);
+        assertNull(result);
+
+        //
+        // events from the previous trigger exception
+        //
+
+        Event previousDayEvent =
+                new MockTimedEvent(TimestampOption.DEFAULT_FULL_FORMAT.parse("12/31/15 01:30:00").getTime());
+
+        try {
+
+            e.processInternal(previousDayEvent);
+            fail("should have thrown exception");
+        }
+        catch(IllegalStateException ex) {
+
+            String msg = ex.getMessage();
+            log.info(msg);
+        }
+
+        //
+        // events from the day after trigger exception
+        //
+
+        Event dayAfterEvent =
+                new MockTimedEvent(TimestampOption.DEFAULT_FULL_FORMAT.parse("01/02/16 01:30:00").getTime());
+
+        try {
+
+            e.processInternal(dayAfterEvent);
+            fail("should have thrown exception");
+        }
+        catch(IllegalStateException ex) {
+
+            String msg = ex.getMessage();
+            log.info(msg);
+        }
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

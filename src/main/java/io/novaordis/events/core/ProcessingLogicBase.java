@@ -77,7 +77,7 @@ public abstract class ProcessingLogicBase implements ProcessingLogic {
         }
         catch (IllegalStateException ise) {
             //
-            // fail fast on illegal state exception, it means the pipeline was iproperly configured and won't be
+            // fail fast on illegal state exception, it means the pipeline was improperly configured and won't be
             // able to process anything
             //
             throw ise;

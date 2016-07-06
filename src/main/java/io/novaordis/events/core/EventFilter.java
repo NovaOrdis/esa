@@ -24,12 +24,22 @@ import io.novaordis.events.core.event.TimedEvent;
 import java.util.Date;
 
 /**
+ * The events that match the filters contained by this instance are are returned unchanged by processInternal(),
+ * otherwise processInternal() returns null.
+ *
+ * If at least one of the timestamp filters (from or to) are relative, the EventFilter instance calibrates itself
+ * based on the values of the relative timestamp filters and the events.
+ *
+ * @see TimestampOption#isRelative()
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 7/5/16
  */
 public class EventFilter extends ProcessingLogicBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    public static final long MILLISECONDS_IN_A_DAY = 24L * 60 * 60 * 1000L;
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -57,9 +67,7 @@ public class EventFilter extends ProcessingLogicBase {
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private long from;
-    private boolean fromRelative;
     private long to;
-    private boolean toRelative;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -89,7 +97,6 @@ public class EventFilter extends ProcessingLogicBase {
             }
 
             this.from = d.getTime();
-            this.fromRelative = from.isRelative();
         }
 
         if (to == null) {
@@ -105,12 +112,18 @@ public class EventFilter extends ProcessingLogicBase {
             }
 
             this.to = d.getTime();
-            this.toRelative = to.isRelative();
         }
     }
 
     // ProcessingLogicBase overrides -----------------------------------------------------------------------------------
 
+    /**
+     * If relative timestamp filters are used, the first timed event sent into the instance via this method calibrates
+     * the filter.
+     *
+     * @exception IllegalStateException - "fail fast" exception, interrupts the pipeline processing and fail right
+     * away - a fault is not produced in this case.
+     */
     @Override
     protected Event processInternal(Event e) throws Exception {
 
@@ -120,6 +133,25 @@ public class EventFilter extends ProcessingLogicBase {
             TimedEvent te = (TimedEvent)e;
             timestamp = te.getTimestamp();
         }
+
+        //
+        // if not calibrated, do calibrate
+        //
+        if (from > -1 && from < MILLISECONDS_IN_A_DAY && timestamp != null) {
+
+            long ds = timestamp / MILLISECONDS_IN_A_DAY;
+            from = ds * MILLISECONDS_IN_A_DAY + from;
+        }
+
+        if (to > -1 && to < MILLISECONDS_IN_A_DAY && timestamp != null) {
+
+            long ds = timestamp / MILLISECONDS_IN_A_DAY;
+            to = ds * MILLISECONDS_IN_A_DAY + to;
+        }
+
+        //
+        // we're calibrated
+        //
 
         if (from > -1) {
 
