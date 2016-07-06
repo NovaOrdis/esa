@@ -27,7 +27,7 @@ public interface Event {
     // Constants -------------------------------------------------------------------------------------------------------
 
     // where it makes sense, it is maintained as a LongProperty
-    String LINE_NUMBER_PROPERTY_NAME = "line_number";
+    String LINE_NUMBER_PROPERTY_NAME = "line-number";
 
     // Static ----------------------------------------------------------------------------------------------------------
 

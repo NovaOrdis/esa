@@ -80,6 +80,31 @@ public class MapProperty extends PropertyBase implements Property {
         return map;
     }
 
+    /**
+     * Null on non-existent key (including null).
+     */
+    public String externalizeValue(String key) {
+
+        if (key == null) {
+            return null;
+        }
+
+        //noinspection unchecked
+        Map<String, Object> map = (Map<String, Object>)getValue();
+
+        if (map == null) {
+            return null;
+        }
+
+        Object o = map.get(key);
+
+        if (o == null) {
+            return null;
+        }
+
+        return o.toString();
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

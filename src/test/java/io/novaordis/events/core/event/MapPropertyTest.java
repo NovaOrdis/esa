@@ -26,6 +26,7 @@ import java.util.Map;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -87,6 +88,27 @@ public class MapPropertyTest extends PropertyTest {
         assertTrue(externalizedValue.matches("\\{.*=.*,.*=.*\\}"));
         assertTrue(externalizedValue.contains("key1=value1"));
         assertTrue(externalizedValue.contains("key2=7"));
+    }
+
+    @Test
+    public void externalizeValue_Key() throws Exception {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("key1", "value1");
+        map.put("key2", 7);
+        MapProperty mp = new MapProperty("test-name", map);
+
+        String externalizedValue = mp.externalizeValue(null);
+        assertNull(externalizedValue);
+
+        externalizedValue = mp.externalizeValue("no-such-key");
+        assertNull(externalizedValue);
+
+        externalizedValue = mp.externalizeValue("key1");
+        assertEquals("value1", externalizedValue);
+
+        externalizedValue = mp.externalizeValue("key2");
+        assertEquals("7", externalizedValue);
     }
 
     @Test

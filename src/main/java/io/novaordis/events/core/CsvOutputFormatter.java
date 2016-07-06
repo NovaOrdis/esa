@@ -20,6 +20,7 @@ import io.novaordis.events.ParsingException;
 import io.novaordis.events.core.event.EndOfStreamEvent;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
+import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.ShutdownEvent;
 import io.novaordis.events.core.event.TimedEvent;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -62,6 +64,10 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
     private StringBuilder sb;
     private volatile boolean closed;
+
+    /**
+     * @see CsvOutputFormatter#setOutputFormat(String)
+     */
     private List<String> outputFormat;
 
     private boolean headerOn;
@@ -131,7 +137,9 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
-     * We interpret the given format as comma separated property names (plus "timestamp")
+     * We interpret the given format as comma separated property names (plus "timestamp").
+     *
+     * For map properties, the dot-separated syntax map-property-name.key is valid.
      */
     public void setOutputFormat(String format) {
 
@@ -148,6 +156,9 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
         }
     }
 
+    /**
+     * @see CsvOutputFormatter#setOutputFormat(String)
+     */
     public String getOutputFormat() {
 
         if (outputFormat == null) {
@@ -238,6 +249,8 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     // Private ---------------------------------------------------------------------------------------------------------
 
     /**
+     * Package protected for testing.
+     *
      * @return true if there are bytes to be collected.
      */
     private boolean externalizeEvent(Event event) {
@@ -285,6 +298,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
             String fieldName = fni.next();
 
             if (TimedEvent.TIMESTAMP_PROPERTY_NAME.equals(fieldName)) {
+
                 Long timestamp = null;
                 if (event instanceof TimedEvent) {
                     timestamp = ((TimedEvent)event).getTimestamp();
@@ -293,12 +307,34 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
             }
             else {
 
+                int i;
+                String mapKey = null;
                 Object externalizedValue = null;
+
+                if ((i = fieldName.indexOf('.')) != -1) {
+
+                    //
+                    // map property
+                    //
+
+                    mapKey = fieldName.substring(i + 1);
+                    fieldName  = fieldName.substring(0, i);
+                }
+
+
                 Property p = event.getProperty(fieldName);
-                if (p != null) {
+
+                if (p instanceof MapProperty) {
+
+                    externalizedValue = ((MapProperty)p).externalizeValue(mapKey);
+                }
+                else if (p != null) {
+
                     externalizedValue = p.externalizeValue();
                 }
+
                 if (externalizedValue == null) {
+
                     s += NULL_EXTERNALIZATION;
                 }
                 else {

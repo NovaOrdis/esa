@@ -1,4 +1,4 @@
 
-* Business scenarios carry statistics about individual HTTP request/responses, like duration and status code.
-  These statistics are are reported in the CSV output.
-* Business scenario processing generates headers.
+Fixed a defect that prevented map property components to be displayed correctly when using an output format.
+
+line-number can be displayed as part of the output.

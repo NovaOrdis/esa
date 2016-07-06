@@ -14,6 +14,8 @@ the output for that property will be the empty string.
 
 The event's timestamp can be specified as "timestamp".
 
+The line number of the log line the event was read from can be displayed using "line-number".
+
 If the property is a Map, the following notation can be used:
 
     map-property-name.key-name

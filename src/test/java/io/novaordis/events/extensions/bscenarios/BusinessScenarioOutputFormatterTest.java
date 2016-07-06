@@ -79,6 +79,12 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
         // noop
     }
 
+    @Test
+    public void toStringEvent_MapProperty() throws Exception {
+
+        // noop
+    }
+
     // header line overrides -------------------------------------------------------------------------------------------
 
     @Test

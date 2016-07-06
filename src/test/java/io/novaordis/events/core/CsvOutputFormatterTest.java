@@ -21,6 +21,7 @@ import io.novaordis.events.core.event.FaultEvent;
 import io.novaordis.events.core.event.MockEvent;
 import io.novaordis.events.core.event.MockProperty;
 import io.novaordis.events.core.event.MockTimedEvent;
+import io.novaordis.events.httpd.HttpEvent;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,6 +174,21 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
 
         String expected = "B value, , " + CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(d) + ", C value\n";
         assertEquals(expected, s);
+    }
+
+    // toString(Event) -------------------------------------------------------------------------------------------------
+
+    @Test
+    public void toStringEvent_MapProperty() throws Exception {
+
+        CsvOutputFormatter formatter = getConversionLogicToTest();
+        formatter.setOutputFormat("request-headers.TEST-HEADER");
+
+        HttpEvent e = new HttpEvent(1L);
+        e.setRequestHeader("TEST-HEADER", "TEST-VALUE");
+
+        String result = formatter.toString(e);
+        assertEquals("TEST-VALUE", result);
     }
 
     // setOutputFormat() -----------------------------------------------------------------------------------------------
