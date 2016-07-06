@@ -344,7 +344,7 @@ function compute-next-version() {
             #
             # we're not a snapshot
             #
-            fail "incrementing a non-snapshot minor NOT YET IMPLEMENTED"
+            minor=$(expr ${minor} + 1) || exit 1
         fi
         patch=""
         snapshot=""
@@ -859,14 +859,16 @@ function install-release() {
 
     debug-arguments "$@"
 
-    [ -z "${release_repository}" ] && \
-        fail "'release_repository' not defined. Check your local configuration file ${configuration_file}"
-
-    debug "release repository: ${release_repository}"
-
     local release_file_path=$1
     [ -z "${release_file_path}" ] && fail "'release_file' not provided"
     [ -f ${release_file_path} ] || fail "the release file ${release_file_path} does not exist"
+
+    debug "release repository: ${release_repository}"
+
+    if [ -z "${release_repository}" ]; then
+        info "no 'release_repository' defined in ${configuration_file}, the binary release available as ${release_file_path} ..."
+        return 0
+    fi
 
     local target_file=${release_repository}/$(basename ${release_file_path})
 
@@ -880,8 +882,12 @@ function install-release() {
 # return 0 if the configured release_repository is LOCAL_MAVEN
 function is-local-maven-release() {
 
-    [ -z "${release_repository}" ] && \
-        fail "'release_repository' not defined. Check your local configuration file ${configuration_file}"
+    if [ -z "${release_repository}" ]; then
+        #
+        # no ${release_repository} defined, that means we'll handle the binary artifact manually
+        #
+        return 1
+    fi
 
     [ "${release_repository}" = "LOCAL_MAVEN" ] && return 0 || return 1
 }
@@ -1111,8 +1117,6 @@ function do-release() {
     info ""
     info "TODO: ask whether to start a new major/minor/patch snapshot, and start it ..."
     info ""
-
-
 }
 
 main $@
