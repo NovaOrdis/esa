@@ -69,6 +69,9 @@ public class EventFilter extends ProcessingLogicBase {
     private long from;
     private long to;
 
+    // in case of relative timestamps, this value is initialized during calibration
+    private long relativeOffsetDays;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
@@ -113,6 +116,8 @@ public class EventFilter extends ProcessingLogicBase {
 
             this.to = d.getTime();
         }
+
+        relativeOffsetDays = -1;
     }
 
     // ProcessingLogicBase overrides -----------------------------------------------------------------------------------
@@ -139,14 +144,27 @@ public class EventFilter extends ProcessingLogicBase {
         //
         if (from > -1 && from < MILLISECONDS_IN_A_DAY && timestamp != null) {
 
-            long ds = timestamp / MILLISECONDS_IN_A_DAY;
-            from = ds * MILLISECONDS_IN_A_DAY + from;
+            if (relativeOffsetDays > 0) {
+                //
+                // redundant calibration
+                //
+                throw new IllegalStateException("the filter was already calibrated");
+            }
+
+            relativeOffsetDays = timestamp / MILLISECONDS_IN_A_DAY;
+            from = relativeOffsetDays * MILLISECONDS_IN_A_DAY + from;
         }
 
         if (to > -1 && to < MILLISECONDS_IN_A_DAY && timestamp != null) {
 
-            long ds = timestamp / MILLISECONDS_IN_A_DAY;
-            to = ds * MILLISECONDS_IN_A_DAY + to;
+            //
+            // not calibrated yet
+            //
+            if (relativeOffsetDays < 0) {
+                relativeOffsetDays = timestamp / MILLISECONDS_IN_A_DAY;
+            }
+
+            to = relativeOffsetDays * MILLISECONDS_IN_A_DAY + to;
         }
 
         //

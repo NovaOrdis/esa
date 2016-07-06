@@ -628,7 +628,7 @@ function configure-run-wrapper()
         fi
     done
 
-    [ -z "${run_wrapper_file}" ] && fail "no run wrapper file found in ${zip_bin_dir}"
+    [ -z "${run_wrapper_file}" ] && fail "no run wrapper file found in ${zip_bin_dir} (or none of the following files: [$(ls ${zip_bin_dir})] contains a main=class= line ...)"
 
     debug "run wrapper file: ${run_wrapper_file}"
 

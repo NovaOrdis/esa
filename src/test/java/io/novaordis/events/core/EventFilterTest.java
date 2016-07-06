@@ -19,7 +19,6 @@ package io.novaordis.events.core;
 import io.novaordis.clad.option.TimestampOption;
 import io.novaordis.events.clad.MockConfiguration;
 import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.MockEvent;
 import io.novaordis.events.core.event.MockTimedEvent;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -28,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -155,41 +153,15 @@ public class EventFilterTest extends ProcessingLogicTest {
         result = e.processInternal(mte);
         assertNull(result);
 
-        //
-        // events from the previous trigger exception
-        //
-
         Event previousDayEvent =
                 new MockTimedEvent(TimestampOption.DEFAULT_FULL_FORMAT.parse("12/31/15 01:30:00").getTime());
 
-        try {
-
-            e.processInternal(previousDayEvent);
-            fail("should have thrown exception");
-        }
-        catch(IllegalStateException ex) {
-
-            String msg = ex.getMessage();
-            log.info(msg);
-        }
-
-        //
-        // events from the day after trigger exception
-        //
+        assertNull(e.processInternal(previousDayEvent));
 
         Event dayAfterEvent =
                 new MockTimedEvent(TimestampOption.DEFAULT_FULL_FORMAT.parse("01/02/16 01:30:00").getTime());
 
-        try {
-
-            e.processInternal(dayAfterEvent);
-            fail("should have thrown exception");
-        }
-        catch(IllegalStateException ex) {
-
-            String msg = ex.getMessage();
-            log.info(msg);
-        }
+        assertNull(e.processInternal(dayAfterEvent));
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
