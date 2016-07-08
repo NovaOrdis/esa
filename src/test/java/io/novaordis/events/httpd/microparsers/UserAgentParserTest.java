@@ -90,7 +90,7 @@ public class UserAgentParserTest {
 
             String msg = e.getMessage();
             log.info(msg);
-            assertTrue(msg.startsWith("no known User-Agent pattern identified"));
+            assertTrue(msg.startsWith("no known User-Agent pattern identified in \""));
             assertEquals(7L, e.getLineNumber().longValue());
             assertEquals(0, e.getPositionInLine().intValue());
         }
@@ -150,6 +150,14 @@ public class UserAgentParserTest {
     public void production7() throws Exception {
 
         String value = "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_3_2 like Mac OS X; en-us) AppleWebKit/533.17.9 (KHTML, like Gecko) Version/5.0.2 Mobile/8H7 Safari/6533.18.5";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(-1, result);
+    }
+
+    @Test
+    public void production8() throws Exception{
+
+        String value = "check_http/v2.0.3 (nagios-plugins 2.0.3)";
         int result = UserAgentParser.identifyEnd(value, 0, null);
         assertEquals(-1, result);
     }

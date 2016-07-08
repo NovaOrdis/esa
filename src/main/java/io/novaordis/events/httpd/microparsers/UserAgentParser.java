@@ -54,7 +54,8 @@ public class UserAgentParser {
 
             // "Mozilla/4.0 (compatible; MSIE 8.0; ...; ...; ...) Firefox/3.0.11 ..."
             // "Mozilla_CA/4.79 [en] (...)";
-            Pattern.compile("^(\\w+/[\\d\\.\\+]+( \\[.+\\]){0,1} (\\([^\\)]+\\)){0,1} {0,1})+"),
+            // "check_http/v2.0.3 (nagios-plugins 2.0.3)"
+            Pattern.compile("^(\\w+/v{0,1}[\\d\\.\\+]+( \\[.+\\]){0,1} (\\([^\\)]+\\)){0,1} {0,1})+"),
 
             // Java/1.7.0_51
             Pattern.compile("^\\w+/[\\d\\._]+"),
@@ -105,7 +106,14 @@ public class UserAgentParser {
             }
         }
 
-        throw new ParsingException("no known User-Agent pattern identified", lineNumber, startFrom);
+        int intendedFragmentLength = 60;
+        int fragmentLength = line.length();
+        fragmentLength = fragmentLength < intendedFragmentLength ? fragmentLength : intendedFragmentLength;
+
+        throw new ParsingException(
+                "no known User-Agent pattern identified in \"" +
+                        line.substring(startFrom, startFrom + fragmentLength) + "...\"",
+                lineNumber, startFrom);
     }
 
     public static boolean isUserAgentRequestHeader(HttpdFormatString fs) {
