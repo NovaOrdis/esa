@@ -19,7 +19,6 @@ package io.novaordis.events.csv;
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.LineParserTest;
 import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.EventTest;
 import io.novaordis.events.core.event.GenericEvent;
 import io.novaordis.events.core.event.GenericTimedEvent;
 import io.novaordis.events.core.event.IntegerProperty;
@@ -349,6 +348,29 @@ public class CsvLineParserTest extends LineParserTest {
         IntegerProperty p2 = (IntegerProperty)properties.get(2);
         assertEquals("count", p2.getName());
         assertEquals(7, p2.getValue());
+    }
+
+    @Test
+    public void parse_FieldContainsComma() throws Exception {
+
+        CsvLineParser parser = new CsvLineParser("a, b");
+
+        String line = "something, \"something, else\"";
+
+        GenericEvent e = (GenericEvent)parser.parseLine(77L, line);
+
+        List<Property> props = e.getPropertyList();
+
+        assertEquals(3, props.size());
+
+        LongProperty p = (LongProperty)props.get(0);
+        assertEquals(77L, p.getLong().longValue());
+
+        StringProperty p2 = (StringProperty)props.get(1);
+        assertEquals("something", p2.getString());
+
+        StringProperty p3 = (StringProperty)props.get(2);
+        assertEquals("something, else", p3.getString());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

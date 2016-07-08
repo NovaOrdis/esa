@@ -39,6 +39,9 @@ public class CsvLineParser implements LineParser {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    private static final String COMMA = ",";
+    private static final String DOUBLE_QUOTE = "\"";
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Package Protected Static ----------------------------------------------------------------------------------------
@@ -118,37 +121,77 @@ public class CsvLineParser implements LineParser {
 
         int headerIndex = 0;
 
-        for(StringTokenizer st = new StringTokenizer(line, ",");
+        String quotedField = null;
+        String blank = null;
 
-            st.hasMoreTokens() && headerIndex < headers.size();
-            headerIndex ++) {
+        for(StringTokenizer st = new StringTokenizer(line, ",\"", true);
+            st.hasMoreTokens() && headerIndex < headers.size(); ) {
 
-            String tok = st.nextToken().trim();
-            Field header = headers.get(headerIndex);
+            String tok = st.nextToken();
 
-            if (headerIndex == timestampFieldIndex) {
+            if (COMMA.equals(tok)) {
+
+                if (blank != null) {
+
+                    //
+                    // empty field
+                    //
+                    insertNewEventProperty(event, headerIndex, blank);
+                    headerIndex ++;
+                    blank = null;
+                }
+                else if (quotedField != null) {
+
+                    quotedField += tok;
+                }
+
+                continue;
+            }
+
+            if (DOUBLE_QUOTE.equals(tok)) {
+
+                if (blank != null) {
+                    //
+                    // blank between comma and double quote, ignore it ...
+                    //
+                    blank = null;
+                }
+
+                if (quotedField == null) {
+                    //
+                    // start a quoted field
+                    //
+                    quotedField = "";
+                    continue;
+                }
+                else {
+                    //
+                    // end a quoted field
+                    //
+                    insertNewEventProperty(event, headerIndex, quotedField);
+                    headerIndex ++;
+                    quotedField = null;
+                    continue;
+                }
+            }
+
+            if (quotedField != null) {
 
                 //
-                // this is our timestamp, set the timed event timestamp, and not a regular property
+                // append to the quoted field, do not insert a property yet
                 //
-                DateFormat dateFormat = (DateFormat)header.getFormat();
-
-                Date d;
-
-                try {
-                    d = dateFormat.parse(tok);
-                }
-                catch(Exception e) {
-                    throw new ParsingException(
-                            "invalid timestamp value \"" + tok + "\", does not match the required timestamp format", e);
-                }
-
-                ((GenericTimedEvent)event).setTimestamp(d.getTime());
+                quotedField += tok;
+                continue;
             }
-            else {
-                Property p = header.toProperty(tok);
-                event.setProperty(p);
+
+            if (tok.trim().length() == 0) {
+
+                blank = tok;
+                continue;
             }
+
+            insertNewEventProperty(event, headerIndex, tok);
+            headerIndex ++;
         }
 
         return event;
@@ -175,6 +218,39 @@ public class CsvLineParser implements LineParser {
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
+
+    private void insertNewEventProperty(Event event, int headerIndex, String tok) throws ParsingException {
+
+        tok = tok.trim();
+
+        Field header = headers.get(headerIndex);
+
+        if (headerIndex == timestampFieldIndex) {
+
+            //
+            // this is our timestamp, set the timed event timestamp, and not a regular property
+            //
+            DateFormat dateFormat = (DateFormat)header.getFormat();
+
+            Date d;
+
+            try {
+
+                d = dateFormat.parse(tok);
+            }
+            catch(Exception e) {
+                throw new ParsingException(
+                        "invalid timestamp value \"" + tok + "\", does not match the required timestamp format", e);
+            }
+
+            ((GenericTimedEvent)event).setTimestamp(d.getTime());
+        }
+        else {
+
+            Property p = header.toProperty(tok);
+            event.setProperty(p);
+        }
+    }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 
