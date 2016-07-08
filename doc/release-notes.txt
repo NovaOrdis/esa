@@ -4,3 +4,5 @@ Fixed a defect that prevented map property components to be displayed correctly 
 line-number can be displayed as part of the output.
 
 A few more User-Agent patterns.
+
+A few more Cookie patterns.

@@ -215,7 +215,7 @@ public class HttpdLineParser implements LineParser {
         }
         else if (CookieParser.isCookieRequestHeader(crt)) {
 
-            i = CookieParser.identifyEnd(line, cursor, lineNumber);
+            i = CookieParser.identifyEnd(line, cursor, crt, lineNumber);
         }
         else {
 

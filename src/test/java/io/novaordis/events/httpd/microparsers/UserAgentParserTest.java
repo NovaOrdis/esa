@@ -162,6 +162,14 @@ public class UserAgentParserTest {
         assertEquals(-1, result);
     }
 
+    @Test
+    public void production9() throws Exception {
+
+        String value = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/534.55.3         (KHTML, like Gecko) Version/5.1.5 Safari/534.55.3";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(-1, result);
+    }
+
     // isUserAgentRequestHeader() --------------------------------------------------------------------------------------
 
     @Test

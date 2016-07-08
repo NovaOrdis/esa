@@ -40,6 +40,9 @@ public class CookieParser {
     /**
      * @param startFrom the index of the first character of the field.
      * @param lineNumber null is acceptable. If not null, will be used for error reporting.
+     * @param httpdFormatString - the HTTP format string we parse the string representation for. Used to generate
+     *                          a friendlier user message. Null is acceptable, but hte error message will be less
+     *                          descriptive.
 
      * @throws ParsingException in case the content on the line does not make sense for this type of field.
      *
@@ -48,7 +51,8 @@ public class CookieParser {
      *
      * @exception  ParsingException if no known pattern was identified
      */
-    public static int identifyEnd(String line, int startFrom, Long lineNumber) throws ParsingException {
+    public static int identifyEnd(String line, int startFrom, HttpdFormatString httpdFormatString, Long lineNumber)
+            throws ParsingException {
 
         //
         // easy way out, no value
@@ -76,7 +80,9 @@ public class CookieParser {
                 // no more semi-colons, we're dealing with the last cookie in the series, so we need to look for
                 // a separator other than the semi-colon. One of those separators is space
                 //
-                cookieFragmentEnd = identifyEndOfTheCookieSeries(line, cookieFragmentStart, lineNumber);
+                cookieFragmentEnd = identifyEndOfTheCookieSeries(
+                        line, cookieFragmentStart, httpdFormatString, lineNumber);
+
                 if (cookieFragmentEnd == -1) {
                     //
                     // end of the string
@@ -166,12 +172,17 @@ public class CookieParser {
      * Invoked at the end of a cookie series, when no more semicolons are present, and we need to apply heuristics
      * to figure out where the last cookie representation ends.
      *
+     * @param httpdFormatString - the HTTP format string we parse the string representation for. Used to generate
+     *                          a friendlier user message. Null is acceptable, but hte error message will be less
+     *                          descriptive.
+     *
      * @return index in the string that designates the first position of the next token. If we reach the end of the
      * string, we return -1.
      *
      * @exception ParsingException if the string does not start with a cookie
      */
-    static int identifyEndOfTheCookieSeries(String s, int from, Long lineNumber) throws ParsingException {
+    static int identifyEndOfTheCookieSeries(String s, int from, HttpdFormatString httpdFormatString, Long lineNumber)
+            throws ParsingException {
 
         //
         // heuristics
@@ -189,7 +200,10 @@ public class CookieParser {
             // no cookie here
             //
 
-            throw new ParsingException("no cookie detected", lineNumber, from);
+            String message = httpdFormatString == null ? "header value" : httpdFormatString.getLiteral();
+            message += " missing";
+
+            throw new ParsingException(message, lineNumber, from);
         }
 
         //

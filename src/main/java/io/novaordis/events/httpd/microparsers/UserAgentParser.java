@@ -52,6 +52,9 @@ public class UserAgentParser {
             // "Mozilla/5.0 (...) like Gecko"
             Pattern.compile("^\\w+/[\\d\\.\\+]+ \\(.+\\) like Gecko"),
 
+            // Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/534.55.3         (KHTML, like Gecko) Version/5.1.5 Safari/534.55.3"
+            Pattern.compile("^Mozilla.*Safari/[\\d\\.\\+]+"),
+
             // "Mozilla/4.0 (compatible; MSIE 8.0; ...; ...; ...) Firefox/3.0.11 ..."
             // "Mozilla_CA/4.79 [en] (...)";
             // "check_http/v2.0.3 (nagios-plugins 2.0.3)"
@@ -59,7 +62,6 @@ public class UserAgentParser {
 
             // Java/1.7.0_51
             Pattern.compile("^\\w+/[\\d\\._]+"),
-
     };
 
     // Static ----------------------------------------------------------------------------------------------------------

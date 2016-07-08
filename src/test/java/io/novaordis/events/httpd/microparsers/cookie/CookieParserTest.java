@@ -18,6 +18,8 @@ package io.novaordis.events.httpd.microparsers.cookie;
 
 import io.novaordis.events.ParsingException;
 import io.novaordis.events.httpd.HttpdFormatString;
+import io.novaordis.events.httpd.RequestHeaderHttpdFormatString;
+import io.novaordis.events.httpd.ResponseHeaderHttpdFormatString;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +53,7 @@ public class CookieParserTest {
 
         int startFrom = 0;
 
-        int result = CookieParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null, null);
 
         assertEquals(46, result);
     }
@@ -62,7 +64,7 @@ public class CookieParserTest {
         String line = "something - something else";
 
         int startFrom = 10;
-        int result = CookieParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null, null);
         assertEquals(11 , result);
     }
 
@@ -73,7 +75,7 @@ public class CookieParserTest {
 
         int startFrom = 5;
 
-        int result = CookieParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null, null);
 
         assertEquals(13, result);
     }
@@ -84,7 +86,7 @@ public class CookieParserTest {
         String line = "cookie1=value1 blah";
         int startFrom = 0;
 
-        int result = CookieParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null, null);
         assertEquals(14, result);
     }
 
@@ -94,7 +96,7 @@ public class CookieParserTest {
         String line = "cookie1=value1; cookie2=value2; cookie3=value3";
         int startFrom = 0;
 
-        int result = CookieParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null, null);
         assertEquals(-1, result);
     }
 
@@ -104,16 +106,18 @@ public class CookieParserTest {
         String line = "blah";
         int startFrom = 0;
 
+        RequestHeaderHttpdFormatString fs = new RequestHeaderHttpdFormatString("%{Something}i");
+
         try {
 
-            CookieParser.identifyEnd(line, startFrom, 7L);
+            CookieParser.identifyEnd(line, startFrom, fs, 7L);
             fail("should have thrown exception");
         }
         catch(ParsingException e) {
 
             String msg = e.getMessage();
             log.info(msg);
-            assertTrue(msg.startsWith("no cookie detected"));
+            assertTrue(msg.equals("%{Something}i missing"));
             assertEquals(7L, e.getLineNumber().longValue());
             assertEquals(0, e.getPositionInLine().intValue());
         }
@@ -125,7 +129,7 @@ public class CookieParserTest {
         String line = "something.somethingelse=value1";
 
         int startFrom = 0;
-        int result = CookieParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null, null);
         assertEquals(-1, result);
     }
 
@@ -135,7 +139,7 @@ public class CookieParserTest {
         String line = "Expires=Thu, 01-Jan-1970 00:00:10 GMT; something=something-else";
 
         int startFrom = 0;
-        int result = CookieParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null, null);
         assertEquals(-1 , result);
     }
 
@@ -145,7 +149,7 @@ public class CookieParserTest {
         String line = "Secure,online_uid=121212; something=something-else";
 
         int startFrom = 0;
-        int result = CookieParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null, null);
         assertEquals(-1 , result);
     }
 
@@ -155,7 +159,7 @@ public class CookieParserTest {
         String line = "A=B; C=D E=F";
 
         int startFrom = 0;
-        int result = CookieParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null, null);
         assertEquals(8 , result);
     }
 
@@ -165,7 +169,7 @@ public class CookieParserTest {
         String line = "A=B; C=D NewField=Value; something=something";
 
         int startFrom = 0;
-        int result = CookieParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null, null);
         assertEquals(8 , result);
     }
 
@@ -175,8 +179,18 @@ public class CookieParserTest {
         String line = "Path=/,SignedIn=1; Domain=.example.com";
 
         int startFrom = 0;
-        int result = CookieParser.identifyEnd(line, startFrom, null);
+        int result = CookieParser.identifyEnd(line, startFrom, null, null);
         assertEquals(-1 , result);
+    }
+
+    @Test
+    public void identifyEnd_DoubleBackspacesInString() throws Exception {
+
+        String line = "A=\\\\; B=C D=E;";
+
+        int startFrom = 0;
+        int result = CookieParser.identifyEnd(line, startFrom, null, null);
+        assertEquals(9 , result);
     }
 
     // identifyEndOfTheCookieSeries() ----------------------------------------------------------------------------------
@@ -187,31 +201,32 @@ public class CookieParserTest {
         //
         // first space after the first equal sign
         //
-        int i = CookieParser.identifyEndOfTheCookieSeries(" A=B C", 0, null);
+        int i = CookieParser.identifyEndOfTheCookieSeries(" A=B C", 0, null, null);
         assertEquals(4, i);
     }
 
     @Test
     public void identifyEndOfTheCookieSeries_NoEqualSign() throws Exception {
 
+        HttpdFormatString fs = new ResponseHeaderHttpdFormatString("%{Some-Header}o");
+
         try {
 
-            CookieParser.identifyEndOfTheCookieSeries(" blah", 0, 7L);
+            CookieParser.identifyEndOfTheCookieSeries(" blah", 0, fs, 7L);
             fail("should have thrown exception");
         }
         catch(ParsingException e) {
             String msg = e.getMessage();
-            assertTrue(msg.startsWith("no cookie detected"));
+            assertTrue(msg.equals("%{Some-Header}o missing"));
             assertEquals(0, e.getPositionInLine().intValue());
             assertEquals(7L, e.getLineNumber().longValue());
         }
     }
 
-
     @Test
     public void identifyEndOfTheCookieSeries_NoSpaceAfterTheEqualSign() throws Exception {
 
-        int i = CookieParser.identifyEndOfTheCookieSeries(" A=B", 0, null);
+        int i = CookieParser.identifyEndOfTheCookieSeries(" A=B", 0, null, null);
         assertEquals(-1, i);
     }
 

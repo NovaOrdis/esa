@@ -38,9 +38,9 @@ public class ResponseHeaderHttpdFormatString extends ParameterizedHttpdFormatStr
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
-     * @param formatStringLiteral - we expect a cookie format specification (%{o,Some-Header}) to start the given
-     *                            string, but it is acceptable that other format strings follow, without any
-     *                            intermediary space. They will be ignored.
+     * @param formatStringLiteral - we expect a cookie format specification (%{o,Some-Header} or %{Some-Header}o) to
+     *                            start the given string, but it is acceptable that other format strings follow, without
+     *                            any intermediary space. They will be ignored.
      *
      * @throws IllegalArgumentException if the literal does not match the expected pattern.
      */
