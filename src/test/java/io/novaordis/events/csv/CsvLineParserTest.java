@@ -373,6 +373,30 @@ public class CsvLineParserTest extends LineParserTest {
         assertEquals("something, else", p3.getString());
     }
 
+    @Test
+    public void parse_QuotedFields() throws Exception {
+
+        CsvLineParser parser = new CsvLineParser("a, b");
+
+        String line = "\"blah\", \"blah blah\"";
+
+        GenericEvent e = (GenericEvent)parser.parseLine(77L, line);
+
+        List<Property> props = e.getPropertyList();
+
+        assertEquals(3, props.size());
+
+        LongProperty p = (LongProperty)props.get(0);
+        assertEquals(77L, p.getLong().longValue());
+
+        StringProperty p2 = (StringProperty)props.get(1);
+        assertEquals("blah", p2.getString());
+
+        StringProperty p3 = (StringProperty)props.get(2);
+        assertEquals("blah blah", p3.getString());
+    }
+
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
