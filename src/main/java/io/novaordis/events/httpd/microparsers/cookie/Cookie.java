@@ -70,7 +70,7 @@ public class Cookie {
         int equalIndex = logRepresentation.indexOf('=');
 
         if (equalIndex == -1) {
-            throw new ParsingException("no cookie identified in string \"" + logRepresentation + "\"", lineNumber);
+            throw new ParsingException(getLiteral() + " missing from \"" + logRepresentation + "\"", lineNumber);
         }
     }
 

@@ -71,7 +71,7 @@ public class CookieTest {
 
             String msg = e.getMessage();
             log.info(msg);
-            assertTrue(msg.startsWith("no cookie identified"));
+            assertTrue(msg.startsWith("blah missing from \""));
             assertEquals(7L, e.getLineNumber().longValue());
         }
     }
