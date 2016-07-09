@@ -45,6 +45,26 @@ public class UserAgentParserTest {
     // Public ----------------------------------------------------------------------------------------------------------
 
     @Test
+    public void identifyEnd_NoUserAgent() throws Exception {
+
+        String line = "- ";
+        int startFrom = 0;
+
+        int result = UserAgentParser.identifyEnd(line, startFrom, null);
+        assertEquals(1, result);
+    }
+
+    @Test
+    public void identifyEnd_NoUserAgent_EndOfLine() throws Exception {
+
+        String line = "-";
+        int startFrom = 0;
+
+        int result = UserAgentParser.identifyEnd(line, startFrom, null);
+        assertEquals(-1, result);
+    }
+
+    @Test
     public void identifyEnd() throws Exception {
 
         String line = "Mozilla/4.0 (compatible; MSIE 8.0) blah";

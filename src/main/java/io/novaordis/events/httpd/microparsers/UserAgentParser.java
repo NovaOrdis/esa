@@ -82,6 +82,21 @@ public class UserAgentParser {
     public static int identifyEnd(String line, int startFrom, Long lineNumber) throws ParsingException {
 
         //
+        // easy way out, no value
+        //
+
+        if (line.charAt(startFrom) == '-') {
+
+            int end = startFrom + 1;
+
+            if (end >= line.length()) {
+                end = -1;
+            }
+
+            return end;
+        }
+
+        //
         // no quotes, and the value includes multiple spaces
         //
 
