@@ -29,6 +29,11 @@ import java.util.List;
  * A micro-parser is useful for particular fields that contain spaces and that were written in the log without being
  * embedded by quotes. It applies field-specific heuristics to figure out the end of the field.
  *
+ *
+ * Cases that are not handled (if they keep appearing, they will):
+ *
+ * 1. Cookie fragments are separated by commas, not semicolons.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 6/30/16
  */
