@@ -48,7 +48,8 @@ public class UserAgentParser {
 
             // ... Mobile Safari/534.11+
             // ... Mobile/12A405"
-            Pattern.compile("^.+ Mobile(/\\w+){0,1}( Safari/[\\d\\.\\+]+){0,1}"),
+            // ... Mobile/13F69 [...]
+            Pattern.compile("^.+ Mobile(/\\w+){0,1}( Safari/[\\d\\.\\+]+){0,1}( \\[.+?\\]){0,1}"),
 
             // "Mozilla/5.0 (...) like Gecko"
             Pattern.compile("^\\w+/[\\d\\.\\+]+ \\(.+\\) like Gecko"),
