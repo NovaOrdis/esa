@@ -127,7 +127,7 @@ public class HttpdLineParser implements LineParser {
                     // empty enclosure or consumed enclosure, advance the cursor and continue
                     while(line.charAt(cursor) == ' ') { cursor++; }
                     if ((c = line.charAt(cursor)) != crt.getLiteral().charAt(0)) {
-                        throw new ParsingException("expecting " + crt + " but got " + c);
+                        throw new ParsingException("expecting " + crt + " but got " + c, lineNumber, cursor);
                     }
                     cursor++;
                     while(cursor < line.length() && line.charAt(cursor) == ' ') { cursor++; }
@@ -147,7 +147,7 @@ public class HttpdLineParser implements LineParser {
 
                 while(line.charAt(cursor) == ' ') { cursor++; }
                 if ((c = line.charAt(cursor)) != crt.getLiteral().charAt(0)) {
-                    throw new ParsingException("expecting " + crt + " but got '" + c + "'");
+                    throw new ParsingException("expecting " + crt + " but got '" + c + "'", lineNumber, cursor);
                 }
                 cursor++;
 

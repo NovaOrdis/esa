@@ -9,4 +9,4 @@ A few more Cookie patterns.
 
 CSV parser handles quoted fields that can contain commas
 
-Introduced UrlParser
+introduced UrlParser, which is used to indentify fields such as %{Referer}i
