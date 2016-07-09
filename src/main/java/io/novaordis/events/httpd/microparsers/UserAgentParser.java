@@ -37,6 +37,16 @@ public class UserAgentParser {
     public static final String HEADER_NAME = "User-Agent";
 
     //
+    // Known user agent names
+    //
+
+    public static final String[] USER_AGENT_NAMES = {
+
+            "Google Bot",
+            "SearchmetricsBot",
+    };
+
+    //
     // Known user agent patterns
     //
 
@@ -54,7 +64,7 @@ public class UserAgentParser {
             // "Mozilla/5.0 (...) like Gecko"
             Pattern.compile("^\\w+/[\\d\\.\\+]+ \\(.+\\) like Gecko"),
 
-            // Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/534.55.3         (KHTML, like Gecko) Version/5.1.5 Safari/534.55.3"
+            // Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_3) AppleWebKit/534.55.3 (KHTML, like Gecko) Version/5.1.5 Safari/534.55.3"
             Pattern.compile("^Mozilla.*Safari/[\\d\\.\\+]+( \\w+/[\\d\\.]+)*"),
 
             // "Mozilla/4.0 (compatible; MSIE 8.0; ...; ...; ...) Firefox/3.0.11 ..."
@@ -65,6 +75,14 @@ public class UserAgentParser {
             // Java/1.7.0_51
             Pattern.compile("^\\w+/[\\d\\._]+"),
 
+            // Xenu Link Sleuth/1.3.8
+            Pattern.compile("^Xenu Link.*?/[\\d\\.]+"),
+
+            // Typhoeus - https://github.com/typhoeus/typhoeus
+            Pattern.compile("^Typhoeus.+typhoeus"),
+
+            // "HubSpot Links Crawler 2.0 http://www.hubspot.com/"
+            Pattern.compile("^HubSpot.+www\\.hubspot\\.com(/){0,1}"),
 
     };
 
@@ -81,18 +99,16 @@ public class UserAgentParser {
      */
     public static int identifyEnd(String line, int startFrom, Long lineNumber) throws ParsingException {
 
+        int end;
+
         //
         // easy way out, no value
         //
 
         if (line.charAt(startFrom) == '-') {
 
-            int end = startFrom + 1;
-
-            if (end >= line.length()) {
-                end = -1;
-            }
-
+            end = startFrom + 1;
+            end = end < line.length() ? end : -1;
             return end;
         }
 
@@ -102,13 +118,23 @@ public class UserAgentParser {
 
         String interestingSection = line.substring(startFrom);
 
+        for (String s: USER_AGENT_NAMES) {
+
+            if (interestingSection.startsWith(s)) {
+
+                end = startFrom + s.length();
+                end = end < line.length() ? end : -1;
+                return end;
+            }
+        }
+
         for(Pattern p: USER_AGENT_PATTERNS) {
 
             Matcher m = p.matcher(interestingSection);
 
             if (m.find()) {
 
-                int end = startFrom + m.end();
+                end = startFrom + m.end();
 
                 if (end >= line.length()) {
 

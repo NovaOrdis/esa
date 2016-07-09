@@ -64,7 +64,7 @@ public class UserAgentParserTest {
         assertEquals(-1, result);
     }
 
-    @Test
+     @Test
     public void identifyEnd() throws Exception {
 
         String line = "Mozilla/4.0 (compatible; MSIE 8.0) blah";
@@ -211,6 +211,54 @@ public class UserAgentParserTest {
     public void production12() throws Exception {
 
         String value = "Mozilla/5.0 (iPad; CPU OS 9_3_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13F69 [FBAN/FBIOS;FBAV/57.0.0.41.136;FBBV/31395714;FBRV/0;FBDV/iPad4,1;FBMD/iPad;FBSN/iPhone OS;FBSV/9.3.2;FBSS/2;FBCR/;FBID/tablet;FBLC/en_US;FBOP/5]";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(-1, result);
+    }
+
+    @Test
+    public void production13() throws Exception {
+
+        String value = "Google Bot";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(-1, result);
+    }
+
+    @Test
+    public void production13_1() throws Exception {
+
+        String value = "Google Bot ";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(10, result);
+    }
+
+    @Test
+    public void production14() throws Exception {
+
+        String value = "SearchmetricsBot";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(-1, result);
+    }
+
+    @Test
+    public void production15() throws Exception {
+
+        String value = "Xenu Link Sleuth/1.3.8";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(-1, result);
+    }
+
+    @Test
+    public void production16() throws Exception {
+
+        String value = "Typhoeus - https://github.com/typhoeus/typhoeus";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(-1, result);
+    }
+
+    @Test
+    public void production17() throws Exception {
+
+        String value = "HubSpot Links Crawler 2.0 http://www.hubspot.com/";
         int result = UserAgentParser.identifyEnd(value, 0, null);
         assertEquals(-1, result);
     }
