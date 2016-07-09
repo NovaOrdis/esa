@@ -18,7 +18,8 @@ package io.novaordis.events.httpd.microparsers.cookie;
 
 import io.novaordis.events.ParsingException;
 import io.novaordis.events.httpd.HttpdFormatString;
-import io.novaordis.events.httpd.ParameterizedHttpdFormatString;
+import io.novaordis.events.httpd.RequestHeaderHttpdFormatString;
+import io.novaordis.events.httpd.ResponseHeaderHttpdFormatString;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,9 +41,7 @@ public class CookieParser {
     /**
      * @param startFrom the index of the first character of the field.
      * @param lineNumber null is acceptable. If not null, will be used for error reporting.
-     * @param httpdFormatString - the HTTP format string we parse the string representation for. Used to generate
-     *                          a friendlier user message. Null is acceptable, but hte error message will be less
-     *                          descriptive.
+     * @param httpdFormatString - the HTTP format string we parse the string representation for. Must not be null.
 
      * @throws ParsingException in case the content on the line does not make sense for this type of field.
      *
@@ -53,6 +52,10 @@ public class CookieParser {
      */
     public static int identifyEnd(String line, int startFrom, HttpdFormatString httpdFormatString, Long lineNumber)
             throws ParsingException {
+
+        if (httpdFormatString == null) {
+            throw new IllegalArgumentException("null httpd format string");
+        }
 
         //
         // easy way out, no value
@@ -109,6 +112,22 @@ public class CookieParser {
                 moreCookies = false;
             }
 
+            //
+            // There are situations when the Cookie input header is not quoted, does not end with a non-semicolon space
+            // and it is immediately followed by the Set-Cookie output header, so we can't say where one ends and the
+            // other begins. We must we apply heuristics by looking for Domain/Path and we allocate that to the output
+            // Set-Cookie. So don't add the cookie just identified to the cookie list, first check if there's no
+            // Domain/Path pattern coming
+            //
+
+            if (isCookieRequestHeader(httpdFormatString) &&
+                    doesDomainSpecificationFollow(line, cookieFragmentStart + cookieLogRepresentation.length())) {
+
+                //
+                // the cookie we just identified belongs to the next fragment, so don't add it to the list
+                //
+                break;
+            }
 
             Cookie c = new Cookie(cookieLogRepresentation, lineNumber);
             cookies.add(c);
@@ -130,6 +149,15 @@ public class CookieParser {
             }
         }
 
+        //
+        // walk past semicolons, if any
+        //
+
+        while(nextTokenStartIndex < line.length() && line.charAt(nextTokenStartIndex) == ';') {
+
+            nextTokenStartIndex ++;
+        }
+
         if (nextTokenStartIndex >= line.length()) {
 
             //
@@ -142,19 +170,39 @@ public class CookieParser {
         return nextTokenStartIndex;
     }
 
+    public static boolean isCookieHeader(HttpdFormatString fs) {
+
+        return isCookieRequestHeader(fs) || isCookieResponseHeader(fs);
+    }
+
     public static boolean isCookieRequestHeader(HttpdFormatString fs) {
 
         if (fs == null) {
             return false;
         }
 
-        if (!(fs instanceof ParameterizedHttpdFormatString)) {
+        if (!(fs instanceof RequestHeaderHttpdFormatString)) {
             return false;
         }
 
-        ParameterizedHttpdFormatString pfs = (ParameterizedHttpdFormatString)fs;
-        String parameterName = pfs.getParameter();
-        return "Cookie".equalsIgnoreCase(parameterName) || "Set-Cookie".equalsIgnoreCase(parameterName);
+        RequestHeaderHttpdFormatString requestHeader = (RequestHeaderHttpdFormatString)fs;
+        String parameterName = requestHeader.getParameter();
+        return "Cookie".equalsIgnoreCase(parameterName);
+    }
+
+    public static boolean isCookieResponseHeader(HttpdFormatString fs) {
+
+        if (fs == null) {
+            return false;
+        }
+
+        if (!(fs instanceof ResponseHeaderHttpdFormatString)) {
+            return false;
+        }
+
+        ResponseHeaderHttpdFormatString responseHeader = (ResponseHeaderHttpdFormatString)fs;
+        String parameterName = responseHeader.getParameter();
+        return "Set-Cookie".equalsIgnoreCase(parameterName);
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -242,6 +290,19 @@ public class CookieParser {
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
+
+    private static boolean doesDomainSpecificationFollow(String line, int startFrom) {
+
+        //
+        // walk past semicolons and spaces
+        //
+        int i = startFrom;
+        while (i < line.length() && (line.charAt(i) == ';' || line.charAt(i) == ' ')) {
+            i++;
+        }
+
+        return i < line.length() && line.substring(i).startsWith("Domain=");
+    }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 

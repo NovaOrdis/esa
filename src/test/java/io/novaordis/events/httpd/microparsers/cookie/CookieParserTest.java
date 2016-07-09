@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -49,11 +50,13 @@ public class CookieParserTest {
     @Test
     public void identifyEnd() throws Exception {
 
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
         String line = "cookie1=value1; cookie2=value2; cookie3=value3 blah";
 
         int startFrom = 0;
 
-        int result = CookieParser.identifyEnd(line, startFrom, null, null);
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
 
         assertEquals(46, result);
     }
@@ -61,21 +64,25 @@ public class CookieParserTest {
     @Test
     public void identifyEnd_NoValue() throws Exception {
 
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
         String line = "something - something else";
 
         int startFrom = 10;
-        int result = CookieParser.identifyEnd(line, startFrom, null, null);
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
         assertEquals(11 , result);
     }
 
     @Test
     public void identifyEnd_LeadingString() throws Exception {
 
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
         String line = "blah A=B; C=D blah";
 
         int startFrom = 5;
 
-        int result = CookieParser.identifyEnd(line, startFrom, null, null);
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
 
         assertEquals(13, result);
     }
@@ -83,20 +90,24 @@ public class CookieParserTest {
     @Test
     public void identifyEnd2() throws Exception {
 
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
         String line = "cookie1=value1 blah";
         int startFrom = 0;
 
-        int result = CookieParser.identifyEnd(line, startFrom, null, null);
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
         assertEquals(14, result);
     }
 
     @Test
     public void identifyEnd_EndOfLine() throws Exception {
 
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
         String line = "cookie1=value1; cookie2=value2; cookie3=value3";
         int startFrom = 0;
 
-        int result = CookieParser.identifyEnd(line, startFrom, null, null);
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
         assertEquals(-1, result);
     }
 
@@ -126,71 +137,102 @@ public class CookieParserTest {
     @Test
     public void identifyEnd3() throws Exception {
 
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
         String line = "something.somethingelse=value1";
 
         int startFrom = 0;
-        int result = CookieParser.identifyEnd(line, startFrom, null, null);
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
         assertEquals(-1, result);
     }
 
     @Test
     public void identifyEnd4() throws Exception {
 
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
         String line = "Expires=Thu, 01-Jan-1970 00:00:10 GMT; something=something-else";
 
         int startFrom = 0;
-        int result = CookieParser.identifyEnd(line, startFrom, null, null);
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
         assertEquals(-1 , result);
     }
 
     @Test
     public void identifyEnd5() throws Exception {
 
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
         String line = "Secure,online_uid=121212; something=something-else";
 
         int startFrom = 0;
-        int result = CookieParser.identifyEnd(line, startFrom, null, null);
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
         assertEquals(-1 , result);
     }
 
     @Test
     public void identifyEnd6() throws Exception {
 
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
         String line = "A=B; C=D E=F";
 
         int startFrom = 0;
-        int result = CookieParser.identifyEnd(line, startFrom, null, null);
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
         assertEquals(8 , result);
     }
 
     @Test
     public void identifyEnd6_1() throws Exception {
 
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
         String line = "A=B; C=D NewField=Value; something=something";
 
         int startFrom = 0;
-        int result = CookieParser.identifyEnd(line, startFrom, null, null);
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
         assertEquals(8 , result);
     }
 
     @Test
     public void identifyEnd7() throws Exception {
 
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Set-Cookie}o").get(0);
+
         String line = "Path=/,SignedIn=1; Domain=.example.com";
 
         int startFrom = 0;
-        int result = CookieParser.identifyEnd(line, startFrom, null, null);
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
         assertEquals(-1 , result);
     }
 
     @Test
     public void identifyEnd_DoubleBackspacesInString() throws Exception {
 
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
         String line = "A=\\\\; B=C D=E;";
 
         int startFrom = 0;
-        int result = CookieParser.identifyEnd(line, startFrom, null, null);
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
         assertEquals(9 , result);
+    }
+
+    /**
+     * There are situations when the Cookie input header is not quoted, does not end with a non-semicolon space and
+     * it is immediately followed by the Set-Cookie output header, so we can't say where one ends and the other begins.
+     * We apply heuristics by looking for Domain/Path and we allocate that to the output Set-Cookie.
+     */
+    @Test
+    public void identifyEnd_OutputCookieFollows() throws Exception {
+
+        String line = "INPUT_COOKIE_KEY1=Value1; SET_COOKIE_KEY1=Value2; Domain=something; Path=/";
+
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
+        int startFrom = 0;
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
+        assertEquals(25 , result);
     }
 
     // identifyEndOfTheCookieSeries() ----------------------------------------------------------------------------------
@@ -246,6 +288,35 @@ public class CookieParserTest {
         assertEquals(-1, i);
     }
 
+    // isCookieHeader() ------------------------------------------------------------------------------------------------
+
+    @Test
+    public void isCookieHeader() throws Exception {
+
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+        assertTrue(CookieParser.isCookieHeader(fs));
+    }
+
+    @Test
+    public void isCookieHeader_SetCookie() throws Exception {
+
+        //
+        // we also use the Cookie parser for Set-Cookie response headers values
+        //
+        HttpdFormatString fs = HttpdFormatString.fromString("%{SET-COOKIE}o").get(0);
+        assertTrue(CookieParser.isCookieHeader(fs));
+    }
+
+    @Test
+    public void isCookieHeader_SetCookie2() throws Exception {
+
+        //
+        // we also use the Cookie parser for Set-Cookie response headers values
+        //
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Set-Cookie}o").get(0);
+        assertTrue(CookieParser.isCookieHeader(fs));
+    }
+
     // isCookieRequestHeader() -----------------------------------------------------------------------------------------
 
     @Test
@@ -258,24 +329,25 @@ public class CookieParserTest {
     @Test
     public void isCookieRequestHeader_SetCookie() throws Exception {
 
-        //
-        // we also use the Cookie micro parser for Set-Cookie response headers values
-        //
-        HttpdFormatString fs = HttpdFormatString.fromString("%{SET-COOKIE}o").get(0);
-        assertTrue(CookieParser.isCookieRequestHeader(fs));
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Set-Cookie}o").get(0);
+        assertFalse(CookieParser.isCookieRequestHeader(fs));
+    }
+
+    // isCookieResponseHeader() ----------------------------------------------------------------------------------------
+
+    @Test
+    public void isCookieResponseHeader() throws Exception {
+
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Set-Cookie}o").get(0);
+        assertTrue(CookieParser.isCookieResponseHeader(fs));
     }
 
     @Test
-    public void isCookieRequestHeader_SetCookie2() throws Exception {
+    public void isCookieResponseHeader_Cookie() throws Exception {
 
-        //
-        // we also use the Cookie micro parser for Set-Cookie response headers values
-        //
-        HttpdFormatString fs = HttpdFormatString.fromString("%{Set-Cookie}o").get(0);
-        assertTrue(CookieParser.isCookieRequestHeader(fs));
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+        assertFalse(CookieParser.isCookieResponseHeader(fs));
     }
-
-
 
     // Package protected -----------------------------------------------------------------------------------------------
 

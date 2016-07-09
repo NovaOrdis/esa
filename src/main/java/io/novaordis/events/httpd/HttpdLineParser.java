@@ -214,7 +214,7 @@ public class HttpdLineParser implements LineParser {
 
             i = UserAgentParser.identifyEnd(line, cursor, lineNumber);
         }
-        else if (CookieParser.isCookieRequestHeader(crt)) {
+        else if (CookieParser.isCookieHeader(crt)) {
 
             i = CookieParser.identifyEnd(line, cursor, crt, lineNumber);
         }
