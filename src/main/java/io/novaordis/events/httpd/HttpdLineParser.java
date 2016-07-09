@@ -20,6 +20,7 @@ import io.novaordis.events.ParsingException;
 import io.novaordis.events.core.LineFormat;
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.event.Event;
+import io.novaordis.events.httpd.microparsers.UrlParser;
 import io.novaordis.events.httpd.microparsers.cookie.CookieParser;
 import io.novaordis.events.httpd.microparsers.FirstRequestLineParser;
 import io.novaordis.events.httpd.microparsers.UserAgentParser;
@@ -216,6 +217,10 @@ public class HttpdLineParser implements LineParser {
         else if (CookieParser.isCookieRequestHeader(crt)) {
 
             i = CookieParser.identifyEnd(line, cursor, crt, lineNumber);
+        }
+        else if (UrlParser.isUrl(crt)) {
+
+            i = UrlParser.identifyEnd(line, cursor, crt, lineNumber);
         }
         else {
 

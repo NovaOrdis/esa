@@ -8,3 +8,5 @@ A few more User-Agent patterns.
 A few more Cookie patterns.
 
 CSV parser handles quoted fields that can contain commas
+
+Introduced UrlParser

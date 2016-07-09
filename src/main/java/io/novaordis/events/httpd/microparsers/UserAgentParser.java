@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * A micro-parser is useful for particular fields that contain spaces and that were written in the log without being
+ * A parser is useful for particular fields that contain spaces and that were written in the log without being
  * embedded by quotes. It applies field-specific heuristics to figure out the end of the field.
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
