@@ -178,6 +178,14 @@ public class UserAgentParserTest {
         assertEquals(-1, result);
     }
 
+    @Test
+    public void production11() throws Exception {
+
+        String value = "Mozilla/5.0 (iPad; CPU OS 8_0_2 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Mobile/12A405";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(-1, result);
+
+    }
     // isUserAgentRequestHeader() --------------------------------------------------------------------------------------
 
     @Test
