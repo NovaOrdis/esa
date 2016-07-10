@@ -91,6 +91,13 @@ public class CookieParser {
                 cookieFragmentEnd = identifyEndOfTheCookieSeries(
                         line, cookieFragmentStart, httpdFormatString, lineNumber);
 
+                if (cookieFragmentEnd == cookieFragmentStart) {
+                    //
+                    // the segment does not contain any more cookie externalization
+                    //
+                    break;
+                }
+
                 if (cookieFragmentEnd == -1) {
                     //
                     // end of the string
@@ -134,9 +141,15 @@ public class CookieParser {
                 break;
             }
 
-            Cookie c = new Cookie(cookieLogRepresentation, lineNumber);
-            cookies.add(c);
-            cookieFragmentStart = cookieFragmentEnd + 1;
+            //
+            // it's possible (and normal) to get an empty string here, case for it
+            //
+            if (cookieLogRepresentation.length() != 0) {
+
+                Cookie c = new Cookie(cookieLogRepresentation, lineNumber);
+                cookies.add(c);
+                cookieFragmentStart = cookieFragmentEnd + 1;
+            }
         }
 
         int nextTokenStartIndex = startFrom;
@@ -242,7 +255,31 @@ public class CookieParser {
         //
 
         //
-        // first space after the first equal sign
+        // if the first character that follows after spaces is not the beginning of a word, this is the end of the
+        // cookie series
+        //
+
+        int i = from;
+
+        while(i < s.length() && s.charAt(i) == ' ') {
+            i ++;
+        }
+
+        if (i >= s.length()) {
+            return -1;
+        }
+
+        char c = s.charAt(i);
+
+        if (c != '_' && (c < 'A' || c > 'Z') && (c < 'a' || c > 'z')) {
+            //
+            // not the beginning of a word
+            //
+            return from;
+        }
+
+        //
+        // first space after the first equal sign indicates the last cookie in the series, or
         //
 
         int equalsIndex = s.indexOf('=', from);

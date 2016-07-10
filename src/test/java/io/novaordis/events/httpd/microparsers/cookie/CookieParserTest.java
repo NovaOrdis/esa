@@ -235,6 +235,42 @@ public class CookieParserTest {
         assertEquals(25 , result);
     }
 
+    @Test
+    public void identifyEnd_SemicolonTrailingAfterLastCookie_EndOfLine() throws Exception {
+
+        String line = "A=B; C=D;";
+
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
+        int startFrom = 0;
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
+        assertEquals(-1 , result);
+    }
+
+    @Test
+    public void identifyEnd_SemicolonTrailingAfterLastCookie_NoValue() throws Exception {
+
+        String line = "A=B; C=D; -";
+
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
+        int startFrom = 0;
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
+        assertEquals(9 , result);
+    }
+
+    @Test
+    public void identifyEnd_SemicolonTrailingAfterLastCookie_Digit() throws Exception {
+
+        String line = "A=B; C=D; 7";
+
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
+        int startFrom = 0;
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
+        assertEquals(9 , result);
+    }
+
     // identifyEndOfTheCookieSeries() ----------------------------------------------------------------------------------
 
     @Test
@@ -271,6 +307,21 @@ public class CookieParserTest {
         int i = CookieParser.identifyEndOfTheCookieSeries(" A=B", 0, null, null);
         assertEquals(-1, i);
     }
+
+    @Test
+    public void identifyEndOfTheCookieSeries_NoValueFollows() throws Exception {
+
+        int i = CookieParser.identifyEndOfTheCookieSeries(" -", 0, null, null);
+        assertEquals(0, i);
+    }
+
+    @Test
+    public void identifyEndOfTheCookieSeries_NoWordBeginningFollows() throws Exception {
+
+        int i = CookieParser.identifyEndOfTheCookieSeries(" 7", 0, null, null);
+        assertEquals(0, i);
+    }
+
 
     // identifyEndOfTheCookieSeries() ----------------------------------------------------------------------------------
 

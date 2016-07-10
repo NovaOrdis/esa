@@ -263,6 +263,13 @@ public class UserAgentParserTest {
         assertEquals(-1, result);
     }
 
+    @Test
+    public void production18() throws Exception {
+
+        String value = "Mozilla/5.0 (Windows NT 6.1; rv:12.0) Gecko/20120403211507         Firefox/12.0 ";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(-1, result);
+    }
 
     // isUserAgentRequestHeader() --------------------------------------------------------------------------------------
 
