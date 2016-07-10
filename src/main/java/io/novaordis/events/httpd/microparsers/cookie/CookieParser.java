@@ -91,6 +91,13 @@ public class CookieParser {
                 cookieFragmentEnd = identifyEndOfTheCookieSeries(
                         line, cookieFragmentStart, httpdFormatString, lineNumber);
 
+                if (cookieFragmentEnd == -1) {
+                    //
+                    // end of the string
+                    //
+                    cookieFragmentEnd = line.length();
+                }
+
                 if (cookieFragmentEnd == cookieFragmentStart) {
                     //
                     // the segment does not contain any more cookie externalization
@@ -98,12 +105,6 @@ public class CookieParser {
                     break;
                 }
 
-                if (cookieFragmentEnd == -1) {
-                    //
-                    // end of the string
-                    //
-                    cookieFragmentEnd = line.length();
-                }
                 moreCookies = false;
             }
 
@@ -141,15 +142,9 @@ public class CookieParser {
                 break;
             }
 
-            //
-            // it's possible (and normal) to get an empty string here, case for it
-            //
-            if (cookieLogRepresentation.length() != 0) {
-
-                Cookie c = new Cookie(cookieLogRepresentation, lineNumber);
-                cookies.add(c);
-                cookieFragmentStart = cookieFragmentEnd + 1;
-            }
+            Cookie c = new Cookie(cookieLogRepresentation, lineNumber);
+            cookies.add(c);
+            cookieFragmentStart = cookieFragmentEnd + 1;
         }
 
         int nextTokenStartIndex = startFrom;
