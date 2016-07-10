@@ -307,6 +307,19 @@ public class CookieParserTest {
         assertEquals(13 , result);
     }
 
+    @Test
+    public void identifyEnd_EmptyLine() throws Exception {
+
+        String line = "";
+
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
+        int startFrom = 0;
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
+        assertEquals(-1 , result);
+    }
+
+
     // identifyEndOfTheCookieSeries() ----------------------------------------------------------------------------------
 
     @Test

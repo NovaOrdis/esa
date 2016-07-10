@@ -62,10 +62,19 @@ public class CookieParser {
         // easy way out, no value
         //
 
-        if ("- ".equals(line.substring(startFrom, startFrom + 2))) {
-
-            return startFrom + 1;
+        if (startFrom >= line.length()) {
+            return -1;
         }
+
+        int end;
+
+        if (line.charAt(startFrom) == '-') {
+
+            end = startFrom + 1;
+            end = end < line.length() ? end : -1;
+            return end;
+        }
+
 
         List<Cookie> cookies = new ArrayList<>();
 
