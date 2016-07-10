@@ -56,6 +56,9 @@ public class UserAgentParser {
             // order is important, do not modify
             //
 
+            // "WordPress/4.0.11; http://kollelbudget.com"
+            Pattern.compile("^WordPress.+?com"),
+
             // ... Mobile Safari/534.11+
             // ... Mobile/12A405"
             // ... Mobile/13F69 [...]
@@ -70,6 +73,7 @@ public class UserAgentParser {
             // "Mozilla/4.0 (compatible; MSIE 8.0; ...; ...; ...) Firefox/3.0.11 ..."
             // "Mozilla_CA/4.79 [en] (...)";
             // "check_http/v2.0.3 (nagios-plugins 2.0.3)"
+            // Mozilla/5.0 (Windows NT 6.1; rv:12.0) Gecko/20120403211507         Firefox/12.0
             Pattern.compile("^(\\w+/v{0,1}[\\d\\.\\+]+( \\[.+\\]){0,1} (\\([^\\)]+\\)){0,1} *)+"),
 
             // Java/1.7.0_51
@@ -83,9 +87,6 @@ public class UserAgentParser {
 
             // "HubSpot Links Crawler 2.0 http://www.hubspot.com/"
             Pattern.compile("^HubSpot.+www\\.hubspot\\.com(/){0,1}"),
-
-            //Mozilla/5.0 (Windows NT 6.1; rv:12.0) Gecko/20120403211507         Firefox/12.0
-
     };
 
     // Static ----------------------------------------------------------------------------------------------------------

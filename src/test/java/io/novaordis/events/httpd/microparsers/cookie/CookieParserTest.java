@@ -151,7 +151,7 @@ public class CookieParserTest {
 
         HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
 
-        String line = "Expires=Thu, 01-Jan-1970 00:00:10 GMT; something=something-else";
+        String line = "Expires=Thu,01-Jan-1970 00:00:10 GMT; something=something-else";
 
         int startFrom = 0;
         int result = CookieParser.identifyEnd(line, startFrom, fs, null);
@@ -269,6 +269,42 @@ public class CookieParserTest {
         int startFrom = 0;
         int result = CookieParser.identifyEnd(line, startFrom, fs, null);
         assertEquals(9 , result);
+    }
+
+    @Test
+    public void identifyEnd_CommaSeparator() throws Exception {
+
+        String line = "A=B, C=D, E=F ";
+
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
+        int startFrom = 0;
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
+        assertEquals(13 , result);
+    }
+
+    @Test
+    public void identifyEnd_CommaSeparator_2() throws Exception {
+
+        String line = "A=B, C=D, E=F";
+
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
+        int startFrom = 0;
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
+        assertEquals(-1 , result);
+    }
+
+    @Test
+    public void identifyEnd_CommaSeparator_3() throws Exception {
+
+        String line = "A=B, C=D, E=F G=H; Domain=something; ";
+
+        HttpdFormatString fs = HttpdFormatString.fromString("%{Cookie}i").get(0);
+
+        int startFrom = 0;
+        int result = CookieParser.identifyEnd(line, startFrom, fs, null);
+        assertEquals(13 , result);
     }
 
     // identifyEndOfTheCookieSeries() ----------------------------------------------------------------------------------

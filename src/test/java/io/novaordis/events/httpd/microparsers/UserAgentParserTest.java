@@ -271,6 +271,14 @@ public class UserAgentParserTest {
         assertEquals(-1, result);
     }
 
+    @Test
+    public void production19() throws Exception {
+
+        String value = "WordPress/4.0.11; http://kollelbudget.com ";
+        int result = UserAgentParser.identifyEnd(value, 0, null);
+        assertEquals(41, result);
+    }
+
     // isUserAgentRequestHeader() --------------------------------------------------------------------------------------
 
     @Test

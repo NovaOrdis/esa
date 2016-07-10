@@ -30,10 +30,6 @@ import java.util.List;
  * embedded by quotes. It applies field-specific heuristics to figure out the end of the field.
  *
  *
- * Cases that are not handled (if they keep appearing, they will):
- *
- * 1. Cookie fragments are separated by commas, not semicolons.
- *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 6/30/16
  */
@@ -78,9 +74,21 @@ public class CookieParser {
         String cookieLogRepresentation;
         boolean moreCookies = true;
 
+        //
+        // decide on separator (comma or semicolon)
+        //
+        int semicolonIndex = line.indexOf("; ", startFrom);
+        int commaIndex = line.indexOf(", ", startFrom);
+
+        char separator = ';';
+
+        if (commaIndex != -1 && (semicolonIndex == -1 || commaIndex < semicolonIndex)) {
+            separator = ',';
+        }
+
         while(moreCookies) {
 
-            int cookieFragmentEnd = line.indexOf(';', cookieFragmentStart);
+            int cookieFragmentEnd = line.indexOf(separator, cookieFragmentStart);
 
             if (cookieFragmentEnd == -1) {
 
@@ -134,7 +142,8 @@ public class CookieParser {
             //
 
             if (isCookieRequestHeader(httpdFormatString) &&
-                    doesDomainSpecificationFollow(line, cookieFragmentStart + cookieLogRepresentation.length())) {
+                    doesDomainSpecificationFollow(
+                            line, cookieFragmentStart + cookieLogRepresentation.length(), separator)) {
 
                 //
                 // the cookie we just identified belongs to the next fragment, so don't add it to the list
@@ -163,10 +172,10 @@ public class CookieParser {
         }
 
         //
-        // walk past semicolons, if any
+        // walk past separator, if any
         //
 
-        while(nextTokenStartIndex < line.length() && line.charAt(nextTokenStartIndex) == ';') {
+        while(nextTokenStartIndex < line.length() && line.charAt(nextTokenStartIndex) == separator) {
 
             nextTokenStartIndex ++;
         }
@@ -328,13 +337,13 @@ public class CookieParser {
 
     // Private ---------------------------------------------------------------------------------------------------------
 
-    private static boolean doesDomainSpecificationFollow(String line, int startFrom) {
+    private static boolean doesDomainSpecificationFollow(String line, int startFrom, char separator) {
 
         //
         // walk past semicolons and spaces
         //
         int i = startFrom;
-        while (i < line.length() && (line.charAt(i) == ';' || line.charAt(i) == ' ')) {
+        while (i < line.length() && (line.charAt(i) == separator || line.charAt(i) == ' ')) {
             i++;
         }
 
