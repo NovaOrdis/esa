@@ -88,7 +88,11 @@ public class HttpdLogLine {
             return values.remove(e);
         }
 
-        if (!e.getType().equals(value.getClass())) {
+        Class formatType = e.getType();
+        Class valueType = value.getClass();
+
+        //noinspection unchecked
+        if (!formatType.isAssignableFrom(valueType)) {
             throw new IllegalArgumentException(
                     "type mismatch, " + value.getClass() + " \"" + value + "\" is not a valid type for " + e);
         }

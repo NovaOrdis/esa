@@ -297,7 +297,8 @@ public class BusinessScenario {
     }
 
     /**
-     * The timestamp of the moment the first request of the scenario enters the server.
+     * The timestamp of the moment the first request of the scenario enters the server. May return null if there
+     * are no requests processed yet.
      */
     public Timestamp getBeginTimestamp() {
         return beginTimestamp;

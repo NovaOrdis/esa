@@ -62,7 +62,7 @@ public class BusinessScenarioTest {
 
         bs.close();
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
 
         try {
 
@@ -79,10 +79,10 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
         assertNull(bs.getType());
-        assertEquals(0L, bs.getBeginTimestamp().getTimestampGMT());
+        assertNull(bs.getBeginTimestamp());
         assertEquals(BusinessScenarioState.NEW, bs.getState());
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestDuration(77L);
 
@@ -95,7 +95,7 @@ public class BusinessScenarioTest {
         assertEquals(77L, bs.getDuration());
         assertEquals(BusinessScenarioState.OPEN, bs.getState());
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(55L, null));
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e2.setRequestDuration(2L);
 
@@ -116,7 +116,7 @@ public class BusinessScenarioTest {
         BusinessScenario bs = new BusinessScenario();
         assertEquals(BusinessScenarioState.NEW, bs.getState());
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
 
         try {
@@ -143,7 +143,7 @@ public class BusinessScenarioTest {
         assertNull(bs.getType());
         assertEquals(BusinessScenarioState.NEW, bs.getState());
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestDuration(1L);
 
@@ -157,7 +157,7 @@ public class BusinessScenarioTest {
         assertEquals(BusinessScenarioState.OPEN, bs.getState());
 
         // no duration
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(2L, null));
 
         try {
 
@@ -182,14 +182,14 @@ public class BusinessScenarioTest {
 
         assertEquals(0L, bs.getDuration());
         assertEquals(0, bs.getRequestCount());
-        assertEquals(0L, bs.getBeginTimestamp().getTimestampGMT());
-        assertEquals(0L, bs.getEndTimestamp().getTimestampGMT());
+        assertNull(bs.getBeginTimestamp());
+        assertNull(bs.getEndTimestamp());
         assertNull(bs.getType());
         assertEquals(BusinessScenarioState.NEW, bs.getState());
         assertTrue(bs.getRequestSequenceIds().isEmpty());
         assertNull(bs.getIterationId());
 
-        HttpEvent firstRequest = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent firstRequest = new HttpEvent(new TimestampImpl(100L, null));
         firstRequest.setLongProperty(Event.LINE_NUMBER_PROPERTY_NAME, 777L);
         firstRequest.setRequestDuration(7L);
         firstRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
@@ -210,7 +210,7 @@ public class BusinessScenarioTest {
         assertEquals("10", bs.getIterationId());
         assertEquals(777L, bs.getLineNumber().longValue());
 
-        HttpEvent secondRequest = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent secondRequest = new HttpEvent(new TimestampImpl(200L, null));
         secondRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "B");
         secondRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "10");
         secondRequest.setRequestDuration(8L);
@@ -237,7 +237,7 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestDuration(1L);
 
@@ -249,7 +249,7 @@ public class BusinessScenarioTest {
         assertFalse(bs.isClosed());
         assertEquals(BusinessScenarioState.OPEN, bs.getState());
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(5L, null));
         e2.setRequestDuration(6L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
 
@@ -261,7 +261,7 @@ public class BusinessScenarioTest {
         assertTrue(bs.isClosed());
         assertEquals(BusinessScenarioState.COMPLETE, bs.getState());
 
-        HttpEvent e3 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e3 = new HttpEvent(new TimestampImpl(7L, null));
 
         try {
             bs.update(e3);
@@ -279,7 +279,7 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "A");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "11");
@@ -298,7 +298,7 @@ public class BusinessScenarioTest {
         assertEquals("A", requestSequenceIds.get(0));
         assertEquals("11", bs.getIterationId());
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(5L, null));
         e2.setRequestDuration(6L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TYPE-A");
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "B");
@@ -317,7 +317,7 @@ public class BusinessScenarioTest {
         assertEquals("B", requestSequenceIds.get(1));
         assertEquals("11", bs.getIterationId());
 
-        HttpEvent e3 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e3 = new HttpEvent(new TimestampImpl(7L, null));
 
         try {
             bs.update(e3);
@@ -335,7 +335,7 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestDuration(1L);
 
@@ -347,7 +347,7 @@ public class BusinessScenarioTest {
         assertFalse(bs.isClosed());
         assertEquals(BusinessScenarioState.OPEN, bs.getState());
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(5L, null));
         e2.setRequestDuration(6L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TYPE-B");
 
@@ -367,7 +367,7 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestDuration(1L);
 
@@ -376,7 +376,7 @@ public class BusinessScenarioTest {
         assertFalse(bs.isClosed());
         assertEquals(BusinessScenarioState.OPEN, bs.getState());
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(2L, null));
         e2.setRequestDuration(2L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
 
@@ -403,7 +403,7 @@ public class BusinessScenarioTest {
         assertEquals(BusinessScenarioState.NEW, bs.getState());
         assertFalse(bs.isOpen());
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestDuration(1L);
 
         try {
@@ -427,7 +427,7 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
-        HttpEvent firstRequest = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent firstRequest = new HttpEvent(new TimestampImpl(100L, null));
         firstRequest.setRequestDuration(7L);
         firstRequest.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "session-1");
         firstRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
@@ -436,7 +436,7 @@ public class BusinessScenarioTest {
 
         assertEquals("session-1", bs.getJSessionId());
 
-        HttpEvent requestFromAnotherSession = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent requestFromAnotherSession = new HttpEvent(new TimestampImpl(200L, null));
         requestFromAnotherSession.setRequestDuration(1L);
         requestFromAnotherSession.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "session-2");
 
@@ -453,14 +453,14 @@ public class BusinessScenarioTest {
     public void update_duplicateRequestSequenceId() throws Exception {
 
         BusinessScenario bs = new BusinessScenario();
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestDuration(1L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "samevalue");
 
         assertFalse(bs.update(e));
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(2L, null));
         e2.setRequestDuration(2L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_REQUEST_SEQUENCE_ID_HEADER_NAME, "samevalue");
 
@@ -481,7 +481,7 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestDuration(1L);
 
@@ -491,7 +491,7 @@ public class BusinessScenarioTest {
         assertFalse(bs.update(e));
         assertNull(bs.getIterationId());
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(5L, null));
         e2.setRequestDuration(6L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "something");
@@ -517,7 +517,7 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "something");
         e.setRequestDuration(1L);
@@ -526,7 +526,7 @@ public class BusinessScenarioTest {
 
         assertEquals("something", bs.getIterationId());
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(5L, null));
         e2.setRequestDuration(6L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "something-else");
@@ -552,7 +552,7 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "something");
         e.setRequestDuration(1L);
@@ -561,7 +561,7 @@ public class BusinessScenarioTest {
 
         assertEquals("something", bs.getIterationId());
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(5L, null));
         e2.setRequestDuration(6L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
 
@@ -586,7 +586,7 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
         e.setLineNumber(1001L);
         assertNull(e.getRequestDuration());
@@ -620,13 +620,13 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
         e.setRequestDuration(1L);
 
         assertFalse(bs.update(e));
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(10L, null));
         assertNull(e2.getRequestDuration());
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TEST");
         e2.setLineNumber(1001L);
@@ -663,7 +663,7 @@ public class BusinessScenarioTest {
         // Start scenario
         //
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
         e.setRequestDuration(1L);
         e.setStatusCode(200);
@@ -682,7 +682,7 @@ public class BusinessScenarioTest {
         // 200 request
         //
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(5L, null));
         e2.setRequestDuration(6L);
         e2.setStatusCode(200);
 
@@ -697,7 +697,7 @@ public class BusinessScenarioTest {
         // 400 request
         //
 
-        HttpEvent e3 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e3 = new HttpEvent(new TimestampImpl(10L, null));
         e3.setRequestDuration(11L);
         e3.setStatusCode(400);
 
@@ -714,7 +714,7 @@ public class BusinessScenarioTest {
         // Stop scenario
         //
 
-        HttpEvent e4 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e4 = new HttpEvent(new TimestampImpl(15L, null));
         e4.setRequestDuration(16L);
         e4.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
         e4.setStatusCode(500);
@@ -739,7 +739,7 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(777L, null));
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "iteration-one");
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "a-session");
@@ -748,7 +748,7 @@ public class BusinessScenarioTest {
 
         assertFalse(bs.update(e));
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(888L, null));
         e2.setRequestDuration(8L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TYPE-A");
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME, "iteration-one");
@@ -793,17 +793,17 @@ public class BusinessScenarioTest {
         bs.setType("SOME-TYPE");
         bs.setBeginTimestamp(new TimestampImpl(101L, null));
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(0L, null));
         e.setRequestDuration(11L);
 
         bs.updateScenarioStatistics(e);
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(0L, null));
         assertNull(e2.getRequestDuration());
 
         bs.updateScenarioStatistics(e2);
 
-        HttpEvent e3 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e3 = new HttpEvent(new TimestampImpl(0L, null));
         e3.setRequestDuration(22L);
 
         bs.updateScenarioStatistics(e3);
@@ -827,13 +827,13 @@ public class BusinessScenarioTest {
         // all requests are 200, so the scenario must be successful
         //
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(777L, null), 7L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setStatusCode(200);
 
         assertFalse(bs.update(e));
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(888L, null), 8L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TYPE-A");
         e2.setStatusCode(200);
 
@@ -853,13 +853,13 @@ public class BusinessScenarioTest {
         // some requests are not 200, so the scenario must not be successful
         //
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(777L, null), 7L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TYPE-A");
         e.setStatusCode(200);
 
         assertFalse(bs.update(e));
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(888L, null), 8L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TYPE-A");
         e2.setStatusCode(201);
 
@@ -921,7 +921,7 @@ public class BusinessScenarioTest {
 
         BusinessScenario bs = new BusinessScenario();
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestDuration(2L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
 
@@ -946,7 +946,7 @@ public class BusinessScenarioTest {
         e.setRequestDuration(1L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
         bs.update(e);
-        e = new HttpEvent(new TimestampImpl(1, null));
+        e = new HttpEvent(new TimestampImpl(2L, null));
         e.setRequestDuration(2L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "TEST");
         assertTrue(bs.update(e));
@@ -973,7 +973,7 @@ public class BusinessScenarioTest {
         e.setRequestDuration(1L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
         bs.update(e);
-        e = new HttpEvent(new TimestampImpl(1, null));
+        e = new HttpEvent(new TimestampImpl(2L, null));
         e.setRequestDuration(2L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
         assertTrue(bs.update(e));
@@ -1018,7 +1018,7 @@ public class BusinessScenarioTest {
 
         assertEquals(0, bs.getRequestCount(200));
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null), 1L);
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "TEST");
         e.setStatusCode(200);
 
@@ -1028,7 +1028,7 @@ public class BusinessScenarioTest {
         assertEquals(1, bs.getRequestCount(200));
         assertEquals(0, bs.getRequestCount(201));
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(2L, null), 2L);
         e2.setStatusCode(201);
 
         assertFalse(bs.update(e2));

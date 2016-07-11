@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -130,11 +129,13 @@ public class HttpdLogLineTest {
 
         assertNull(e.getTimestamp());
 
-        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        Timestamp t = new TimestampImpl(1L, null);
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
 
         assertEquals(1L, e.getTimestamp().getTimestampGMT());
 
-        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(2L));
+        Timestamp t2 = new TimestampImpl(2L, null);
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, t2);
 
         assertEquals(2L, e.getTimestamp().getTimestampGMT());
 
@@ -164,7 +165,6 @@ public class HttpdLogLineTest {
         line.setLogValue(HttpdFormatStrings.LOCAL_SERVER_NAME, "test.local.server.name");
         line.setLogValue(HttpdFormatStrings.BYTES_TRANSFERRED, 8L);
 
-
         Timestamp t = line.getTimestamp();
         assertEquals(1L, t.getTimestampGMT());
         assertEquals(2, t.getTimezoneOffsetMs().intValue());
@@ -182,26 +182,25 @@ public class HttpdLogLineTest {
         assertEquals(1.1d, line.getRequestProcessingTimeSec().doubleValue(), 0.0001);
         assertEquals("test.local.address", line.getLocalIpAddress());
         assertEquals("test.local.server.name", line.getLocalServerName());
-        assertEquals(7L, line.getBytesTransferred().longValue());
+        assertEquals(8L, line.getBytesTransferred().longValue());
 
         Set<HttpdFormatString> httpdFormatStrings = line.getFormatStrings();
         assertEquals(15, httpdFormatStrings.size());
-
-        assertEquals(HttpdFormatStrings.TIMESTAMP, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.REMOTE_HOST, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.REMOTE_LOGNAME, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.REMOTE_USER, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.QUERY_STRING, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.FIRST_REQUEST_LINE, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.STATUS_CODE, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.THREAD_NAME, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.REQUEST_PROCESSING_TIME_MS, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.REQUEST_PROCESSING_TIME_S, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.LOCAL_IP_ADDRESS, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.LOCAL_SERVER_NAME, httpdFormatStrings.iterator().next());
-        assertEquals(HttpdFormatStrings.BYTES_TRANSFERRED, httpdFormatStrings.iterator().next());
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.TIMESTAMP));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.REMOTE_HOST));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.REMOTE_LOGNAME));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.REMOTE_USER));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.QUERY_STRING));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.FIRST_REQUEST_LINE));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.STATUS_CODE));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.THREAD_NAME));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.REQUEST_PROCESSING_TIME_MS));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.REQUEST_PROCESSING_TIME_S));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.LOCAL_IP_ADDRESS));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.LOCAL_SERVER_NAME));
+        assertTrue(httpdFormatStrings.contains(HttpdFormatStrings.BYTES_TRANSFERRED));
     }
 
     // setLineNumber() -------------------------------------------------------------------------------------------------
@@ -231,7 +230,8 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        Timestamp t = new TimestampImpl(1L, null);
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
 
         HttpEvent event = e.toEvent();
 
@@ -271,7 +271,8 @@ public class HttpdLogLineTest {
 
         e.setLineNumber(7L);
 
-        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        Timestamp t = new TimestampImpl(1L, null);
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(HttpdFormatStrings.FIRST_REQUEST_LINE, "PUT /test/ HTTP/1.1");
         e.setLogValue(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE, 404);
         e.setLogValue(HttpdFormatStrings.THREAD_NAME, "some thread name XXX-100");
@@ -295,7 +296,8 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        Timestamp t = new TimestampImpl(1L, null);
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(HttpdFormatStrings.STATUS_CODE, 200);
 
         HttpEvent event = e.toEvent();
@@ -308,7 +310,8 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        Timestamp t = new TimestampImpl(1L, null);
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE, 301);
         e.setLogValue(HttpdFormatStrings.STATUS_CODE, 302);
 
@@ -324,7 +327,8 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        Timestamp t = new TimestampImpl(1L, null);
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(new RequestHeaderHttpdFormatString("%{i,Test-Header}"), "header value");
 
         HttpEvent event = e.toEvent();
@@ -343,7 +347,8 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        Timestamp t = new TimestampImpl(1L, null);
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(new RequestHeaderHttpdFormatString("%{i,Test-Header}"), "header value");
         e.setLogValue(new RequestHeaderHttpdFormatString("%{i,Another-Test-Header}"), "header value 2");
 
@@ -364,7 +369,8 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        Timestamp t = new TimestampImpl(1L, null);
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(new CookieHttpdFormatString("%{c,TestCookie}"), "test-cookie-value");
 
         HttpEvent event = e.toEvent();
@@ -383,7 +389,8 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
+        Timestamp t = new TimestampImpl(1L, null);
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(new CookieHttpdFormatString("%{c,TestCookie}"), "test-cookie-value");
         e.setLogValue(new CookieHttpdFormatString("%{c,AnotherTestCookie}"), "another-test-cookie-value");
 
