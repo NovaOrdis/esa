@@ -9,4 +9,6 @@ A few more Cookie patterns and heuristics when the cookie headers are not enclos
 
 CSV parser handles quoted fields that can contain commas
 
-introduced UrlParser, which is used to indentify fields such as %{Referer}i
+introduced UrlParser, which is used to identify fields such as %{Referer}i
+
+Introduced Timestamp API and the possibility to generate correct timestamps in a different timezone.
