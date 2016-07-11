@@ -71,13 +71,18 @@ public class GenericEvent implements Event {
     @Override
     public Property getProperty(String name) {
 
+        if (properties == null) {
+
+            return null;
+        }
+
         return properties.get(name);
     }
 
     @Override
     public StringProperty getStringProperty(String name) {
 
-        Property p = properties.get(name);
+        Property p = getProperty(name);
 
         if (p != null && p instanceof StringProperty) {
             return (StringProperty)p;
@@ -90,7 +95,7 @@ public class GenericEvent implements Event {
     @Override
     public LongProperty getLongProperty(String name) {
 
-        Property p = properties.get(name);
+        Property p = getProperty(name);
 
         if (p != null && p instanceof LongProperty) {
             return (LongProperty)p;
@@ -102,7 +107,7 @@ public class GenericEvent implements Event {
     @Override
     public IntegerProperty getIntegerProperty(String name) {
 
-        Property p = properties.get(name);
+        Property p = getProperty(name);
 
         if (p != null && p instanceof IntegerProperty) {
             return (IntegerProperty)p;
@@ -114,7 +119,7 @@ public class GenericEvent implements Event {
     @Override
     public BooleanProperty getBooleanProperty(String name) {
 
-        Property p = properties.get(name);
+        Property p = getProperty(name);
 
         if (p != null && p instanceof BooleanProperty) {
             return (BooleanProperty)p;
@@ -126,7 +131,7 @@ public class GenericEvent implements Event {
     @Override
     public MapProperty getMapProperty(String name) {
 
-        Property p = properties.get(name);
+        Property p = getProperty(name);
 
         if (p != null && p instanceof MapProperty) {
             return (MapProperty)p;
@@ -138,7 +143,7 @@ public class GenericEvent implements Event {
     @Override
     public ListProperty getListProperty(String name) {
 
-        Property p = properties.get(name);
+        Property p = getProperty(name);
 
         if (p != null && p instanceof ListProperty) {
             return (ListProperty)p;

@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -490,7 +489,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
             return null;
         }
 
-        String s = "";
+        String s;
 
         //
         // make parsing errors easy to read
