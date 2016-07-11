@@ -22,10 +22,12 @@ import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.PropertyFactory;
 import io.novaordis.events.core.event.TimeMeasureUnit;
 import io.novaordis.events.ParsingException;
+import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.timestamp.TimestampImpl;
 
+import java.text.DateFormat;
 import java.text.Format;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,10 +68,10 @@ public enum HttpdFormatStrings implements HttpdFormatString {
     REMOTE_USER("%u", String.class, HttpEvent.REMOTE_USER),
 
     //
-    // Time the request was received, in the format [18/Sep/2011:19:18:28 -0400]. The last number indicates the timezone
-    // offset from GMT
+    // Time the request was received, in the format [18/Sep/2011:19:18:28 -0400]. The last fragment indicates the
+    // timezone offset from GMT
     //
-    TIMESTAMP("%t", Date.class, TIMESTAMP_FORMAT, TIMESTAMP_FORMAT_STRING),
+    TIMESTAMP("%t", Timestamp.class, TIMESTAMP_FORMAT, TIMESTAMP_FORMAT_STRING),
 
     //
     // The query string, excluding the '?' character. Usually enclosed in quotes.
@@ -160,12 +162,18 @@ public enum HttpdFormatStrings implements HttpdFormatString {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    /**
+     * @param type the type of the values produced by parsing the string representations of this format. May be an
+     *             interface.
+     */
     HttpdFormatStrings(String literal, Class type) {
 
         this(literal, type, null, null, null, null);
     }
 
     /**
+     * @param type the type of the values produced by parsing the string representations of this format. May be an
+     *             interface.
      * @param format an optional Format (can be null) which specifies the string representation format.
      * @param formatStringRepresentation - if present, makes the info and error messages more user friendly, if not
      *                                   present, format.toString() should be used. null is therefore acceptable.
@@ -175,6 +183,10 @@ public enum HttpdFormatStrings implements HttpdFormatString {
         this(literal, type, format, formatStringRepresentation, null);
     }
 
+    /**
+     * @param type the type of the values produced by parsing the string representations of this format. May be an
+     *             interface.
+     */
     HttpdFormatStrings(String literal, Class type, String propertyName) {
 
         this(literal, type, null, null, propertyName);
@@ -188,6 +200,8 @@ public enum HttpdFormatStrings implements HttpdFormatString {
     /**
      * Using this constructor implies that the HttpdFormatString type coincides with the corresponding property type.
      *
+     * @param type the type of the values produced by parsing the string representations of this format. May be an
+     *             interface.
      * @param formatStringRepresentation - if present, makes the info and error messages more user friendly, if not
      *                                   present, format.toString() should be used. null is therefore acceptable.
      */
@@ -198,6 +212,9 @@ public enum HttpdFormatStrings implements HttpdFormatString {
 
     /**
      * Using this constructor implies that the HttpdFormatString type coincides with the corresponding property type.
+     *
+     * @param type the type of the values produced by parsing the string representations of this format. May be an
+     *             interface.
      */
     HttpdFormatStrings(String literal, Class type, String propertyName, MeasureUnit mu) {
 
@@ -205,6 +222,8 @@ public enum HttpdFormatStrings implements HttpdFormatString {
     }
 
     /**
+     * @param type the type of the values produced by parsing the string representations of this format. May be an
+     *             interface.
      * @param formatStringRepresentation - if present, makes the info and error messages more user friendly, if not
      *                                   present, format.toString() should be used. null is therefore acceptable.
      */
@@ -215,6 +234,8 @@ public enum HttpdFormatStrings implements HttpdFormatString {
     }
 
     /**
+     * @param type the type of the values produced by parsing the string representations of this format. May be an
+     *             interface.
      * @param formatStringRepresentation - if present, makes the info and error messages more user friendly, if not
      *                                   present, format.toString() should be used. null is therefore acceptable.
      */
@@ -257,16 +278,28 @@ public enum HttpdFormatStrings implements HttpdFormatString {
             return logStringRepresentation;
         }
 
-        if (Date.class.equals(type)) {
+        if (Timestamp.class.equals(type)) {
 
+            //
             // use the default timestamp format
+            //
+
             if (format == null) {
+
                 throw new IllegalStateException(
-                        this + " incorrectly configured, it must have a non-null SimpleDateFormat instance");
+                        this + " incorrectly configured, it must come with a non-null DateFormat instance");
+            }
+
+            if (!(format instanceof DateFormat)) {
+
+                throw new IllegalStateException(
+                        this + " incorrectly configured, it must come with a DateFormat instance, but it has a " +
+                                format.getClass().getName());
             }
 
             try {
-                return format.parseObject(logStringRepresentation);
+
+                return new TimestampImpl(logStringRepresentation, (DateFormat)format);
             }
             catch(ParseException e) {
                 throw new ParsingException(

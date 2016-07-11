@@ -22,7 +22,6 @@ import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.utilities.timestamp.Timestamp;
 import io.novaordis.utilities.timestamp.Timestamps;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -92,13 +91,6 @@ public class HttpdLogLine {
         if (!e.getType().equals(value.getClass())) {
             throw new IllegalArgumentException(
                     "type mismatch, " + value.getClass() + " \"" + value + "\" is not a valid type for " + e);
-        }
-
-        if (HttpdFormatStrings.TIMESTAMP.equals(e)) {
-
-            // we convert timestamp from Date to Long
-            Date timestamp = (Date)value;
-            value = timestamp.getTime();
         }
 
         return values.put(e, value);
@@ -179,6 +171,34 @@ public class HttpdLogLine {
      */
     public Long getRequestProcessingTimeMs() {
         return (Long) getLogValue(HttpdFormatStrings.REQUEST_PROCESSING_TIME_MS);
+    }
+
+    /**
+     * @return may return null.
+     */
+    public Double getRequestProcessingTimeSec() {
+        return (Double) getLogValue(HttpdFormatStrings.REQUEST_PROCESSING_TIME_S);
+    }
+
+    /**
+     * @return may return null.
+     */
+    public String getLocalIpAddress() {
+        return (String) getLogValue(HttpdFormatStrings.LOCAL_IP_ADDRESS);
+    }
+
+    /**
+     * @return may return null.
+     */
+    public String getLocalServerName() {
+        return (String) getLogValue(HttpdFormatStrings.LOCAL_SERVER_NAME);
+    }
+
+    /**
+     * @return may return null.
+     */
+    public Long getBytesTransferred() {
+        return (Long) getLogValue(HttpdFormatStrings.BYTES_TRANSFERRED);
     }
 
     /**

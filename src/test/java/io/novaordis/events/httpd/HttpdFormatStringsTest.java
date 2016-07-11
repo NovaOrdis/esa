@@ -24,6 +24,7 @@ import io.novaordis.events.core.event.MemoryMeasureUnit;
 import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.events.core.event.TimeMeasureUnit;
 import io.novaordis.events.ParsingException;
+import io.novaordis.utilities.timestamp.Timestamp;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -205,13 +206,15 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
         }
     }
 
+    // TIMESTAMP -------------------------------------------------------------------------------------------------------
+
     @Test
     public void timestamp() throws Exception {
 
         HttpdFormatString e = HttpdFormatStrings.TIMESTAMP;
         assertEquals("%t", e.getLiteral());
-        Date d = (Date)e.parse("18/Sep/2016:19:18:28 -0400", null, null);
-        assertEquals(TestDate.create("09/18/16 19:18:28 -0400"), d);
+        Timestamp d = (Timestamp)e.parse("18/Sep/2016:19:18:28 -0400", null, null);
+        assertEquals(TestDate.create("09/18/16 19:18:28 -0400"), new Date(d.getTimestampGMT()));
         assertNull(e.parse("-", null, null));
 
         assertFalse(e.isLeftEnclosure());
@@ -252,6 +255,9 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
             assertTrue(pe.getCause() instanceof ParseException);
         }
     }
+
+    // END of TIMESTAMP ------------------------------------------------------------------------------------------------
+
 
     @Test
     public void originalRequestStatusCode() throws Exception {

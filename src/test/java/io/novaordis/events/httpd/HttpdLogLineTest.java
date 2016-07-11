@@ -20,6 +20,7 @@ import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.IntegerProperty;
 import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.StringProperty;
+import io.novaordis.utilities.timestamp.Timestamp;
 import io.novaordis.utilities.timestamp.TimestampImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -140,6 +141,67 @@ public class HttpdLogLineTest {
         Set<HttpdFormatString> httpdFormatStrings = e.getFormatStrings();
         assertEquals(1, httpdFormatStrings.size());
         assertEquals(HttpdFormatStrings.TIMESTAMP, httpdFormatStrings.iterator().next());
+    }
+
+    @Test
+    public void fullLine() throws Exception {
+
+        HttpdLogLine line = new HttpdLogLine();
+
+        line.setLogValue(HttpdFormatStrings.TIMESTAMP, new TimestampImpl(1L, 2));
+        line.setLogValue(HttpdFormatStrings.REMOTE_HOST, "test.remote.host");
+        line.setLogValue(HttpdFormatStrings.REMOTE_LOGNAME, "test.remote.logname");
+        line.setLogValue(HttpdFormatStrings.REMOTE_USER, "test.remote.user");
+        line.setLogValue(HttpdFormatStrings.QUERY_STRING, "a=b&c=d");
+        line.setLogValue(HttpdFormatStrings.FIRST_REQUEST_LINE, "GET /something HTTP/1.1");
+        line.setLogValue(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE, 200);
+        line.setLogValue(HttpdFormatStrings.STATUS_CODE, 201);
+        line.setLogValue(HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE, 1L);
+        line.setLogValue(HttpdFormatStrings.THREAD_NAME, "test.thread.name");
+        line.setLogValue(HttpdFormatStrings.REQUEST_PROCESSING_TIME_MS, 7L);
+        line.setLogValue(HttpdFormatStrings.REQUEST_PROCESSING_TIME_S, 1.1d);
+        line.setLogValue(HttpdFormatStrings.LOCAL_IP_ADDRESS, "test.local.address");
+        line.setLogValue(HttpdFormatStrings.LOCAL_SERVER_NAME, "test.local.server.name");
+        line.setLogValue(HttpdFormatStrings.BYTES_TRANSFERRED, 8L);
+
+
+        Timestamp t = line.getTimestamp();
+        assertEquals(1L, t.getTimestampGMT());
+        assertEquals(2, t.getTimezoneOffsetMs().intValue());
+
+        assertEquals("test.remote.host", line.getRemoteHost());
+        assertEquals("test.remote.logname", line.getRemoteLogname());
+        assertEquals("test.remote.user", line.getRemoteUser());
+        assertEquals("a=b&c=d", line.getQueryString());
+        assertEquals("GET /something HTTP/1.1", line.getFirstRequestLine());
+        assertEquals(200, line.getOriginalRequestStatusCode().intValue());
+        assertEquals(201, line.getStatusCode().intValue());
+        assertEquals(1L, line.getResponseEntityBodySize().longValue());
+        assertEquals("test.thread.name", line.getThreadName());
+        assertEquals(7L, line.getRequestProcessingTimeMs().longValue());
+        assertEquals(1.1d, line.getRequestProcessingTimeSec().doubleValue(), 0.0001);
+        assertEquals("test.local.address", line.getLocalIpAddress());
+        assertEquals("test.local.server.name", line.getLocalServerName());
+        assertEquals(7L, line.getBytesTransferred().longValue());
+
+        Set<HttpdFormatString> httpdFormatStrings = line.getFormatStrings();
+        assertEquals(15, httpdFormatStrings.size());
+
+        assertEquals(HttpdFormatStrings.TIMESTAMP, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.REMOTE_HOST, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.REMOTE_LOGNAME, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.REMOTE_USER, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.QUERY_STRING, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.FIRST_REQUEST_LINE, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.STATUS_CODE, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.RESPONSE_ENTITY_BODY_SIZE, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.THREAD_NAME, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.REQUEST_PROCESSING_TIME_MS, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.REQUEST_PROCESSING_TIME_S, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.LOCAL_IP_ADDRESS, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.LOCAL_SERVER_NAME, httpdFormatStrings.iterator().next());
+        assertEquals(HttpdFormatStrings.BYTES_TRANSFERRED, httpdFormatStrings.iterator().next());
     }
 
     // setLineNumber() -------------------------------------------------------------------------------------------------
