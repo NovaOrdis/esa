@@ -16,6 +16,7 @@
 
 package io.novaordis.events.core.event;
 
+import io.novaordis.utilities.timestamp.TimestampImpl;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -41,14 +42,14 @@ public abstract class TimedEventTest extends EventTest {
     public void timestamp_NullTimestamp() throws Exception {
 
         TimedEvent te = getEventToTest(null);
-        assertNull(te.getTimestamp());
+        assertNull(te.getTimestampGMT());
     }
 
     @Test
     public void timestamp() throws Exception {
 
         TimedEvent te = getEventToTest(1L);
-        assertEquals(1L, te.getTimestamp().longValue());
+        assertEquals(1L, te.getTimestampGMT().longValue());
     }
 
     @Test
@@ -58,10 +59,12 @@ public abstract class TimedEventTest extends EventTest {
 
         assertNull(te.getTimezoneOffsetMs());
 
-        te.setTimezoneOffsetMs(-10);
+        te.setTimestamp(new TimestampImpl(1L, -10));
+
         assertEquals(-10, te.getTimezoneOffsetMs().intValue());
 
-        te.setTimezoneOffsetMs(10);
+        te.setTimestamp(new TimestampImpl(1L, 10));
+
         assertEquals(10, te.getTimezoneOffsetMs().intValue());
     }
 

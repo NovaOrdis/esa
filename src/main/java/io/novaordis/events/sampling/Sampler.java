@@ -87,7 +87,7 @@ public class Sampler extends ProcessingLogicBase {
 
     private void interpolate(List<Event> outputEventBuffer, TimedEvent e) throws Exception {
 
-        long time = e.getTimestamp();
+        long time = e.getTimestampGMT();
 
         Property p = e.getProperty(propertyName);
 

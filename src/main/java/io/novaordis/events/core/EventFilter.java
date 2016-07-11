@@ -136,7 +136,7 @@ public class EventFilter extends ProcessingLogicBase {
 
         if (e instanceof TimedEvent) {
             TimedEvent te = (TimedEvent)e;
-            timestamp = te.getTimestamp();
+            timestamp = te.getTimestampGMT();
         }
 
         //

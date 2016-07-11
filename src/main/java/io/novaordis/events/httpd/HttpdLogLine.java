@@ -19,6 +19,8 @@ package io.novaordis.events.httpd;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.StringProperty;
+import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.timestamp.Timestamps;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -110,8 +112,8 @@ public class HttpdLogLine {
         return values.keySet();
     }
 
-    public Long getTimestamp() {
-        return (Long)getLogValue(HttpdFormatStrings.TIMESTAMP);
+    public Timestamp getTimestamp() {
+        return (Timestamp)getLogValue(HttpdFormatStrings.TIMESTAMP);
     }
 
     /**
@@ -189,7 +191,7 @@ public class HttpdLogLine {
      */
     public HttpEvent toEvent() throws IllegalStateException {
 
-        Long timestamp = getTimestamp();
+        Timestamp timestamp = getTimestamp();
 
         // we allow for non-timestamps events
 //        if (timestamp == null) {
@@ -240,8 +242,8 @@ public class HttpdLogLine {
     @Override
     public String toString() {
 
-        Long timestamp = getTimestamp();
-        String ts = timestamp == null ? "-" : HttpdFormatString.TIMESTAMP_FORMAT.format(timestamp);
+        Timestamp timestamp = getTimestamp();
+        String ts = Timestamps.format(timestamp, HttpdFormatString.TIMESTAMP_FORMAT, "-");
         String rls = getFirstRequestLine();
         rls = rls == null ? "-" : rls;
         Integer rsc = getOriginalRequestStatusCode();

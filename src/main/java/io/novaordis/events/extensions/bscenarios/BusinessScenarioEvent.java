@@ -20,6 +20,7 @@ import io.novaordis.events.core.event.GenericTimedEvent;
 import io.novaordis.events.core.event.IntegerProperty;
 import io.novaordis.events.core.event.LongProperty;
 import io.novaordis.events.core.event.StringProperty;
+import io.novaordis.utilities.timestamp.Timestamp;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -54,7 +55,7 @@ public class BusinessScenarioEvent extends GenericTimedEvent {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    protected BusinessScenarioEvent(Long timestamp) {
+    protected BusinessScenarioEvent(Timestamp timestamp) {
         super(timestamp);
     }
 

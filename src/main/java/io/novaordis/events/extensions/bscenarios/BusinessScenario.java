@@ -18,6 +18,8 @@ package io.novaordis.events.extensions.bscenarios;
 
 import io.novaordis.clad.UserErrorException;
 import io.novaordis.events.httpd.HttpEvent;
+import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.timestamp.TimestampImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,12 +81,12 @@ public class BusinessScenario {
     //
     // the timestamp of the moment the first request of the scenario enters the server
     //
-    private long beginTimestamp;
+    private Timestamp beginTimestamp;
 
     //
-    // the timestamp of the moment the last request exists the scenario, 0 if the scenario is still active
+    // the timestamp of the moment the last request exists the scenario, null if the scenario is still active
     //
-    private long endTimestamp;
+    private Timestamp endTimestamp;
 
     private String jSessionId;
 
@@ -155,7 +157,7 @@ public class BusinessScenario {
         }
 
         lineNumber = event.getLineNumber();
-        long requestTimestamp = event.getTimestamp();
+        Timestamp requestTimestamp = event.getTimestamp();
 
         String startMarker = event.getRequestHeader(BUSINESS_SCENARIO_START_MARKER_HEADER_NAME);
         String iterationId = event.getIterationId();
@@ -202,7 +204,7 @@ public class BusinessScenario {
             // a Fault to be sent down the pipeline, but it won't interrupt processing
             //
 
-            if (beginTimestamp <= 0) {
+            if (beginTimestamp == null) {
 
                 throw new BusinessScenarioException(
                         getLineNumber(),
@@ -297,7 +299,7 @@ public class BusinessScenario {
     /**
      * The timestamp of the moment the first request of the scenario enters the server.
      */
-    public long getBeginTimestamp() {
+    public Timestamp getBeginTimestamp() {
         return beginTimestamp;
     }
 
@@ -306,13 +308,13 @@ public class BusinessScenario {
      */
     public boolean isOpen() {
 
-        return beginTimestamp > 0 && !isClosed();
+        return beginTimestamp != null && !isClosed();
     }
 
     /**
-     * The timestamp of the moment the last request exists the scenario, 0 if the scenario is still active.
+     * The timestamp of the moment the last request exists the scenario, null if the scenario is still active.
      */
-    public long getEndTimestamp() {
+    public Timestamp getEndTimestamp() {
         return endTimestamp;
     }
 
@@ -460,7 +462,7 @@ public class BusinessScenario {
         this.type = type;
     }
 
-    void setBeginTimestamp(long ts) {
+    void setBeginTimestamp(Timestamp ts) {
         this.beginTimestamp = ts;
     }
 
@@ -472,10 +474,11 @@ public class BusinessScenario {
 
         updatePerRequestStatistics(event);
 
-        Long requestTimestamp = event.getTimestamp();
+        Timestamp requestTimestamp = event.getTimestamp();
         Long rd = event.getRequestDuration();
         long requestDuration = rd == null ? 0 : rd;
-        endTimestamp = requestTimestamp + requestDuration;
+        endTimestamp = new TimestampImpl
+                (requestTimestamp.getTimestampGMT() + requestDuration, requestTimestamp.getTimezoneOffsetMs());
 
         // See BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME constant definition. A business scenario can only exists in
         // the context of a single iteration, so if a business scenario receives requestResponsePairs belonging to different

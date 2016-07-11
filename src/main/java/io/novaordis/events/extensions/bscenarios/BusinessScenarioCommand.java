@@ -34,6 +34,8 @@ import io.novaordis.events.extensions.bscenarios.stats.BusinessScenarioStatistic
 import io.novaordis.events.extensions.bscenarios.stats.FaultStatistics;
 import io.novaordis.events.httpd.HttpdFormatString;
 import io.novaordis.events.httpd.HttpEvent;
+import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.timestamp.Timestamps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +66,7 @@ public class BusinessScenarioCommand extends CommandBase {
 
     private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat(HttpdFormatString.TIMESTAMP_FORMAT_STRING);
 
-    public static String formatTimestamp(long timestamp) {
+    public static String formatTimestamp(Timestamp timestamp) {
 
         //
         // currently we use the standard httpd timestamp format, but TODO in the future we must generalize this and
@@ -73,12 +75,9 @@ public class BusinessScenarioCommand extends CommandBase {
         // TODO implement a better concurrent access than synchronization
         //
 
-        if (timestamp <= 0) {
-            return "-";
-        }
-
         synchronized (TIMESTAMP_FORMAT) {
-            return TIMESTAMP_FORMAT.format(timestamp);
+
+            return Timestamps.format(timestamp, TIMESTAMP_FORMAT, "-");
         }
     }
 

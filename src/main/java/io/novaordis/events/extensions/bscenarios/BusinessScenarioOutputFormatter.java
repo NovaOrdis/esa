@@ -93,7 +93,7 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
             String propertyName = PROPERTIES_TO_DISPLAY[i];
 
             if (TimedEvent.TIMESTAMP_PROPERTY_NAME.equals(propertyName)) {
-                Long timestamp = bse.getTimestamp();
+                Long timestamp = bse.getTimestampGMT();
                 s += timestamp == null ? NULL_EXTERNALIZATION : TIMESTAMP_FORMAT.format(timestamp);
             }
             else {

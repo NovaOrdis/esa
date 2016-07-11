@@ -20,6 +20,7 @@ import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.IntegerProperty;
 import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.StringProperty;
+import io.novaordis.utilities.timestamp.TimestampImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,11 +131,11 @@ public class HttpdLogLineTest {
 
         e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(1L));
 
-        assertEquals(1L, e.getTimestamp().longValue());
+        assertEquals(1L, e.getTimestamp().getTimestampGMT());
 
         e.setLogValue(HttpdFormatStrings.TIMESTAMP, new Date(2L));
 
-        assertEquals(2L, e.getTimestamp().longValue());
+        assertEquals(2L, e.getTimestamp().getTimestampGMT());
 
         Set<HttpdFormatString> httpdFormatStrings = e.getFormatStrings();
         assertEquals(1, httpdFormatStrings.size());
@@ -160,7 +161,7 @@ public class HttpdLogLineTest {
         HttpdLogLine logLine = new HttpdLogLine();
         assertNull(logLine.getTimestamp());
         HttpEvent event = logLine.toEvent();
-        assertNull(event.getTimestamp());
+        assertNull(event.getTimestampGMT());
     }
 
     @Test
@@ -172,7 +173,33 @@ public class HttpdLogLineTest {
 
         HttpEvent event = e.toEvent();
 
-        assertEquals(1L, event.getTimestamp().longValue());
+        assertEquals(1L, event.getTimestampGMT().longValue());
+    }
+
+    @Test
+    public void toEvent_NoTimezoneOffset() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new TimestampImpl(1L, null));
+
+        HttpEvent event = e.toEvent();
+
+        assertEquals(1L, event.getTimestampGMT().longValue());
+        assertNull(event.getTimezoneOffsetMs());
+    }
+
+    @Test
+    public void toEvent_TimezoneOffsetPresent() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new TimestampImpl(1L, 2));
+
+        HttpEvent event = e.toEvent();
+
+        assertEquals(1L, event.getTimestampGMT().longValue());
+        assertEquals(2, event.getTimezoneOffsetMs().intValue());
     }
 
     @Test
@@ -189,7 +216,7 @@ public class HttpdLogLineTest {
 
         HttpEvent event = e.toEvent();
 
-        assertEquals(1L, event.getTimestamp().longValue());
+        assertEquals(1L, event.getTimestampGMT().longValue());
         assertEquals(HTTPMethod.PUT.name(), ((StringProperty)event.getProperty(HttpEvent.METHOD)).getString());
         assertEquals("/test/", ((StringProperty)event.getProperty(HttpEvent.REQUEST_URI)).getString());
         assertEquals("HTTP/1.1", ((StringProperty) event.getProperty(HttpEvent.HTTP_VERSION)).getString());

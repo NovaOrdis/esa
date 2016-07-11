@@ -20,6 +20,7 @@ import io.novaordis.events.core.event.IntegerProperty;
 import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.events.httpd.HttpEvent;
+import io.novaordis.utilities.timestamp.TimestampImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_String_Yaml() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(1L);
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
 
         httpEvent.setProperty(new StringProperty("name1", "value1"));
 
@@ -64,7 +65,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_String_YamlInline() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(1L);
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
 
         httpEvent.setProperty(new StringProperty("name1", "value1"));
 
@@ -78,7 +79,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_String_Integer_Yaml() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(1L);
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
 
         httpEvent.setProperty(new StringProperty("name1", "value1"));
         httpEvent.setProperty(new IntegerProperty("name2", 2));
@@ -93,7 +94,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_String_Integer_YamlInline() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(1L);
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
 
         httpEvent.setProperty(new StringProperty("name1", "value1"));
         httpEvent.setProperty(new IntegerProperty("name2", 2));
@@ -108,7 +109,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_Map_NoElements_Yaml() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(1L);
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
 
         httpEvent.setProperty(new MapProperty("name1", new HashMap()));
 
@@ -122,7 +123,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_Map_NoElements_YamlInline() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(1L);
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
 
         httpEvent.setProperty(new MapProperty("name1", new HashMap()));
 
@@ -136,7 +137,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_Map_HasElements_Yaml() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(1L);
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
 
         Map<String, Object> map = new HashMap<>();
         map.put("x", "val-x");
@@ -153,7 +154,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_Map_HasElements_YamlInline() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(1L);
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
 
         Map<String, Object> map = new HashMap<>();
         map.put("x", "val-x");
@@ -170,7 +171,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_Map_HasElements_PropertyFollows_Yaml() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(1L);
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
 
         Map<String, Object> map = new HashMap<>();
         map.put("x", "val-x");
@@ -188,7 +189,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_Map_HasElements_PropertyFollows_YamlInline() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(1L);
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
 
         Map<String, Object> map = new HashMap<>();
         map.put("x", "val-x");

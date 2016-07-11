@@ -19,6 +19,7 @@ package io.novaordis.events.httpd;
 import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.TimedEventTest;
 import io.novaordis.events.extensions.bscenarios.BusinessScenario;
+import io.novaordis.utilities.timestamp.TimestampImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,16 @@ public class HttpEventTest extends TimedEventTest {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    // constructor -----------------------------------------------------------------------------------------------------
+
+    @Test
+    public void constructor() throws Exception {
+
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, 2));
+        assertEquals(1L, e.getTimestampGMT().longValue());
+        assertEquals(2, e.getTimezoneOffsetMs().intValue());
+    }
 
     // getCookie() -----------------------------------------------------------------------------------------------------
 
@@ -188,9 +199,9 @@ public class HttpEventTest extends TimedEventTest {
     // getStatusCode()/setStatusCode() ---------------------------------------------------------------------------------
 
     @Test
-    public void getStatusCode_setStatusCode() {
+    public void getStatusCode_setStatusCode() throws Exception {
 
-        HttpEvent e = new HttpEvent(1L);
+        HttpEvent e = getEventToTest(1L);
 
         assertNull(e.getStatusCode());
 
@@ -199,9 +210,9 @@ public class HttpEventTest extends TimedEventTest {
     }
 
     @Test
-    public void setStatusCode_InvalidValue_SmallerThan200() {
+    public void setStatusCode_InvalidValue_SmallerThan200() throws Exception {
 
-        HttpEvent e = new HttpEvent(1L);
+        HttpEvent e = getEventToTest(1L);
 
         try {
 
@@ -217,9 +228,9 @@ public class HttpEventTest extends TimedEventTest {
     }
 
     @Test
-    public void setStatusCode_InvalidValue_LargerThan599() {
+    public void setStatusCode_InvalidValue_LargerThan599() throws Exception {
 
-        HttpEvent e = new HttpEvent(1L);
+        HttpEvent e = getEventToTest(1L);
 
         try {
 
@@ -240,7 +251,7 @@ public class HttpEventTest extends TimedEventTest {
 
     @Override
     protected HttpEvent getEventToTest(Long timestamp) throws Exception {
-        return new HttpEvent(timestamp);
+        return new HttpEvent(timestamp == null ? null : new TimestampImpl(timestamp, null));
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

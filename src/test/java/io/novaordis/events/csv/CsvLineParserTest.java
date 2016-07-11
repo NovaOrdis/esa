@@ -300,7 +300,7 @@ public class CsvLineParserTest extends LineParserTest {
         GenericTimedEvent event = (GenericTimedEvent)parser.parseLine(1L, "Jan-01 2016 12:01:01, BMW, 7");
         assertNotNull(event);
 
-        Long timestamp = event.getTimestamp();
+        Long timestamp = event.getTimestampGMT();
         assertEquals(timestamp.longValue(),
                 new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse("16/01/01 12:01:01").getTime());
 
@@ -329,7 +329,7 @@ public class CsvLineParserTest extends LineParserTest {
         GenericTimedEvent event = (GenericTimedEvent)parser.parseLine(1L, "BMW, Jan-01 2016 12:01:01, 7");
         assertNotNull(event);
 
-        Long timestamp = event.getTimestamp();
+        Long timestamp = event.getTimestampGMT();
         assertEquals(timestamp.longValue(),
                 new SimpleDateFormat("yy/MM/dd HH:mm:ss").parse("16/01/01 12:01:01").getTime());
 

@@ -18,6 +18,7 @@ package io.novaordis.events.extensions.bscenarios;
 
 import io.novaordis.events.core.CsvOutputFormatterTest;
 import io.novaordis.events.core.event.MockEvent;
+import io.novaordis.utilities.timestamp.TimestampImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,7 +131,7 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
         BusinessScenario bs = new BusinessScenario();
 
         long beginTimestamp = 1L;
-        bs.setBeginTimestamp(beginTimestamp);
+        bs.setBeginTimestamp(new TimestampImpl(beginTimestamp, null));
         bs.setId(2L);
         bs.setJSessionId("test-jsession-id");
         bs.setIterationId("test-iteration-id");
@@ -172,7 +173,8 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
 
         BusinessScenarioOutputFormatter formatter = getConversionLogicToTest();
 
-        BusinessScenarioEvent bse = new BusinessScenarioEvent(dateFormat.parse("12/16/24 16:17:18").getTime());
+        long t = dateFormat.parse("12/16/24 16:17:18").getTime();
+        BusinessScenarioEvent bse = new BusinessScenarioEvent(new TimestampImpl(t, null));
 
         assertTrue(formatter.process(bse));
 
@@ -186,7 +188,8 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
         formatter.setHeaderOn();
         assertTrue(formatter.isHeaderOn());
 
-        bse = new BusinessScenarioEvent(dateFormat.parse("12/16/24 16:17:19").getTime());
+        t = dateFormat.parse("12/16/24 16:17:19").getTime();
+        bse = new BusinessScenarioEvent(new TimestampImpl(t, null));
 
         assertTrue(formatter.process(bse));
         assertFalse(formatter.isHeaderOn());
@@ -203,7 +206,8 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
         // make sure the header generation turns off automatically
         //
 
-        bse = new BusinessScenarioEvent(dateFormat.parse("12/16/24 16:17:20").getTime());
+        t = dateFormat.parse("12/16/24 16:17:20").getTime();
+        bse = new BusinessScenarioEvent(new TimestampImpl(t, null));
 
         assertTrue(formatter.process(bse));
 

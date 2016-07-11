@@ -24,6 +24,8 @@ import io.novaordis.events.core.event.GenericEvent;
 import io.novaordis.events.core.event.GenericTimedEvent;
 import io.novaordis.events.core.event.LongProperty;
 import io.novaordis.events.core.event.Property;
+import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.timestamp.TimestampImpl;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -230,20 +232,19 @@ public class CsvLineParser implements LineParser {
             //
             // this is our timestamp, set the timed event timestamp, and not a regular property
             //
-            DateFormat dateFormat = (DateFormat)header.getFormat();
 
-            Date d;
+            Timestamp t;
 
             try {
 
-                d = dateFormat.parse(tok);
+                t = new TimestampImpl(tok, (DateFormat)header.getFormat());
             }
             catch(Exception e) {
                 throw new ParsingException(
                         "invalid timestamp value \"" + tok + "\", does not match the required timestamp format", e);
             }
 
-            ((GenericTimedEvent)event).setTimestamp(d.getTime());
+            ((GenericTimedEvent)event).setTimestamp(t);
         }
         else {
 

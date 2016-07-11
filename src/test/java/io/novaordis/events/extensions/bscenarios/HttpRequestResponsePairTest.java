@@ -17,15 +17,12 @@
 package io.novaordis.events.extensions.bscenarios;
 
 import io.novaordis.events.httpd.HttpEvent;
+import io.novaordis.utilities.timestamp.TimestampImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -48,7 +45,7 @@ public class HttpRequestResponsePairTest {
     @Test
     public void constructor() throws Exception {
 
-        HttpEvent e = new HttpEvent(0L);
+        HttpEvent e = new HttpEvent(new TimestampImpl(0L, null));
         e.setRequestSequenceId("test-3432");
         e.setStatusCode(200);
         e.setRequestDuration(7L);
@@ -57,6 +54,8 @@ public class HttpRequestResponsePairTest {
         assertEquals("test-3432", r.getRequestSequenceId());
         assertEquals(200, r.getStatusCode().intValue());
         assertEquals(7L, r.getDuration().longValue());
+
+        log.debug(".");
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

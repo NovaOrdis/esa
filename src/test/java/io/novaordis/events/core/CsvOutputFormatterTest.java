@@ -22,6 +22,7 @@ import io.novaordis.events.core.event.MockEvent;
 import io.novaordis.events.core.event.MockProperty;
 import io.novaordis.events.core.event.MockTimedEvent;
 import io.novaordis.events.httpd.HttpEvent;
+import io.novaordis.utilities.timestamp.TimestampImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -184,7 +185,7 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
         CsvOutputFormatter formatter = getConversionLogicToTest();
         formatter.setOutputFormat("request-headers.TEST-HEADER");
 
-        HttpEvent e = new HttpEvent(1L);
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
         e.setRequestHeader("TEST-HEADER", "TEST-VALUE");
 
         String result = formatter.toString(e);

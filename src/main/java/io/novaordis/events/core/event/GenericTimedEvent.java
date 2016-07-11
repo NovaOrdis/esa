@@ -16,6 +16,9 @@
 
 package io.novaordis.events.core.event;
 
+import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.timestamp.TimestampImpl;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
@@ -28,18 +31,10 @@ public class GenericTimedEvent extends GenericEvent implements TimedEvent {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    //
-    // the timestamp in milliseconds from the GMT epoch, not accounting for timezone and daylight saving offsets.
-    //
-    private Long timestamp;
-
-    //
-    // the timezone offset, in milliseconds, as specified by the source of the event (logs, for example). If
-    // the timestamp was specified as "12/31/16 10:00:00 -0800" in the log, then the timezone offset is
-    // -8 * 3600 * 1000 ms. Null if no timezone offset specified by the source of the event. We need this information
-    // to produce timestamps similar to the original ones, when the processing is done in an arbitrary timezone.
-    //
-    private Integer timezoneOffsetMs;
+    /**
+     * @see Timestamp
+     */
+    private Timestamp timestamp;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -47,34 +42,51 @@ public class GenericTimedEvent extends GenericEvent implements TimedEvent {
         this(null);
     }
 
-    public GenericTimedEvent(Long timestamp) {
+    /**
+     * @see Timestamp
+     */
+    public GenericTimedEvent(Timestamp timestamp) {
+
         this.timestamp = timestamp;
+    }
+
+    public GenericTimedEvent(long timestampGMT) {
+
+        this(new TimestampImpl(timestampGMT, null));
     }
 
     // TimedEvent implementation ---------------------------------------------------------------------------------------
 
     @Override
-    public Long getTimestamp() {
+    public Timestamp getTimestamp() {
 
         return timestamp;
     }
 
     @Override
-    public void setTimestamp(Long timestamp) {
+    public Long getTimestampGMT() {
 
-        this.timestamp = timestamp;
+        if (timestamp == null) {
+            return null;
+        }
+
+        return timestamp.getTimestampGMT();
     }
 
     @Override
     public Integer getTimezoneOffsetMs() {
 
-        return timezoneOffsetMs;
+        if (timestamp == null) {
+            return null;
+        }
+
+        return timestamp.getTimezoneOffsetMs();
     }
 
     @Override
-    public void setTimezoneOffsetMs(Integer i) {
+    public void setTimestamp(Timestamp timestamp) {
 
-        this.timezoneOffsetMs = i;
+        this.timestamp = timestamp;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

@@ -24,6 +24,7 @@ import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.events.core.event.TimedEvent;
 import io.novaordis.events.core.event.GenericTimedEvent;
 import io.novaordis.events.extensions.bscenarios.BusinessScenario;
+import io.novaordis.utilities.timestamp.Timestamp;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,11 +82,17 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public HttpEvent(Long timestamp) {
+    /**
+     * @see Timestamp
+     */
+    public HttpEvent(Timestamp timestamp) {
         super(timestamp);
     }
 
-    public HttpEvent(Long timestamp, long duration) {
+    /**
+     * @see Timestamp
+     */
+    public HttpEvent(Timestamp timestamp, long duration) {
         super(timestamp);
         setRequestDuration(duration);
     }
@@ -318,7 +325,7 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
     @Override
     public String toString() {
 
-        Long timestamp = getTimestamp();
+        Long timestamp = getTimestampGMT();
         String s = (timestamp == null ? "N/A" : formatTimestamp(timestamp));
         s += " " + getMethod() + " " + getRequestUri();
         s += "(line=" + getLineNumber();

@@ -17,6 +17,7 @@
 package io.novaordis.events.extensions.bscenarios;
 
 import io.novaordis.events.core.event.TimedEventTest;
+import io.novaordis.utilities.timestamp.TimestampImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ public class BusinessScenarioEventTest extends TimedEventTest {
 
     @Override
     protected BusinessScenarioEvent getEventToTest(Long timestamp) throws Exception {
-        return new BusinessScenarioEvent(timestamp);
+        return new BusinessScenarioEvent(timestamp == null ? null : new TimestampImpl(timestamp.longValue(), null));
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

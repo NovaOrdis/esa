@@ -16,6 +16,8 @@
 
 package io.novaordis.events.core.event;
 
+import io.novaordis.utilities.timestamp.Timestamp;
+
 /**
  * A timed event.
  *
@@ -36,9 +38,7 @@ public interface TimedEvent extends Event {
      * @return the timestamp in milliseconds from the GMT epoch, not accounting for timezone and daylight saving
      * offsets. May return null.
      */
-    Long getTimestamp();
-
-    void setTimestamp(Long timestamp);
+    Long getTimestampGMT();
 
     /**
      * @return the timezone offset, in milliseconds, as specified by the source of the event (logs, for example). If
@@ -48,6 +48,8 @@ public interface TimedEvent extends Event {
      */
     Integer getTimezoneOffsetMs();
 
-    void setTimezoneOffsetMs(Integer i);
+    Timestamp getTimestamp();
+
+    void setTimestamp(Timestamp timestamp);
 
 }
