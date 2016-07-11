@@ -17,7 +17,7 @@
 package io.novaordis.events.core.event;
 
 /**
- * A read-only interface. Once an event was created, it is immutable.
+ * A timed event.
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16
@@ -33,11 +33,21 @@ public interface TimedEvent extends Event {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
-     * May return null.
+     * @return the timestamp in milliseconds from the GMT epoch, not accounting for timezone and daylight saving
+     * offsets. May return null.
      */
     Long getTimestamp();
 
     void setTimestamp(Long timestamp);
 
+    /**
+     * @return the timezone offset, in milliseconds, as specified by the source of the event (logs, for example). If
+     * the original event timestamp was "12/31/16 10:00:00 -0800" in the log, then the timezone offset is
+     * -8 * 3600 * 1000 ms. Null if no timezone offset specified by the source of the event. We need this information
+     * to produce timestamps similar to the original ones, when the processing is done in an arbitrary timezone.
+     */
+    Integer getTimezoneOffsetMs();
+
+    void setTimezoneOffsetMs(Integer i);
 
 }

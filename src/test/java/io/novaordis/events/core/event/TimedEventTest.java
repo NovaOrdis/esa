@@ -51,6 +51,19 @@ public abstract class TimedEventTest extends EventTest {
         assertEquals(1L, te.getTimestamp().longValue());
     }
 
+    @Test
+    public void timezoneOffset() throws Exception {
+
+        TimedEvent te = getEventToTest(1L);
+
+        assertNull(te.getTimezoneOffsetMs());
+
+        te.setTimezoneOffsetMs(-10);
+        assertEquals(-10, te.getTimezoneOffsetMs().intValue());
+
+        te.setTimezoneOffsetMs(10);
+        assertEquals(10, te.getTimezoneOffsetMs().intValue());
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
