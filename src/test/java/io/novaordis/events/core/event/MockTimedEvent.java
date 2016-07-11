@@ -16,6 +16,8 @@
 
 package io.novaordis.events.core.event;
 
+import io.novaordis.utilities.timestamp.Timestamp;
+
 /**
  * For mock untimed events see:
  *
@@ -35,6 +37,10 @@ public class MockTimedEvent extends GenericTimedEvent {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public MockTimedEvent(Long timestamp) {
+        super(timestamp);
+    }
+
+    public MockTimedEvent(Timestamp timestamp) {
         super(timestamp);
     }
 

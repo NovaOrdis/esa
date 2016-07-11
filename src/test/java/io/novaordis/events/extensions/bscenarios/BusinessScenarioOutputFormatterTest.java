@@ -82,9 +82,24 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
 
     @Test
     public void toStringEvent_MapProperty() throws Exception {
-
         // noop
     }
+
+    @Test
+    public void toStringEvent_TimestampDoesNOTHaveTimezoneOffsetInfo() throws Exception {
+        // noop
+    }
+
+    @Test
+    public void process_TimestampHasTimezoneOffsetInfo() throws Exception {
+        // noop
+    }
+
+    @Test
+    public void toStringEvent_TimestampHasTimezoneOffsetInfo() throws Exception {
+        // noop
+    }
+
 
     // header line overrides -------------------------------------------------------------------------------------------
 

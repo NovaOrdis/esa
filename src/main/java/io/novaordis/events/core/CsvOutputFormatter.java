@@ -24,6 +24,8 @@ import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.ShutdownEvent;
 import io.novaordis.events.core.event.TimedEvent;
+import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.timestamp.Timestamps;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -298,11 +300,12 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
             if (TimedEvent.TIMESTAMP_PROPERTY_NAME.equals(fieldName)) {
 
-                Long timestamp = null;
+                Timestamp timestamp = null;
                 if (event instanceof TimedEvent) {
-                    timestamp = ((TimedEvent)event).getTimestampGMT();
+                    timestamp = ((TimedEvent)event).getTimestamp();
                 }
-                s += externalizeTimestamp(timestamp);
+
+                s +=  Timestamps.format(timestamp, DEFAULT_TIMESTAMP_FORMAT, NULL_EXTERNALIZATION);
             }
             else {
 
@@ -467,16 +470,6 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
         }
 
         return s;
-    }
-
-    private String externalizeTimestamp(Long timestamp) {
-
-        if (timestamp == null) {
-            return NULL_EXTERNALIZATION;
-        }
-        else {
-            return DEFAULT_TIMESTAMP_FORMAT.format(timestamp);
-        }
     }
 
     /**

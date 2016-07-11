@@ -22,16 +22,22 @@ import io.novaordis.events.core.event.MockEvent;
 import io.novaordis.events.core.event.MockProperty;
 import io.novaordis.events.core.event.MockTimedEvent;
 import io.novaordis.events.httpd.HttpEvent;
+import io.novaordis.utilities.timestamp.Timestamp;
 import io.novaordis.utilities.timestamp.TimestampImpl;
+import io.novaordis.utilities.timestamp.Timestamps;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Time;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -177,6 +183,32 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
         assertEquals(expected, s);
     }
 
+    @Test
+    public void process_TimestampHasTimezoneOffsetInfo() throws Exception {
+
+        CsvOutputFormatter c = getConversionLogicToTest();
+        c.setOutputFormat("timestamp");
+
+        DateFormat sourceDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm:ss Z");
+        Timestamp ts = new TimestampImpl("07/01/16 10:00:00 +1100", sourceDateFormat);
+        assertNotNull(ts.getTimezoneOffsetMs());
+
+        int ourOffset =
+                (TimeZone.getDefault().getDSTSavings() + TimeZone.getDefault().getRawOffset()) /
+                        Timestamps.MILLISECONDS_IN_AN_HOUR;
+        assertTrue(ourOffset != 11);
+
+
+        MockTimedEvent mte = new MockTimedEvent(ts);
+
+        assertTrue(c.process(mte));
+
+        byte[] content = c.getBytes();
+        String s = new String(content);
+
+        assertEquals("07/01/16 10:00:00\n", s);
+    }
+
     // toString(Event) -------------------------------------------------------------------------------------------------
 
     @Test
@@ -190,6 +222,45 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
 
         String result = formatter.toString(e);
         assertEquals("TEST-VALUE", result);
+    }
+
+    @Test
+    public void toStringEvent_TimestampHasTimezoneOffsetInfo() throws Exception {
+
+        CsvOutputFormatter c = getConversionLogicToTest();
+        c.setOutputFormat("timestamp");
+
+        DateFormat sourceDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss Z");
+        Timestamp ts = new TimestampImpl("01/07/16 10:00:00 +1100", sourceDateFormat);
+        assertNotNull(ts.getTimezoneOffsetMs());
+
+        int ourOffset =
+                (TimeZone.getDefault().getDSTSavings() + TimeZone.getDefault().getRawOffset()) /
+                        Timestamps.MILLISECONDS_IN_AN_HOUR;
+        assertTrue(ourOffset != 11);
+
+        MockTimedEvent mte = new MockTimedEvent(ts);
+
+        String result = c.toString(mte);
+
+        assertEquals("07/01/16 10:00:00", result);
+    }
+
+    @Test
+    public void toStringEvent_TimestampDoesNOTHaveTimezoneOffsetInfo() throws Exception {
+
+        CsvOutputFormatter c = getConversionLogicToTest();
+        c.setOutputFormat("timestamp");
+
+        DateFormat sourceDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        Timestamp ts = new TimestampImpl("01/07/16 10:00:00", sourceDateFormat);
+        assertNull(ts.getTimezoneOffsetMs());
+
+        MockTimedEvent mte = new MockTimedEvent(ts);
+
+        String result = c.toString(mte);
+
+        assertEquals("07/01/16 10:00:00", result);
     }
 
     // setOutputFormat() -----------------------------------------------------------------------------------------------
