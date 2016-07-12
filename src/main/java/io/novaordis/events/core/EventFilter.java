@@ -20,6 +20,7 @@ import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.clad.option.TimestampOption;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.TimedEvent;
+import io.novaordis.utilities.timestamp.Timestamps;
 
 import java.util.Date;
 
@@ -132,17 +133,19 @@ public class EventFilter extends ProcessingLogicBase {
     @Override
     protected Event processInternal(Event e) throws Exception {
 
-        Long timestamp = null;
+        Long eventTimestampAdjustedForLocalOffset = null;
 
         if (e instanceof TimedEvent) {
+
             TimedEvent te = (TimedEvent)e;
-            timestamp = te.getTimestampGMT();
+            eventTimestampAdjustedForLocalOffset = Timestamps.
+                    adjustForTimezone(te.getTimestamp(), Timestamps.getDefaultTimezoneMs());
         }
 
         //
         // if not calibrated, do calibrate
         //
-        if (from > -1 && from < MILLISECONDS_IN_A_DAY && timestamp != null) {
+        if (from > -1 && from < MILLISECONDS_IN_A_DAY && eventTimestampAdjustedForLocalOffset != null) {
 
             if (relativeOffsetDays > 0) {
                 //
@@ -151,17 +154,17 @@ public class EventFilter extends ProcessingLogicBase {
                 throw new IllegalStateException("the filter was already calibrated");
             }
 
-            relativeOffsetDays = timestamp / MILLISECONDS_IN_A_DAY;
+            relativeOffsetDays = eventTimestampAdjustedForLocalOffset / MILLISECONDS_IN_A_DAY;
             from = relativeOffsetDays * MILLISECONDS_IN_A_DAY + from;
         }
 
-        if (to > -1 && to < MILLISECONDS_IN_A_DAY && timestamp != null) {
+        if (to > -1 && to < MILLISECONDS_IN_A_DAY && eventTimestampAdjustedForLocalOffset != null) {
 
             //
             // not calibrated yet
             //
             if (relativeOffsetDays < 0) {
-                relativeOffsetDays = timestamp / MILLISECONDS_IN_A_DAY;
+                relativeOffsetDays = eventTimestampAdjustedForLocalOffset / MILLISECONDS_IN_A_DAY;
             }
 
             to = relativeOffsetDays * MILLISECONDS_IN_A_DAY + to;
@@ -173,14 +176,14 @@ public class EventFilter extends ProcessingLogicBase {
 
         if (from > -1) {
 
-            if (timestamp == null) {
+            if (eventTimestampAdjustedForLocalOffset == null) {
                 //
                 // we have a "from" filter but not an event timestamp, the event does not match
                 //
                 return null;
             }
 
-            if (timestamp < from) {
+            if (eventTimestampAdjustedForLocalOffset < from) {
                 //
                 // we have a timestamp but falls ahead of the threshold
                 //
@@ -190,14 +193,14 @@ public class EventFilter extends ProcessingLogicBase {
 
         if (to > -1) {
 
-            if (timestamp == null) {
+            if (eventTimestampAdjustedForLocalOffset == null) {
                 //
                 // we have a "to" filter but not an event timestamp, the event does not match
                 //
                 return null;
             }
 
-            if (timestamp > to) {
+            if (eventTimestampAdjustedForLocalOffset > to) {
                 //
                 // we have a timestamp but falls after the threshold
                 //
