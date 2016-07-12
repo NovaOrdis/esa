@@ -259,6 +259,99 @@ public class EventFilterTest extends ProcessingLogicTest {
     }
 
     @Test
+    public void fromFilterAdjustedForTimezone_TimezoneSpecifiedInLog_RelativeFormat() throws Exception {
+
+        MockConfiguration mc = new MockConfiguration();
+        mc.addGlobalOption(new TimestampOption("from", "10:00:00"));
+        // the relative format is extracted from the full format
+        assertEquals("MM/dd/yy HH:mm:ss", TimestampOption.DEFAULT_FORMAT_AS_STRING);
+        EventFilter f = EventFilter.buildInstance(mc);
+        assertNotNull(f);
+
+        //
+        // the date is parsed in the default time zone so to make sure the test is relevant, use a different
+        // time zone
+        //
+
+        int ourTimezoneOffsetHours = Timestamps.getDefaultTimezoneHours();
+        int logTimezoneOffset = ourTimezoneOffsetHours + 2;
+
+        // will fail if not a valid timezone offset; if it does, it means it's run from a strange timezone
+        // so need to adjust the test
+        String tzOffset = Timestamps.timezoneOffsetHoursToString(logTimezoneOffset);
+
+        Event result;
+
+        //
+        // event does not match
+        //
+
+        DateFormat logDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm:ss Z");
+
+        String timestampString = "07/01/15 09:59:59 " + tzOffset;
+        Timestamp ts = new TimestampImpl(timestampString, logDateFormat);
+        Event e = new MockTimedEvent(ts);
+        result = f.processInternal(e);
+        assertNull(result);
+
+
+        //
+        // events match
+        //
+
+        String timestampString2 = "07/01/15 10:00:00 " + tzOffset;
+        Timestamp ts2 = new TimestampImpl(timestampString2, logDateFormat);
+        Event e2 = new MockTimedEvent(ts2);
+        result = f.processInternal(e2);
+        assertEquals(e2, result);
+
+        String timestampString3 = "07/01/15 10:00:01 " + tzOffset;
+        Timestamp ts3 = new TimestampImpl(timestampString3, logDateFormat);
+        Event e3 = new MockTimedEvent(ts3);
+        result = f.processInternal(e3);
+        assertEquals(e3, result);
+    }
+
+    @Test
+    public void fromFilterAdjustedForTimezone_TimezoneNotSpecifiedInLog_RelativeFormat() throws Exception {
+
+        MockConfiguration mc = new MockConfiguration();
+        mc.addGlobalOption(new TimestampOption("from", "10:00:00"));
+        // the relative format is extracted from the full format
+        assertEquals("MM/dd/yy HH:mm:ss", TimestampOption.DEFAULT_FORMAT_AS_STRING);
+        EventFilter f = EventFilter.buildInstance(mc);
+        assertNotNull(f);
+
+        Event result;
+
+        //
+        // event does not match
+        //
+
+        DateFormat logDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
+
+        Timestamp logTimestamp = new TimestampImpl("07/01/15 09:59:59", logDateFormat);
+        Event e = new MockTimedEvent(logTimestamp);
+        result = f.processInternal(e);
+        assertNull(result);
+
+
+        //
+        // events match
+        //
+
+        Timestamp ts2 = new TimestampImpl("07/01/15 10:00:00", logDateFormat);
+        Event e2 = new MockTimedEvent(ts2);
+        result = f.processInternal(e2);
+        assertEquals(e2, result);
+
+        Timestamp ts3 = new TimestampImpl("07/01/15 10:00:01", logDateFormat);
+        Event e3 = new MockTimedEvent(ts3);
+        result = f.processInternal(e3);
+        assertEquals(e3, result);
+    }
+
+    @Test
     public void toFilterAdjustedForTimezone_TimezoneSpecifiedInLog() throws Exception {
 
         MockConfiguration mc = new MockConfiguration();
@@ -312,6 +405,95 @@ public class EventFilterTest extends ProcessingLogicTest {
 
         MockConfiguration mc = new MockConfiguration();
         mc.addGlobalOption(new TimestampOption("to", "07/01/15 10:00:00"));
+        assertEquals("MM/dd/yy HH:mm:ss", TimestampOption.DEFAULT_FORMAT_AS_STRING);
+        EventFilter f = EventFilter.buildInstance(mc);
+        assertNotNull(f);
+
+        Event result;
+
+        //
+        // events match
+        //
+
+        DateFormat logDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
+
+        Timestamp logTimestamp = new TimestampImpl("07/01/15 09:59:59", logDateFormat);
+        Event e = new MockTimedEvent(logTimestamp);
+        result = f.processInternal(e);
+        assertEquals(e, result);
+
+
+        Timestamp ts2 = new TimestampImpl("07/01/15 10:00:00", logDateFormat);
+        Event e2 = new MockTimedEvent(ts2);
+        result = f.processInternal(e2);
+        assertEquals(e2, result);
+
+        //
+        // event does not match
+        //
+
+        Timestamp ts3 = new TimestampImpl("07/01/15 10:00:01", logDateFormat);
+        Event e3 = new MockTimedEvent(ts3);
+        result = f.processInternal(e3);
+        assertNull(result);
+    }
+
+    @Test
+    public void toFilterAdjustedForTimezone_TimezoneSpecifiedInLog_RelativeFormat() throws Exception {
+
+        MockConfiguration mc = new MockConfiguration();
+        mc.addGlobalOption(new TimestampOption("to", "10:00:00"));
+        // the relative format is extracted from the full format
+        assertEquals("MM/dd/yy HH:mm:ss", TimestampOption.DEFAULT_FORMAT_AS_STRING);
+        EventFilter f = EventFilter.buildInstance(mc);
+        assertNotNull(f);
+
+        //
+        // the date is parsed in the default time zone so to make sure the test is relevant, use a different
+        // time zone
+        //
+
+        int ourTimezoneOffsetHours = Timestamps.getDefaultTimezoneHours();
+        int logTimezoneOffset = ourTimezoneOffsetHours + 2;
+
+        // will fail if not a valid timezone offset; if it does, it means it's run from a strange timezone
+        // so need to adjust the test
+        String tzOffset = Timestamps.timezoneOffsetHoursToString(logTimezoneOffset);
+
+        Event result;
+
+        //
+        // events match
+        //
+
+        DateFormat logDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm:ss Z");
+
+        Timestamp ts = new TimestampImpl("07/01/15 09:59:59 " + tzOffset, logDateFormat);
+        Event e = new MockTimedEvent(ts);
+        result = f.processInternal(e);
+        assertEquals(e, result);
+
+        Timestamp ts2 = new TimestampImpl("07/01/15 10:00:00 " + tzOffset, logDateFormat);
+        Event e2 = new MockTimedEvent(ts2);
+        result = f.processInternal(e2);
+        assertEquals(e2, result);
+
+        //
+        // event does not match
+        //
+
+        Timestamp ts3 = new TimestampImpl("07/01/15 10:00:01 " + tzOffset, logDateFormat);
+        Event e3 = new MockTimedEvent(ts3);
+        result = f.processInternal(e3);
+        assertNull(result);
+    }
+
+    @Test
+    public void toFilterAdjustedForTimezone_TimezoneNotSpecifiedInLog_RelativeFormat() throws Exception {
+
+        MockConfiguration mc = new MockConfiguration();
+        mc.addGlobalOption(new TimestampOption("to", "10:00:00"));
+        // the relative format is extracted from the full format
         assertEquals("MM/dd/yy HH:mm:ss", TimestampOption.DEFAULT_FORMAT_AS_STRING);
         EventFilter f = EventFilter.buildInstance(mc);
         assertNotNull(f);
