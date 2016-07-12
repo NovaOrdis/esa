@@ -31,8 +31,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -79,36 +81,115 @@ public class EventFilterTest extends ProcessingLogicTest {
     }
 
     @Test
-    public void buildInstance_From() throws Exception {
+    public void buildInstance_From_Relative() throws Exception {
 
         MockConfiguration mc = new MockConfiguration();
-        mc.addGlobalOption(new TimestampOption(null, "from", "11:11:11"));
+        TimestampOption option = new TimestampOption(null, "from", "11:11:11");
+        mc.addGlobalOption(option);
 
         EventFilter e = EventFilter.buildInstance(mc);
         assertNotNull(e);
 
-        long t = e.getFromTimestampMs();
-        assertEquals(TimestampOption.DEFAULT_RELATIVE_FORMAT.parse("11:11:11").getTime(), t);
+        assertFalse(e.isCalibrated());
+        Long from = e.getFromTimestampMs();
+        assertNull(from);
 
-        t = e.getToTimestampMs();
-        assertEquals(-1L, t);
+
+
+        //
+        // from not calibrated
+        //
+
+        //
+        // calibrate it by sending a timed event into it
+        //
+
+        e.processInternal(new MockTimedEvent(1L));
+
+        assertTrue(e.isCalibrated());
+
+        //noinspection ConstantConditions
+        assertNotNull(e.getFromTimestampMs());
+
+        assertNull(e.getToTimestampMs());
     }
 
     @Test
-    public void buildInstance_Tom() throws Exception {
+    public void buildInstance_From_Full() throws Exception {
 
         MockConfiguration mc = new MockConfiguration();
-        mc.addGlobalOption(new TimestampOption(null, "to", "01/01/16 12:12:12"));
+        TimestampOption option = new TimestampOption(null, "from", "07/01/15 11:11:11");
+        mc.addGlobalOption(option);
 
         EventFilter e = EventFilter.buildInstance(mc);
-
         assertNotNull(e);
 
-        long t = e.getFromTimestampMs();
-        assertEquals(-1L, t);
+        //
+        // the event filter is calibrated
+        //
 
-        t = e.getToTimestampMs();
-        assertEquals(TimestampOption.DEFAULT_FULL_FORMAT.parse("01/01/16 12:12:12").getTime(), t);
+        assertTrue(e.isCalibrated());
+
+        Long from  = e.getFromTimestampMs();
+        assertNotNull(from);
+        assertEquals(option.getFullFormat().parse("07/01/15 11:11:11").getTime(), from.longValue());
+
+        assertNull(e.getToTimestampMs());
+    }
+
+    @Test
+    public void buildInstance_To_Relative() throws Exception {
+
+        MockConfiguration mc = new MockConfiguration();
+        TimestampOption option = new TimestampOption(null, "to", "12:12:12");
+        mc.addGlobalOption(option);
+
+        EventFilter e = EventFilter.buildInstance(mc);
+        assertNotNull(e);
+
+        assertFalse(e.isCalibrated());
+        Long to = e.getToTimestampMs();
+        assertNull(to);
+
+        //
+        // from not calibrated
+        //
+
+        //
+        // calibrate it by sending a timed event into it
+        //
+
+        e.processInternal(new MockTimedEvent(1L));
+
+        assertTrue(e.isCalibrated());
+
+        //noinspection ConstantConditions
+        assertNotNull(e.getToTimestampMs());
+
+        assertNull(e.getFromTimestampMs());
+    }
+
+    @Test
+    public void buildInstance_To_Full() throws Exception {
+
+        MockConfiguration mc = new MockConfiguration();
+        TimestampOption option = new TimestampOption(null, "to", "07/01/15 12:12:12");
+        mc.addGlobalOption(option);
+
+        EventFilter e = EventFilter.buildInstance(mc);
+        assertNotNull(e);
+        assertTrue(e.isCalibrated());
+
+        //
+        // the event filter is calibrated
+        //
+
+        Long to = e.getToTimestampMs();
+        assertNotNull(to);
+
+        assertEquals(option.getFullFormat().parse("07/01/15 12:12:12").getTime(), to.longValue());
+
+        assertNull(e.getFromTimestampMs());
     }
 
     //

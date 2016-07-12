@@ -23,6 +23,7 @@ import io.novaordis.events.core.event.TimedEvent;
 import io.novaordis.utilities.timestamp.Timestamp;
 import io.novaordis.utilities.timestamp.Timestamps;
 
+import java.text.DateFormat;
 import java.util.Date;
 
 /**
@@ -40,8 +41,6 @@ import java.util.Date;
 public class EventFilter extends ProcessingLogicBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final long MILLISECONDS_IN_A_DAY = 24L * 60 * 60 * 1000L;
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -68,11 +67,13 @@ public class EventFilter extends ProcessingLogicBase {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private long from;
-    private long to;
+    // null means no "from" clause
+    private Long from;
+    private String uncalibratedFrom;
 
-    // in case of relative timestamps, this value is initialized during calibration
-    private long relativeOffsetDays;
+    // null means no "to" clause
+    private Long to;
+    private String uncalibratedTo;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -82,44 +83,67 @@ public class EventFilter extends ProcessingLogicBase {
      */
     private EventFilter(Configuration configuration) throws NoFiltersException {
 
-        TimestampOption from = (TimestampOption)configuration.getGlobalOption(new TimestampOption("from"));
-        TimestampOption to = (TimestampOption)configuration.getGlobalOption(new TimestampOption("to"));
+        TimestampOption fromOption = (TimestampOption)configuration.getGlobalOption(new TimestampOption("from"));
+        TimestampOption toOption = (TimestampOption)configuration.getGlobalOption(new TimestampOption("to"));
 
-        if (from == null && to == null) {
+        if (fromOption == null && toOption == null) {
             throw new NoFiltersException();
         }
 
-        if (from == null) {
+        if (fromOption != null) {
 
-            this.from = -1L;
-        }
-        else {
+            if (fromOption.isRelative()) {
 
-            Date d = from.getValue();
+                //
+                // calibrate later
+                //
 
-            if (d == null) {
-                throw new IllegalArgumentException("\"from\" option contains a null timestamp");
+                uncalibratedFrom = fromOption.getValue();
             }
+            else {
 
-            this.from = d.getTime();
-        }
+                DateFormat df = fromOption.getFullFormat();
+                Date d;
 
-        if (to == null) {
+                try {
 
-            this.to = -1L;
-        }
-        else {
+                    d = df.parse(fromOption.getValue());
+                }
+                catch(Exception e) {
+                    throw new IllegalArgumentException("failed to parse the value of the \"from\" option into a date", e);
+                }
 
-            Date d = to.getValue();
-
-            if (d == null) {
-                throw new IllegalArgumentException("\"to\" option contains a null timestamp");
+                this.from = d.getTime();
             }
-
-            this.to = d.getTime();
         }
 
-        relativeOffsetDays = -1;
+        if (toOption != null) {
+
+            if (toOption.isRelative()) {
+
+                //
+                // calibrate later
+                //
+
+                uncalibratedTo = toOption.getValue();
+
+            }
+            else {
+
+                DateFormat df = toOption.getFullFormat();
+                Date d;
+
+                try {
+
+                    d = df.parse(toOption.getValue());
+                }
+                catch(Exception e) {
+                    throw new IllegalArgumentException("failed to parse the value of the \"to\" option into a date", e);
+                }
+
+                this.to = d.getTime();
+            }
+        }
     }
 
     // ProcessingLogicBase overrides -----------------------------------------------------------------------------------
@@ -135,49 +159,48 @@ public class EventFilter extends ProcessingLogicBase {
     protected Event processInternal(Event e) throws Exception {
 
         Long eventGMTAdjustedForLocalTimezone = null;
+        String dayPortion = null;
 
         if (e instanceof TimedEvent) {
 
             TimedEvent te = (TimedEvent)e;
             Timestamp ts = te.getTimestamp();
+            dayPortion = ts.getMonth() + "/" + ts.getDay() + "/" + ts.getYear();
             eventGMTAdjustedForLocalTimezone = Timestamps.adjustForTimezone(ts, Timestamps.getDefaultTimezoneMs());
         }
 
         //
-        // if relative timestamp and not calibrated yet, do calibrate
+        // if relative timestamp and not calibrated yet, do calibrate for timed events
         //
-        if (from > -1 && from < MILLISECONDS_IN_A_DAY && eventGMTAdjustedForLocalTimezone != null) {
 
-            if (relativeOffsetDays > 0) {
-                //
-                // redundant calibration
-                //
-                throw new IllegalStateException("the filter was already calibrated");
-            }
-
-            relativeOffsetDays = eventGMTAdjustedForLocalTimezone / MILLISECONDS_IN_A_DAY;
-            from = relativeOffsetDays * MILLISECONDS_IN_A_DAY + from;
-        }
-
-        if (to > -1 && to < MILLISECONDS_IN_A_DAY && eventGMTAdjustedForLocalTimezone != null) {
+        if (uncalibratedFrom != null && eventGMTAdjustedForLocalTimezone != null) {
 
             //
             // not calibrated yet
             //
-            if (relativeOffsetDays < 0) {
-                relativeOffsetDays = eventGMTAdjustedForLocalTimezone / MILLISECONDS_IN_A_DAY;
-            }
 
-            to = relativeOffsetDays * MILLISECONDS_IN_A_DAY + to;
+            from = TimestampOption.DEFAULT_FULL_FORMAT.parse(dayPortion + " " + uncalibratedFrom).getTime();
+            uncalibratedFrom = null;
+        }
+
+        if (uncalibratedTo != null && eventGMTAdjustedForLocalTimezone != null) {
+
+            //
+            // not calibrated yet
+            //
+
+            to = TimestampOption.DEFAULT_FULL_FORMAT.parse(dayPortion + " " + uncalibratedTo).getTime();
+            uncalibratedTo = null;
         }
 
         //
         // we're calibrated
         //
 
-        if (from > -1) {
+        if (from != null) {
 
             if (eventGMTAdjustedForLocalTimezone == null) {
+
                 //
                 // we have a "from" filter but not an event timestamp, the event does not match
                 //
@@ -188,12 +211,11 @@ public class EventFilter extends ProcessingLogicBase {
                 //
                 // we have a timestamp but falls ahead of the threshold
                 //
-                System.out.println("######## from: " + ((eventGMTAdjustedForLocalTimezone - from) / 1000));
                 return null;
             }
         }
 
-        if (to > -1) {
+        if (to != null) {
 
             if (eventGMTAdjustedForLocalTimezone == null) {
                 //
@@ -206,8 +228,6 @@ public class EventFilter extends ProcessingLogicBase {
                 //
                 // we have a timestamp but falls after the threshold
                 //
-                System.out.println("########  to: " + ((eventGMTAdjustedForLocalTimezone - to) / 1000));
-
                 return null;
             }
         }
@@ -218,22 +238,30 @@ public class EventFilter extends ProcessingLogicBase {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
-     * May return -1 if it was not configured.
+     * May return null if it was not configured or calibrated.
      */
-    public long getFromTimestampMs() {
+    public Long getFromTimestampMs() {
 
         return from;
     }
 
     /**
-     * May return -1 if it was not configured.
+     * May return null if it was not configured  or calibrated.
      */
-    public long getToTimestampMs() {
+    public Long getToTimestampMs() {
 
         return to;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
+
+    /**
+     * Package protected, for testing only.
+     */
+    boolean isCalibrated() {
+
+        return uncalibratedFrom == null && uncalibratedTo == null;
+    }
 
     // Protected -------------------------------------------------------------------------------------------------------
 

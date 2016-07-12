@@ -52,7 +52,7 @@ public class GenericTimedEvent extends GenericEvent implements TimedEvent {
 
     public GenericTimedEvent(long timestampGMT) {
 
-        this(new TimestampImpl(timestampGMT, null));
+        this(new TimestampImpl(timestampGMT));
     }
 
     // TimedEvent implementation ---------------------------------------------------------------------------------------
