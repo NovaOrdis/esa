@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -149,7 +150,7 @@ public class HttpdLogLineTest {
 
         HttpdLogLine line = new HttpdLogLine();
 
-        line.setLogValue(HttpdFormatStrings.TIMESTAMP, new TimestampImpl(1L, 2));
+        line.setLogValue(HttpdFormatStrings.TIMESTAMP, new TimestampImpl(1L, TimeZone.getTimeZone("PST")));
         line.setLogValue(HttpdFormatStrings.REMOTE_HOST, "test.remote.host");
         line.setLogValue(HttpdFormatStrings.REMOTE_LOGNAME, "test.remote.logname");
         line.setLogValue(HttpdFormatStrings.REMOTE_USER, "test.remote.user");
@@ -167,7 +168,7 @@ public class HttpdLogLineTest {
 
         Timestamp t = line.getTimestamp();
         assertEquals(1L, t.getTimestampGMT());
-        assertEquals(2, t.getTimezoneOffsetMs().intValue());
+        assertEquals(TimeZone.getTimeZone("PST"), t.getTimeZone());
 
         assertEquals("test.remote.host", line.getRemoteHost());
         assertEquals("test.remote.logname", line.getRemoteLogname());
@@ -248,7 +249,7 @@ public class HttpdLogLineTest {
         HttpEvent event = e.toEvent();
 
         assertEquals(1L, event.getTimestampGMT().longValue());
-        assertNull(event.getTimezoneOffsetMs());
+        assertNull(event.getTimestamp().getTimeZone());
     }
 
     @Test
@@ -256,12 +257,12 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new TimestampImpl(1L, 2));
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new TimestampImpl(1L, TimeZone.getTimeZone("PST")));
 
         HttpEvent event = e.toEvent();
 
         assertEquals(1L, event.getTimestampGMT().longValue());
-        assertEquals(2, event.getTimezoneOffsetMs().intValue());
+        assertEquals(TimeZone.getTimeZone("PST"), event.getTimestamp().getTimeZone());
     }
 
     @Test

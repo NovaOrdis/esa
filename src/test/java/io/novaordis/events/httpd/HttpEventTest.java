@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.TimeZone;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -51,9 +53,9 @@ public class HttpEventTest extends TimedEventTest {
     @Test
     public void constructor() throws Exception {
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1L, 2));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, TimeZone.getTimeZone("PST")));
         assertEquals(1L, e.getTimestampGMT().longValue());
-        assertEquals(2, e.getTimezoneOffsetMs().intValue());
+        assertEquals(TimeZone.getTimeZone("PST"), e.getTimestamp().getTimeZone());
     }
 
     // getCookie() -----------------------------------------------------------------------------------------------------

@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -191,7 +190,7 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
 
         DateFormat sourceDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm:ss Z");
         Timestamp ts = new TimestampImpl("07/01/16 10:00:00 +1100", sourceDateFormat);
-        assertNotNull(ts.getTimezoneOffsetMs());
+        assertNotNull(ts.getTimeZone());
 
         int ourOffset =
                 (TimeZone.getDefault().getDSTSavings() + TimeZone.getDefault().getRawOffset()) /
@@ -232,7 +231,7 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
 
         DateFormat sourceDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss Z");
         Timestamp ts = new TimestampImpl("01/07/16 10:00:00 +1100", sourceDateFormat);
-        assertNotNull(ts.getTimezoneOffsetMs());
+        assertNotNull(ts.getTimeZone());
 
         int ourOffset =
                 (TimeZone.getDefault().getDSTSavings() + TimeZone.getDefault().getRawOffset()) /
@@ -254,7 +253,7 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
 
         DateFormat sourceDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
         Timestamp ts = new TimestampImpl("01/07/16 10:00:00", sourceDateFormat);
-        assertNull(ts.getTimezoneOffsetMs());
+        assertNull(ts.getTimeZone());
 
         MockTimedEvent mte = new MockTimedEvent(ts);
 

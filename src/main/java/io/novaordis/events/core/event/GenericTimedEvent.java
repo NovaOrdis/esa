@@ -19,6 +19,8 @@ package io.novaordis.events.core.event;
 import io.novaordis.utilities.timestamp.Timestamp;
 import io.novaordis.utilities.timestamp.TimestampImpl;
 
+import java.util.TimeZone;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
@@ -52,7 +54,7 @@ public class GenericTimedEvent extends GenericEvent implements TimedEvent {
 
     public GenericTimedEvent(long timestampGMT) {
 
-        this(new TimestampImpl(timestampGMT));
+        this(new TimestampImpl(timestampGMT, TimeZone.getDefault()));
     }
 
     // TimedEvent implementation ---------------------------------------------------------------------------------------
@@ -71,16 +73,6 @@ public class GenericTimedEvent extends GenericEvent implements TimedEvent {
         }
 
         return timestamp.getTimestampGMT();
-    }
-
-    @Override
-    public Integer getTimezoneOffsetMs() {
-
-        if (timestamp == null) {
-            return null;
-        }
-
-        return timestamp.getTimezoneOffsetMs();
     }
 
     @Override
