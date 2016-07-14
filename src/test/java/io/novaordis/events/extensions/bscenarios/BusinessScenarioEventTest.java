@@ -81,7 +81,7 @@ public class BusinessScenarioEventTest extends TimedEventTest {
 
     @Override
     protected BusinessScenarioEvent getEventToTest(Long timestamp) throws Exception {
-        return new BusinessScenarioEvent(timestamp == null ? null : new TimestampImpl(timestamp.longValue(), null));
+        return new BusinessScenarioEvent(timestamp == null ? null : new TimestampImpl(timestamp.longValue()));
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

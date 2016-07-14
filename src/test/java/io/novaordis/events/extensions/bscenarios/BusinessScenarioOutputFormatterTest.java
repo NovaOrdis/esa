@@ -146,7 +146,7 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
         BusinessScenario bs = new BusinessScenario();
 
         long beginTimestamp = 1L;
-        bs.setBeginTimestamp(new TimestampImpl(beginTimestamp, null));
+        bs.setBeginTimestamp(new TimestampImpl(beginTimestamp));
         bs.setId(2L);
         bs.setJSessionId("test-jsession-id");
         bs.setIterationId("test-iteration-id");
@@ -189,7 +189,7 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
         BusinessScenarioOutputFormatter formatter = getConversionLogicToTest();
 
         long t = dateFormat.parse("12/16/24 16:17:18").getTime();
-        BusinessScenarioEvent bse = new BusinessScenarioEvent(new TimestampImpl(t, null));
+        BusinessScenarioEvent bse = new BusinessScenarioEvent(new TimestampImpl(t));
 
         assertTrue(formatter.process(bse));
 
@@ -204,7 +204,7 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
         assertTrue(formatter.isHeaderOn());
 
         t = dateFormat.parse("12/16/24 16:17:19").getTime();
-        bse = new BusinessScenarioEvent(new TimestampImpl(t, null));
+        bse = new BusinessScenarioEvent(new TimestampImpl(t));
 
         assertTrue(formatter.process(bse));
         assertFalse(formatter.isHeaderOn());
@@ -222,7 +222,7 @@ public class BusinessScenarioOutputFormatterTest extends CsvOutputFormatterTest 
         //
 
         t = dateFormat.parse("12/16/24 16:17:20").getTime();
-        bse = new BusinessScenarioEvent(new TimestampImpl(t, null));
+        bse = new BusinessScenarioEvent(new TimestampImpl(t));
 
         assertTrue(formatter.process(bse));
 

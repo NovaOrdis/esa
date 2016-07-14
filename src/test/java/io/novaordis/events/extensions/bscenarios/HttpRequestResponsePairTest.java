@@ -45,7 +45,7 @@ public class HttpRequestResponsePairTest {
     @Test
     public void constructor() throws Exception {
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(0L, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(0L));
         e.setRequestSequenceId("test-3432");
         e.setStatusCode(200);
         e.setRequestDuration(7L);

@@ -66,7 +66,7 @@ public class HttpSessionTest {
 
         HttpSession s = new HttpSession("test-session-1");
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(0L, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(0L));
 
         try {
             s.process(e);
@@ -84,7 +84,7 @@ public class HttpSessionTest {
 
         HttpSession s = new HttpSession("test-session-1");
 
-        HttpEvent startRequest = new HttpEvent(new TimestampImpl(7L, null));
+        HttpEvent startRequest = new HttpEvent(new TimestampImpl(7L));
         startRequest.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         startRequest.setLongProperty(HttpEvent.REQUEST_DURATION, 10L);
         startRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
@@ -92,7 +92,7 @@ public class HttpSessionTest {
         List<Event> events = s.process(startRequest);
         assertTrue(events.isEmpty());
 
-        HttpEvent stopRequest = new HttpEvent(new TimestampImpl(8L, null));
+        HttpEvent stopRequest = new HttpEvent(new TimestampImpl(8L));
         stopRequest.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         stopRequest.setLongProperty(HttpEvent.REQUEST_DURATION, 20L);
         stopRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "scenario-1");
@@ -112,7 +112,7 @@ public class HttpSessionTest {
 
         HttpSession s = new HttpSession("test-session-1");
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L));
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e.setLongProperty(HttpEvent.REQUEST_DURATION, 1L);
 
@@ -140,7 +140,7 @@ public class HttpSessionTest {
 
         List<Event> re;
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(10L, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(10L));
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
         e.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
@@ -154,7 +154,7 @@ public class HttpSessionTest {
         assertEquals("scenario-1", bs.getType());
         assertEquals("test-session-1", bs.getJSessionId());
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(20L, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(20L));
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e2.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
 
@@ -164,7 +164,7 @@ public class HttpSessionTest {
         bs = s.getCurrentBusinessScenario();
         assertEquals(2, bs.getRequestCount());
 
-        HttpEvent e3 = new HttpEvent(new TimestampImpl(30L, null));
+        HttpEvent e3 = new HttpEvent(new TimestampImpl(30L));
         e3.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e3.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
         e3.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
@@ -193,7 +193,7 @@ public class HttpSessionTest {
         // successive scenario
         //
 
-        HttpEvent e4 = new HttpEvent(new TimestampImpl(40L, null));
+        HttpEvent e4 = new HttpEvent(new TimestampImpl(40L));
         e4.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e4.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-2");
         e4.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
@@ -206,7 +206,7 @@ public class HttpSessionTest {
         assertEquals(1, bs.getRequestCount());
         assertEquals("scenario-2", bs.getType());
 
-        HttpEvent e5 = new HttpEvent(new TimestampImpl(50L, null));
+        HttpEvent e5 = new HttpEvent(new TimestampImpl(50L));
         e5.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e5.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
         e5.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME);
@@ -240,7 +240,7 @@ public class HttpSessionTest {
 
         List<Event> re;
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L));
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
         e.setLongProperty(HttpEvent.REQUEST_DURATION, 1L);
@@ -248,7 +248,7 @@ public class HttpSessionTest {
         re = s.process(e);
         assertTrue(re.isEmpty());
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(2L, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(2L));
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e2.setProperty(new LongProperty(HttpEvent.REQUEST_DURATION, 1L));
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "scenario-1");
@@ -270,7 +270,7 @@ public class HttpSessionTest {
 
         List<Event> re;
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L));
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
         e.setRequestDuration(1L);
@@ -278,7 +278,7 @@ public class HttpSessionTest {
         re = s.process(e);
         assertTrue(re.isEmpty());
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(2L, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(2L));
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e2.setRequestDuration(2L);
         e2.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "scenario-2");
@@ -299,7 +299,7 @@ public class HttpSessionTest {
 
         List<Event> re;
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1L, null));
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L));
         e.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
         e.setRequestDuration(1L);
@@ -307,7 +307,7 @@ public class HttpSessionTest {
         re = s.process(e);
         assertTrue(re.isEmpty());
 
-        HttpEvent noDurationRequest = new HttpEvent(new TimestampImpl(2L, null));
+        HttpEvent noDurationRequest = new HttpEvent(new TimestampImpl(2L));
         noDurationRequest.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
 
         List<Event> re2 = s.process(noDurationRequest);
@@ -322,7 +322,7 @@ public class HttpSessionTest {
 
         HttpSession s = new HttpSession("test-session-1");
 
-        HttpEvent startRequest = new HttpEvent(new TimestampImpl(7L, null));
+        HttpEvent startRequest = new HttpEvent(new TimestampImpl(7L));
         startRequest.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         startRequest.setLongProperty(HttpEvent.REQUEST_DURATION, 10L);
         startRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
@@ -330,7 +330,7 @@ public class HttpSessionTest {
         List<Event> events = s.process(startRequest);
         assertTrue(events.isEmpty());
 
-        HttpEvent secondStartRequest = new HttpEvent(new TimestampImpl(20L, null));
+        HttpEvent secondStartRequest = new HttpEvent(new TimestampImpl(20L));
         secondStartRequest.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         secondStartRequest.setLongProperty(HttpEvent.REQUEST_DURATION, 20L);
         secondStartRequest.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_START_MARKER_HEADER_NAME, "scenario-1");
@@ -344,14 +344,14 @@ public class HttpSessionTest {
         assertEquals(10L, bse.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
         assertEquals(7L, bse.getTime().longValue());
 
-        HttpEvent e2 = new HttpEvent(new TimestampImpl(30L, null));
+        HttpEvent e2 = new HttpEvent(new TimestampImpl(30L));
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         e2.setLongProperty(HttpEvent.REQUEST_DURATION, 30L);
 
         events = s.process(e2);
         assertTrue(events.isEmpty());
 
-        HttpEvent end = new HttpEvent(new TimestampImpl(40L, null));
+        HttpEvent end = new HttpEvent(new TimestampImpl(40L));
         end.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
         end.setLongProperty(HttpEvent.REQUEST_DURATION, 40L);
         end.setRequestHeader(BusinessScenario.BUSINESS_SCENARIO_STOP_MARKER_HEADER_NAME, "scenario-1");

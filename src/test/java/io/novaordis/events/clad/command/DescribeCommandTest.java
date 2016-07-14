@@ -51,7 +51,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_String_Yaml() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1));
 
         httpEvent.setProperty(new StringProperty("name1", "value1"));
 
@@ -65,7 +65,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_String_YamlInline() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1));
 
         httpEvent.setProperty(new StringProperty("name1", "value1"));
 
@@ -79,7 +79,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_String_Integer_Yaml() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1));
 
         httpEvent.setProperty(new StringProperty("name1", "value1"));
         httpEvent.setProperty(new IntegerProperty("name2", 2));
@@ -94,7 +94,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_String_Integer_YamlInline() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1));
 
         httpEvent.setProperty(new StringProperty("name1", "value1"));
         httpEvent.setProperty(new IntegerProperty("name2", 2));
@@ -109,8 +109,9 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_Map_NoElements_Yaml() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1));
 
+        //noinspection unchecked
         httpEvent.setProperty(new MapProperty("name1", new HashMap()));
 
         String s = DescribeCommand.getSignature(httpEvent, DescribeCommand.YAML);
@@ -123,8 +124,9 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_Map_NoElements_YamlInline() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1));
 
+        //noinspection unchecked
         httpEvent.setProperty(new MapProperty("name1", new HashMap()));
 
         String s = DescribeCommand.getSignature(httpEvent, DescribeCommand.YAML_INLINE);
@@ -137,7 +139,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_Map_HasElements_Yaml() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1));
 
         Map<String, Object> map = new HashMap<>();
         map.put("x", "val-x");
@@ -154,7 +156,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_Map_HasElements_YamlInline() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1));
 
         Map<String, Object> map = new HashMap<>();
         map.put("x", "val-x");
@@ -171,7 +173,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_Map_HasElements_PropertyFollows_Yaml() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1));
 
         Map<String, Object> map = new HashMap<>();
         map.put("x", "val-x");
@@ -189,7 +191,7 @@ public class DescribeCommandTest {
     @Test
     public void getSignature_Map_HasElements_PropertyFollows_YamlInline() throws Exception {
 
-        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1, null));
+        HttpEvent httpEvent = new HttpEvent(new TimestampImpl(1));
 
         Map<String, Object> map = new HashMap<>();
         map.put("x", "val-x");
