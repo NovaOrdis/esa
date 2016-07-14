@@ -16,7 +16,7 @@
 
 package io.novaordis.events.core.event;
 
-import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.time.Timestamp;
 
 /**
  * A timed event.

@@ -21,7 +21,7 @@ import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
 import io.novaordis.events.core.event.LongProperty;
 import io.novaordis.events.httpd.HttpEvent;
-import io.novaordis.utilities.timestamp.TimestampImpl;
+import io.novaordis.utilities.time.TimestampImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -20,8 +20,8 @@ import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.clad.option.TimestampOption;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.TimedEvent;
-import io.novaordis.utilities.timestamp.TimeOffset;
-import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.time.TimeOffset;
+import io.novaordis.utilities.time.Timestamp;
 
 import java.text.DateFormat;
 import java.util.Date;

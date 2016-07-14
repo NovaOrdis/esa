@@ -24,7 +24,7 @@ import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.ShutdownEvent;
 import io.novaordis.events.core.event.TimedEvent;
-import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.time.Timestamp;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

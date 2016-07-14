@@ -24,7 +24,7 @@ import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.events.core.event.TimedEvent;
 import io.novaordis.events.core.event.GenericTimedEvent;
 import io.novaordis.events.extensions.bscenarios.BusinessScenario;
-import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.time.Timestamp;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

@@ -22,8 +22,8 @@ import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.PropertyFactory;
 import io.novaordis.events.core.event.TimeMeasureUnit;
 import io.novaordis.events.ParsingException;
-import io.novaordis.utilities.timestamp.Timestamp;
-import io.novaordis.utilities.timestamp.TimestampImpl;
+import io.novaordis.utilities.time.Timestamp;
+import io.novaordis.utilities.time.TimestampImpl;
 
 import java.text.DateFormat;
 import java.text.Format;

@@ -34,7 +34,7 @@ import io.novaordis.events.extensions.bscenarios.stats.BusinessScenarioStatistic
 import io.novaordis.events.extensions.bscenarios.stats.FaultStatistics;
 import io.novaordis.events.httpd.HttpdFormatString;
 import io.novaordis.events.httpd.HttpEvent;
-import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.time.Timestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

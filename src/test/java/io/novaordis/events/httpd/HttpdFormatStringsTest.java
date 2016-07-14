@@ -24,7 +24,7 @@ import io.novaordis.events.core.event.MemoryMeasureUnit;
 import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.events.core.event.TimeMeasureUnit;
 import io.novaordis.events.ParsingException;
-import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.time.Timestamp;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

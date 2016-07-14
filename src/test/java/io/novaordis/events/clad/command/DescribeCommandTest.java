@@ -20,7 +20,7 @@ import io.novaordis.events.core.event.IntegerProperty;
 import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.events.httpd.HttpEvent;
-import io.novaordis.utilities.timestamp.TimestampImpl;
+import io.novaordis.utilities.time.TimestampImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

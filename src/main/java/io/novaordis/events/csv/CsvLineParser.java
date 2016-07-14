@@ -24,8 +24,8 @@ import io.novaordis.events.core.event.GenericEvent;
 import io.novaordis.events.core.event.GenericTimedEvent;
 import io.novaordis.events.core.event.LongProperty;
 import io.novaordis.events.core.event.Property;
-import io.novaordis.utilities.timestamp.Timestamp;
-import io.novaordis.utilities.timestamp.TimestampImpl;
+import io.novaordis.utilities.time.Timestamp;
+import io.novaordis.utilities.time.TimestampImpl;
 
 import java.text.DateFormat;
 import java.util.ArrayList;

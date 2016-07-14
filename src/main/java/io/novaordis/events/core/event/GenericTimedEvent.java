@@ -16,8 +16,8 @@
 
 package io.novaordis.events.core.event;
 
-import io.novaordis.utilities.timestamp.Timestamp;
-import io.novaordis.utilities.timestamp.TimestampImpl;
+import io.novaordis.utilities.time.Timestamp;
+import io.novaordis.utilities.time.TimestampImpl;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>

@@ -20,7 +20,7 @@ import io.novaordis.events.core.event.GenericTimedEvent;
 import io.novaordis.events.core.event.IntegerProperty;
 import io.novaordis.events.core.event.LongProperty;
 import io.novaordis.events.core.event.StringProperty;
-import io.novaordis.utilities.timestamp.Timestamp;
+import io.novaordis.utilities.time.Timestamp;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>

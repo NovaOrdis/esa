@@ -18,8 +18,8 @@ package io.novaordis.events.extensions.bscenarios;
 
 import io.novaordis.clad.UserErrorException;
 import io.novaordis.events.httpd.HttpEvent;
-import io.novaordis.utilities.timestamp.Timestamp;
-import io.novaordis.utilities.timestamp.TimestampImpl;
+import io.novaordis.utilities.time.Timestamp;
+import io.novaordis.utilities.time.TimestampImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
