@@ -17,7 +17,7 @@
         <slf4j-version>1.7.12</slf4j-version>
         <junit-version>4.12</junit-version>
         <novaordis-clad-version>3.3</novaordis-clad-version>
-        <novaordis-utilities-version>4.1-SNAPSHOT-24</novaordis-utilities-version>
+        <novaordis-utilities-version>4.1-SNAPSHOT-25</novaordis-utilities-version>
     </properties>
 
     <build>

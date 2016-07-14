@@ -304,7 +304,12 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
                     timestamp = ((TimedEvent)event).getTimestamp();
                 }
 
-                s +=  Timestamp.format(timestamp, DEFAULT_TIMESTAMP_FORMAT, NULL_EXTERNALIZATION);
+                if (timestamp == null) {
+                    s += NULL_EXTERNALIZATION;
+                }
+                else {
+                    s += timestamp.format(DEFAULT_TIMESTAMP_FORMAT);
+                }
             }
             else {
 

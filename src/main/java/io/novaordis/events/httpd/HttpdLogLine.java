@@ -266,7 +266,7 @@ public class HttpdLogLine {
     public String toString() {
 
         Timestamp timestamp = getTimestamp();
-        String ts = Timestamp.format(timestamp, HttpdFormatString.TIMESTAMP_FORMAT, "-");
+        String ts = timestamp == null ? "-" : timestamp.format(HttpdFormatString.TIMESTAMP_FORMAT);
         String rls = getFirstRequestLine();
         rls = rls == null ? "-" : rls;
         Integer rsc = getOriginalRequestStatusCode();

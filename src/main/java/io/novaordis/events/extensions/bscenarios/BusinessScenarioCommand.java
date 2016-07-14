@@ -74,9 +74,13 @@ public class BusinessScenarioCommand extends CommandBase {
         // TODO implement a better concurrent access than synchronization
         //
 
+        if (timestamp == null) {
+            return "-";
+        }
+
         synchronized (TIMESTAMP_FORMAT) {
 
-            return Timestamp.format(timestamp, TIMESTAMP_FORMAT, "-");
+            return timestamp.format(TIMESTAMP_FORMAT);
         }
     }
 
