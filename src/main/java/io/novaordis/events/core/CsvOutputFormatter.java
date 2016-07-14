@@ -25,7 +25,6 @@ import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.ShutdownEvent;
 import io.novaordis.events.core.event.TimedEvent;
 import io.novaordis.utilities.timestamp.Timestamp;
-import io.novaordis.utilities.timestamp.Timestamps;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -305,7 +304,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
                     timestamp = ((TimedEvent)event).getTimestamp();
                 }
 
-                s +=  Timestamps.format(timestamp, DEFAULT_TIMESTAMP_FORMAT, NULL_EXTERNALIZATION);
+                s +=  Timestamp.format(timestamp, DEFAULT_TIMESTAMP_FORMAT, NULL_EXTERNALIZATION);
             }
             else {
 

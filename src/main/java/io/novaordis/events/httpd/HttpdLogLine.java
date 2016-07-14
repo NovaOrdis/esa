@@ -20,7 +20,6 @@ import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.utilities.timestamp.Timestamp;
-import io.novaordis.utilities.timestamp.Timestamps;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -267,7 +266,7 @@ public class HttpdLogLine {
     public String toString() {
 
         Timestamp timestamp = getTimestamp();
-        String ts = Timestamps.format(timestamp, HttpdFormatString.TIMESTAMP_FORMAT, "-");
+        String ts = Timestamp.format(timestamp, HttpdFormatString.TIMESTAMP_FORMAT, "-");
         String rls = getFirstRequestLine();
         rls = rls == null ? "-" : rls;
         Integer rsc = getOriginalRequestStatusCode();

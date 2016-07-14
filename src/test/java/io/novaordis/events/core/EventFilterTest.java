@@ -20,15 +20,16 @@ import io.novaordis.clad.option.TimestampOption;
 import io.novaordis.events.clad.MockConfiguration;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.MockTimedEvent;
+import io.novaordis.utilities.timestamp.TimeOffset;
 import io.novaordis.utilities.timestamp.Timestamp;
 import io.novaordis.utilities.timestamp.TimestampImpl;
-import io.novaordis.utilities.timestamp.Timestamps;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -265,12 +266,12 @@ public class EventFilterTest extends ProcessingLogicTest {
         // time zone
         //
 
-        int ourTimezoneOffsetHours = Timestamps.getDefaultTimezoneHours();
+        int ourTimezoneOffsetHours = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / (3600 * 1000);
         int logTimezoneOffset = ourTimezoneOffsetHours + 2;
 
         // will fail if not a valid timezone offset; if it does, it means it's run from a strange timezone
         // so need to adjust the test
-        String tzOffset = Timestamps.timezoneOffsetHoursToString(logTimezoneOffset);
+        String tzOffset = new TimeOffset(logTimezoneOffset * 3600 * 1000).toRFC822String();
 
         Event result;
 
@@ -354,12 +355,10 @@ public class EventFilterTest extends ProcessingLogicTest {
         // time zone
         //
 
-        int ourTimezoneOffsetHours = Timestamps.getDefaultTimezoneHours();
-        int logTimezoneOffset = ourTimezoneOffsetHours + 2;
 
-        // will fail if not a valid timezone offset; if it does, it means it's run from a strange timezone
-        // so need to adjust the test
-        String tzOffset = Timestamps.timezoneOffsetHoursToString(logTimezoneOffset);
+        int ourTimezoneOffsetHours = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / (3600 * 1000);
+        int logTimezoneOffset = ourTimezoneOffsetHours + 2;
+        String tzOffset = new TimeOffset(logTimezoneOffset * 3600 * 1000).toRFC822String();
 
         Event result;
 
@@ -446,12 +445,9 @@ public class EventFilterTest extends ProcessingLogicTest {
         // time zone
         //
 
-        int ourTimezoneOffsetHours = Timestamps.getDefaultTimezoneHours();
+        int ourTimezoneOffsetHours = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / (3600 * 1000);
         int logTimezoneOffset = ourTimezoneOffsetHours + 2;
-
-        // will fail if not a valid timezone offset; if it does, it means it's run from a strange timezone
-        // so need to adjust the test
-        String tzOffset = Timestamps.timezoneOffsetHoursToString(logTimezoneOffset);
+        String tzOffset = new TimeOffset(logTimezoneOffset * 3600 * 1000).toRFC822String();
 
         Event result;
 
@@ -534,12 +530,9 @@ public class EventFilterTest extends ProcessingLogicTest {
         // time zone
         //
 
-        int ourTimezoneOffsetHours = Timestamps.getDefaultTimezoneHours();
+        int ourTimezoneOffsetHours = TimeZone.getDefault().getOffset(System.currentTimeMillis()) / (3600 * 1000);
         int logTimezoneOffset = ourTimezoneOffsetHours + 2;
-
-        // will fail if not a valid timezone offset; if it does, it means it's run from a strange timezone
-        // so need to adjust the test
-        String tzOffset = Timestamps.timezoneOffsetHoursToString(logTimezoneOffset);
+        String tzOffset = new TimeOffset(logTimezoneOffset * 3600 * 1000).toRFC822String();
 
         Event result;
 

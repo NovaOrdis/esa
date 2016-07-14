@@ -35,7 +35,6 @@ import io.novaordis.events.extensions.bscenarios.stats.FaultStatistics;
 import io.novaordis.events.httpd.HttpdFormatString;
 import io.novaordis.events.httpd.HttpEvent;
 import io.novaordis.utilities.timestamp.Timestamp;
-import io.novaordis.utilities.timestamp.Timestamps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +76,7 @@ public class BusinessScenarioCommand extends CommandBase {
 
         synchronized (TIMESTAMP_FORMAT) {
 
-            return Timestamps.format(timestamp, TIMESTAMP_FORMAT, "-");
+            return Timestamp.format(timestamp, TIMESTAMP_FORMAT, "-");
         }
     }
 

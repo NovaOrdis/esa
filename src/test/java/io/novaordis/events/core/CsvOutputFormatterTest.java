@@ -25,7 +25,6 @@ import io.novaordis.events.httpd.HttpEvent;
 import io.novaordis.utilities.timestamp.TimeOffset;
 import io.novaordis.utilities.timestamp.Timestamp;
 import io.novaordis.utilities.timestamp.TimestampImpl;
-import io.novaordis.utilities.timestamp.Timestamps;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -193,8 +192,7 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
         assertEquals("+1100", ts.getTimeOffset().toRFC822String());
 
         int ourOffset =
-                (TimeZone.getDefault().getDSTSavings() + TimeZone.getDefault().getRawOffset()) /
-                        Timestamps.MILLISECONDS_IN_AN_HOUR;
+                (TimeZone.getDefault().getDSTSavings() + TimeZone.getDefault().getRawOffset()) / (3600 * 1000);
         assertTrue(ourOffset != 11);
 
 
@@ -234,8 +232,7 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
         assertEquals("+1100", ts.getTimeOffset().toRFC822String());
 
         int ourOffset =
-                (TimeZone.getDefault().getDSTSavings() + TimeZone.getDefault().getRawOffset()) /
-                        Timestamps.MILLISECONDS_IN_AN_HOUR;
+                (TimeZone.getDefault().getDSTSavings() + TimeZone.getDefault().getRawOffset()) / (3600 * 1000);
         assertTrue(ourOffset != 11);
 
         MockTimedEvent mte = new MockTimedEvent(ts);
