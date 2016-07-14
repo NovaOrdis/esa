@@ -41,14 +41,14 @@ public abstract class TimedEventTest extends EventTest {
     public void timestamp_NullTimestamp() throws Exception {
 
         TimedEvent te = getEventToTest(null);
-        assertNull(te.getTimestampGMT());
+        assertNull(te.getTime());
     }
 
     @Test
     public void timestamp() throws Exception {
 
         TimedEvent te = getEventToTest(1L);
-        assertEquals(1L, te.getTimestampGMT().longValue());
+        assertEquals(1L, te.getTime().longValue());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

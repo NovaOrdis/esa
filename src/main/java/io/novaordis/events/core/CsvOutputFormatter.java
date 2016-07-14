@@ -366,7 +366,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
             // if it's a timed event, always start with the timestamp
             //
 
-            Long timestamp = ((TimedEvent)event).getTimestampGMT();
+            Long timestamp = ((TimedEvent)event).getTime();
 
             if (timestamp == null) {
                 s += NULL_EXTERNALIZATION;

@@ -97,7 +97,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         HttpEvent e = (HttpEvent)parser.parseLine(1L, line);
         assertNotNull(e);
-        assertNull(e.getTimestampGMT());
+        assertNull(e.getTime());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         HttpEvent e = (HttpEvent)parser.parseLine(7L, line);
         assertNotNull(e);
-        assertNull(e.getTimestampGMT());
+        assertNull(e.getTime());
         assertEquals(7L, e.getLongProperty(Event.LINE_NUMBER_PROPERTY_NAME).getLong().longValue());
     }
 
@@ -124,7 +124,7 @@ public class HttpdLineParserTest extends LineParserTest {
         assertEquals("127.0.0.1", e.getRemoteHost());
         assertNull(e.getRemoteLogname());
         assertEquals("bob", e.getRemoteUser());
-        assertEquals(TestDate.create("10/10/16 13:55:36 -0700").getTime(), e.getTimestampGMT().longValue());
+        assertEquals(TestDate.create("10/10/16 13:55:36 -0700").getTime(), e.getTime().longValue());
         assertEquals("GET /test.gif HTTP/1.1", e.getFirstRequestLine());
         assertEquals(200, e.getStatusCode().intValue());
         assertEquals(1024, e.getResponseEntityBodySize().longValue());
@@ -142,7 +142,7 @@ public class HttpdLineParserTest extends LineParserTest {
         assertEquals("172.20.2.41", e.getRemoteHost());
         assertNull(e.getRemoteLogname());
         assertNull(e.getRemoteUser());
-        assertEquals(TestDate.create("01/09/16 20:06:07 -0800").getTime(), e.getTimestampGMT().longValue());
+        assertEquals(TestDate.create("01/09/16 20:06:07 -0800").getTime(), e.getTime().longValue());
         assertEquals("OPTIONS * HTTP/1.0", e.getFirstRequestLine());
         assertEquals(200, e.getStatusCode().intValue());
         assertNull(e.getResponseEntityBodySize());
@@ -173,7 +173,7 @@ public class HttpdLineParserTest extends LineParserTest {
         assertEquals("127.0.0.1", e.getRemoteHost());
         assertNull(e.getRemoteLogname());
         assertEquals("bob", e.getRemoteUser());
-        assertEquals(TestDate.create("10/10/16 13:55:36 -0700").getTime(), e.getTimestampGMT().longValue());
+        assertEquals(TestDate.create("10/10/16 13:55:36 -0700").getTime(), e.getTime().longValue());
         assertEquals("GET /test.gif HTTP/1.1", e.getFirstRequestLine());
         assertEquals(200, e.getStatusCode().intValue());
         assertNull(e.getOriginalRequestStatusCode());
@@ -192,7 +192,7 @@ public class HttpdLineParserTest extends LineParserTest {
         assertEquals("default task-1", e.getThreadName());
         assertEquals("127.0.0.1", e.getRemoteHost());
         assertNull(e.getRemoteUser());
-        assertEquals(TestDate.create("01/21/16 09:32:56 -0800").getTime(), e.getTimestampGMT().longValue());
+        assertEquals(TestDate.create("01/21/16 09:32:56 -0800").getTime(), e.getTime().longValue());
         assertEquals("GET /something HTTP/1.1", e.getFirstRequestLine());
         assertEquals("a=b&c=d", e.getQueryString());
         assertEquals(404, e.getOriginalRequestStatusCode().intValue());
@@ -248,7 +248,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         assertEquals(2, e.getProperties().size());
         assertEquals("127.0.0.1", e.getRemoteHost());
-        assertNull(e.getTimestampGMT());
+        assertNull(e.getTime());
         assertNull(e.getRemoteUser());
     }
 
@@ -284,7 +284,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         Date expected = HttpdFormatStrings.TIMESTAMP_FORMAT.parse(line.substring(1, line.length() - 1));
 
-        Long timestamp = e.getTimestampGMT();
+        Long timestamp = e.getTime();
 
         assertEquals(expected.getTime(), timestamp.longValue());
     }
@@ -300,7 +300,7 @@ public class HttpdLineParserTest extends LineParserTest {
 
         Date expected = HttpdFormatStrings.TIMESTAMP_FORMAT.parse(line.substring(1, line.length() - 1));
 
-        Long timestamp = e.getTimestampGMT();
+        Long timestamp = e.getTime();
 
         assertEquals(expected.getTime(), timestamp.longValue());
     }

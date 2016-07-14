@@ -20,6 +20,7 @@ import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.IntegerProperty;
 import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.StringProperty;
+import io.novaordis.utilities.timestamp.TimeOffset;
 import io.novaordis.utilities.timestamp.Timestamp;
 import io.novaordis.utilities.timestamp.TimestampImpl;
 import org.junit.Test;
@@ -28,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -130,15 +130,15 @@ public class HttpdLogLineTest {
 
         assertNull(e.getTimestamp());
 
-        Timestamp t = new TimestampImpl(1L, null);
+        Timestamp t = new TimestampImpl(1L);
         e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
 
-        assertEquals(1L, e.getTimestamp().getTimestampGMT());
+        assertEquals(1L, e.getTimestamp().getTime());
 
-        Timestamp t2 = new TimestampImpl(2L, null);
+        Timestamp t2 = new TimestampImpl(2L);
         e.setLogValue(HttpdFormatStrings.TIMESTAMP, t2);
 
-        assertEquals(2L, e.getTimestamp().getTimestampGMT());
+        assertEquals(2L, e.getTimestamp().getTime());
 
         Set<HttpdFormatString> httpdFormatStrings = e.getFormatStrings();
         assertEquals(1, httpdFormatStrings.size());
@@ -150,7 +150,7 @@ public class HttpdLogLineTest {
 
         HttpdLogLine line = new HttpdLogLine();
 
-        line.setLogValue(HttpdFormatStrings.TIMESTAMP, new TimestampImpl(1L, TimeZone.getTimeZone("PST")));
+        line.setLogValue(HttpdFormatStrings.TIMESTAMP, new TimestampImpl(1L, new TimeOffset("-0800")));
         line.setLogValue(HttpdFormatStrings.REMOTE_HOST, "test.remote.host");
         line.setLogValue(HttpdFormatStrings.REMOTE_LOGNAME, "test.remote.logname");
         line.setLogValue(HttpdFormatStrings.REMOTE_USER, "test.remote.user");
@@ -167,8 +167,8 @@ public class HttpdLogLineTest {
         line.setLogValue(HttpdFormatStrings.BYTES_TRANSFERRED, 8L);
 
         Timestamp t = line.getTimestamp();
-        assertEquals(1L, t.getTimestampGMT());
-        assertEquals(TimeZone.getTimeZone("PST"), t.getTimeZone());
+        assertEquals(1L, t.getTime());
+        assertEquals(new TimeOffset("-0800"), t.getTimeOffset());
 
         assertEquals("test.remote.host", line.getRemoteHost());
         assertEquals("test.remote.logname", line.getRemoteLogname());
@@ -223,7 +223,7 @@ public class HttpdLogLineTest {
         HttpdLogLine logLine = new HttpdLogLine();
         assertNull(logLine.getTimestamp());
         HttpEvent event = logLine.toEvent();
-        assertNull(event.getTimestampGMT());
+        assertNull(event.getTime());
     }
 
     @Test
@@ -231,12 +231,12 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        Timestamp t = new TimestampImpl(1L, null);
+        Timestamp t = new TimestampImpl(1L);
         e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
 
         HttpEvent event = e.toEvent();
 
-        assertEquals(1L, event.getTimestampGMT().longValue());
+        assertEquals(1L, event.getTime().longValue());
     }
 
     @Test
@@ -244,12 +244,12 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new TimestampImpl(1L, null));
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new TimestampImpl(1L));
 
         HttpEvent event = e.toEvent();
 
-        assertEquals(1L, event.getTimestampGMT().longValue());
-        assertNull(event.getTimestamp().getTimeZone());
+        assertEquals(1L, event.getTime().longValue());
+        assertEquals(TimeOffset.getDefault(), event.getTimestamp().getTimeOffset());
     }
 
     @Test
@@ -257,12 +257,12 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new TimestampImpl(1L, TimeZone.getTimeZone("PST")));
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, new TimestampImpl(1L, new TimeOffset("-0800")));
 
         HttpEvent event = e.toEvent();
 
-        assertEquals(1L, event.getTimestampGMT().longValue());
-        assertEquals(TimeZone.getTimeZone("PST"), event.getTimestamp().getTimeZone());
+        assertEquals(1L, event.getTime().longValue());
+        assertEquals(new TimeOffset("-0800"), event.getTimestamp().getTimeOffset());
     }
 
     @Test
@@ -272,7 +272,7 @@ public class HttpdLogLineTest {
 
         e.setLineNumber(7L);
 
-        Timestamp t = new TimestampImpl(1L, null);
+        Timestamp t = new TimestampImpl(1L);
         e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(HttpdFormatStrings.FIRST_REQUEST_LINE, "PUT /test/ HTTP/1.1");
         e.setLogValue(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE, 404);
@@ -280,7 +280,7 @@ public class HttpdLogLineTest {
 
         HttpEvent event = e.toEvent();
 
-        assertEquals(1L, event.getTimestampGMT().longValue());
+        assertEquals(1L, event.getTime().longValue());
         assertEquals(HTTPMethod.PUT.name(), ((StringProperty)event.getProperty(HttpEvent.METHOD)).getString());
         assertEquals("/test/", ((StringProperty)event.getProperty(HttpEvent.REQUEST_URI)).getString());
         assertEquals("HTTP/1.1", ((StringProperty) event.getProperty(HttpEvent.HTTP_VERSION)).getString());
@@ -297,7 +297,7 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        Timestamp t = new TimestampImpl(1L, null);
+        Timestamp t = new TimestampImpl(1L);
         e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(HttpdFormatStrings.STATUS_CODE, 200);
 
@@ -311,7 +311,7 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        Timestamp t = new TimestampImpl(1L, null);
+        Timestamp t = new TimestampImpl(1L);
         e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(HttpdFormatStrings.ORIGINAL_REQUEST_STATUS_CODE, 301);
         e.setLogValue(HttpdFormatStrings.STATUS_CODE, 302);
@@ -328,7 +328,7 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        Timestamp t = new TimestampImpl(1L, null);
+        Timestamp t = new TimestampImpl(1L);
         e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(new RequestHeaderHttpdFormatString("%{i,Test-Header}"), "header value");
 
@@ -348,7 +348,7 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        Timestamp t = new TimestampImpl(1L, null);
+        Timestamp t = new TimestampImpl(1L);
         e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(new RequestHeaderHttpdFormatString("%{i,Test-Header}"), "header value");
         e.setLogValue(new RequestHeaderHttpdFormatString("%{i,Another-Test-Header}"), "header value 2");
@@ -370,7 +370,7 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        Timestamp t = new TimestampImpl(1L, null);
+        Timestamp t = new TimestampImpl(1L);
         e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(new CookieHttpdFormatString("%{c,TestCookie}"), "test-cookie-value");
 
@@ -390,7 +390,7 @@ public class HttpdLogLineTest {
 
         HttpdLogLine e = new HttpdLogLine();
 
-        Timestamp t = new TimestampImpl(1L, null);
+        Timestamp t = new TimestampImpl(1L);
         e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
         e.setLogValue(new CookieHttpdFormatString("%{c,TestCookie}"), "test-cookie-value");
         e.setLogValue(new CookieHttpdFormatString("%{c,AnotherTestCookie}"), "another-test-cookie-value");

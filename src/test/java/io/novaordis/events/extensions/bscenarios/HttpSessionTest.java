@@ -104,7 +104,7 @@ public class HttpSessionTest {
         assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getValue());
         assertEquals(2, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
         assertEquals(30L, bse.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
-        assertEquals(7L, bse.getTimestampGMT().longValue());
+        assertEquals(7L, bse.getTime().longValue());
     }
 
     @Test
@@ -186,7 +186,7 @@ public class HttpSessionTest {
 
         assertEquals(3, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
         assertEquals(3L, bse.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
-        assertEquals(10L, bse.getTimestampGMT().longValue());
+        assertEquals(10L, bse.getTime().longValue());
         assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getString());
 
         //
@@ -227,7 +227,7 @@ public class HttpSessionTest {
 
         assertEquals(2, bse2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
         assertEquals(2, bse2.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
-        assertEquals(40L, bse2.getTimestampGMT().longValue());
+        assertEquals(40L, bse2.getTime().longValue());
         assertEquals("scenario-2", bse2.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getString());
 
         assertEquals(5, s.getRequestsProcessedBySessionCount());
@@ -342,7 +342,7 @@ public class HttpSessionTest {
         assertEquals("scenario-1", bse.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getValue());
         assertEquals(1, bse.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
         assertEquals(10L, bse.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
-        assertEquals(7L, bse.getTimestampGMT().longValue());
+        assertEquals(7L, bse.getTime().longValue());
 
         HttpEvent e2 = new HttpEvent(new TimestampImpl(30L, null));
         e2.setCookie(HttpEvent.JSESSIONID_COOKIE_KEY, "test-session-1");
@@ -363,7 +363,7 @@ public class HttpSessionTest {
         assertEquals("scenario-1", bse2.getStringProperty(BusinessScenarioEvent.TYPE_PROPERTY_NAME).getValue());
         assertEquals(3, bse2.getIntegerProperty(BusinessScenarioEvent.REQUEST_COUNT_PROPERTY_NAME).getInteger().intValue());
         assertEquals(90L, bse2.getLongProperty(BusinessScenarioEvent.DURATION_PROPERTY_NAME).getLong().longValue());
-        assertEquals(20L, bse2.getTimestampGMT().longValue());
+        assertEquals(20L, bse2.getTime().longValue());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

@@ -213,8 +213,8 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
 
         HttpdFormatString e = HttpdFormatStrings.TIMESTAMP;
         assertEquals("%t", e.getLiteral());
-        Timestamp d = (Timestamp)e.parse("18/Sep/2016:19:18:28 -0400", null, null);
-        assertEquals(TestDate.create("09/18/16 19:18:28 -0400"), new Date(d.getTimestampGMT()));
+        Timestamp t = (Timestamp)e.parse("18/Sep/2016:19:18:28 -0400", null, null);
+        assertEquals(TestDate.create("09/18/16 19:18:28 -0400"), new Date(t.getTime()));
         assertNull(e.parse("-", null, null));
 
         assertFalse(e.isLeftEnclosure());

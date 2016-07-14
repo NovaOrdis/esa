@@ -73,7 +73,7 @@ public class LabCommand extends CommandBase {
 
     public void onHttpEvent(HttpEvent e) throws Exception {
 
-        long currentTimestamp = e.getTimestampGMT();
+        long currentTimestamp = e.getTime();
 
         if (currentTimestamp < previousTimestamp) {
             throw new UserErrorException("found misplaced event " + e);

@@ -480,7 +480,7 @@ public class BusinessScenario {
         long requestDuration = rd == null ? 0 : rd;
 
         endTimestamp = new TimestampImpl
-                (requestTimestamp.getTimestampGMT() + requestDuration, requestTimestamp.getTimeZone());
+                (requestTimestamp.getTime() + requestDuration, requestTimestamp.getTimeOffset());
 
         // See BUSINESS_SCENARIO_ITERATION_ID_HEADER_NAME constant definition. A business scenario can only exists in
         // the context of a single iteration, so if a business scenario receives requestResponsePairs belonging to different

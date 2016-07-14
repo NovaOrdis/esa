@@ -35,10 +35,10 @@ public interface TimedEvent extends Event {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
-     * @return the timestamp in milliseconds from the GMT epoch, not accounting for timezone and daylight saving
-     * offsets. May return null.
+     * @return the universal time (UTC) - timestamp in milliseconds from 01/01/70 00:00:00 UTC, not accounting for
+     * timezone and daylight saving offsets. May return null.
      */
-    Long getTimestampGMT();
+    Long getTime();
 
     Timestamp getTimestamp();
 

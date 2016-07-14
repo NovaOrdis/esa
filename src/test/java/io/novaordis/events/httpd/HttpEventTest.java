@@ -19,12 +19,11 @@ package io.novaordis.events.httpd;
 import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.TimedEventTest;
 import io.novaordis.events.extensions.bscenarios.BusinessScenario;
+import io.novaordis.utilities.timestamp.TimeOffset;
 import io.novaordis.utilities.timestamp.TimestampImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -53,9 +52,9 @@ public class HttpEventTest extends TimedEventTest {
     @Test
     public void constructor() throws Exception {
 
-        HttpEvent e = new HttpEvent(new TimestampImpl(1L, TimeZone.getTimeZone("PST")));
-        assertEquals(1L, e.getTimestampGMT().longValue());
-        assertEquals(TimeZone.getTimeZone("PST"), e.getTimestamp().getTimeZone());
+        HttpEvent e = new HttpEvent(new TimestampImpl(1L, new TimeOffset("-0800")));
+        assertEquals(1L, e.getTime().longValue());
+        assertEquals(new TimeOffset("-0800"), e.getTimestamp().getTimeOffset());
     }
 
     // getCookie() -----------------------------------------------------------------------------------------------------
@@ -253,7 +252,7 @@ public class HttpEventTest extends TimedEventTest {
 
     @Override
     protected HttpEvent getEventToTest(Long timestamp) throws Exception {
-        return new HttpEvent(timestamp == null ? null : new TimestampImpl(timestamp, null));
+        return new HttpEvent(timestamp == null ? null : new TimestampImpl(timestamp));
     }
 
     // Private ---------------------------------------------------------------------------------------------------------

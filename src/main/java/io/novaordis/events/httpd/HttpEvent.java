@@ -325,7 +325,7 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
     @Override
     public String toString() {
 
-        Long timestamp = getTimestampGMT();
+        Long timestamp = getTime();
         String s = (timestamp == null ? "N/A" : formatTimestamp(timestamp));
         s += " " + getMethod() + " " + getRequestUri();
         s += "(line=" + getLineNumber();

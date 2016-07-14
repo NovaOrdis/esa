@@ -21,7 +21,6 @@ import io.novaordis.clad.option.TimestampOption;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.TimedEvent;
 import io.novaordis.utilities.timestamp.Timestamp;
-import io.novaordis.utilities.timestamp.Timestamps;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -159,25 +158,24 @@ public class EventFilter extends ProcessingLogicBase {
     @Override
     protected Event processInternal(Event e) throws Exception {
 
-        Long eventGMTAdjustedForLocalTimezone = null;
         String dayPortion = null;
+
+        // the event UTC time adjusted for the local time offset.
+        Long adjustedEventTime = null;
 
         if (e instanceof TimedEvent) {
 
             TimedEvent te = (TimedEvent)e;
             Timestamp ts = te.getTimestamp();
-            dayPortion =
-                    ts.getTimestampElement("M") + "/" +
-                            ts.getTimestampElement("d") + "/" +
-                            ts.getTimestampElement("y");
-            eventGMTAdjustedForLocalTimezone = ts.adjustForTimeZone(TimeZone.getDefault());
+            dayPortion = ts.elementToString("MM/dd/yy");
+            adjustedEventTime = ts.adjustForTimeOffset(TimeZone.getDefault().getOffset(System.currentTimeMillis()));
         }
 
         //
         // if relative timestamp and not calibrated yet, do calibrate for timed events
         //
 
-        if (uncalibratedFrom != null && eventGMTAdjustedForLocalTimezone != null) {
+        if (uncalibratedFrom != null && adjustedEventTime != null) {
 
             //
             // not calibrated yet
@@ -187,7 +185,7 @@ public class EventFilter extends ProcessingLogicBase {
             uncalibratedFrom = null;
         }
 
-        if (uncalibratedTo != null && eventGMTAdjustedForLocalTimezone != null) {
+        if (uncalibratedTo != null && adjustedEventTime != null) {
 
             //
             // not calibrated yet
@@ -203,7 +201,7 @@ public class EventFilter extends ProcessingLogicBase {
 
         if (from != null) {
 
-            if (eventGMTAdjustedForLocalTimezone == null) {
+            if (adjustedEventTime == null) {
 
                 //
                 // we have a "from" filter but not an event timestamp, the event does not match
@@ -211,7 +209,7 @@ public class EventFilter extends ProcessingLogicBase {
                 return null;
             }
 
-            if (eventGMTAdjustedForLocalTimezone < from) {
+            if (adjustedEventTime < from) {
                 //
                 // we have a timestamp but falls ahead of the threshold
                 //
@@ -221,14 +219,14 @@ public class EventFilter extends ProcessingLogicBase {
 
         if (to != null) {
 
-            if (eventGMTAdjustedForLocalTimezone == null) {
+            if (adjustedEventTime == null) {
                 //
                 // we have a "to" filter but not an event timestamp, the event does not match
                 //
                 return null;
             }
 
-            if (eventGMTAdjustedForLocalTimezone > to) {
+            if (adjustedEventTime > to) {
                 //
                 // we have a timestamp but falls after the threshold
                 //
