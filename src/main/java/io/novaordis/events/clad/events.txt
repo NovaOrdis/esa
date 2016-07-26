@@ -42,8 +42,13 @@ sections and knows how to handle with it without quotes. However, quotes are han
 present. The following forms are equivalent:
 
     --from=07/25/16 14:00:00
-
     --from="07/25/16 14:00:00"
+
+A shorter version is allowed, if the date portion of the timestamp is not specified, then the
+HH:mm:ss timestamp can be used. It will be assumed to be relative to the date of the first timed
+event seen by the parser, so this won't work if the time window spans more than a day. Example:
+
+    --from=14:00:00
 
 Input Formats: -----------------------------------------------------------------------------------
 
