@@ -61,6 +61,7 @@ public class UrlParser {
 
         String protocol;
         String host;
+        int port = -1;
         String path;
         String query;
 
@@ -100,11 +101,28 @@ public class UrlParser {
             return -1;
         }
 
-        if (crt == ':') {
-            throw new RuntimeException("port parsing NOT YET IMPLEMENTED");
-        }
-
         i = j;
+
+        if (crt == ':') {
+
+            j = line.indexOf('/', i);
+            String ports = j == -1 ? line.substring(i + 1) : line.substring(i + 1, j);
+
+            try {
+                port = Integer.parseInt(ports);
+                log.debug("port: " + port);
+            }
+            catch(Exception e) {
+                throw new ParsingException("invalid port value: \"" + ports + "\"", lineNumber, startFrom);
+            }
+
+            if (j == -1 || j >= line.length()) {
+                // end of the line
+                return -1;
+            }
+
+            i = j;
+        }
 
         // walk path
         while (j < line.length() && (crt = line.charAt(j)) != '?' && crt != ' ') {

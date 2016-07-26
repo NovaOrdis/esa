@@ -231,6 +231,27 @@ public class UrlParserTest {
         assertEquals(line.length() - "OtherFieldStartsHere".length() - 1, result);
     }
 
+    @Test
+    public void identifyEnd_PortNumber() throws Exception {
+
+        String line = "http://something:80/";
+        int startFrom = 0;
+
+        int result = UrlParser.identifyEnd(line, startFrom, null, null);
+        assertEquals(-1, result);
+    }
+
+    @Test
+    public void identifyEnd_PortNumber2() throws Exception {
+
+        String line = "http://something:80";
+        int startFrom = 0;
+
+        int result = UrlParser.identifyEnd(line, startFrom, null, null);
+        assertEquals(-1, result);
+    }
+
+
     // isUrl() ---------------------------------------------------------------------------------------------------------
 
     @Test
