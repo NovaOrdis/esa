@@ -135,6 +135,11 @@ public enum HttpdFormatStrings implements HttpdFormatString {
     BYTES_TRANSFERRED("%S", Long.class, HttpEvent.BYTES_TRANSFERRED, MemoryMeasureUnit.BYTE),
 
     //
+    // The process ID of the child that serviced the request
+    //
+    PID("%P", Integer.class, HttpEvent.PID),
+
+    //
     // Ignore - drop whatever is logged on this position
     //
     IGNORE("%?", String.class, null);

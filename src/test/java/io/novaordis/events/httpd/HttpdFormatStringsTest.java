@@ -258,7 +258,6 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
 
     // END of TIMESTAMP ------------------------------------------------------------------------------------------------
 
-
     @Test
     public void originalRequestStatusCode() throws Exception {
 
@@ -495,6 +494,40 @@ public class HttpdFormatStringsTest extends HttpdFormatStringTest {
             assertEquals(7L, pe.getLineNumber().longValue());
             assertEquals(11, pe.getPositionInLine().intValue());
             assertTrue(msg.contains("empty string"));
+        }
+    }
+
+    @Test
+    public void pid() throws Exception {
+
+        HttpdFormatString e = HttpdFormatStrings.PID;
+        assertEquals("%P", e.getLiteral());
+        Integer i = (Integer)e.parse("12000", null, null);
+        assertNotNull(i);
+        assertEquals(12000, i.intValue());
+        assertNull(e.parse("-", null, null));
+
+        assertFalse(e.isLeftEnclosure());
+        assertFalse(e.isRightEnclosure());
+        assertNull(e.getMatchingEnclosure());
+
+        IntegerProperty property = (IntegerProperty)e.toProperty(12001);
+        assertEquals(HttpEvent.PID, property.getName());
+        assertEquals(12001, property.getInteger().intValue());
+    }
+
+    @Test
+    public void pid_NotAnInteger() throws Exception {
+
+        HttpdFormatString e = HttpdFormatStrings.PID;
+
+        try {
+            e.parse("blah", null, null);
+            fail("should throw exception");
+        }
+        catch(ParsingException pe) {
+            String msg = pe.getMessage();
+            log.info(msg);
         }
     }
 

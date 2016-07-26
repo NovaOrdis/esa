@@ -83,6 +83,7 @@ httpd Input Format: ------------------------------------------------------------
   %l - Remote logname from identd (if supplied).
   %u - Remote user if the request was authenticated. May be irrelevant if return status (%s) is
        401 (unauthorized).
+  %P - The PID of the process that serviced the request.
   %q - The query string, excluding the '?' character. Usually enclosed in quotes.
   %r - First line of request. Note that the first line is enclosed in quotes, you must explicitly
        specify the \" (double quotes) or ' (single quote) format elements.

@@ -61,6 +61,7 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
     public static final String LOCAL_IP_ADDRESS = "local-ip-address";
     public static final String LOCAL_SERVER_NAME = "local-server-name";
     public static final String BYTES_TRANSFERRED = "bytes-transferred";
+    public static final String PID = "pid";
 
     public static final String JSESSIONID_COOKIE_KEY = "JSESSIONID";
 
