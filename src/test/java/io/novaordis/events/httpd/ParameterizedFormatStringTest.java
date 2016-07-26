@@ -74,25 +74,53 @@ public abstract class ParameterizedFormatStringTest extends HttpdFormatStringTes
     @Test
     public void parameterizedFormatFromString_RequestHeader_AlternativeFormat() throws Exception {
 
-        ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString("%{Test-Header}i");
+        ParameterizedHttpdFormatString pfs =
+                ParameterizedHttpdFormatString.parameterizedFormatFromString("%{Test-Header}i");
         assertNotNull(pfs);
         RequestHeaderHttpdFormatString i = (RequestHeaderHttpdFormatString)pfs;
         assertEquals("Test-Header", i.getHeaderName());
     }
 
     @Test
+    public void parameterizedFormatFromString_RequestHeader_AlternativeFormat_FollowedByQuote() throws Exception {
+
+        ParameterizedHttpdFormatString pfs =
+                ParameterizedHttpdFormatString.parameterizedFormatFromString("%{Test-Header}i\"");
+        assertNotNull(pfs);
+        RequestHeaderHttpdFormatString i = (RequestHeaderHttpdFormatString)pfs;
+        assertEquals("Test-Header", i.getHeaderName());
+    }
+
+
+    @Test
     public void parameterizedFormatFromString_ResponseHeader() throws Exception {
 
-        ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString("%{o,Test-Header}");
+        ParameterizedHttpdFormatString pfs =
+                ParameterizedHttpdFormatString.parameterizedFormatFromString("%{o,Test-Header}");
+        assertNotNull(pfs);
+        ResponseHeaderHttpdFormatString o = (ResponseHeaderHttpdFormatString)pfs;
+        assertEquals("Test-Header", o.getHeaderName());
+    }
+
+    //
+    // Alternative format: %{Test-Header}o
+    //
+
+    @Test
+    public void parameterizedFormatFromString_ResponseHeader_AlternativeFormat() throws Exception {
+
+        ParameterizedHttpdFormatString pfs =
+                ParameterizedHttpdFormatString.parameterizedFormatFromString("%{Test-Header}o");
         assertNotNull(pfs);
         ResponseHeaderHttpdFormatString o = (ResponseHeaderHttpdFormatString)pfs;
         assertEquals("Test-Header", o.getHeaderName());
     }
 
     @Test
-    public void parameterizedFormatFromString_ResponseHeader_AlternativeFormat() throws Exception {
+    public void parameterizedFormatFromString_ResponseHeader_AlternativeFormat_FollowedByQuote() throws Exception {
 
-        ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString("%{Test-Header}o");
+        ParameterizedHttpdFormatString pfs =
+                ParameterizedHttpdFormatString.parameterizedFormatFromString("%{Test-Header}o\"");
         assertNotNull(pfs);
         ResponseHeaderHttpdFormatString o = (ResponseHeaderHttpdFormatString)pfs;
         assertEquals("Test-Header", o.getHeaderName());
@@ -101,16 +129,8 @@ public abstract class ParameterizedFormatStringTest extends HttpdFormatStringTes
     @Test
     public void parameterizedFormatFromString_Cookie() throws Exception {
 
-        ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString("%{c,something}");
-        assertNotNull(pfs);
-        CookieHttpdFormatString o = (CookieHttpdFormatString)pfs;
-        assertEquals("something", o.getCookieName());
-    }
-
-    @Test
-    public void parameterizedFormatFromString_Cookie_AlternativeFormat() throws Exception {
-
-        ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString("%{something}c");
+        ParameterizedHttpdFormatString pfs =
+                ParameterizedHttpdFormatString.parameterizedFormatFromString("%{c,something}");
         assertNotNull(pfs);
         CookieHttpdFormatString o = (CookieHttpdFormatString)pfs;
         assertEquals("something", o.getCookieName());
@@ -119,7 +139,32 @@ public abstract class ParameterizedFormatStringTest extends HttpdFormatStringTes
     @Test
     public void parameterizedFormatFromString_ParameterizedFormatStringFollowedByQuote() throws Exception {
 
-        ParameterizedHttpdFormatString pfs = ParameterizedHttpdFormatString.parameterizedFormatFromString("%{c,something}\"");
+        ParameterizedHttpdFormatString pfs =
+                ParameterizedHttpdFormatString.parameterizedFormatFromString("%{c,something}\"");
+        assertNotNull(pfs);
+        CookieHttpdFormatString o = (CookieHttpdFormatString)pfs;
+        assertEquals("something", o.getCookieName());
+    }
+
+    //
+    // Alternative format: %{Some-Cookie}c
+    //
+
+    @Test
+    public void parameterizedFormatFromString_Cookie_AlternativeFormat() throws Exception {
+
+        ParameterizedHttpdFormatString pfs =
+                ParameterizedHttpdFormatString.parameterizedFormatFromString("%{something}c");
+        assertNotNull(pfs);
+        CookieHttpdFormatString o = (CookieHttpdFormatString)pfs;
+        assertEquals("something", o.getCookieName());
+    }
+
+    @Test
+    public void parameterizedFormatFromString_Cookie_AlternativeFormat_FollowedByQuote() throws Exception {
+
+        ParameterizedHttpdFormatString pfs =
+                ParameterizedHttpdFormatString.parameterizedFormatFromString("%{something}c\"");
         assertNotNull(pfs);
         CookieHttpdFormatString o = (CookieHttpdFormatString)pfs;
         assertEquals("something", o.getCookieName());

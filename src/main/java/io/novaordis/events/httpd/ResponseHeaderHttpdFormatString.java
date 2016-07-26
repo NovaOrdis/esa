@@ -27,7 +27,8 @@ public class ResponseHeaderHttpdFormatString extends ParameterizedHttpdFormatStr
     // Constants -------------------------------------------------------------------------------------------------------
 
     public static final String PREFIX = "%{o,"; // handles this format %{o,Something}
-    public static final Pattern ALTERNATIVE_FORMAT_PATTERN = Pattern.compile("%\\{(.+)\\}o"); // handles this format %{Something}o
+    // handles this format %{Something}o
+    public static final Pattern ALTERNATIVE_FORMAT_PATTERN = Pattern.compile("%\\{(.+)\\}o.*");
 
     // Static ----------------------------------------------------------------------------------------------------------
 

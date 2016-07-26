@@ -27,7 +27,8 @@ public class CookieHttpdFormatString extends ParameterizedHttpdFormatStringBase 
     // Constants -------------------------------------------------------------------------------------------------------
 
     public static final String PREFIX = "%{c,"; // handles this format %{c,Something}
-    public static final Pattern ALTERNATIVE_FORMAT_PATTERN = Pattern.compile("%\\{(.+)\\}c"); // handles this format %{Something}c
+    // handles this format %{Something}c
+    public static final Pattern ALTERNATIVE_FORMAT_PATTERN = Pattern.compile("%\\{(.+)\\}c.*");
 
     // Static ----------------------------------------------------------------------------------------------------------
 
