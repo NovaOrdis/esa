@@ -247,7 +247,9 @@ public class HttpdLogLine {
                 String[] methodPathHtmlVersion = parseFirstRequestLine(s);
                 httpEvent.setProperty(new StringProperty(HttpEvent.METHOD, methodPathHtmlVersion[0]));
                 httpEvent.setProperty(new StringProperty(HttpEvent.REQUEST_URI, methodPathHtmlVersion[1]));
-                httpEvent.setProperty(new StringProperty(HttpEvent.HTTP_VERSION, methodPathHtmlVersion[2]));
+                if (methodPathHtmlVersion.length > 2) {
+                    httpEvent.setProperty(new StringProperty(HttpEvent.HTTP_VERSION, methodPathHtmlVersion[2]));
+                }
             }
             else {
 
@@ -280,7 +282,8 @@ public class HttpdLogLine {
 
     /**
      * @return a String[3] array containing <b>valid</b> HTTP Method, the request path and a <b>valid</b> HTTP version
-     * String. The result is guaranteed to contain 3 elements and have valid values.
+     * String or a String[2] array containing <b>valid</b> HTTP Method and the request path. The result is guaranteed
+     * to contain 2 or 3 elements and have valid values.
      *
      * @exception IllegalArgumentException if the passed argument cannot produce the valid String[3].
      */
@@ -292,10 +295,16 @@ public class HttpdLogLine {
 
         String[] result = firstRequestLine.split(" +");
 
-        if (result.length != 3) {
+        if (result.length > 3) {
             throw new IllegalArgumentException(
                     "invalid first request line, more than three elements: \"" + firstRequestLine + "\"");
         }
+
+        if (result.length < 2) {
+            throw new IllegalArgumentException(
+                    "invalid first request line, less than two elements: \"" + firstRequestLine + "\"");
+        }
+
 
         // verify method
 
@@ -304,15 +313,21 @@ public class HttpdLogLine {
             HTTPMethod.valueOf(result[0]);
         }
         catch(Exception e) {
-            throw new IllegalArgumentException("invalid first request line, unknown HTTP method: \"" + firstRequestLine + "\"", e);
+            throw new IllegalArgumentException(
+                    "invalid first request line, unknown HTTP method: \"" + firstRequestLine + "\"", e);
         }
 
         //
         // TODO maybe some path validation in the future
         //
 
-        if (!"HTTP/1.0".equals(result[2]) && !"HTTP/1.1".equals(result[2])) {
-            throw new IllegalArgumentException("invalid first request line \"" + firstRequestLine + "\", unknown HTTP version \"" + result[2] + "\"") ;
+        if (result.length == 3) {
+
+            if (!"HTTP/1.0".equals(result[2]) && !"HTTP/1.1".equals(result[2])) {
+                throw new IllegalArgumentException(
+                        "invalid first request line \"" + firstRequestLine + "\", unknown HTTP version \"" +
+                                result[2] + "\"");
+            }
         }
 
         return result;

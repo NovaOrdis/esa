@@ -116,6 +116,12 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         return getString(METHOD);
     }
 
+    public void setMethod(String method) {
+
+        // TODO - method validity verification
+        setStringProperty(METHOD, method);
+    }
+
     public String getRequestUri() {
         return getString(REQUEST_URI);
     }
@@ -128,17 +134,39 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         return getString(HTTP_VERSION);
     }
 
+    public void setHttpVersion(String s) {
+        // TODO - HTTP version validity verification
+        setStringProperty(HTTP_VERSION, s);
+    }
+
     public String getFirstRequestLine() {
 
-        String method = getMethod();
-        String path = getRequestUri();
-        String version = getHttpVersion();
+        String result;
 
-        if (method == null || path == null || version == null) {
+        String method = getMethod();
+
+        if (method == null) {
             return null;
         }
 
-        return method + " " + path + " " + version;
+        result = method;
+
+        String path = getRequestUri();
+
+        if (path == null) {
+            return result;
+        }
+
+        result += " " + path;
+
+        String version = getHttpVersion();
+
+        if (version == null) {
+            return result;
+        }
+
+        result += " " + version;
+        return result;
     }
 
     public Integer getStatusCode() {

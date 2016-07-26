@@ -407,6 +407,29 @@ public class HttpdLogLineTest {
         assertEquals("another-test-cookie-value", map.get("AnotherTestCookie"));
     }
 
+    @Test
+    public void toEvent_TwoElementRequestLine() throws Exception {
+
+        HttpdLogLine e = new HttpdLogLine();
+
+        Timestamp t = new TimestampImpl(1L);
+        e.setLogValue(HttpdFormatStrings.TIMESTAMP, t);
+        e.setLogValue(HttpdFormatStrings.FIRST_REQUEST_LINE, "GET /something");
+
+        HttpEvent event = e.toEvent();
+
+        String s = event.getFirstRequestLine();
+        assertEquals("GET /something", s);
+
+        s = event.getMethod();
+        assertEquals("GET", s);
+
+        s = event.getRequestUri();
+        assertEquals("/something", s);
+
+        assertNull(event.getHttpVersion());
+    }
+
     // parseFirstRequestLine() -----------------------------------------------------------------------------------------
 
     @Test
@@ -422,15 +445,31 @@ public class HttpdLogLineTest {
     }
 
     @Test
-    public void parseFirstRequestLine_TwoElements() throws Exception {
+    public void parseFirstRequestLine_OneElement() throws Exception {
 
         try {
-            HttpdLogLine.parseFirstRequestLine("GET /a");
+            HttpdLogLine.parseFirstRequestLine("GET");
             fail("should throw exception");
         }
         catch(IllegalArgumentException e) {
             log.info(e.getMessage());
         }
+    }
+
+    @Test
+    public void parseFirstRequestLine_TwoElements() throws Exception {
+
+        //
+        // actually, we saw "valid" first line requests in the logs made of only two elements, do we'll have to
+        // accept those
+        //
+
+        HttpdLogLine.parseFirstRequestLine("GET /a");
+
+        //
+        // this is an actual value from logs
+        //
+        HttpdLogLine.parseFirstRequestLine("GET /server-status?auto");
     }
 
     @Test

@@ -1,3 +1,4 @@
 
 * Edge cases for parameterized httpd log format strings
 * Added %P
+* More permissive "first request line" parsing, allowing lines without HTTP version

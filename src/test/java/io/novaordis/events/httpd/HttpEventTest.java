@@ -246,6 +246,32 @@ public class HttpEventTest extends TimedEventTest {
         }
     }
 
+    // getFirstRequestLine() -------------------------------------------------------------------------------------------
+
+    @Test
+    public void getFirstRequestLine_ThreeElements() throws Exception {
+
+        HttpEvent e = getEventToTest(1L);
+        e.setMethod("GET");
+        e.setRequestUri("/something?auto");
+
+        // TODO - this will fail someday
+        e.setHttpVersion("somethingelse");
+
+        assertEquals("GET /something?auto somethingelse", e.getFirstRequestLine());
+    }
+
+    @Test
+    public void getFirstRequestLine_TwoElements() throws Exception {
+
+        HttpEvent e = getEventToTest(1L);
+        e.setMethod("GET");
+        e.setRequestUri("/something?auto");
+
+        assertEquals("GET /something?auto", e.getFirstRequestLine());
+        assertNull(e.getHttpVersion());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
