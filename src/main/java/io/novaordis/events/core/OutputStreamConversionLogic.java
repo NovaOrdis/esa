@@ -44,12 +44,14 @@ public interface OutputStreamConversionLogic extends ConversionLogic {
      * @return true if bytes are available for retrieval, and false if no byte is available for retrieval. If the
      * returned value is true, the byte(s) can be retrieved and at the same time removed with getBytes(), which is
      * guaranteed to return a non-empty array. The return value has advisory value only, no harm will come from
-     * invoking getBytes() if process() returned false, however the result of the getEvents() invocation will be an
-     * empty list. Presumably one could invoke process() multiple time without consulting the return value and only
-     * belatedly invoke getBytes() - that would probably work assuming the conversion logic instance has sufficient
-     * memory at its disposal to temporarily store the bytes.
+     * invoking getBytes() if process() returned false, however the result of the getBytes() invocation will be an empty
+     * array. Presumably one could invoke process() multiple time without consulting the return value and only
+     * belatedly invoke getBytes() - that would work assuming the conversion logic instance has sufficient memory at its
+     * disposal to temporarily store the bytes.
      *
      * @see OutputStreamConversionLogic#getBytes()
+     *
+     * @exception ClosedException if the ConversionLogic instance is closed.
      */
     boolean process(Event inputEvent) throws ClosedException;
 
