@@ -28,7 +28,7 @@ import java.util.Set;
  *
  * It can be used as such, or it can be subclassed by more specialized events.
  *
- * It also maintains the relative orders of its properties, hence getPropertyList()
+ * It also maintains the relative orders of its properties, hence getPropertyList().
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
@@ -50,6 +50,21 @@ public class GenericEvent implements Event {
 
         this.properties = new HashMap<>();
         this.orderedPropertyNames = new ArrayList<>();
+    }
+
+    /**
+     * @param properties the order matters, and it will be preserved as the event is processed downstream. The
+     *                   implementation makes an internal shallow copy.
+
+     */
+    public GenericEvent(List<Property> properties) {
+
+        this();
+
+        //noinspection Convert2streamapi
+        for(Property p: properties) {
+            setProperty(p);
+        }
     }
 
     // Event implementation --------------------------------------------------------------------------------------------

@@ -18,6 +18,7 @@ package io.novaordis.events.core.event;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -39,6 +40,33 @@ public class GenericEventTest extends EventTest {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    // constructor -----------------------------------------------------------------------------------------------------
+
+    @Test
+    public void constructor_PropertyList() throws Exception {
+
+        List<Property> input = new ArrayList<>();
+        input.add(new IntegerProperty("test1", 1));
+        input.add(new StringProperty("test2", "2"));
+
+        GenericEvent ge = new GenericEvent(input);
+
+        List<Property> result = ge.getPropertyList();
+
+        assertEquals(input.size(), result.size());
+
+        for(int i = 0; i < input.size(); i ++) {
+
+            Property ip = input.get(i);
+            Property op = result.get(i);
+
+            assertEquals(ip.getName(), op.getName());
+            assertEquals(ip.getValue(), op.getValue());
+        }
+    }
+
+    // setProperty() ---------------------------------------------------------------------------------------------------
 
     @Test
     public void verifySetPropertyRemembersOrder() throws Exception {

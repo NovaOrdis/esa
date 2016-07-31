@@ -19,6 +19,8 @@ package io.novaordis.events.core.event;
 import io.novaordis.utilities.time.Timestamp;
 import io.novaordis.utilities.time.TimestampImpl;
 
+import java.util.List;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
@@ -39,7 +41,11 @@ public class GenericTimedEvent extends GenericEvent implements TimedEvent {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public GenericTimedEvent() {
-        this(null);
+        this((Timestamp)null);
+    }
+
+    public GenericTimedEvent(Long timestampUTC) {
+        this(timestampUTC == null ? null : new TimestampImpl(timestampUTC));
     }
 
     /**
@@ -50,9 +56,23 @@ public class GenericTimedEvent extends GenericEvent implements TimedEvent {
         this.timestamp = timestamp;
     }
 
-    public GenericTimedEvent(long timestampUTC) {
+    public GenericTimedEvent(List<Property> properties) {
+        this(null, properties);
+    }
 
-        this(new TimestampImpl(timestampUTC));
+    public GenericTimedEvent(long timestampUTC, List<Property> properties) {
+        this(new TimestampImpl(timestampUTC), properties);
+    }
+
+    /**
+     * @param properties the implementation makes an internal shallow copy.
+     *
+     * @see Timestamp
+     */
+    public GenericTimedEvent(Timestamp timestamp, List<Property> properties) {
+
+        super(properties);
+        this.timestamp = timestamp;
     }
 
     // TimedEvent implementation ---------------------------------------------------------------------------------------
