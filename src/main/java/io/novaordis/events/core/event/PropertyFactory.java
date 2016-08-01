@@ -31,7 +31,7 @@ public class PropertyFactory {
      */
     public static Property createInstance(String name, Class type, Object value, MeasureUnit measureUnit) {
 
-        PropertyBase result = null;
+        PropertyBase result;
 
         if(String.class.equals(type)) {
 
@@ -76,6 +76,7 @@ public class PropertyFactory {
                         "cannot create a " + type + " property with a " + value.getClass().getSimpleName() + " value");
             }
 
+            //noinspection unchecked
             result = new MapProperty(name, (Map)value);
         }
         else {

@@ -19,6 +19,8 @@ package io.novaordis.events.core.event;
 import java.text.Format;
 
 /**
+ * A typed key/value pair. Optionally, it can have a measure unit, a format, etc.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
@@ -31,6 +33,10 @@ public interface Property extends Comparable<Property> {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
+     * A human readable, possibly multi-word, name. Example: "Post-Collection Old Generation Size". When processed
+     * for display, the name may optionally be followed by the measure unit, if present. Example:
+     * "Post-Collection Old Generation Size (MB)".
+     *
      * Case sensitive.
      */
     String getName();
