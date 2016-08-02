@@ -1192,7 +1192,10 @@ function do-release() {
             fail "release binary artifact ${release_binary_artifact} not found, something went wrong with the maven build process"
 
     else
-        mvn ${maven_testing_configuration} clean package || \
+        #
+        # we need to do install and not package because we may need the JAR in the Maven repository as well
+        #
+        mvn ${maven_testing_configuration} clean install || \
             fail "failed to pass tests, must restore the version in pom.xml to ${current_version} manually"
         release_binary_artifact=$(build-release-zip-file) || exit 1
         install-release ${release_binary_artifact}
