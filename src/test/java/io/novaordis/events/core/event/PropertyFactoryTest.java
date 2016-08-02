@@ -90,6 +90,26 @@ public class PropertyFactoryTest {
     }
 
     @Test
+    public void createInstance_Integer_NullMultiplicationFactor() throws Exception {
+
+        IntegerProperty ip = (IntegerProperty)PropertyFactory.createInstance("test", Integer.class, 1, null, null);
+
+        assertEquals("test", ip.getName());
+        assertEquals(Integer.class, ip.getType());
+        assertEquals(1, ip.getInteger().intValue());
+    }
+
+    @Test
+    public void createInstance_Integer_MultiplicationFactor() throws Exception {
+
+        IntegerProperty ip = (IntegerProperty)PropertyFactory.createInstance("test", Integer.class, 1, 10, null);
+
+        assertEquals("test", ip.getName());
+        assertEquals(Integer.class, ip.getType());
+        assertEquals(10, ip.getInteger().intValue());
+    }
+
+    @Test
     public void createInstance_Integer_Null() throws Exception {
 
         IntegerProperty ip = (IntegerProperty)PropertyFactory.createInstance("test", Integer.class, null, null);
@@ -121,6 +141,26 @@ public class PropertyFactoryTest {
     }
 
     @Test
+    public void createInstance_Long_NullMultiplicationFactor() throws Exception {
+
+        LongProperty ip = (LongProperty)PropertyFactory.createInstance("test", Long.class, 1L, null, null);
+
+        assertEquals("test", ip.getName());
+        assertEquals(Long.class, ip.getType());
+        assertEquals(1L, ip.getLong().longValue());
+    }
+
+    @Test
+    public void createInstance_Long_MultiplicationFactor() throws Exception {
+
+        LongProperty ip = (LongProperty)PropertyFactory.createInstance("test", Long.class, 1L, 10, null);
+
+        assertEquals("test", ip.getName());
+        assertEquals(Long.class, ip.getType());
+        assertEquals(10L, ip.getLong().longValue());
+    }
+
+    @Test
     public void createInstance_Long_Null() throws Exception {
 
         LongProperty ip = (LongProperty)PropertyFactory.createInstance("test", Long.class, null, null);
@@ -148,7 +188,27 @@ public class PropertyFactoryTest {
 
         assertEquals("test", dp.getName());
         assertEquals(Double.class, dp.getType());
+        assertEquals(1.0, dp.getDouble().doubleValue(), 0.0001);
+    }
+
+    @Test
+    public void createInstance_Double_NullMultiplicationFactor() throws Exception {
+
+        DoubleProperty dp = (DoubleProperty)PropertyFactory.createInstance("test", Double.class, 1d, null, null);
+
+        assertEquals("test", dp.getName());
+        assertEquals(Double.class, dp.getType());
         assertEquals(1L, dp.getDouble().doubleValue(), 0.0001);
+    }
+
+    @Test
+    public void createInstance_Double_MultiplicationFactor() throws Exception {
+
+        DoubleProperty dp = (DoubleProperty)PropertyFactory.createInstance("test", Double.class, 1d, 10, null);
+
+        assertEquals("test", dp.getName());
+        assertEquals(Double.class, dp.getType());
+        assertEquals(10.0, dp.getDouble().doubleValue(), 0.0001);
     }
 
     @Test

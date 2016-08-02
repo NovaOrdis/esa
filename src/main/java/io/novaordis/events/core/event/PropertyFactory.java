@@ -27,6 +27,13 @@ public class PropertyFactory {
     // Constants -------------------------------------------------------------------------------------------------------
 
     /**
+     * @see PropertyFactory#createInstance(String, Class, Object, Integer, MeasureUnit)
+     */
+    public static Property createInstance(String name, Class type, Object value, MeasureUnit measureUnit) {
+        return createInstance(name, type, value, null, measureUnit);
+    }
+
+    /**
      * Creates a property instance with the given name, based on the given value and type. If the value and the type
      * match, the property is created right away. If the value is a String, and the type is not a String.class, a
      * conversion is attempted first, and if the conversion is successful, the property is created. Otherwise, an
@@ -34,10 +41,14 @@ public class PropertyFactory {
      *
      * @param measureUnit null is acceptable
      *
+     * @param multiplicationFactor the integer to multiply the given value to obtain the value to write into the
+     *                             property. May be null, in which case it is ignored.
+     *
      * @exception IllegalArgumentException if the value and the type do not match, or a conversion from String to the
      * type in question fails.
      */
-    public static Property createInstance(String name, Class type, Object value, MeasureUnit measureUnit) {
+    public static Property createInstance(
+            String name, Class type, Object value, Integer multiplicationFactor, MeasureUnit measureUnit) {
 
         PropertyBase result;
 
@@ -70,6 +81,10 @@ public class PropertyFactory {
                         "cannot create a " + type + " property with a " + value.getClass().getSimpleName() + " value");
             }
 
+            if (multiplicationFactor != null && i != null) {
+                i = i * multiplicationFactor;
+            }
+
             result = new IntegerProperty(name, i);
         }
         else if(Long.class.equals(type)) {
@@ -92,6 +107,10 @@ public class PropertyFactory {
                         "cannot create a " + type + " property with a " + value.getClass().getSimpleName() + " value");
             }
 
+            if (multiplicationFactor != null && l != null) {
+                l = l * multiplicationFactor;
+            }
+
             result = new LongProperty(name, l);
         }
         else if(Double.class.equals(type)) {
@@ -112,6 +131,10 @@ public class PropertyFactory {
             else {
                 throw new IllegalArgumentException(
                         "cannot create a " + type + " property with a " + value.getClass().getSimpleName() + " value");
+            }
+
+            if (multiplicationFactor != null && d != null) {
+                d = d * multiplicationFactor;
             }
 
             result = new DoubleProperty(name, d);
