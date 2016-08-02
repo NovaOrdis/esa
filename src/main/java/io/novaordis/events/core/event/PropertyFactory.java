@@ -27,7 +27,15 @@ public class PropertyFactory {
     // Constants -------------------------------------------------------------------------------------------------------
 
     /**
+     * Creates a property instance with the given name, based on the given value and type. If the value and the type
+     * match, the property is created right away. If the value is a String, and the type is not a String.class, a
+     * conversion is attempted first, and if the conversion is successful, the property is created. Otherwise, an
+     * IllegalArgumentException is thrown.
+     *
      * @param measureUnit null is acceptable
+     *
+     * @exception IllegalArgumentException if the value and the type do not match, or a conversion from String to the
+     * type in question fails.
      */
     public static Property createInstance(String name, Class type, Object value, MeasureUnit measureUnit) {
 
@@ -44,30 +52,69 @@ public class PropertyFactory {
         }
         else if(Integer.class.equals(type)) {
 
-            if (value != null && !(value instanceof Integer)) {
+            Integer i;
+
+            if (value == null || value instanceof Integer) {
+                i = (Integer)value;
+            }
+            else if (value instanceof String) {
+                try {
+                    i = Integer.parseInt((String) value);
+                }
+                catch(Exception e) {
+                    throw new IllegalArgumentException("cannot convert \"" + value + "\" to an integer");
+                }
+            }
+            else {
                 throw new IllegalArgumentException(
                         "cannot create a " + type + " property with a " + value.getClass().getSimpleName() + " value");
             }
 
-            result = new IntegerProperty(name, (Integer)value);
+            result = new IntegerProperty(name, i);
         }
         else if(Long.class.equals(type)) {
 
-            if (value != null && !(value instanceof Long)) {
+            Long l;
+
+            if (value == null || value instanceof Long) {
+                l = (Long)value;
+            }
+            else if (value instanceof String) {
+                try {
+                    l = Long.parseLong((String) value);
+                }
+                catch(Exception e) {
+                    throw new IllegalArgumentException("cannot convert \"" + value + "\" to a long");
+                }
+            }
+            else {
                 throw new IllegalArgumentException(
                         "cannot create a " + type + " property with a " + value.getClass().getSimpleName() + " value");
             }
 
-            result = new LongProperty(name, (Long)value);
+            result = new LongProperty(name, l);
         }
         else if(Double.class.equals(type)) {
 
-            if (value != null && !(value instanceof Double)) {
+            Double d;
+
+            if (value == null || value instanceof Double) {
+                d = (Double)value;
+            }
+            else if (value instanceof String) {
+                try {
+                    d = Double.parseDouble((String) value);
+                }
+                catch(Exception e) {
+                    throw new IllegalArgumentException("cannot convert \"" + value + "\" to a double");
+                }
+            }
+            else {
                 throw new IllegalArgumentException(
                         "cannot create a " + type + " property with a " + value.getClass().getSimpleName() + " value");
             }
 
-            result = new DoubleProperty(name, (Double)value);
+            result = new DoubleProperty(name, d);
         }
         else if(Map.class.equals(type)) {
 

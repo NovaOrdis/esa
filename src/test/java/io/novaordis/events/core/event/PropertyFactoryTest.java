@@ -27,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -202,6 +203,80 @@ public class PropertyFactoryTest {
         }
         catch(IllegalArgumentException e) {
             log.info(e.getMessage());
+        }
+    }
+
+    // conversions -----------------------------------------------------------------------------------------------------
+
+    @Test
+    public void createInstance_StringToIntegerConversion() throws Exception {
+
+        IntegerProperty ip = (IntegerProperty)PropertyFactory.createInstance("test", Integer.class, "1", null);
+
+        assertEquals("test", ip.getName());
+        assertEquals(Integer.class, ip.getType());
+        assertEquals(1, ip.getInteger().intValue());
+    }
+
+    @Test
+    public void createInstance_StringToIntegerConversionFails() throws Exception {
+
+        try {
+            PropertyFactory.createInstance("test", Integer.class, "blah", null);
+            fail("should throw Exception");
+        }
+        catch(IllegalArgumentException e) {
+            String msg = e.getMessage();
+            log.info(msg);
+            assertEquals("cannot convert \"blah\" to an integer", msg);
+        }
+    }
+
+    @Test
+    public void createInstance_StringToLongConversion() throws Exception {
+
+        LongProperty lp = (LongProperty)PropertyFactory.createInstance("test", Long.class, "1", null);
+
+        assertEquals("test", lp.getName());
+        assertEquals(Long.class, lp.getType());
+        assertEquals(1L, lp.getLong().longValue());
+    }
+
+    @Test
+    public void createInstance_StringToLongConversionFails() throws Exception {
+
+        try {
+            PropertyFactory.createInstance("test", Long.class, "blah", null);
+            fail("should throw Exception");
+        }
+        catch(IllegalArgumentException e) {
+            String msg = e.getMessage();
+            log.info(msg);
+            assertEquals("cannot convert \"blah\" to a long", msg);
+        }
+    }
+
+    @Test
+    public void createInstance_StringToDoubleConversion() throws Exception {
+
+        DoubleProperty dp = (DoubleProperty)PropertyFactory.createInstance("test", Double.class, "1.1", null);
+
+        assertEquals("test", dp.getName());
+        assertEquals(Double.class, dp.getType());
+        assertEquals(1.1d, dp.getDouble().doubleValue(), 0.0001);
+    }
+
+    @Test
+    public void createInstance_StringToDoubleConversionFails() throws Exception {
+
+        try {
+            PropertyFactory.createInstance("test", Double.class, "blah", null);
+            fail("should throw Exception");
+        }
+        catch(IllegalArgumentException e) {
+            String msg = e.getMessage();
+            log.info(msg);
+            assertEquals("cannot convert \"blah\" to a double", msg);
         }
     }
 
