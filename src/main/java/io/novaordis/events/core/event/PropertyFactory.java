@@ -139,6 +139,32 @@ public class PropertyFactory {
 
             result = new DoubleProperty(name, d);
         }
+        else if(Float.class.equals(type)) {
+
+            Float f;
+
+            if (value == null || value instanceof Float) {
+                f = (Float)value;
+            }
+            else if (value instanceof String) {
+                try {
+                    f = Float.parseFloat((String) value);
+                }
+                catch(Exception e) {
+                    throw new IllegalArgumentException("cannot convert \"" + value + "\" to a float");
+                }
+            }
+            else {
+                throw new IllegalArgumentException(
+                        "cannot create a " + type + " property with a " + value.getClass().getSimpleName() + " value");
+            }
+
+            if (multiplicationFactor != null && f != null) {
+                f = f * multiplicationFactor;
+            }
+
+            result = new FloatProperty(name, f);
+        }
         else if(Map.class.equals(type)) {
 
             if (value != null && !(value instanceof Map)) {

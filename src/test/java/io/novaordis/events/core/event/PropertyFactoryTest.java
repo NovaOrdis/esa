@@ -233,6 +233,57 @@ public class PropertyFactoryTest {
     }
 
     @Test
+    public void createInstance_Float() throws Exception {
+
+        FloatProperty fp = (FloatProperty)PropertyFactory.createInstance("test", Float.class, 1.1f, null);
+
+        assertEquals("test", fp.getName());
+        assertEquals(Float.class, fp.getType());
+        assertEquals(1.1f, fp.getFloat().floatValue(), 0.0001);
+    }
+
+    @Test
+    public void createInstance_Float_NullMultiplicationFactor() throws Exception {
+
+        FloatProperty fp = (FloatProperty)PropertyFactory.createInstance("test", Float.class, 1.1f, null, null);
+
+        assertEquals("test", fp.getName());
+        assertEquals(Float.class, fp.getType());
+        assertEquals(1.1f, fp.getFloat().floatValue(), 0.0001);
+    }
+
+    @Test
+    public void createInstance_Float_MultiplicationFactor() throws Exception {
+
+        FloatProperty fp = (FloatProperty)PropertyFactory.createInstance("test", Float.class, 1.1f, 10, null);
+
+        assertEquals("test", fp.getName());
+        assertEquals(Float.class, fp.getType());
+        assertEquals(11.0f, fp.getFloat().floatValue(), 0.0001);
+    }
+
+    @Test
+    public void createInstance_Float_Null() throws Exception {
+
+        FloatProperty fp = (FloatProperty)PropertyFactory.createInstance("test", Float.class, null, null);
+
+        assertEquals("test", fp.getName());
+        assertEquals(Float.class, fp.getType());
+        assertNull(fp.getFloat());
+    }
+
+    @Test
+    public void createInstance_Float_TypeMismatch() throws Exception {
+
+        try {
+            PropertyFactory.createInstance("test", Float.class, "1", null);
+        }
+        catch(IllegalArgumentException e) {
+            log.info(e.getMessage());
+        }
+    }
+
+    @Test
     public void createInstance_Map() throws Exception {
 
         Map<String, String> map = new HashMap<>();
