@@ -16,6 +16,10 @@
 
 package io.novaordis.events.core.event;
 
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 8/3/16
@@ -32,13 +36,22 @@ public class PercentageTest extends MeasureUnitTest {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    @Test
+    public void equals() throws Exception {
+
+        Percentage p = Percentage.getInstance();
+        Percentage p2 = Percentage.getInstance();
+
+        assertEquals(p, p2);
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
     protected Percentage getMeasureUnitToTest() throws Exception {
-        return new Percentage();
+        return Percentage.getInstance();
     }
 
     // Private ---------------------------------------------------------------------------------------------------------
