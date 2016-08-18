@@ -18,12 +18,9 @@ package io.novaordis.events.core.event;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 8/3/16
  */
-public enum TimeMeasureUnit implements MeasureUnit {
-
-    MILLISECOND("ms"),
-    SECOND("sec");
+public abstract class MemoryMeasureUnitTest extends MeasureUnitTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -31,22 +28,19 @@ public enum TimeMeasureUnit implements MeasureUnit {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String label;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    TimeMeasureUnit(String label) {
+    // Public ----------------------------------------------------------------------------------------------------------
 
-        this.label = label;
-    }
+    // Package protected -----------------------------------------------------------------------------------------------
 
-    // MeasureUnit implementation --------------------------------------------------------------------------------------
+    // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    public String getLabel() {
-        return label;
-    }
+    protected abstract MemoryMeasureUnit getMeasureUnitToTest() throws Exception;
 
-    // Public ----------------------------------------------------------------------------------------------------------
+    // Private ---------------------------------------------------------------------------------------------------------
+
+    // Inner classes ---------------------------------------------------------------------------------------------------
 
 }

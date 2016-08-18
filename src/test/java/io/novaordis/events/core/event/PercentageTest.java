@@ -45,6 +45,13 @@ public class PercentageTest extends MeasureUnitTest {
         assertEquals(p, p2);
     }
 
+    @Test
+    public void getLabel() throws Exception {
+
+        Percentage p = Percentage.getInstance();
+        assertEquals("%", p.getLabel());
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

@@ -2,5 +2,5 @@
 * Edge cases for parameterized httpd log format strings
 * Added %P
 * More permissive "first request line" parsing, allowing lines without HTTP version
-* Added Percentage as MeasureUnit
+* Added Percentage as MeasureUnit, added getLabel() to MeasureUnit and more memory and time measure units.
 * CsvOutputFormatter-generated headers start now with "# "

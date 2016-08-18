@@ -16,14 +16,15 @@
 
 package io.novaordis.events.core.event;
 
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 1/23/16
+ * @since 8/3/16
  */
-public enum TimeMeasureUnit implements MeasureUnit {
-
-    MILLISECOND("ms"),
-    SECOND("sec");
+public class MillisecondTest extends TimeMeasureUnitTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -31,22 +32,28 @@ public enum TimeMeasureUnit implements MeasureUnit {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String label;
-
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    TimeMeasureUnit(String label) {
+    // Public ----------------------------------------------------------------------------------------------------------
 
-        this.label = label;
+    @Test
+    public void getLabel() throws Exception {
+
+        String label = TimeMeasureUnit.MILLISECOND.getLabel();
+        assertEquals("ms", label);
     }
 
-    // MeasureUnit implementation --------------------------------------------------------------------------------------
+    // Package protected -----------------------------------------------------------------------------------------------
+
+    // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    public String getLabel() {
-        return label;
+    protected TimeMeasureUnit getMeasureUnitToTest() throws Exception {
+        return TimeMeasureUnit.MILLISECOND;
     }
 
-    // Public ----------------------------------------------------------------------------------------------------------
+    // Private ---------------------------------------------------------------------------------------------------------
+
+    // Inner classes ---------------------------------------------------------------------------------------------------
 
 }

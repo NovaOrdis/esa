@@ -28,7 +28,7 @@ public class Percentage implements MeasureUnit {
 
     private static final Percentage INSTANCE = new Percentage();
 
-    public static final Percentage getInstance() {
+    public static Percentage getInstance() {
         return INSTANCE;
     }
 
@@ -37,6 +37,13 @@ public class Percentage implements MeasureUnit {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     private Percentage() {
+    }
+
+    // MeasureUnit implementation --------------------------------------------------------------------------------------
+
+    @Override
+    public String getLabel() {
+        return "%";
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

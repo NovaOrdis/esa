@@ -43,6 +43,15 @@ public abstract class MeasureUnitTest {
         assertNotNull(mu);
     }
 
+    @Test
+    public void labelIsNeverNull() throws Exception {
+
+        MeasureUnit mu = getMeasureUnitToTest();
+
+        String label = mu.getLabel();
+        assertNotNull(label);
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

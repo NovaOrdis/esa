@@ -28,4 +28,10 @@ public interface MeasureUnit {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    /**
+     * A human readable string, possibly space separated, that is used to represent the measure in user-facing
+     * representations, such as a CSV file headers. Example: "bytes", "MB", "GB", "%", etc.
+     */
+    String getLabel();
+
 }

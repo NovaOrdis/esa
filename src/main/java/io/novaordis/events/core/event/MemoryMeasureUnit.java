@@ -20,13 +20,34 @@ package io.novaordis.events.core.event;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/23/16
  */
-public enum  MemoryMeasureUnit implements MeasureUnit {
+public enum MemoryMeasureUnit implements MeasureUnit {
 
-    BYTE;
+    BYTE("bytes"),
+    KILOBYTE("KB"),
+    MEGABYTE("MB"),
+    GIGABYTE("GB");
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
+
+    // Attributes ------------------------------------------------------------------------------------------------------
+
+    private String label;
+
+    // Constructors ----------------------------------------------------------------------------------------------------
+
+    MemoryMeasureUnit(String label) {
+
+        this.label = label;
+    }
+
+    // MeasureUnit implementation --------------------------------------------------------------------------------------
+
+    @Override
+    public String getLabel() {
+        return label;
+    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
