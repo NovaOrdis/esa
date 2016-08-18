@@ -3,3 +3,4 @@
 * Added %P
 * More permissive "first request line" parsing, allowing lines without HTTP version
 * Added Percentage as MeasureUnit
+* CsvOutputFormatter-generated headers start now with "# "

@@ -44,7 +44,8 @@ import java.util.StringTokenizer;
  * properties in the output. Otherwise, all the properties are introspected and included in the output.
  *
  * The class contains support for generating headers. A header line is generated when the first event is received and
- * inserted *before* the first event representation:
+ * inserted *before* the first event representation. The header starts with a "#" and it contains comma-separated
+ * event's properties names. Also see:
  *
  * @see CsvOutputFormatter#setHeaderOn()
  *
@@ -67,6 +68,15 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     public static final String NULL_EXTERNALIZATION = "";
 
     // Static ----------------------------------------------------------------------------------------------------------
+
+    public static String outputFormatToHeader(String outputFormat) {
+
+        //
+        // granted, more checks can be performed, but we will refactor this anyway when we refactor output format
+        // support
+        //
+        return "# " + outputFormat;
+    }
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
@@ -245,9 +255,11 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
      */
     protected String getHeader(Event event) {
 
-        String header = getOutputFormat();
-        if (header != null) {
-            return header;
+        String outputFormat = getOutputFormat();
+
+        if (outputFormat != null) {
+
+            return outputFormatToHeader(outputFormat);
         }
 
         //
@@ -453,7 +465,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
     private String getHeaderViaIntrospection(Event event) {
 
-        String s = "";
+        String s = "# ";
 
         Set<Property> properties = event.getProperties();
         List <Property> orderedProperties = new ArrayList<>(properties);
