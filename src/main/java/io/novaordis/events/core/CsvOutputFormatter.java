@@ -24,6 +24,7 @@ import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.ShutdownEvent;
 import io.novaordis.events.core.event.TimedEvent;
+import io.novaordis.events.metric.MetricDefinition;
 import io.novaordis.utilities.time.Timestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,13 +70,51 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
     // Static ----------------------------------------------------------------------------------------------------------
 
+    /**
+     * @return a "#" preceded header line, assembled from the given output format, which is a string consisting in
+     * comma-separated property names and a "timestamp" field. We first attempt to resolve the property names to
+     * known metrics. If a known metric can be identified, we use the label instead of the metric name.
+     *
+     * @see CsvOutputFormatter#setOutputFormat(String)
+     * @see CsvOutputFormatter#getOutputFormat()
+     */
     public static String outputFormatToHeader(String outputFormat) {
 
-        //
-        // granted, more checks can be performed, but we will refactor this anyway when we refactor output format
-        // support
-        //
-        return "# " + outputFormat;
+        String headerLine = "# ";
+
+        for(StringTokenizer st = new StringTokenizer(outputFormat, ","); st.hasMoreTokens(); ) {
+
+            String propertyName = st.nextToken().trim();
+
+            //
+            // attempt to identify a known metric
+            //
+
+            String header;
+
+            try {
+
+                MetricDefinition md = MetricDefinition.getInstance(propertyName);
+                header = md.getLabel();
+            }
+            catch (Exception e) {
+
+                //
+                // that's fine, no known metric, use the given literal
+                //
+
+                header = propertyName;
+            }
+
+            headerLine += header;
+
+            if (st.hasMoreTokens()) {
+                headerLine += ", ";
+            }
+
+        }
+
+        return headerLine;
     }
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -157,7 +196,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
-     * We interpret the given format as comma separated property names (plus "timestamp").
+     * We interpret the given format as comma separated property names and a "timestamp" field.
      *
      * For map properties, the dot-separated syntax map-property-name.key is valid.
      */
