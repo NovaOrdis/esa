@@ -1157,7 +1157,11 @@ function do-release() {
 
     git add . && info "git add ok" || fail "git add . failed"
 
-    git commit -m "release ${release_version}" && info "git commit ok" || fail "git commit failed"
+    #
+    # there may be nothing to commit, so we don't fail on commit failure, we just warn
+    #
+
+    git commit -m "release ${release_version}" && info "git commit ok" || warn "git commit did not succeed, maybe because there was nothing to commit"
 
     local tag=release-${release_version}
     local tagged
