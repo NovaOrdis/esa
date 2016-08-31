@@ -17,8 +17,13 @@
 package io.novaordis.events.core.event;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -27,6 +32,8 @@ import static org.junit.Assert.assertNotNull;
 public abstract class MeasureUnitTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
+
+    private static final Logger log = LoggerFactory.getLogger(MeasureUnitTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -50,6 +57,42 @@ public abstract class MeasureUnitTest {
 
         String label = mu.getLabel();
         assertNotNull(label);
+    }
+
+    // conversion factor -----------------------------------------------------------------------------------------------
+
+    @Test
+    public void getConversionFactor_nullMeasureUnit() throws Exception {
+
+        MeasureUnit m = getMeasureUnitToTest();
+
+        try {
+            m.getConversionFactor(null);
+            fail("should have thrown exception");
+        }
+        catch(IllegalArgumentException e) {
+            String msg = e.getMessage();
+            log.info(msg);
+            assertEquals("null measure unit", msg);
+        }
+    }
+
+    @Test
+    public void getConversionFactor_unmatchedMeasureUnit() throws Exception {
+
+        MeasureUnit m = getMeasureUnitToTest();
+
+        MockMeasureUnit mmu = new MockMeasureUnit();
+
+        try {
+            m.getConversionFactor(mmu);
+            fail("should have thrown exception");
+        }
+        catch(IllegalArgumentException e) {
+            String msg = e.getMessage();
+            log.info(msg);
+            assertTrue(msg.contains("cannot be converted to"));
+        }
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

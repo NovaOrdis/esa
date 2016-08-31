@@ -1,0 +1,8 @@
+﻿top - 17:26:36 up 14 days,  3:13,  6 users,  load average: 0.24, 0.35, 0.43
+Tasks:   1 total,   1 running,   0 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.5%us,  0.1%sy,  0.0%ni, 99.2%id,  0.1%wa,  0.0%hi,  0.0%si,  0.0%st
+Mem:  24607916k total,  9873232k used, 14734684k free,   788776k buffers
+Swap:  4194300k total,        0k used,  4194300k free,  3229568k cached
+
+  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND
+18779 test      20   0 14896  980  820 R  0.0  0.0   0:00.00 top

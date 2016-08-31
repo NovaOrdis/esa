@@ -102,7 +102,7 @@ public class PropertyFactoryTest {
     @Test
     public void createInstance_Integer_MultiplicationFactor() throws Exception {
 
-        IntegerProperty ip = (IntegerProperty)PropertyFactory.createInstance("test", Integer.class, 1, 10, null);
+        IntegerProperty ip = (IntegerProperty)PropertyFactory.createInstance("test", Integer.class, 1, 10d, null);
 
         assertEquals("test", ip.getName());
         assertEquals(Integer.class, ip.getType());
@@ -153,7 +153,7 @@ public class PropertyFactoryTest {
     @Test
     public void createInstance_Long_MultiplicationFactor() throws Exception {
 
-        LongProperty ip = (LongProperty)PropertyFactory.createInstance("test", Long.class, 1L, 10, null);
+        LongProperty ip = (LongProperty)PropertyFactory.createInstance("test", Long.class, 1L, 10d, null);
 
         assertEquals("test", ip.getName());
         assertEquals(Long.class, ip.getType());
@@ -204,7 +204,7 @@ public class PropertyFactoryTest {
     @Test
     public void createInstance_Double_MultiplicationFactor() throws Exception {
 
-        DoubleProperty dp = (DoubleProperty)PropertyFactory.createInstance("test", Double.class, 1d, 10, null);
+        DoubleProperty dp = (DoubleProperty)PropertyFactory.createInstance("test", Double.class, 1d, 10d, null);
 
         assertEquals("test", dp.getName());
         assertEquals(Double.class, dp.getType());
@@ -255,7 +255,7 @@ public class PropertyFactoryTest {
     @Test
     public void createInstance_Float_MultiplicationFactor() throws Exception {
 
-        FloatProperty fp = (FloatProperty)PropertyFactory.createInstance("test", Float.class, 1.1f, 10, null);
+        FloatProperty fp = (FloatProperty)PropertyFactory.createInstance("test", Float.class, 1.1f, 10d, null);
 
         assertEquals("test", fp.getName());
         assertEquals(Float.class, fp.getType());

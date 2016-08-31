@@ -16,6 +16,13 @@
 
 package io.novaordis.events.core.event;
 
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 8/3/16
@@ -24,6 +31,8 @@ public abstract class MemoryMeasureUnitTest extends MeasureUnitTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
+    private static final Logger log = LoggerFactory.getLogger(ListPropertyTest.class);
+
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
@@ -31,6 +40,38 @@ public abstract class MemoryMeasureUnitTest extends MeasureUnitTest {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    // parse() ---------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void parse_UnknownUnit() throws Exception {
+
+        try {
+
+            MemoryMeasureUnit.parse("we don't know what this is");
+            fail("should have thrown exception");
+        }
+        catch(IllegalArgumentException e) {
+
+            log.info(e.getMessage());
+            assertTrue(e.getMessage().contains("No enum constant"));
+        }
+    }
+
+    @Test
+    public void parse_Null() throws Exception {
+
+        try {
+
+            MemoryMeasureUnit.parse(null);
+            fail("should have thrown exception");
+        }
+        catch(IllegalArgumentException e) {
+
+            log.info(e.getMessage());
+            assertTrue(e.getMessage().contains("null memory measure unit string"));
+        }
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 

@@ -43,6 +43,73 @@ public class GigabyteTest extends MemoryMeasureUnitTest {
         assertEquals("GB", label);
     }
 
+    // parse() ---------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void parse_GiB() throws Exception {
+
+        MemoryMeasureUnit mmu = MemoryMeasureUnit.parse("GiB");
+        assertEquals(MemoryMeasureUnit.GIGABYTE, mmu);
+    }
+
+    @Test
+    public void parse_KiB_CaseNotImportant() throws Exception {
+
+        MemoryMeasureUnit mmu = MemoryMeasureUnit.parse("gib");
+        assertEquals(MemoryMeasureUnit.GIGABYTE, mmu);
+    }
+
+    @Test
+    public void parse_GB() throws Exception {
+
+        MemoryMeasureUnit mmu = MemoryMeasureUnit.parse("GB");
+        assertEquals(MemoryMeasureUnit.GIGABYTE, mmu);
+    }
+
+    @Test
+    public void parse_G() throws Exception {
+
+        MemoryMeasureUnit mmu = MemoryMeasureUnit.parse("G");
+        assertEquals(MemoryMeasureUnit.GIGABYTE, mmu);
+    }
+
+    @Test
+    public void parse_DeclaredUnit() throws Exception {
+
+        MemoryMeasureUnit mmu = MemoryMeasureUnit.parse("GIGABYTE");
+        assertEquals(MemoryMeasureUnit.GIGABYTE, mmu);
+    }
+
+    // getConversionFactor() -------------------------------------------------------------------------------------------
+
+    @Test
+    public void getConversionFactor_bytesToGigabytes() throws Exception {
+
+        double d = MemoryMeasureUnit.GIGABYTE.getConversionFactor(MemoryMeasureUnit.BYTE);
+        assertEquals(1d/1024/1024/1024, d, 0.000001);
+    }
+
+    @Test
+    public void getConversionFactor_KilobytesToGigabytes() throws Exception {
+
+        double d = MemoryMeasureUnit.GIGABYTE.getConversionFactor(MemoryMeasureUnit.KILOBYTE);
+        assertEquals(1d/1024/1024, d, 0.000001);
+    }
+
+    @Test
+    public void getConversionFactor_MegabytesToGigabytes() throws Exception {
+
+        double d = MemoryMeasureUnit.GIGABYTE.getConversionFactor(MemoryMeasureUnit.MEGABYTE);
+        assertEquals(1d/1024, d, 0.000001);
+    }
+
+    @Test
+    public void getConversionFactor_GigabytesToGigabytes() throws Exception {
+
+        double d = MemoryMeasureUnit.GIGABYTE.getConversionFactor(MemoryMeasureUnit.GIGABYTE);
+        assertEquals(1, (int)d);
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

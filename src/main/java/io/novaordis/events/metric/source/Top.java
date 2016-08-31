@@ -16,6 +16,8 @@
 
 package io.novaordis.events.metric.source;
 
+import io.novaordis.events.core.event.MeasureUnit;
+import io.novaordis.events.core.event.MemoryMeasureUnit;
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.PropertyFactory;
 import io.novaordis.events.metric.MetricCollectionException;
@@ -119,19 +121,45 @@ public class Top extends OSCommand {
                 List<Property> loadAverage = parseLoadAverage(line.substring(i + "load average:".length()));
                 result.addAll(loadAverage);
             }
-            else if (line.matches("^%Cpu.*:.*")) {
+            else if (line.matches(".*Cpu.*:.*")) {
                 i = line.indexOf(":");
                 List<Property> cpu = parseLinuxCpuInfo(line.substring(i + 1));
                 result.addAll(cpu);
             }
             else if (line.matches(".*Mem.*:.*")) {
+
+                //
+                // we get a chance to figure out the measure unit
+                //
+                MemoryMeasureUnit mmu = null;
+                i = line.indexOf("Mem");
+                if (i != 0) {
+                    //
+                    // measure unit leads
+                    //
+                    String measureUnit = line.substring(0, i).trim();
+                    mmu = MemoryMeasureUnit.parse(measureUnit);
+                }
                 i = line.indexOf(":");
-                List<Property> memory = parseLinuxMemoryInfo(line.substring(i + 1));
+                List<Property> memory = parseLinuxMemoryInfo(line.substring(i + 1), mmu);
                 result.addAll(memory);
             }
             else if (line.matches(".*Swap.*:.*")) {
+
+                //
+                // we get a chance to figure out the measure unit
+                //
+                MemoryMeasureUnit mmu = null;
+                i = line.indexOf("Swap");
+                if (i != 0) {
+                    //
+                    // measure unit leads
+                    //
+                    String measureUnit = line.substring(0, i).trim();
+                    mmu = MemoryMeasureUnit.parse(measureUnit);
+                }
                 i = line.indexOf(":");
-                List<Property> swap = parseLinuxSwapInfo(line.substring(i + 1));
+                List<Property> swap = parseLinuxSwapInfo(line.substring(i + 1), mmu);
                 result.addAll(swap);
             }
         }
@@ -155,9 +183,16 @@ public class Top extends OSCommand {
     }
 
     /**
-     * Parses "1015944 total,   802268 free,    86860 used,   126816 buff/cache" (line usually starts with  KiB Mem :"
+     * Parses memory info lines that usually start with "KiB Mem :" or "Mem: "
+     *
+     * "1015944 total,   802268 free,    86860 used,   126816 buff/cache"
+     * "24607916k total,  9873232k used, 14734684k free,   788776k buffers"
+     *
+     * @param mmu - optional, null is acceptable, in which case the memory measure unit should be inferable from the
+     *            string
      */
-    public static List<Property> parseLinuxMemoryInfo(String s) throws MetricCollectionException {
+    public static List<Property> parseLinuxMemoryInfo(String s, MemoryMeasureUnit mmu)
+            throws MetricCollectionException {
 
         List<Property> result = new ArrayList<>();
 
@@ -170,17 +205,50 @@ public class Top extends OSCommand {
             if ((i = tok.indexOf("total")) != -1) {
                 PhysicalMemoryTotal m = new PhysicalMemoryTotal();
                 tok = tok.substring(0, i).trim();
-                result.add(PropertyFactory.createInstance(m.getName(), m.getType(), tok, 1024, m.getMeasureUnit()));
+                MeasureUnit defaultMeasureUnit = m.getMeasureUnit();
+                double conversionFactor;
+                if (mmu != null) {
+                    conversionFactor = defaultMeasureUnit.getConversionFactor(mmu);
+                }
+                else {
+                    StringMeasureUnitPair p = extractMemoryMeasureUnitHeuristics(tok);
+                    tok = p.s;
+                    conversionFactor = defaultMeasureUnit.getConversionFactor(p.memoryMeasureUnit);
+                }
+                result.add(PropertyFactory.createInstance(
+                        m.getName(), m.getType(), tok, conversionFactor, defaultMeasureUnit));
             }
             else if ((i = tok.indexOf("free")) != -1) {
                 PhysicalMemoryFree m = new PhysicalMemoryFree();
                 tok = tok.substring(0, i).trim();
-                result.add(PropertyFactory.createInstance(m.getName(), m.getType(), tok, 1024, m.getMeasureUnit()));
+                MeasureUnit defaultMeasureUnit = m.getMeasureUnit();
+                double conversionFactor;
+                if (mmu != null) {
+                    conversionFactor = defaultMeasureUnit.getConversionFactor(mmu);
+                }
+                else {
+                    StringMeasureUnitPair p = extractMemoryMeasureUnitHeuristics(tok);
+                    tok = p.s;
+                    conversionFactor = defaultMeasureUnit.getConversionFactor(p.memoryMeasureUnit);
+                }
+                result.add(PropertyFactory.createInstance(
+                        m.getName(), m.getType(), tok, conversionFactor, m.getMeasureUnit()));
             }
             else if ((i = tok.indexOf("used")) != -1) {
                 PhysicalMemoryUsed m = new PhysicalMemoryUsed();
                 tok = tok.substring(0, i).trim();
-                result.add(PropertyFactory.createInstance(m.getName(), m.getType(), tok, 1024, m.getMeasureUnit()));
+                MeasureUnit defaultMeasureUnit = m.getMeasureUnit();
+                double conversionFactor;
+                if (mmu != null) {
+                    conversionFactor = defaultMeasureUnit.getConversionFactor(mmu);
+                }
+                else {
+                    StringMeasureUnitPair p = extractMemoryMeasureUnitHeuristics(tok);
+                    tok = p.s;
+                    conversionFactor = defaultMeasureUnit.getConversionFactor(p.memoryMeasureUnit);
+                }
+                result.add(PropertyFactory.createInstance(
+                        m.getName(), m.getType(), tok, conversionFactor, m.getMeasureUnit()));
             }
 
             //
@@ -194,8 +262,11 @@ public class Top extends OSCommand {
 
     /**
      * Parses "10 total,        10 free,        10 used.   791404 avail Mem" (line usually starts with  KiB Swap :"
+     *
+     * @param mmu - optional, null is acceptable, in which case the memory measure unit should be inferable from the
+     *            string
      */
-    public static List<Property> parseLinuxSwapInfo(String s) throws MetricCollectionException {
+    public static List<Property> parseLinuxSwapInfo(String s, MemoryMeasureUnit mmu) throws MetricCollectionException {
 
         List<Property> result = new ArrayList<>();
 
@@ -210,17 +281,50 @@ public class Top extends OSCommand {
             if ((i = tok.indexOf("total")) != -1) {
                 SwapTotal m = new SwapTotal();
                 tok = tok.substring(0, i).trim();
-                result.add(PropertyFactory.createInstance(m.getName(), m.getType(), tok, 1024, m.getMeasureUnit()));
+                MeasureUnit defaultMeasureUnit = m.getMeasureUnit();
+                double conversionFactor;
+                if (mmu != null) {
+                    conversionFactor = defaultMeasureUnit.getConversionFactor(mmu);
+                }
+                else {
+                    StringMeasureUnitPair p = extractMemoryMeasureUnitHeuristics(tok);
+                    tok = p.s;
+                    conversionFactor = defaultMeasureUnit.getConversionFactor(p.memoryMeasureUnit);
+                }
+                result.add(PropertyFactory.createInstance(
+                        m.getName(), m.getType(), tok, conversionFactor, m.getMeasureUnit()));
             }
             else if ((i = tok.indexOf("free")) != -1) {
                 SwapFree m = new SwapFree();
                 tok = tok.substring(0, i).trim();
-                result.add(PropertyFactory.createInstance(m.getName(), m.getType(), tok, 1024, m.getMeasureUnit()));
+                MeasureUnit defaultMeasureUnit = m.getMeasureUnit();
+                double conversionFactor;
+                if (mmu != null) {
+                    conversionFactor = defaultMeasureUnit.getConversionFactor(mmu);
+                }
+                else {
+                    StringMeasureUnitPair p = extractMemoryMeasureUnitHeuristics(tok);
+                    tok = p.s;
+                    conversionFactor = defaultMeasureUnit.getConversionFactor(p.memoryMeasureUnit);
+                }
+                result.add(PropertyFactory.createInstance(
+                        m.getName(), m.getType(), tok, conversionFactor, m.getMeasureUnit()));
             }
             else if ((i = tok.indexOf("used")) != -1) {
                 SwapUsed m = new SwapUsed();
                 tok = tok.substring(0, i).trim();
-                result.add(PropertyFactory.createInstance(m.getName(), m.getType(), tok, 1024, m.getMeasureUnit()));
+                MeasureUnit defaultMeasureUnit = m.getMeasureUnit();
+                double conversionFactor;
+                if (mmu != null) {
+                    conversionFactor = defaultMeasureUnit.getConversionFactor(mmu);
+                }
+                else {
+                    StringMeasureUnitPair p = extractMemoryMeasureUnitHeuristics(tok);
+                    tok = p.s;
+                    conversionFactor = defaultMeasureUnit.getConversionFactor(p.memoryMeasureUnit);
+                }
+                result.add(PropertyFactory.createInstance(
+                        m.getName(), m.getType(), tok, conversionFactor, m.getMeasureUnit()));
             }
 
             //
@@ -277,9 +381,12 @@ public class Top extends OSCommand {
                 { "used", new PhysicalMemoryUsed()},
                 { "unused",  new PhysicalMemoryFree()},
         };
+
         for(Object[] e: expected) {
+
             String label = (String)e[0];
             MetricDefinition m = (MetricDefinition)e[1];
+
             int i = s.indexOf(" " + label);
             if (i == -1) {
                 continue;
@@ -287,25 +394,53 @@ public class Top extends OSCommand {
             String ms = s.substring(0, i);
             i = ms.lastIndexOf(' ');
             ms = i == -1 ? ms : ms.substring(i);
-            int multiplicationFactor;
-            if (ms.endsWith("G")) {
-                multiplicationFactor = 1024 * 1024 * 1024;
-            }
-            else if (ms.endsWith("M")) {
-                multiplicationFactor = 1024 * 1024;
-            }
-            else {
-                throw new MetricCollectionException("not handling yet '" + ms.charAt(ms.length() - 1));
-            }
-            ms = ms.substring(0, ms.length() - 1).trim();
+            StringMeasureUnitPair p = extractMemoryMeasureUnitHeuristics(ms);
+            ms = p.s;
+            MemoryMeasureUnit mmu = p.memoryMeasureUnit;
+            MeasureUnit defaultMemoryUnit = m.getMeasureUnit();
+            double conversionFactor =  defaultMemoryUnit.getConversionFactor(mmu);
             result.add(PropertyFactory.createInstance(
-                    m.getName(), m.getType(), ms, multiplicationFactor, m.getMeasureUnit()));
+                    m.getName(), m.getType(), ms, conversionFactor, defaultMemoryUnit));
         }
         return result;
     }
 
-    // Attributes ------------------------------------------------------------------------------------------------------
 
+    // Package protected static ----------------------------------------------------------------------------------------
+
+    /**
+     * Attempts to figure out a memory measure unit in the given string.
+     *
+     * @return never returns null, and the wrapped string and the memory unit are never null.
+     */
+    static StringMeasureUnitPair extractMemoryMeasureUnitHeuristics(String s) {
+
+        s = s.trim();
+
+        //
+        // skip all digits
+        //
+        int i;
+        for(i = 0; i < s.length(); i ++) {
+
+            char crt = s.charAt(i);
+
+            if (crt < '0' || crt > '9') {
+
+                // not a digit
+                break;
+            }
+        }
+
+        if (i == s.length()) {
+            return new StringMeasureUnitPair(s, MemoryMeasureUnit.BYTE);
+        }
+
+        MemoryMeasureUnit mmu = MemoryMeasureUnit.parse(s.substring(i));
+        return new StringMeasureUnitPair(s.substring(0, i), mmu);
+    }
+
+    // Attributes ------------------------------------------------------------------------------------------------------
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -342,5 +477,16 @@ public class Top extends OSCommand {
     // Private ---------------------------------------------------------------------------------------------------------
 
     // Inner classes ---------------------------------------------------------------------------------------------------
+
+    static class StringMeasureUnitPair {
+
+        public String s;
+        public MemoryMeasureUnit memoryMeasureUnit;
+
+        public StringMeasureUnitPair(String s, MemoryMeasureUnit mmu) {
+            this.s = s;
+            this.memoryMeasureUnit = mmu;
+        }
+    }
 
 }

@@ -27,7 +27,7 @@ public class PropertyFactory {
     // Constants -------------------------------------------------------------------------------------------------------
 
     /**
-     * @see PropertyFactory#createInstance(String, Class, Object, Integer, MeasureUnit)
+     * @see PropertyFactory#createInstance(String, Class, Object, Double, MeasureUnit)
      */
     public static Property createInstance(String name, Class type, Object value, MeasureUnit measureUnit) {
         return createInstance(name, type, value, null, measureUnit);
@@ -41,14 +41,14 @@ public class PropertyFactory {
      *
      * @param measureUnit null is acceptable
      *
-     * @param multiplicationFactor the integer to multiply the given value to obtain the value to write into the
-     *                             property. May be null, in which case it is ignored.
+     * @param conversionFactor the double to multiply the given value to obtain the value to write into the property.
+     *                         May be null, in which case it is ignored.
      *
      * @exception IllegalArgumentException if the value and the type do not match, or a conversion from String to the
      * type in question fails.
      */
     public static Property createInstance(
-            String name, Class type, Object value, Integer multiplicationFactor, MeasureUnit measureUnit) {
+            String name, Class type, Object value, Double conversionFactor, MeasureUnit measureUnit) {
 
         PropertyBase result;
 
@@ -81,8 +81,8 @@ public class PropertyFactory {
                         "cannot create a " + type + " property with a " + value.getClass().getSimpleName() + " value");
             }
 
-            if (multiplicationFactor != null && i != null) {
-                i = i * multiplicationFactor;
+            if (conversionFactor != null && i != null) {
+                i = (int)(i * conversionFactor);
             }
 
             result = new IntegerProperty(name, i);
@@ -107,8 +107,8 @@ public class PropertyFactory {
                         "cannot create a " + type + " property with a " + value.getClass().getSimpleName() + " value");
             }
 
-            if (multiplicationFactor != null && l != null) {
-                l = l * multiplicationFactor;
+            if (conversionFactor != null && l != null) {
+                l = (long)(l * conversionFactor);
             }
 
             result = new LongProperty(name, l);
@@ -133,8 +133,8 @@ public class PropertyFactory {
                         "cannot create a " + type + " property with a " + value.getClass().getSimpleName() + " value");
             }
 
-            if (multiplicationFactor != null && d != null) {
-                d = d * multiplicationFactor;
+            if (conversionFactor != null && d != null) {
+                d = d * conversionFactor;
             }
 
             result = new DoubleProperty(name, d);
@@ -159,8 +159,8 @@ public class PropertyFactory {
                         "cannot create a " + type + " property with a " + value.getClass().getSimpleName() + " value");
             }
 
-            if (multiplicationFactor != null && f != null) {
-                f = f * multiplicationFactor;
+            if (conversionFactor != null && f != null) {
+                f = (float)(f * conversionFactor);
             }
 
             result = new FloatProperty(name, f);

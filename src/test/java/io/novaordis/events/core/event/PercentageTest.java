@@ -19,6 +19,7 @@ package io.novaordis.events.core.event;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -50,6 +51,16 @@ public class PercentageTest extends MeasureUnitTest {
 
         Percentage p = Percentage.getInstance();
         assertEquals("%", p.getLabel());
+    }
+
+    // getConversionFactor() -------------------------------------------------------------------------------------------
+
+    @Test
+    public void getConversionFactor() throws Exception {
+
+        Percentage p = Percentage.getInstance();
+        Percentage p2 = Percentage.getInstance();
+        assertNull(p.getConversionFactor(p2));
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

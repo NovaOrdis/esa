@@ -94,6 +94,8 @@ public class TopTest extends OSCommandTest {
 
     // Linux static ----------------------------------------------------------------------------------------------------
 
+    // top format 1 ----------------------------------------------------------------------------------------------------
+
     @Test
     public void parseLinuxCommandOutput() throws Exception {
 
@@ -243,7 +245,7 @@ public class TopTest extends OSCommandTest {
     public void parseLinuxMemoryInfo() throws Exception {
 
         List<Property> props = Top.parseLinuxMemoryInfo(
-                "  1015944 total,   802268 free,    86860 used,   126816 buff/cache");
+                "  1015944 total,   802268 free,    86860 used,   126816 buff/cache", MemoryMeasureUnit.KILOBYTE);
 
         assertEquals(3, props.size());
 
@@ -270,10 +272,70 @@ public class TopTest extends OSCommandTest {
     }
 
     @Test
+    public void parseLinuxMemoryInfo_DifferentMeasureUnit() throws Exception {
+
+        List<Property> props = Top.parseLinuxMemoryInfo(
+                "  1015944 total,   802268 free,    86860 used,   126816 buff/cache", MemoryMeasureUnit.BYTE);
+
+        assertEquals(3, props.size());
+
+        PhysicalMemoryTotal metric = new PhysicalMemoryTotal();
+        LongProperty p = (LongProperty)props.get(0);
+        assertEquals(MemoryMeasureUnit.BYTE, p.getMeasureUnit());
+        assertEquals(metric.getName(), p.getName());
+        assertEquals(1015944L, p.getLong().longValue());
+        assertEquals(Long.class, p.getType());
+
+        PhysicalMemoryFree metric2 = new PhysicalMemoryFree();
+        LongProperty p2 = (LongProperty)props.get(1);
+        assertEquals(MemoryMeasureUnit.BYTE, p2.getMeasureUnit());
+        assertEquals(metric2.getName(), p2.getName());
+        assertEquals(802268L, p2.getLong().longValue());
+        assertEquals(Long.class, p2.getType());
+
+        PhysicalMemoryUsed metric3 = new PhysicalMemoryUsed();
+        LongProperty p3 = (LongProperty)props.get(2);
+        assertEquals(MemoryMeasureUnit.BYTE, p3.getMeasureUnit());
+        assertEquals(metric3.getName(), p3.getName());
+        assertEquals(86860L, p3.getLong().longValue());
+        assertEquals(Long.class, p3.getType());
+    }
+
+    @Test
+    public void parseLinuxMemoryInfo_MeasureUnitNotSpecified() throws Exception {
+
+        List<Property> props = Top.parseLinuxMemoryInfo(
+                "  1015945k total,   802269k free,    86861k used,   126817k buff/cache", null);
+
+        assertEquals(3, props.size());
+
+        PhysicalMemoryTotal metric = new PhysicalMemoryTotal();
+        LongProperty p = (LongProperty)props.get(0);
+        assertEquals(MemoryMeasureUnit.BYTE, p.getMeasureUnit());
+        assertEquals(metric.getName(), p.getName());
+        assertEquals(1015945l * 1024, p.getLong().longValue());
+        assertEquals(Long.class, p.getType());
+
+        PhysicalMemoryFree metric2 = new PhysicalMemoryFree();
+        LongProperty p2 = (LongProperty)props.get(1);
+        assertEquals(MemoryMeasureUnit.BYTE, p2.getMeasureUnit());
+        assertEquals(metric2.getName(), p2.getName());
+        assertEquals(802269L * 1024, p2.getLong().longValue());
+        assertEquals(Long.class, p2.getType());
+
+        PhysicalMemoryUsed metric3 = new PhysicalMemoryUsed();
+        LongProperty p3 = (LongProperty)props.get(2);
+        assertEquals(MemoryMeasureUnit.BYTE, p3.getMeasureUnit());
+        assertEquals(metric3.getName(), p3.getName());
+        assertEquals(86861L * 1024, p3.getLong().longValue());
+        assertEquals(Long.class, p3.getType());
+    }
+
+    @Test
     public void parseLinuxSwapInfo() throws Exception {
 
         List<Property> props = Top.parseLinuxSwapInfo(
-                "  100 total,        80 free,        20 used.   791404 avail Mem");
+                "  100 total,        80 free,        20 used.   791404 avail Mem", MemoryMeasureUnit.KILOBYTE);
 
         assertEquals(3, props.size());
 
@@ -298,6 +360,243 @@ public class TopTest extends OSCommandTest {
         assertEquals(20L * 1024, p3.getLong().longValue());
         assertEquals(Long.class, p3.getType());
     }
+
+    @Test
+    public void parseLinuxSwapInfo_DifferentMeasureUnit() throws Exception {
+
+        List<Property> props = Top.parseLinuxSwapInfo(
+                "  100 total,        80 free,        20 used.   791404 avail Mem", MemoryMeasureUnit.GIGABYTE);
+
+        assertEquals(3, props.size());
+
+        SwapTotal metric = new SwapTotal();
+        LongProperty p = (LongProperty)props.get(0);
+        assertEquals(MemoryMeasureUnit.BYTE, p.getMeasureUnit());
+        assertEquals(metric.getName(), p.getName());
+        assertEquals(100L * 1024 * 1024 * 1024, p.getLong().longValue());
+        assertEquals(Long.class, p.getType());
+
+        SwapFree metric2 = new SwapFree();
+        LongProperty p2 = (LongProperty)props.get(1);
+        assertEquals(MemoryMeasureUnit.BYTE, p2.getMeasureUnit());
+        assertEquals(metric2.getName(), p2.getName());
+        assertEquals(80L * 1024 * 1024 * 1024, p2.getLong().longValue());
+        assertEquals(Long.class, p2.getType());
+
+        SwapUsed metric3 = new SwapUsed();
+        LongProperty p3 = (LongProperty)props.get(2);
+        assertEquals(MemoryMeasureUnit.BYTE, p3.getMeasureUnit());
+        assertEquals(metric3.getName(), p3.getName());
+        assertEquals(20L * 1024 * 1024 * 1024, p3.getLong().longValue());
+        assertEquals(Long.class, p3.getType());
+    }
+
+    // top format 2 ----------------------------------------------------------------------------------------------------
+
+    @Test
+    public void parseLinuxCommandOutput2() throws Exception {
+
+        File f = new File(System.getProperty("basedir"), "src/test/resources/data/metric/top-linux-2.out");
+        assertTrue(f.isFile());
+        String content = Files.read(f);
+
+        List<Property> ps = Top.parseLinuxCommandOutput(content);
+
+        assertEquals(3 + 8 + 3 + 3, ps.size());
+
+        int i = 0;
+        assertEquals(new LoadAverageLastMinute().getName(), ps.get(i).getName());
+        assertEquals(0.24f, (Float)ps.get(i).getValue(), 0.0001);
+
+        i = 1;
+        assertEquals(new LoadAverageLastFiveMinutes().getName(), ps.get(i).getName());
+        assertEquals(0.35f, (Float)ps.get(i).getValue(), 0.0001);
+
+        i = 2;
+        assertEquals(new LoadAverageLastTenMinutes().getName(), ps.get(i).getName());
+        assertEquals(0.43f, (Float)ps.get(i).getValue(), 0.0001);
+
+        i = 3;
+        assertEquals(new CpuUserTime().getName(), ps.get(i).getName());
+        assertEquals(0.5f, (Float)ps.get(i).getValue(), 0.0001);
+
+        i = 4;
+        assertEquals(new CpuKernelTime().getName(), ps.get(i).getName());
+        assertEquals(0.1f, (Float)ps.get(i).getValue(), 0.0001);
+
+        i = 5;
+        assertEquals(new CpuNiceTime().getName(), ps.get(i).getName());
+        assertEquals(0.0f, (Float)ps.get(i).getValue(), 0.0001);
+
+        i = 6;
+        assertEquals(new CpuIdleTime().getName(), ps.get(i).getName());
+        assertEquals(99.2f, (Float)ps.get(i).getValue(), 0.0001);
+
+        i = 7;
+        assertEquals(new CpuIoWaitTime().getName(), ps.get(i).getName());
+        assertEquals(0.1f, (Float)ps.get(i).getValue(), 0.0001);
+
+        i = 8;
+        assertEquals(new CpuHardwareInterruptTime().getName(), ps.get(i).getName());
+        assertEquals(0.0f, (Float)ps.get(i).getValue(), 0.0001);
+
+        i = 9;
+        assertEquals(new CpuSoftwareInterruptTime().getName(), ps.get(i).getName());
+        assertEquals(0.0f, (Float)ps.get(i).getValue(), 0.0001);
+
+        i = 10;
+        assertEquals(new CpuStolenTime().getName(), ps.get(i).getName());
+        assertEquals(0.0f, (Float)ps.get(i).getValue(), 0.0001);
+
+        i = 11;
+        assertEquals(new PhysicalMemoryTotal().getName(), ps.get(i).getName());
+        assertEquals(24607916L * 1024, ((Long) ps.get(i).getValue()).longValue());
+
+        i = 12;
+        assertEquals(new PhysicalMemoryUsed().getName(), ps.get(i).getName());
+        assertEquals(9873232L * 1024, ((Long) ps.get(i).getValue()).longValue());
+
+        i = 13;
+        assertEquals(new PhysicalMemoryFree().getName(), ps.get(i).getName());
+        assertEquals(14734684L * 1024, ((Long) ps.get(i).getValue()).longValue());
+
+        i = 14;
+        assertEquals(new SwapTotal().getName(), ps.get(i).getName());
+        assertEquals(4194300L * 1024, ((Long) ps.get(i).getValue()).longValue());
+
+        i = 15;
+        assertEquals(new SwapUsed().getName(), ps.get(i).getName());
+        assertEquals(0L, ((Long) ps.get(i).getValue()).longValue());
+
+        i = 16;
+        assertEquals(new SwapFree().getName(), ps.get(i).getName());
+        assertEquals(4194300L * 1024, ((Long) ps.get(i).getValue()).longValue());
+    }
+
+    @Test
+    public void parseLinuxCpuInfo2() throws Exception {
+
+        List<Property> props = Top.parseLinuxCpuInfo(
+                "  1.1%us,  2.2%sy,  3.3%ni, 44.4%id,  5.5%wa,  6.6%hi,  7.7%si,  8.8%st");
+
+        assertEquals(8, props.size());
+
+        CpuUserTime metric = new CpuUserTime();
+        FloatProperty p = (FloatProperty)props.get(0);
+        assertEquals(Percentage.getInstance(), p.getMeasureUnit());
+        assertEquals(metric.getName(), p.getName());
+        assertEquals(1.1f, p.getFloat().floatValue(), 0.00001);
+        assertEquals(Float.class, p.getType());
+
+        CpuKernelTime metric2 = new CpuKernelTime();
+        FloatProperty p2 = (FloatProperty)props.get(1);
+        assertEquals(Percentage.getInstance(), p2.getMeasureUnit());
+        assertEquals(metric2.getName(), p2.getName());
+        assertEquals(2.2f, p2.getFloat().floatValue(), 0.00001);
+        assertEquals(Float.class, p2.getType());
+
+        CpuNiceTime metric3 = new CpuNiceTime();
+        FloatProperty p3 = (FloatProperty)props.get(2);
+        assertEquals(Percentage.getInstance(), p3.getMeasureUnit());
+        assertEquals(metric3.getName(), p3.getName());
+        assertEquals(3.3f, p3.getFloat().floatValue(), 0.00001);
+        assertEquals(Float.class, p3.getType());
+
+        CpuIdleTime metric4 = new CpuIdleTime();
+        FloatProperty p4 = (FloatProperty)props.get(3);
+        assertEquals(Percentage.getInstance(), p4.getMeasureUnit());
+        assertEquals(metric4.getName(), p4.getName());
+        assertEquals(44.4f, p4.getFloat().floatValue(), 0.00001);
+        assertEquals(Float.class, p4.getType());
+
+        CpuIoWaitTime metric5 = new CpuIoWaitTime();
+        FloatProperty p5 = (FloatProperty)props.get(4);
+        assertEquals(Percentage.getInstance(), p5.getMeasureUnit());
+        assertEquals(metric5.getName(), p5.getName());
+        assertEquals(5.5f, p5.getFloat().floatValue(), 0.00001);
+        assertEquals(Float.class, p5.getType());
+
+        CpuHardwareInterruptTime metric6 = new CpuHardwareInterruptTime();
+        FloatProperty p6 = (FloatProperty)props.get(5);
+        assertEquals(Percentage.getInstance(), p6.getMeasureUnit());
+        assertEquals(metric6.getName(), p6.getName());
+        assertEquals(6.6f, p6.getFloat().floatValue(), 0.00001);
+        assertEquals(Float.class, p6.getType());
+
+        CpuSoftwareInterruptTime metric7 = new CpuSoftwareInterruptTime();
+        FloatProperty p7 = (FloatProperty)props.get(6);
+        assertEquals(Percentage.getInstance(), p7.getMeasureUnit());
+        assertEquals(metric7.getName(), p7.getName());
+        assertEquals(7.7f, p7.getFloat().floatValue(), 0.00001);
+        assertEquals(Float.class, p7.getType());
+
+        CpuStolenTime metric8 = new CpuStolenTime();
+        FloatProperty p8 = (FloatProperty)props.get(7);
+        assertEquals(Percentage.getInstance(), p8.getMeasureUnit());
+        assertEquals(metric8.getName(), p8.getName());
+        assertEquals(8.8f, p8.getFloat().floatValue(), 0.00001);
+        assertEquals(Float.class, p8.getType());
+    }
+//
+//    @Test
+//    public void parseLinuxMemoryInfo() throws Exception {
+//
+//        List<Property> props = Top.parseLinuxMemoryInfo(
+//                "  1015944 total,   802268 free,    86860 used,   126816 buff/cache");
+//
+//        assertEquals(3, props.size());
+//
+//        PhysicalMemoryTotal metric = new PhysicalMemoryTotal();
+//        LongProperty p = (LongProperty)props.get(0);
+//        assertEquals(MemoryMeasureUnit.BYTE, p.getMeasureUnit());
+//        assertEquals(metric.getName(), p.getName());
+//        assertEquals(1015944l * 1024, p.getLong().longValue());
+//        assertEquals(Long.class, p.getType());
+//
+//        PhysicalMemoryFree metric2 = new PhysicalMemoryFree();
+//        LongProperty p2 = (LongProperty)props.get(1);
+//        assertEquals(MemoryMeasureUnit.BYTE, p2.getMeasureUnit());
+//        assertEquals(metric2.getName(), p2.getName());
+//        assertEquals(802268L * 1024, p2.getLong().longValue());
+//        assertEquals(Long.class, p2.getType());
+//
+//        PhysicalMemoryUsed metric3 = new PhysicalMemoryUsed();
+//        LongProperty p3 = (LongProperty)props.get(2);
+//        assertEquals(MemoryMeasureUnit.BYTE, p3.getMeasureUnit());
+//        assertEquals(metric3.getName(), p3.getName());
+//        assertEquals(86860L * 1024, p3.getLong().longValue());
+//        assertEquals(Long.class, p3.getType());
+//    }
+//
+//    @Test
+//    public void parseLinuxSwapInfo() throws Exception {
+//
+//        List<Property> props = Top.parseLinuxSwapInfo(
+//                "  100 total,        80 free,        20 used.   791404 avail Mem");
+//
+//        assertEquals(3, props.size());
+//
+//        SwapTotal metric = new SwapTotal();
+//        LongProperty p = (LongProperty)props.get(0);
+//        assertEquals(MemoryMeasureUnit.BYTE, p.getMeasureUnit());
+//        assertEquals(metric.getName(), p.getName());
+//        assertEquals(100L * 1024, p.getLong().longValue());
+//        assertEquals(Long.class, p.getType());
+//
+//        SwapFree metric2 = new SwapFree();
+//        LongProperty p2 = (LongProperty)props.get(1);
+//        assertEquals(MemoryMeasureUnit.BYTE, p2.getMeasureUnit());
+//        assertEquals(metric2.getName(), p2.getName());
+//        assertEquals(80L * 1024, p2.getLong().longValue());
+//        assertEquals(Long.class, p2.getType());
+//
+//        SwapUsed metric3 = new SwapUsed();
+//        LongProperty p3 = (LongProperty)props.get(2);
+//        assertEquals(MemoryMeasureUnit.BYTE, p3.getMeasureUnit());
+//        assertEquals(metric3.getName(), p3.getName());
+//        assertEquals(20L * 1024, p3.getLong().longValue());
+//        assertEquals(Long.class, p3.getType());
+//    }
 
     // Mac static ------------------------------------------------------------------------------------------------------
 
@@ -405,6 +704,32 @@ public class TopTest extends OSCommandTest {
 
         assertEquals("top", top.getCommand());
         assertEquals("something something else", top.getArguments());
+    }
+
+    // extractMemoryMeasureUnitHeuristics() ----------------------------------------------------------------------------
+
+    @Test
+    public void extractMemoryMeasureUnitHeuristics_Default() throws Exception {
+
+        Top.StringMeasureUnitPair p = Top.extractMemoryMeasureUnitHeuristics("123");
+        assertEquals("123", p.s);
+        assertEquals(MemoryMeasureUnit.BYTE, p.memoryMeasureUnit);
+    }
+
+    @Test
+    public void extractMemoryMeasureUnitHeuristics_Kilobytes() throws Exception {
+
+        Top.StringMeasureUnitPair p = Top.extractMemoryMeasureUnitHeuristics("123k");
+        assertEquals("123", p.s);
+        assertEquals(MemoryMeasureUnit.KILOBYTE, p.memoryMeasureUnit);
+    }
+
+    @Test
+    public void extractMemoryMeasureUnitHeuristics_Kilobytes_EndsInSpace() throws Exception {
+
+        Top.StringMeasureUnitPair p = Top.extractMemoryMeasureUnitHeuristics("123k ");
+        assertEquals("123", p.s);
+        assertEquals(MemoryMeasureUnit.KILOBYTE, p.memoryMeasureUnit);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

@@ -18,50 +18,28 @@ package io.novaordis.events.core.event;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 8/3/16
+ * @since 8/30/16
  */
-public class Percentage implements MeasureUnit {
+public class MockMeasureUnit implements MeasureUnit {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
     // Static ----------------------------------------------------------------------------------------------------------
 
-    private static final Percentage INSTANCE = new Percentage();
-
-    public static Percentage getInstance() {
-        return INSTANCE;
-    }
-
     // Attributes ------------------------------------------------------------------------------------------------------
 
     // Constructors ----------------------------------------------------------------------------------------------------
-
-    private Percentage() {
-    }
 
     // MeasureUnit implementation --------------------------------------------------------------------------------------
 
     @Override
     public String getLabel() {
-        return "%";
+        throw new RuntimeException("getLabel() NOT YET IMPLEMENTED");
     }
 
     @Override
     public Double getConversionFactor(MeasureUnit that) {
-
-        if (that == null) {
-            throw new IllegalArgumentException("null measure unit");
-        }
-
-        if (!(that instanceof Percentage)) {
-            throw new IllegalArgumentException(that + " cannot be converted to " + this);
-        }
-
-        //
-        // no conversion
-        //
-
-        return null;
+        throw new RuntimeException("getConversionFactor() NOT YET IMPLEMENTED");
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

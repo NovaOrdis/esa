@@ -22,8 +22,8 @@ package io.novaordis.events.core.event;
  */
 public enum TimeMeasureUnit implements MeasureUnit {
 
-    MILLISECOND("ms"),
-    SECOND("sec");
+    MILLISECOND("ms", 1000L),
+    SECOND("sec", 1000L * 1000L);
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -32,12 +32,14 @@ public enum TimeMeasureUnit implements MeasureUnit {
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private String label;
+    private long microseconds;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    TimeMeasureUnit(String label) {
+    TimeMeasureUnit(String label, long microseconds) {
 
         this.label = label;
+        this.microseconds = microseconds;
     }
 
     // MeasureUnit implementation --------------------------------------------------------------------------------------
@@ -45,6 +47,22 @@ public enum TimeMeasureUnit implements MeasureUnit {
     @Override
     public String getLabel() {
         return label;
+    }
+
+    @Override
+    public Double getConversionFactor(MeasureUnit that) {
+
+        if (that == null) {
+            throw new IllegalArgumentException("null measure unit");
+        }
+
+        if (!(that instanceof TimeMeasureUnit)) {
+            throw new IllegalArgumentException(that + " cannot be converted to " + this);
+        }
+
+        TimeMeasureUnit thatTimeMeasureUnit = (TimeMeasureUnit)that;
+
+        return (double) thatTimeMeasureUnit.microseconds / microseconds;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

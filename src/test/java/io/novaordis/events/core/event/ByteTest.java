@@ -43,6 +43,66 @@ public class ByteTest extends MemoryMeasureUnitTest {
         assertEquals("bytes", label);
     }
 
+    // parse() ---------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void parse_b() throws Exception {
+
+        MemoryMeasureUnit mmu = MemoryMeasureUnit.parse("b");
+        assertEquals(MemoryMeasureUnit.BYTE, mmu);
+    }
+
+    @Test
+    public void parse_b_CaseNotImportant() throws Exception {
+
+        MemoryMeasureUnit mmu = MemoryMeasureUnit.parse("B");
+        assertEquals(MemoryMeasureUnit.BYTE, mmu);
+    }
+
+    @Test
+    public void parse_bytes() throws Exception {
+
+        MemoryMeasureUnit mmu = MemoryMeasureUnit.parse("bytes");
+        assertEquals(MemoryMeasureUnit.BYTE, mmu);
+    }
+
+    @Test
+    public void parse_DeclaredUnit() throws Exception {
+
+        MemoryMeasureUnit mmu = MemoryMeasureUnit.parse("BYTE");
+        assertEquals(MemoryMeasureUnit.BYTE, mmu);
+    }
+
+    // getConversionFactor() -------------------------------------------------------------------------------------------
+
+    @Test
+    public void getConversionFactor_bytesToBytes() throws Exception {
+
+        double d = MemoryMeasureUnit.BYTE.getConversionFactor(MemoryMeasureUnit.BYTE);
+        assertEquals(1, (int)d);
+    }
+
+    @Test
+    public void getConversionFactor_KilobytesToBytes() throws Exception {
+
+        double d = MemoryMeasureUnit.BYTE.getConversionFactor(MemoryMeasureUnit.KILOBYTE);
+        assertEquals(1024, (int)d);
+    }
+
+    @Test
+    public void getConversionFactor_MegabytesToBytes() throws Exception {
+
+        double d = MemoryMeasureUnit.BYTE.getConversionFactor(MemoryMeasureUnit.MEGABYTE);
+        assertEquals(1024 * 1024, (int)d);
+    }
+
+    @Test
+    public void getConversionFactor_GigabytesToBytes() throws Exception {
+
+        double d = MemoryMeasureUnit.BYTE.getConversionFactor(MemoryMeasureUnit.GIGABYTE);
+        assertEquals(1024 * 1024 * 1024, (int)d);
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------

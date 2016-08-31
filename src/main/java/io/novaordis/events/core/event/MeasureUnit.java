@@ -34,4 +34,14 @@ public interface MeasureUnit {
      */
     String getLabel();
 
+    /**
+     * Returns the value that can be used to convert 'that' measure unit into this measure unit. For example, if
+     * 'that' measure unit is BYTE and this is KILOBYTE, the conversion factor is 1024.
+     *
+     * May return null if conversion does not make sense for the given measure units (example: percentage).
+     *
+     * @exception IllegalArgumentException if the measure units cannot converted from one another.
+     */
+    Double getConversionFactor(MeasureUnit that);
+
 }

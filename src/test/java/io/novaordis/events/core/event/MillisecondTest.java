@@ -43,6 +43,22 @@ public class MillisecondTest extends TimeMeasureUnitTest {
         assertEquals("ms", label);
     }
 
+    // getConversionFactor() -------------------------------------------------------------------------------------------
+
+    @Test
+    public void getConversionFactor_millisecondsToMilliseconds() throws Exception {
+
+        double d = TimeMeasureUnit.MILLISECOND.getConversionFactor(TimeMeasureUnit.MILLISECOND);
+        assertEquals(1, (int)d);
+    }
+
+    @Test
+    public void getConversionFactor_secondsToMilliseconds() throws Exception {
+
+        double d = TimeMeasureUnit.MILLISECOND.getConversionFactor(TimeMeasureUnit.SECOND);
+        assertEquals(1000, (int)d);
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
