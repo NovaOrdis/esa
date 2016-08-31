@@ -17,6 +17,7 @@
 package io.novaordis.events.metric;
 
 import io.novaordis.events.core.event.MeasureUnit;
+import io.novaordis.events.metric.jboss.JBossCLIMetricDefinition;
 import io.novaordis.events.metric.source.MetricSource;
 import io.novaordis.utilities.UserErrorException;
 import org.slf4j.Logger;
@@ -36,7 +37,27 @@ public interface MetricDefinition {
 
     // Static ----------------------------------------------------------------------------------------------------------
 
+    /**
+     * So far, we support metrics that are implemented in two different ways:
+     *
+     * 1. Class based - if the name of the class is found in the classpath, it is loaded
+     * 2. Type based (like jboss:)
+     */
     static MetricDefinition getInstance(String s) throws UserErrorException {
+
+        if (s.startsWith(JBossCLIMetricDefinition.PREFIX)) {
+
+            try {
+
+                return new JBossCLIMetricDefinition(s);
+            }
+            catch (Exception e) {
+
+                String msg = "invalid jboss metric definition";
+                msg = e.getMessage() == null ? msg : msg + ": " + e.getMessage();
+                throw new UserErrorException(msg, e);
+            }
+        }
 
         //
         // TODO naive implementation, come up with something better
