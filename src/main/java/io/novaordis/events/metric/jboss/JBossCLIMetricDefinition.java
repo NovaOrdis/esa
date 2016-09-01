@@ -114,6 +114,12 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
         return attribute;
     }
 
+    @Override
+    public String toString() {
+
+        return controller + ":" + path + "/" + attribute;
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
