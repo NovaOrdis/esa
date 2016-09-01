@@ -24,7 +24,7 @@ import io.novaordis.events.metric.MetricDefinitionException;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 8/31/16
  */
-public class JBossCLIMetricDefinition extends MetricDefinitionBase {
+public class JBossCliMetricDefinition extends MetricDefinitionBase {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ public class JBossCLIMetricDefinition extends MetricDefinitionBase {
      * must be human-readable, as it will most likely end up in error messages.
      * @throws IllegalArgumentException
      */
-    public JBossCLIMetricDefinition(String definition) throws MetricDefinitionException {
+    public JBossCliMetricDefinition(String definition) throws MetricDefinitionException {
 
         if (definition == null) {
 

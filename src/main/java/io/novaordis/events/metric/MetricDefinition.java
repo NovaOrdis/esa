@@ -17,7 +17,7 @@
 package io.novaordis.events.metric;
 
 import io.novaordis.events.core.event.MeasureUnit;
-import io.novaordis.events.metric.jboss.JBossCLIMetricDefinition;
+import io.novaordis.events.metric.jboss.JBossCliMetricDefinition;
 import io.novaordis.events.metric.source.MetricSource;
 import io.novaordis.utilities.UserErrorException;
 import org.slf4j.Logger;
@@ -45,11 +45,11 @@ public interface MetricDefinition {
      */
     static MetricDefinition getInstance(String s) throws UserErrorException {
 
-        if (s.startsWith(JBossCLIMetricDefinition.PREFIX)) {
+        if (s.startsWith(JBossCliMetricDefinition.PREFIX)) {
 
             try {
 
-                return new JBossCLIMetricDefinition(s);
+                return new JBossCliMetricDefinition(s);
             }
             catch (Exception e) {
 

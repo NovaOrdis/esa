@@ -33,11 +33,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 8/3/16
  */
-public class JBossCLIMetricDefinitionTest extends MetricDefinitionTest {
+public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(JBossCLIMetricDefinitionTest.class);
+    private static final Logger log = LoggerFactory.getLogger(JBossCliMetricDefinitionTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -52,7 +52,7 @@ public class JBossCLIMetricDefinitionTest extends MetricDefinitionTest {
     @Test
     public void getInstance_JBoss_NoHostNoPort() throws Exception {
 
-        JBossCLIMetricDefinition d = (JBossCLIMetricDefinition)MetricDefinition.getInstance(
+        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(
                 "jboss:/a=b/c=d/f");
 
         fail("return here: " + d);
@@ -61,7 +61,7 @@ public class JBossCLIMetricDefinitionTest extends MetricDefinitionTest {
     @Test
     public void getInstance_JBoss_LocalhostNoPort() throws Exception {
 
-        JBossCLIMetricDefinition d = (JBossCLIMetricDefinition)MetricDefinition.getInstance(
+        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(
                 "jboss:localhost/a=b/c=d/f");
 
         fail("return here: " + d);
@@ -71,7 +71,7 @@ public class JBossCLIMetricDefinitionTest extends MetricDefinitionTest {
     @Test
     public void getInstance_JBoss_HostNoPort() throws Exception {
 
-        JBossCLIMetricDefinition d = (JBossCLIMetricDefinition)MetricDefinition.getInstance(
+        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(
                 "jboss:blue/a=b/c=d/f");
 
         fail("return here: " + d);
@@ -81,7 +81,7 @@ public class JBossCLIMetricDefinitionTest extends MetricDefinitionTest {
     @Test
     public void getInstance_JBoss_LocalhostAndPort() throws Exception {
 
-        JBossCLIMetricDefinition d = (JBossCLIMetricDefinition)MetricDefinition.getInstance(
+        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(
                 "jboss:localhost:9999/a=b/c=d/f");
 
         fail("return here: " + d);
@@ -91,7 +91,7 @@ public class JBossCLIMetricDefinitionTest extends MetricDefinitionTest {
     @Test
     public void getInstance_JBoss_HostAndPort() throws Exception {
 
-        JBossCLIMetricDefinition d = (JBossCLIMetricDefinition)MetricDefinition.getInstance(
+        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(
                 "jboss:blue:9999/a=b/c=d/f");
 
         fail("return here: " + d);
@@ -121,7 +121,7 @@ public class JBossCLIMetricDefinitionTest extends MetricDefinitionTest {
     public void constructor_NullArgument() throws Exception {
 
         try {
-            new JBossCLIMetricDefinition(null);
+            new JBossCliMetricDefinition(null);
             fail("should have thrown exception");
         }
         catch(IllegalArgumentException e) {
@@ -136,7 +136,7 @@ public class JBossCLIMetricDefinitionTest extends MetricDefinitionTest {
     public void constructor_NoPrefix() throws Exception {
 
         try {
-            new JBossCLIMetricDefinition("something");
+            new JBossCliMetricDefinition("something");
             fail("should have thrown exception");
         }
         catch(IllegalArgumentException e) {
@@ -152,9 +152,9 @@ public class JBossCLIMetricDefinitionTest extends MetricDefinitionTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected JBossCLIMetricDefinition getMetricDefinitionToTest() throws Exception {
+    protected JBossCliMetricDefinition getMetricDefinitionToTest() throws Exception {
 
-        return new JBossCLIMetricDefinition("jboss:/name");
+        return new JBossCliMetricDefinition("jboss:/name");
     }
 
     // Private ---------------------------------------------------------------------------------------------------------
