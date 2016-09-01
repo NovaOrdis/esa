@@ -34,6 +34,10 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private CliControllerAddress controller;
+    private CliPath path;
+    private CliAttribute attribute;
+
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
@@ -60,17 +64,35 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
 
     @Override
     public String getSimpleLabel() {
-        throw new RuntimeException("getSimpleLabel() NOT YET IMPLEMENTED");
+
+        //
+        // it would be nice if we could come up with a human readable label - we'll see how we do that; in the mean
+        // time, we'll just report path and attribute
+        //
+
+        return path.getPath() + "/" + attribute.getName();
     }
 
     @Override
     public MeasureUnit getMeasureUnit() {
-        throw new RuntimeException("getMeasureUnit() NOT YET IMPLEMENTED");
+
+        //
+        // it would be nice if we could come up with a valid value - we'll see how we do that; in the mean
+        // time, we'll just return null
+        //
+
+        return null;
     }
 
     @Override
     public String getDescription() {
-        throw new RuntimeException("getDescription() NOT YET IMPLEMENTED");
+
+        //
+        // it would be nice if we could come up with a description - we'll see how we do that; in the mea time, we'll
+        // just return the simple label
+        //
+
+        return getSimpleLabel();
     }
 
     @Override
@@ -79,6 +101,18 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public CliControllerAddress getControllerAddress() {
+        return controller;
+    }
+
+    public CliPath getPath() {
+        return path;
+    }
+
+    public CliAttribute getAttribute() {
+        return attribute;
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
@@ -90,7 +124,36 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
      * @param definition - without prefix
      */
     private void parse(String definition) throws MetricDefinitionException {
-        throw new RuntimeException("NYE");
+
+        int i = definition.indexOf('/');
+
+        if (i == -1) {
+            throw new MetricDefinitionException(
+                    "the jboss CLI metric defintion does not contain a path: \"" + definition + "\"");
+        }
+
+        String pathAndAttribute;
+
+        if (i != 0) {
+
+            //
+            // controller address
+            //
+
+            this.controller = new CliControllerAddress(definition.substring(0, i));
+            pathAndAttribute = definition.substring(i);
+
+        }
+        else {
+
+            this.controller = CliControllerAddress.DEFAULT_CONTROLLER;
+            pathAndAttribute = definition;
+        }
+
+        i = pathAndAttribute.lastIndexOf('/');
+
+        this.path = new CliPath(pathAndAttribute.substring(0, i));
+        this.attribute = new CliAttribute(pathAndAttribute.substring(i + 1));
     }
 
     // Inner classes ---------------------------------------------------------------------------------------------------

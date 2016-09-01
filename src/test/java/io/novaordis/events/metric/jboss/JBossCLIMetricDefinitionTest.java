@@ -52,50 +52,110 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
     @Test
     public void getInstance_JBoss_NoHostNoPort() throws Exception {
 
-        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(
-                "jboss:/a=b/c=d/f");
+        String s = "jboss:/a=b/c=d/f";
 
-        fail("return here: " + d);
+        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(s);
+
+        CliControllerAddress cliControllerAddress = d.getControllerAddress();
+        assertEquals(CliControllerAddress.DEFAULT_HOST, cliControllerAddress.getHost());
+        assertEquals(CliControllerAddress.DEFAULT_PORT, cliControllerAddress.getPort());
+
+        CliPath path = d.getPath();
+
+        assertEquals("/a=b/c=d", path.getPath());
+
+        CliAttribute attribute = d.getAttribute();
+        assertEquals("f", attribute.getName());
+
+        assertEquals("/a=b/c=d/f", d.getSimpleLabel());
+        assertEquals("/a=b/c=d/f", d.getDescription());
     }
 
     @Test
     public void getInstance_JBoss_LocalhostNoPort() throws Exception {
 
-        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(
-                "jboss:localhost/a=b/c=d/f");
+        String s = "jboss:localhost/a=b/c=d/f";
 
-        fail("return here: " + d);
+        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(s);
 
+        CliControllerAddress cliControllerAddress = d.getControllerAddress();
+        assertEquals("localhost", cliControllerAddress.getHost());
+        assertEquals(CliControllerAddress.DEFAULT_PORT, cliControllerAddress.getPort());
+
+        CliPath path = d.getPath();
+
+        assertEquals("/a=b/c=d", path.getPath());
+
+        CliAttribute attribute = d.getAttribute();
+        assertEquals("f", attribute.getName());
+
+        assertEquals("/a=b/c=d/f", d.getSimpleLabel());
+        assertEquals("/a=b/c=d/f", d.getDescription());
     }
 
     @Test
     public void getInstance_JBoss_HostNoPort() throws Exception {
 
-        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(
-                "jboss:blue/a=b/c=d/f");
+        String s = "jboss:blue/a=b/c=d/f";
 
-        fail("return here: " + d);
+        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(s);
 
+        CliControllerAddress cliControllerAddress = d.getControllerAddress();
+        assertEquals("blue", cliControllerAddress.getHost());
+        assertEquals(CliControllerAddress.DEFAULT_PORT, cliControllerAddress.getPort());
+
+        CliPath path = d.getPath();
+
+        assertEquals("/a=b/c=d", path.getPath());
+
+        CliAttribute attribute = d.getAttribute();
+        assertEquals("f", attribute.getName());
+
+        assertEquals("/a=b/c=d/f", d.getSimpleLabel());
+        assertEquals("/a=b/c=d/f", d.getDescription());
     }
 
     @Test
     public void getInstance_JBoss_LocalhostAndPort() throws Exception {
 
-        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(
-                "jboss:localhost:9999/a=b/c=d/f");
+        String s = "jboss:localhost:9999/a=b/c=d/f";
 
-        fail("return here: " + d);
+        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(s);
 
+        CliControllerAddress cliControllerAddress = d.getControllerAddress();
+        assertEquals("localhost", cliControllerAddress.getHost());
+        assertEquals(9999, cliControllerAddress.getPort());
+
+        CliPath path = d.getPath();
+
+        assertEquals("/a=b/c=d", path.getPath());
+
+        CliAttribute attribute = d.getAttribute();
+        assertEquals("f", attribute.getName());
+
+        assertEquals("/a=b/c=d/f", d.getSimpleLabel());
+        assertEquals("/a=b/c=d/f", d.getDescription());
     }
 
     @Test
     public void getInstance_JBoss_HostAndPort() throws Exception {
 
-        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(
-                "jboss:blue:9999/a=b/c=d/f");
+        String s = "jboss:blue:9999/a=b/c=d/f";
+        JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(s);
 
-        fail("return here: " + d);
+        CliControllerAddress cliControllerAddress = d.getControllerAddress();
+        assertEquals("blue", cliControllerAddress.getHost());
+        assertEquals(9999, cliControllerAddress.getPort());
 
+        CliPath path = d.getPath();
+
+        assertEquals("/a=b/c=d", path.getPath());
+
+        CliAttribute attribute = d.getAttribute();
+        assertEquals("f", attribute.getName());
+
+        assertEquals("/a=b/c=d/f", d.getSimpleLabel());
+        assertEquals("/a=b/c=d/f", d.getDescription());
     }
 
     @Test
@@ -144,6 +204,21 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
             String msg = e.getMessage();
             log.info(msg);
             assertEquals("invalid jboss CLI metric, no prefix: \"something\"", msg);
+        }
+    }
+
+    @Test
+    public void constructor_NoPathSeparator() throws Exception {
+
+        try {
+            new JBossCliMetricDefinition("jboss:something");
+            fail("should have thrown exception");
+        }
+        catch(MetricDefinitionException e) {
+
+            String msg = e.getMessage();
+            log.info(msg);
+            assertTrue(msg.startsWith("the jboss CLI metric defintion does not contain a path: \""));
         }
     }
 
