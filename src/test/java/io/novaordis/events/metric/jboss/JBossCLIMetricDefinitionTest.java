@@ -60,9 +60,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
         assertEquals(CliControllerAddress.DEFAULT_HOST, cliControllerAddress.getHost());
         assertEquals(CliControllerAddress.DEFAULT_PORT, cliControllerAddress.getPort());
 
-        CliPath path = d.getPath();
+        CliPath path = d.getPathInstance();
 
         assertEquals("/a=b/c=d", path.getPath());
+        assertEquals("/a=b/c=d", d.getPath());
 
         CliAttribute attribute = d.getAttribute();
         assertEquals("f", attribute.getName());
@@ -82,9 +83,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
         assertEquals("localhost", cliControllerAddress.getHost());
         assertEquals(CliControllerAddress.DEFAULT_PORT, cliControllerAddress.getPort());
 
-        CliPath path = d.getPath();
+        CliPath path = d.getPathInstance();
 
         assertEquals("/a=b/c=d", path.getPath());
+        assertEquals("/a=b/c=d", d.getPath());
 
         CliAttribute attribute = d.getAttribute();
         assertEquals("f", attribute.getName());
@@ -104,9 +106,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
         assertEquals("blue", cliControllerAddress.getHost());
         assertEquals(CliControllerAddress.DEFAULT_PORT, cliControllerAddress.getPort());
 
-        CliPath path = d.getPath();
+        CliPath path = d.getPathInstance();
 
         assertEquals("/a=b/c=d", path.getPath());
+        assertEquals("/a=b/c=d", d.getPath());
 
         CliAttribute attribute = d.getAttribute();
         assertEquals("f", attribute.getName());
@@ -126,9 +129,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
         assertEquals("localhost", cliControllerAddress.getHost());
         assertEquals(9999, cliControllerAddress.getPort());
 
-        CliPath path = d.getPath();
+        CliPath path = d.getPathInstance();
 
         assertEquals("/a=b/c=d", path.getPath());
+        assertEquals("/a=b/c=d", d.getPath());
 
         CliAttribute attribute = d.getAttribute();
         assertEquals("f", attribute.getName());
@@ -147,9 +151,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
         assertEquals("blue", cliControllerAddress.getHost());
         assertEquals(9999, cliControllerAddress.getPort());
 
-        CliPath path = d.getPath();
+        CliPath path = d.getPathInstance();
 
         assertEquals("/a=b/c=d", path.getPath());
+        assertEquals("/a=b/c=d", d.getPath());
 
         CliAttribute attribute = d.getAttribute();
         assertEquals("f", attribute.getName());
@@ -220,6 +225,22 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
             log.info(msg);
             assertTrue(msg.startsWith("the jboss CLI metric defintion does not contain a path: \""));
         }
+    }
+
+    @Test
+    public void constructor_And_Accessors() throws Exception {
+
+        JBossCliMetricDefinition md = new JBossCliMetricDefinition("jboss:some-host:1000/a=b/c=d/f");
+
+        CliAttribute attribute = md.getAttribute();
+        assertEquals("f", attribute.getName());
+        assertEquals("f", md.getAttributeName());
+
+        CliPath pathInstance = md.getPathInstance();
+        assertEquals("/a=b/c=d", pathInstance.getPath());
+
+        String path = md.getPath();
+        assertEquals("/a=b/c=d", path);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

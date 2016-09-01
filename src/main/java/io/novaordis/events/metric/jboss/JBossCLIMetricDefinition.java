@@ -106,21 +106,39 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
         return controller;
     }
 
-    public CliPath getPath() {
-        return path;
+    public String getPath() {
+
+        if (path == null) {
+            return null;
+        }
+
+        return path.getPath();
     }
 
-    public CliAttribute getAttribute() {
-        return attribute;
+    public String getAttributeName() {
+
+        if (attribute == null) {
+            return null;
+        }
+
+        return attribute.getName();
     }
 
     @Override
     public String toString() {
 
-        return controller + ":" + path + "/" + attribute;
+        return PREFIX + controller + ":" + path + "/" + attribute;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
+
+    CliAttribute getAttribute() {
+        return attribute;
+    }
+
+    CliPath getPathInstance() {
+        return path;
+    }
 
     // Protected -------------------------------------------------------------------------------------------------------
 

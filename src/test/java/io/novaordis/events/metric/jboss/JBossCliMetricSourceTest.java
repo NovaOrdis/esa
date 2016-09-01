@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 
-package io.novaordis.events.metric.source;
+package io.novaordis.events.metric.jboss;
 
-import io.novaordis.events.core.event.Property;
-import io.novaordis.events.metric.MetricCollectionException;
-import io.novaordis.events.metric.MetricDefinition;
-import io.novaordis.utilities.os.OS;
+import io.novaordis.events.metric.source.MetricSource;
+import io.novaordis.events.metric.source.MetricSourceTest;
+import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 8/5/16
+ * @since 8/31/16
  */
-public class MockMetricSource implements MetricSource {
+public class JBossCliMetricSourceTest extends MetricSourceTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -39,63 +34,39 @@ public class MockMetricSource implements MetricSource {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private Map<OS, List<Property>> results;
-
-    private boolean breakOnCollect;
-
     // Constructors ----------------------------------------------------------------------------------------------------
-
-    public MockMetricSource() {
-
-        results = new HashMap<>();
-    }
-
-    // MetricSource implementation -------------------------------------------------------------------------------------
-
-    @Override
-    public List<Property> collectMetrics(OS os) throws MetricCollectionException {
-
-        if (breakOnCollect) {
-            throw new MetricCollectionException("SYNTHETIC");
-        }
-
-        List<Property> props = results.get(os);
-
-        if (props == null) {
-            return Collections.emptyList();
-        }
-
-        return props;
-    }
-
-    @Override
-    public List<Property> collectMetrics(List<MetricDefinition> metricDefinitions, OS os) throws MetricCollectionException {
-        throw new RuntimeException("collectMetrics() NOT YET IMPLEMENTED");
-    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public void mockMetricGeneration(OS os, Property p) {
+    // collectMetrics() ------------------------------------------------------------------------------------------------
 
-        List<Property> ps = results.get(os);
+    @Test
+    public void collectMetrics_SomeOfTheDefinitionsAreNotJBossCliMetricDefinitions() throws Exception {
 
-        if (ps == null) {
-
-            ps = new ArrayList<>();
-            results.put(os, ps);
-        }
-
-        ps.add(p);
+        fail("RETURN HERE");
     }
 
-    public void breakOnCollectMetrics() {
+    @Test
+    public void collectMetrics_SomeOfTheDefinitionsDoNotExistOnController() throws Exception {
 
-        breakOnCollect = true;
+        fail("RETURN HERE");
+    }
+
+    @Test
+    public void collectMetrics_SomeOfTheDefinitionsDoNotHaveCorrespondingValues() throws Exception {
+
+        fail("RETURN HERE");
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
+
+    @Override
+    protected MetricSource getMetricSourceToTest() throws Exception {
+
+        return new JBossCliMetricSource();
+    }
 
     // Private ---------------------------------------------------------------------------------------------------------
 

@@ -18,6 +18,7 @@ package io.novaordis.events.metric.source;
 
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.metric.MetricCollectionException;
+import io.novaordis.events.metric.MetricDefinition;
 import io.novaordis.utilities.os.OS;
 
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.List;
 /**
  * The source for metrics. Can represent a native O/S command, a file, etc.
  *
- * The implementations must correctly implement equals() and hashCode()
+ * The implementations must correctly implement equals() and hashCode().
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 8/4/16
@@ -39,8 +40,22 @@ public interface MetricSource {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
+     * Collect all the possible metrics that can be collected in one invocation.
+     *
      * @return the complete list of properties. If no properties are collected, returns an empty list, but never null.
      */
     List<Property> collectMetrics(OS os) throws MetricCollectionException;
+
+    /**
+     * Collect the metrics corresponding to the the given definitions, in one invocation.
+     *
+     * @return the list of properties. If no properties are collected, returns an empty list, but never null. However,
+     * if a property for a specific metric definition cannot be collected, the list will contain a null on that
+     * position.
+     *
+     * @exception MetricCollectionException if metric definitions do not list this source among their sources.
+     *
+     */
+    List<Property> collectMetrics(List<MetricDefinition> metricDefinitions, OS os) throws MetricCollectionException;
 
 }
