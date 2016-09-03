@@ -21,9 +21,9 @@ import io.novaordis.events.core.event.Property;
 import io.novaordis.events.metric.MetricCollectionException;
 import io.novaordis.events.metric.MetricDefinition;
 import io.novaordis.events.metric.source.MetricSource;
-import io.novaordis.utilities.jboss.cli.CliException;
-import io.novaordis.utilities.jboss.cli.JBossControllerClient;
-import io.novaordis.utilities.jboss.cli.JBossControllerClientImpl;
+import io.novaordis.jboss.cli.JBossCliException;
+import io.novaordis.jboss.cli.JBossControllerClient;
+import io.novaordis.jboss.cli.JBossControllerClientImpl;
 import io.novaordis.utilities.os.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class JBossCliMetricSource implements MetricSource {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public JBossCliMetricSource() {
+    public JBossCliMetricSource() throws Exception {
 
         this.controllerClient = new JBossControllerClientImpl();
     }
@@ -75,19 +75,46 @@ public class JBossCliMetricSource implements MetricSource {
         for(MetricDefinition d: metricDefinitions) {
 
             if (!(d instanceof JBossCliMetricDefinition)) {
-                throw new MetricCollectionException("...");
+                throw new MetricCollectionException("RETURN HERE");
             }
 
-            JBossCliMetricDefinition cliMd = (JBossCliMetricDefinition)d;
+            JBossCliMetricDefinition jbmd = (JBossCliMetricDefinition)d;
 
-            String path = cliMd.getPath();
-            String attributeName = cliMd.getAttributeName();
+            String path = jbmd.getPath();
+            String attributeName = jbmd.getAttributeName();
             String attributeValue = null;
 
+
+            //
+            // if the client is not connected, attempt to connect it, every time we collect metrics. This is useful if
+            // the JBoss instance is started after os-stats, or if the JBoss instance becomes inaccessible and then
+            // reappears
+            //
+
+            if (!controllerClient.isConnected()) {
+
+                try {
+
+                    log.debug("attempting to connect " + controllerClient);
+                    controllerClient.connect();
+                }
+                catch(Exception e) {
+
+                    log.warn(e.getMessage());
+                    continue;
+
+                }
+
+                //
+                // TODO - disconnect
+                //
+            }
+
             try {
+
                 attributeValue = controllerClient.getAttributeValue(path, attributeName);
             }
-            catch (CliException e) {
+            catch (JBossCliException e) {
 
                 log.warn(e.getMessage());
             }
@@ -111,16 +138,16 @@ public class JBossCliMetricSource implements MetricSource {
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
-
-    public void connect() throws Exception {
-
-        controllerClient.connect();
-    }
-
-    public void disconnect() {
-
-        controllerClient.disconnect();
-    }
+//
+//    public void connect() throws Exception {
+//
+//        controllerClient.connect();
+//    }
+//
+//    public void disconnect() {
+//
+//        controllerClient.disconnect();
+//    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
