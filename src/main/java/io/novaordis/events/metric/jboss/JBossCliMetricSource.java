@@ -156,7 +156,7 @@ public class JBossCliMetricSource implements MetricSource {
                 // figure out how I converted Strings to Properties for top, and document that in the MetricDefinition doc.
                 //
 
-                p = new StringProperty("mock");
+                p = new StringProperty("JBossCliMetricDefinition");
                 p.setValue(attributeValue);
 
             }
