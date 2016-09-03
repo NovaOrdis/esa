@@ -23,15 +23,21 @@ import io.novaordis.events.metric.MetricDefinition;
 import io.novaordis.events.metric.source.MetricSource;
 import io.novaordis.jboss.cli.JBossCliException;
 import io.novaordis.jboss.cli.JBossControllerClient;
-import io.novaordis.jboss.cli.JBossControllerClientImpl;
+import io.novaordis.jboss.cli.model.JBossControllerAddress;
 import io.novaordis.utilities.os.OS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
+ * Represents a JBoss controller, bound to a specific host:port and accessible using a certain user account.
+ *
+ * A JBossCliMetricSource instance is equal with another JBossCliMetricSource instance if those instances have the
+ * same hosts, ports and user.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 8/31/16
  */
@@ -45,25 +51,39 @@ public class JBossCliMetricSource implements MetricSource {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private JBossControllerAddress controllerAddress;
+
+    //
+    // lazily instantiated and connected
+    //
     private JBossControllerClient controllerClient;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public JBossCliMetricSource() throws Exception {
+    public JBossCliMetricSource(JBossControllerAddress controllerAddress) {
 
-        this.controllerClient = new JBossControllerClientImpl();
+        this.controllerAddress = controllerAddress;
+    }
+
+    /**
+     * Uses the default controller address ("localhost:9999")
+     */
+    public JBossCliMetricSource() {
+
+        this(new JBossControllerAddress());
     }
 
     // MetricSource implementation -------------------------------------------------------------------------------------
 
     @Override
-    public List<Property> collectMetrics(OS os) throws MetricCollectionException {
+    public List<Property> collectAllMetrics(OS os) throws MetricCollectionException {
 
         //
         // this method is not used (yet) for a JBoss CLI controller, so we're not implementing it. When we need it,
-        // we'll implement it
+        // we'll implement it. Currently it returns an empty list.
         //
-        throw new RuntimeException("collectMetrics(" + os + ") NOT YET IMPLEMENTED");
+
+        return Collections.emptyList();
     }
 
     @Override
@@ -84,7 +104,15 @@ public class JBossCliMetricSource implements MetricSource {
             String attributeName = jbmd.getAttributeName();
             String attributeValue = null;
 
+            //
+            // lazy instantiation
 
+            if (controllerClient == null) {
+
+                this.controllerClient = JBossControllerClient.getInstance();
+            }
+
+            //
             //
             // if the client is not connected, attempt to connect it, every time we collect metrics. This is useful if
             // the JBoss instance is started after os-stats, or if the JBoss instance becomes inaccessible and then
@@ -138,18 +166,71 @@ public class JBossCliMetricSource implements MetricSource {
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
-//
-//    public void connect() throws Exception {
-//
-//        controllerClient.connect();
-//    }
-//
-//    public void disconnect() {
-//
-//        controllerClient.disconnect();
-//    }
+
+    public String getHost() {
+
+        return controllerAddress.getHost();
+    }
+
+    public int getPort() {
+
+        return controllerAddress.getPort();
+    }
+
+    /**
+     * @return the username to use to connect to the JBoss controller. null means local connection.
+     */
+    public String getUsername() {
+
+        return controllerAddress.getUsername();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+
+        if (controllerAddress == null) {
+            return false;
+        }
+
+        if (!(o instanceof JBossCliMetricSource)) {
+            return false;
+        }
+
+        JBossCliMetricSource that = (JBossCliMetricSource)o;
+
+        return controllerAddress.equals(that.controllerAddress);
+    }
+
+    @Override
+    public int hashCode() {
+
+        if (controllerAddress == null) {
+            return 0;
+        }
+
+        return 7 + 11 * controllerAddress.hashCode();
+    }
+
+
+    @Override
+    public String toString() {
+
+        return controllerAddress == null ? "null" : controllerAddress.toString();
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
+
+    /**
+     * The password to be used by the associated user to connect to the controller. May be null.
+     */
+    char[] getPassword() {
+
+        return controllerAddress.getPassword();
+    }
 
     // Protected -------------------------------------------------------------------------------------------------------
 

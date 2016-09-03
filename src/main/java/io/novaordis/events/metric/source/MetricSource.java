@@ -40,11 +40,12 @@ public interface MetricSource {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
-     * Collect all the possible metrics that can be collected in one invocation.
+     * Collect all the possible metrics that can be collected in one invocation. Use this to optimize expensive
+     * invocations to sources.
      *
      * @return the complete list of properties. If no properties are collected, returns an empty list, but never null.
      */
-    List<Property> collectMetrics(OS os) throws MetricCollectionException;
+    List<Property> collectAllMetrics(OS os) throws MetricCollectionException;
 
     /**
      * Collect the metrics corresponding to the the given definitions, in one invocation.

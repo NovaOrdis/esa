@@ -19,8 +19,16 @@ package io.novaordis.events.metric.jboss;
 import io.novaordis.events.core.event.MeasureUnit;
 import io.novaordis.events.metric.MetricDefinitionBase;
 import io.novaordis.events.metric.MetricDefinitionException;
+import io.novaordis.events.metric.source.MetricSource;
+import io.novaordis.jboss.cli.JBossCliException;
+import io.novaordis.jboss.cli.model.JBossControllerAddress;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
+ * A metric that can be read from a JBoss controller.
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 8/31/16
  */
@@ -34,9 +42,14 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private CliControllerAddress controller;
     private CliPath path;
     private CliAttribute attribute;
+
+    //
+    // a JBoss CLI metric definition has only one source, irrespective of the OS
+    //
+
+    private JBossCliMetricSource source;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
@@ -100,11 +113,39 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
         throw new RuntimeException("getType() NOT YET IMPLEMENTED");
     }
 
-    // Public ----------------------------------------------------------------------------------------------------------
+    //
+    // we need to override all source-related methods, as we override the storage
+    //
 
-    public CliControllerAddress getControllerAddress() {
-        return controller;
+    /**
+     * Base override, we only have just one source.
+     */
+    @Override
+    public List<MetricSource> getSources(String osName) {
+
+        return Collections.singletonList(source);
     }
+
+    @Override
+    public boolean addSource(String osName, MetricSource source) {
+
+        if (!(source instanceof JBossCliMetricSource)) {
+            throw new IllegalArgumentException("the metric source not a JBossCliMetricSource");
+        }
+
+        //
+        // osName does not matter, we're ignoring it, warn if we're seeing a non-null one
+        //
+
+        if (osName != null) {
+            log.warn("specifying an OS name is superfluous, " + osName + " will be ignored");
+        }
+
+        this.source = (JBossCliMetricSource)source;
+        return true;
+    }
+
+    // Public ----------------------------------------------------------------------------------------------------------
 
     public String getPath() {
 
@@ -124,10 +165,18 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
         return attribute.getName();
     }
 
+    /**
+     * The only source, OS-independent. Never returns null.
+     */
+    public JBossCliMetricSource getSource() {
+
+        return source;
+    }
+
     @Override
     public String toString() {
 
-        return PREFIX + controller + ":" + path + "/" + attribute;
+        return PREFIX + source + ":" + path + "/" + attribute;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -153,9 +202,10 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
 
         if (i == -1) {
             throw new MetricDefinitionException(
-                    "the jboss CLI metric defintion does not contain a path: \"" + definition + "\"");
+                    "the jboss CLI metric definition does not contain a path: \"" + definition + "\"");
         }
 
+        JBossControllerAddress controllerAddress;
         String pathAndAttribute;
 
         if (i != 0) {
@@ -164,15 +214,30 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
             // controller address
             //
 
-            this.controller = new CliControllerAddress(definition.substring(0, i));
+            try {
+
+                controllerAddress = JBossControllerAddress.parseAddress(definition.substring(0, i));
+            }
+            catch(JBossCliException e) {
+
+                throw new MetricDefinitionException("invalid jboss CLI metric definition: " + e.getMessage(), e);
+            }
+
             pathAndAttribute = definition.substring(i);
 
         }
         else {
 
-            this.controller = CliControllerAddress.DEFAULT_CONTROLLER;
+            controllerAddress = new JBossControllerAddress();
             pathAndAttribute = definition;
         }
+
+        //
+        // we don't need a map storage in the superclass, we have one source for any OS, so we simply get rid of the
+        // map storage
+        //
+        setSources(null);
+        addSource(null, new JBossCliMetricSource(controllerAddress));
 
         i = pathAndAttribute.lastIndexOf('/');
 

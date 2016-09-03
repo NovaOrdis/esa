@@ -41,6 +41,10 @@ public class MetricDefinitionException extends Exception {
         super(cause);
     }
 
+    public MetricDefinitionException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     // Package protected -----------------------------------------------------------------------------------------------

@@ -53,7 +53,7 @@ public class MockMetricSource implements MetricSource {
     // MetricSource implementation -------------------------------------------------------------------------------------
 
     @Override
-    public List<Property> collectMetrics(OS os) throws MetricCollectionException {
+    public List<Property> collectAllMetrics(OS os) throws MetricCollectionException {
 
         if (breakOnCollect) {
             throw new MetricCollectionException("SYNTHETIC");

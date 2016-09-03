@@ -451,7 +451,7 @@ public class Top extends OSCommand {
     // OSCommand implementation ----------------------------------------------------------------------------------------
 
     @Override
-    public List<Property> collectMetrics(OS os) throws MetricCollectionException {
+    public List<Property> collectAllMetrics(OS os) throws MetricCollectionException {
 
         String stdout = executeCommandAndReturnStdout(os);
 

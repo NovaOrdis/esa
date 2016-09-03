@@ -19,10 +19,18 @@ package io.novaordis.events.metric.jboss;
 import io.novaordis.events.metric.MetricDefinition;
 import io.novaordis.events.metric.MetricDefinitionException;
 import io.novaordis.events.metric.MetricDefinitionTest;
+import io.novaordis.events.metric.MockOS;
+import io.novaordis.events.metric.source.MetricSource;
+import io.novaordis.events.metric.source.MockMetricSource;
+import io.novaordis.jboss.cli.JBossCliException;
+import io.novaordis.jboss.cli.JBossControllerClient;
 import io.novaordis.utilities.UserErrorException;
+import io.novaordis.utilities.os.OS;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -47,6 +55,58 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    // Overrides -------------------------------------------------------------------------------------------------------
+
+    /**
+     * The OS makes no difference for this metric definition.
+     * @throws Exception
+     */
+    @Override
+    @Test
+    public void getSources_UnknownOS() throws Exception {
+
+        MetricDefinition d = getMetricDefinitionToTest();
+
+        List<MetricSource> sources = d.getSources(MockOS.NAME);
+
+        assertEquals(1, sources.size());
+
+        assertTrue(sources.contains(((JBossCliMetricDefinition) d).getSource()));
+    }
+
+    /**
+     * The OS makes no difference for this metric definition.
+     * @throws Exception
+     */
+    @Override
+    @Test
+    public void getSources_NullOSName() throws Exception {
+
+        JBossCliMetricDefinition d = getMetricDefinitionToTest();
+
+        List<MetricSource> sources = d.getSources(null);
+        assertEquals(1, sources.size());
+        assertEquals(sources.get(0), d.getSource());
+    }
+
+    @Override
+    @Test
+    public void addSource() throws Exception {
+
+        JBossCliMetricDefinition d = getMetricDefinitionToTest();
+
+        try {
+            d.addSource(null, new MockMetricSource());
+            fail("should have thrown exception");
+        }
+        catch(IllegalArgumentException e) {
+
+            String msg = e.getMessage();
+            log.info(msg);
+            assertEquals("the metric source not a JBossCliMetricSource", msg);
+        }
+    }
+
     // getInstance() ---------------------------------------------------------------------------------------------------
 
     @Test
@@ -56,9 +116,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
         JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(s);
 
-        CliControllerAddress cliControllerAddress = d.getControllerAddress();
-        assertEquals(CliControllerAddress.DEFAULT_HOST, cliControllerAddress.getHost());
-        assertEquals(CliControllerAddress.DEFAULT_PORT, cliControllerAddress.getPort());
+        JBossCliMetricSource source = d.getSource();
+
+        assertEquals(JBossControllerClient.DEFAULT_HOST, source.getHost());
+        assertEquals(JBossControllerClient.DEFAULT_PORT, source.getPort());
 
         CliPath path = d.getPathInstance();
 
@@ -79,9 +140,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
         JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(s);
 
-        CliControllerAddress cliControllerAddress = d.getControllerAddress();
-        assertEquals("localhost", cliControllerAddress.getHost());
-        assertEquals(CliControllerAddress.DEFAULT_PORT, cliControllerAddress.getPort());
+        JBossCliMetricSource source = d.getSource();
+
+        assertEquals("localhost", source.getHost());
+        assertEquals(JBossControllerClient.DEFAULT_PORT, source.getPort());
 
         CliPath path = d.getPathInstance();
 
@@ -102,9 +164,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
         JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(s);
 
-        CliControllerAddress cliControllerAddress = d.getControllerAddress();
-        assertEquals("blue", cliControllerAddress.getHost());
-        assertEquals(CliControllerAddress.DEFAULT_PORT, cliControllerAddress.getPort());
+        JBossCliMetricSource source = d.getSource();
+
+        assertEquals("blue", source.getHost());
+        assertEquals(JBossControllerClient.DEFAULT_PORT, source.getPort());
 
         CliPath path = d.getPathInstance();
 
@@ -125,9 +188,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
         JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(s);
 
-        CliControllerAddress cliControllerAddress = d.getControllerAddress();
-        assertEquals("localhost", cliControllerAddress.getHost());
-        assertEquals(9999, cliControllerAddress.getPort());
+        JBossCliMetricSource source = d.getSource();
+
+        assertEquals("localhost", source.getHost());
+        assertEquals(9999, source.getPort());
 
         CliPath path = d.getPathInstance();
 
@@ -147,9 +211,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
         String s = "jboss:blue:9999/a=b/c=d/f";
         JBossCliMetricDefinition d = (JBossCliMetricDefinition)MetricDefinition.getInstance(s);
 
-        CliControllerAddress cliControllerAddress = d.getControllerAddress();
-        assertEquals("blue", cliControllerAddress.getHost());
-        assertEquals(9999, cliControllerAddress.getPort());
+        JBossCliMetricSource source = d.getSource();
+
+        assertEquals("blue", source.getHost());
+        assertEquals(9999, source.getPort());
 
         CliPath path = d.getPathInstance();
 
@@ -223,7 +288,25 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
             String msg = e.getMessage();
             log.info(msg);
-            assertTrue(msg.startsWith("the jboss CLI metric defintion does not contain a path: \""));
+            assertTrue(msg.startsWith("the jboss CLI metric definition does not contain a path: \""));
+        }
+    }
+
+    @Test
+    public void constructor_InvalidPort() throws Exception {
+
+        try {
+            new JBossCliMetricDefinition("jboss:some-host:70000/a=b/c=d/f");
+            fail("should have thrown exception");
+        }
+        catch(MetricDefinitionException e) {
+
+            String msg = e.getMessage();
+            log.info(msg);
+            assertTrue(msg.startsWith("invalid jboss CLI metric definition: invalid port value \"70000\""));
+
+            JBossCliException cause = (JBossCliException)e.getCause();
+            assertNotNull(cause);
         }
     }
 
@@ -241,6 +324,28 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
         String path = md.getPath();
         assertEquals("/a=b/c=d", path);
+    }
+
+    // getSource() -----------------------------------------------------------------------------------------------------
+
+    @Test
+    public void getSource() throws Exception {
+
+        JBossCliMetricDefinition md = new JBossCliMetricDefinition("jboss:some-host:1000/a=b/c=d/f");
+
+        JBossCliMetricSource source = md.getSource();
+
+        List<MetricSource> sources = md.getSources(OS.Linux);
+        assertEquals(1, sources.size());
+        assertTrue(sources.contains(source));
+
+        md.getSources(OS.MacOS);
+        assertEquals(1, sources.size());
+        assertTrue(sources.contains(source));
+
+        md.getSources(OS.Windows);
+        assertEquals(1, sources.size());
+        assertTrue(sources.contains(source));
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

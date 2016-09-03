@@ -122,6 +122,14 @@ public abstract class MetricDefinitionBase implements MetricDefinition {
 
     // Protected -------------------------------------------------------------------------------------------------------
 
+    /**
+     * Used by the subclasses that need a finer grained control to the source storage.
+     */
+    protected void setSources(Map<String, List<MetricSource>> sources) {
+
+        this.sources = sources;
+    }
+
     // Private ---------------------------------------------------------------------------------------------------------
 
     // Inner classes ---------------------------------------------------------------------------------------------------

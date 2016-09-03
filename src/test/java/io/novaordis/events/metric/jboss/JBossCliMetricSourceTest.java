@@ -16,10 +16,14 @@
 
 package io.novaordis.events.metric.jboss;
 
-import io.novaordis.events.metric.source.MetricSource;
 import io.novaordis.events.metric.source.MetricSourceTest;
+import io.novaordis.jboss.cli.JBossControllerClient;
+import io.novaordis.jboss.cli.model.JBossControllerAddress;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 /**
@@ -58,12 +62,87 @@ public class JBossCliMetricSourceTest extends MetricSourceTest {
         fail("RETURN HERE");
     }
 
+    // host, port and username support ---------------------------------------------------------------------------------
+
+    @Test
+    public void defaultValues() throws Exception {
+
+        JBossCliMetricSource s = new JBossCliMetricSource();
+
+        assertEquals(JBossControllerClient.DEFAULT_HOST, s.getHost());
+        assertEquals(JBossControllerClient.DEFAULT_PORT, s.getPort());
+        assertNull(s.getUsername());
+        assertNull(s.getPassword());
+    }
+
+    // equals() and hashCode() -----------------------------------------------------------------------------------------
+
+    @Test
+    public void equals_DefaultController() throws Exception {
+
+        JBossCliMetricSource s = new JBossCliMetricSource();
+        JBossCliMetricSource s2 = new JBossCliMetricSource();
+
+        assertEquals(s, s2);
+        assertEquals(s2, s);
+    }
+
+    @Test
+    public void equals_DefaultControllerPort() throws Exception {
+
+        JBossCliMetricSource s = new JBossCliMetricSource(new JBossControllerAddress("somehost"));
+        JBossCliMetricSource s2 = new JBossCliMetricSource(new JBossControllerAddress("somehost"));
+
+        assertEquals(s, s2);
+        assertEquals(s2, s);
+    }
+
+    @Test
+    public void equals_SameControllerAddress() throws Exception {
+
+        JBossCliMetricSource s = new JBossCliMetricSource(new JBossControllerAddress("somehost", 1234));
+        JBossCliMetricSource s2 = new JBossCliMetricSource(new JBossControllerAddress("somehost", 1234));
+
+        assertEquals(s, s2);
+        assertEquals(s2, s);
+    }
+
+    @Test
+    public void equals_SameControllerAddress2() throws Exception {
+
+        JBossCliMetricSource s = new JBossCliMetricSource(new JBossControllerAddress("somehost", 1234, "someuser"));
+        JBossCliMetricSource s2 = new JBossCliMetricSource(new JBossControllerAddress("somehost", 1234, "someuser"));
+
+        assertEquals(s, s2);
+        assertEquals(s2, s);
+    }
+
+    @Test
+    public void notEquals_DifferentUser() throws Exception {
+
+        JBossCliMetricSource s = new JBossCliMetricSource(new JBossControllerAddress("somehost", 1234, "someuser"));
+        JBossCliMetricSource s2 = new JBossCliMetricSource(new JBossControllerAddress("somehost", 1234, "someuser2"));
+
+        assertFalse(s.equals(s2));
+        assertFalse(s2.equals(s));
+    }
+
+    @Test
+    public void notEquals_DifferentPort() throws Exception {
+
+        JBossCliMetricSource s = new JBossCliMetricSource(new JBossControllerAddress("localhost", 1234));
+        JBossCliMetricSource s2 = new JBossCliMetricSource(new JBossControllerAddress("localhost", 1235));
+
+        assertFalse(s.equals(s2));
+        assertFalse(s2.equals(s));
+    }
+
     // Package protected -----------------------------------------------------------------------------------------------
 
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected MetricSource getMetricSourceToTest() throws Exception {
+    protected JBossCliMetricSource getMetricSourceToTest() throws Exception {
 
         return new JBossCliMetricSource();
     }

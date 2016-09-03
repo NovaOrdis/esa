@@ -14,63 +14,39 @@
  * limitations under the License.
  */
 
-package io.novaordis.events.metric.jboss;
+package io.novaordis.events.metric;
 
-import io.novaordis.events.metric.MetricDefinitionException;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
- * @since 8/31/16
+ * @since 9/3/16
  */
-class CliControllerAddress {
+public class MetricDefinitionExceptionTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
-
-    public static final String DEFAULT_HOST = "localhost";
-    public static final int DEFAULT_PORT = 9999;
-    public static final CliControllerAddress DEFAULT_CONTROLLER = new CliControllerAddress(DEFAULT_HOST, DEFAULT_PORT);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private String address;
-    private String host;
-    private int port;
-
     // Constructors ----------------------------------------------------------------------------------------------------
-
-    public CliControllerAddress(String address) throws MetricDefinitionException {
-
-        this.address = address;
-
-        parse(address);
-    }
-
-    CliControllerAddress(String host, int port) {
-
-        this.host = host;
-        this.port = port;
-        this.address = host + ":" + port;
-    }
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public String getHost() {
-        return host;
-    }
+    @Test
+    public void constructor() throws Exception {
 
-    public int getPort() {
-        return port;
-    }
+        try {
+            throw new MetricDefinitionException(new RuntimeException("SYNTHETIC"));
+        }
+        catch(MetricDefinitionException e) {
 
-    public String getAddress() {
-        return address;
-    }
-
-    @Override
-    public String toString() {
-        return address == null ? "null" : address;
+            RuntimeException re = (RuntimeException)e.getCause();
+            assertEquals("SYNTHETIC", re.getMessage());
+        }
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
@@ -78,36 +54,6 @@ class CliControllerAddress {
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
-
-    private void parse(String s) throws MetricDefinitionException {
-
-        int i = s.indexOf(":");
-
-        if (i == -1) {
-
-            this.host = s;
-            this.port = DEFAULT_PORT;
-        }
-        else {
-
-            this.host = s.substring(0, i);
-
-            if (i == s.length() - 1) {
-                throw new MetricDefinitionException("missing port information");
-            }
-
-            String sp = s.substring(i + 1);
-
-            try {
-
-                this.port = Integer.parseInt(sp);
-            }
-            catch (Exception e) {
-
-                throw new MetricDefinitionException("invalid port value \"" + sp + "\"");
-            }
-        }
-    }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 

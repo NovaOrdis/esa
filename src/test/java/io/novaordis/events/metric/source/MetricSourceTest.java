@@ -42,7 +42,7 @@ public abstract class MetricSourceTest {
 
         MockOS mos = new MockOS();
 
-        s.collectMetrics(mos);
+        s.collectAllMetrics(mos);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

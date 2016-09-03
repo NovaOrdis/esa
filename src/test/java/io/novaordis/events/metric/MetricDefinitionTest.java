@@ -141,9 +141,9 @@ public abstract class MetricDefinitionTest {
 
         MetricDefinition d = getMetricDefinitionToTest();
 
-        List<MetricSource> source = d.getSources(MockOS.NAME);
+        List<MetricSource> sources = d.getSources(MockOS.NAME);
 
-        assertTrue(source.isEmpty());
+        assertTrue(sources.isEmpty());
     }
 
     @Test
