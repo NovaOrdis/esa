@@ -45,6 +45,8 @@ public interface MetricDefinition {
      */
     static MetricDefinition getInstance(String s) throws UserErrorException {
 
+        log.debug("parsing metric definition from \"" + s + "\"");
+
         if (s.startsWith(JBossCliMetricDefinition.PREFIX)) {
 
             try {
