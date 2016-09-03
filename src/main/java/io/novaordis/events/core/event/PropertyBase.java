@@ -77,7 +77,7 @@ public abstract class PropertyBase implements Property, Comparable<Property> {
             this.value = null;
         }
         else {
-            this.value = null;
+            this.value = value;
         }
     }
 
