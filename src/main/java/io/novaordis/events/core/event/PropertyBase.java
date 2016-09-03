@@ -77,7 +77,7 @@ public abstract class PropertyBase implements Property, Comparable<Property> {
             this.value = null;
         }
         else {
-            throw new RuntimeException("setValue() NOT YET IMPLEMENTED for non-null values");
+            this.value = null;
         }
     }
 
