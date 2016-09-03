@@ -51,7 +51,7 @@ public class JBossCliMetricSourceTest extends MetricSourceTest {
 
     @Override
     @Test
-    public void collectMetrics() throws Exception {
+    public void collectAllMetrics() throws Exception {
 
         JBossCliMetricSource s = getMetricSourceToTest();
         MockOS mos = new MockOS();

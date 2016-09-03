@@ -468,16 +468,6 @@ public class Top extends OSCommand {
         }
     }
 
-    @Override
-    public List<Property> collectMetrics(List<MetricDefinition> metricDefinitions, OS os)
-            throws MetricCollectionException {
-
-        //
-        // this method is not used (yet) for top, so we're not implementing it. When we need it, we'll implement it.
-        //
-        throw new RuntimeException("collectMetrics() NOT YET IMPLEMENTED");
-    }
-
     // Public ----------------------------------------------------------------------------------------------------------
 
     // Package protected -----------------------------------------------------------------------------------------------

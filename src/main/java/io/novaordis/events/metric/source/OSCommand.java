@@ -16,10 +16,15 @@
 
 package io.novaordis.events.metric.source;
 
+import io.novaordis.events.core.event.Property;
 import io.novaordis.events.metric.MetricCollectionException;
+import io.novaordis.events.metric.MetricDefinition;
 import io.novaordis.utilities.os.NativeExecutionException;
 import io.novaordis.utilities.os.NativeExecutionResult;
 import io.novaordis.utilities.os.OS;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -57,6 +62,23 @@ public abstract class OSCommand implements MetricSource {
 
         this.command = command;
         this.arguments = arguments;
+    }
+
+    // MetricSource implementation -------------------------------------------------------------------------------------
+
+    /**
+     * noop implementation, override in subclasses if you need a more specific behavior.
+     */
+    @Override
+    public List<Property> collectMetrics(List<MetricDefinition> metricDefinitions) throws MetricCollectionException {
+
+        List<Property> result = new ArrayList<>();
+
+        for(int i = 0; i < metricDefinitions.size(); i ++) {
+            result.add(null);
+        }
+
+        return result;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

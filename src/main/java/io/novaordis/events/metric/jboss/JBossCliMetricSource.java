@@ -16,7 +16,6 @@
 
 package io.novaordis.events.metric.jboss;
 
-import io.novaordis.events.core.event.IntegerProperty;
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.events.metric.MetricCollectionException;
@@ -88,15 +87,17 @@ public class JBossCliMetricSource implements MetricSource {
     }
 
     @Override
-    public List<Property> collectMetrics(List<MetricDefinition> metricDefinitions, OS os)
-            throws MetricCollectionException {
+    public List<Property> collectMetrics(List<MetricDefinition> metricDefinitions) throws MetricCollectionException {
 
         List<Property> properties = new ArrayList<>();
 
         for(MetricDefinition d: metricDefinitions) {
 
             if (!(d instanceof JBossCliMetricDefinition)) {
-                throw new MetricCollectionException("RETURN HERE");
+
+                log.debug(this + " does not handle non-jboss CLI metrics: " + d);
+                properties.add(null);
+                continue;
             }
 
             JBossCliMetricDefinition jbmd = (JBossCliMetricDefinition)d;

@@ -48,15 +48,14 @@ public interface MetricSource {
     List<Property> collectAllMetrics(OS os) throws MetricCollectionException;
 
     /**
-     * Collect the metrics corresponding to the the given definitions, in one invocation.
+     * Collect the metrics for the given definitions, in one invocation.
      *
      * @return the list of properties. If no properties are collected, returns an empty list, but never null. However,
-     * if a property for a specific metric definition cannot be collected, the list will contain a null on that
-     * position.
+     * if a property for a specific metric definition cannot be collected, or it does not apply to this specific source,
+     * the list will contain a null on the respective position.
      *
      * @exception MetricCollectionException if metric definitions do not list this source among their sources.
-     *
      */
-    List<Property> collectMetrics(List<MetricDefinition> metricDefinitions, OS os) throws MetricCollectionException;
+    List<Property> collectMetrics(List<MetricDefinition> metricDefinitions) throws MetricCollectionException;
 
 }

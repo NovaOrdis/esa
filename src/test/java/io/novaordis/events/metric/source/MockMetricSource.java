@@ -69,7 +69,7 @@ public class MockMetricSource implements MetricSource {
     }
 
     @Override
-    public List<Property> collectMetrics(List<MetricDefinition> metricDefinitions, OS os) throws MetricCollectionException {
+    public List<Property> collectMetrics(List<MetricDefinition> metricDefinitions) throws MetricCollectionException {
         throw new RuntimeException("collectMetrics() NOT YET IMPLEMENTED");
     }
 

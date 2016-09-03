@@ -16,8 +16,18 @@
 
 package io.novaordis.events.metric.source;
 
+import io.novaordis.events.core.event.Property;
+import io.novaordis.events.metric.MetricDefinition;
+import io.novaordis.events.metric.MockMetricDefinition;
 import io.novaordis.events.metric.MockOS;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -35,14 +45,39 @@ public abstract class MetricSourceTest {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
+    // collectAllMetrics() ---------------------------------------------------------------------------------------------
+
     @Test
-    public void collectMetrics() throws Exception {
+    public void collectAllMetrics() throws Exception {
 
         MetricSource s = getMetricSourceToTest();
 
         MockOS mos = new MockOS();
 
-        s.collectAllMetrics(mos);
+        List<Property> properties = s.collectAllMetrics(mos);
+
+        assertNotNull(properties);
+    }
+
+    // collectMetrics() ------------------------------------------------------------------------------------------------
+
+    @Test
+    public void collectMetrics_SourceDoesNotProduceMetricForADefinition() throws Exception {
+
+        MetricSource s = getMetricSourceToTest();
+
+        MockMetricDefinition mmd = new MockMetricDefinition("MOCK");
+
+        //noinspection ArraysAsListWithZeroOrOneArgument
+        List<MetricDefinition> definitions = Arrays.asList(mmd);
+
+        List<Property> properties = s.collectMetrics(definitions);
+
+        assertNotNull(properties);
+        assertEquals(1, properties.size());
+
+        Property p = properties.get(0);
+        assertNull(p);
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
