@@ -221,7 +221,7 @@ public class JBossCliMetricSource implements MetricSource {
     @Override
     public String toString() {
 
-        return controllerAddress == null ? "null" : JBossCliMetricDefinition.PREFIX + controllerAddress.toString();
+        return controllerAddress == null ? "null" : controllerAddress.toString();
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
