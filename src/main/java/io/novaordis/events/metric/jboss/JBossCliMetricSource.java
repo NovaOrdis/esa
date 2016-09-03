@@ -18,6 +18,7 @@ package io.novaordis.events.metric.jboss;
 
 import io.novaordis.events.core.event.IntegerProperty;
 import io.novaordis.events.core.event.Property;
+import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.events.metric.MetricCollectionException;
 import io.novaordis.events.metric.MetricDefinition;
 import io.novaordis.events.metric.source.MetricSource;
@@ -79,8 +80,8 @@ public class JBossCliMetricSource implements MetricSource {
     public List<Property> collectAllMetrics(OS os) throws MetricCollectionException {
 
         //
-        // this method is not used (yet) for a JBoss CLI controller, so we're not implementing it. When we need it,
-        // we'll implement it. Currently it returns an empty list.
+        // this method won't be used with a JBoss CLI metric source, we need to pull individual metrics, so always
+        // return an empty list.
         //
 
         return Collections.emptyList();
@@ -152,10 +153,11 @@ public class JBossCliMetricSource implements MetricSource {
             if (attributeValue != null) {
 
                 //
-                // figure out how I converted Strings to Properties for top, and document that in the MetricDefintion doc.
+                // figure out how I converted Strings to Properties for top, and document that in the MetricDefinition doc.
                 //
 
-                p = new IntegerProperty("xxx");
+                p = new StringProperty("mock");
+                p.setValue(attributeValue);
 
             }
 

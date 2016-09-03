@@ -16,14 +16,20 @@
 
 package io.novaordis.events.metric.jboss;
 
+import io.novaordis.events.core.event.Property;
+import io.novaordis.events.metric.MockOS;
+import io.novaordis.events.metric.source.MetricSource;
 import io.novaordis.events.metric.source.MetricSourceTest;
 import io.novaordis.jboss.cli.JBossControllerClient;
 import io.novaordis.jboss.cli.model.JBossControllerAddress;
 import org.junit.Test;
 
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -41,6 +47,19 @@ public class JBossCliMetricSourceTest extends MetricSourceTest {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    // Overrides -------------------------------------------------------------------------------------------------------
+
+    @Override
+    @Test
+    public void collectMetrics() throws Exception {
+
+        JBossCliMetricSource s = getMetricSourceToTest();
+        MockOS mos = new MockOS();
+
+        List<Property> metrics =  s.collectAllMetrics(mos);
+        assertTrue(metrics.isEmpty());
+    }
 
     // collectMetrics() ------------------------------------------------------------------------------------------------
 
