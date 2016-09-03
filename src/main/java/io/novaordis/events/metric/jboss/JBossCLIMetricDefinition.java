@@ -54,6 +54,9 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
+     * @param definition a string metric definition similar to
+     *                   "jboss:username1:password1@localhost/subsystem=remoting/worker-task-core-threads"
+     *
      * @throws MetricDefinitionException in case an invalid metric definition is encountered. The error message
      * must be human-readable, as it will most likely end up in error messages.
      * @throws IllegalArgumentException

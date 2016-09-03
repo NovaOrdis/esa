@@ -18,7 +18,6 @@ package io.novaordis.events.metric.jboss;
 
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.metric.MockOS;
-import io.novaordis.events.metric.source.MetricSource;
 import io.novaordis.events.metric.source.MetricSourceTest;
 import io.novaordis.jboss.cli.JBossControllerClient;
 import io.novaordis.jboss.cli.model.JBossControllerAddress;
@@ -129,8 +128,10 @@ public class JBossCliMetricSourceTest extends MetricSourceTest {
     @Test
     public void equals_SameControllerAddress2() throws Exception {
 
-        JBossCliMetricSource s = new JBossCliMetricSource(new JBossControllerAddress("somehost", 1234, "someuser"));
-        JBossCliMetricSource s2 = new JBossCliMetricSource(new JBossControllerAddress("somehost", 1234, "someuser"));
+        JBossCliMetricSource s = new JBossCliMetricSource(
+                new JBossControllerAddress("someuser", new char[] {'a'}, "somehost", 1234));
+        JBossCliMetricSource s2 = new JBossCliMetricSource(
+                new JBossControllerAddress("someuser", new char[] {'b'}, "somehost", 1234));
 
         assertEquals(s, s2);
         assertEquals(s2, s);
@@ -139,8 +140,10 @@ public class JBossCliMetricSourceTest extends MetricSourceTest {
     @Test
     public void notEquals_DifferentUser() throws Exception {
 
-        JBossCliMetricSource s = new JBossCliMetricSource(new JBossControllerAddress("somehost", 1234, "someuser"));
-        JBossCliMetricSource s2 = new JBossCliMetricSource(new JBossControllerAddress("somehost", 1234, "someuser2"));
+        JBossCliMetricSource s = new JBossCliMetricSource(
+                new JBossControllerAddress("someuser", new char[] {'a'}, "somehost", 1234));
+        JBossCliMetricSource s2 = new JBossCliMetricSource(
+                new JBossControllerAddress("someuser2", new char[] {'a'}, "somehost", 1234));
 
         assertFalse(s.equals(s2));
         assertFalse(s2.equals(s));

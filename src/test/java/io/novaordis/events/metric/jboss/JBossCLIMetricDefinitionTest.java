@@ -303,7 +303,7 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
             String msg = e.getMessage();
             log.info(msg);
-            assertTrue(msg.startsWith("invalid jboss CLI metric definition: invalid port value \"70000\""));
+            assertTrue(msg.startsWith("invalid jboss CLI metric definition: invalid port value 70000"));
 
             JBossCliException cause = (JBossCliException)e.getCause();
             assertNotNull(cause);
@@ -325,6 +325,25 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
         String path = md.getPath();
         assertEquals("/a=b/c=d", path);
     }
+
+    @Test
+    public void constructor_UsernameAndPassword() throws Exception {
+
+        String s = "jboss:some-user:some-password@some-host:1000/a=b/c=d/f";
+
+        JBossCliMetricDefinition md = new JBossCliMetricDefinition(s);
+
+        CliAttribute attribute = md.getAttribute();
+        assertEquals("f", attribute.getName());
+        assertEquals("f", md.getAttributeName());
+
+        CliPath pathInstance = md.getPathInstance();
+        assertEquals("/a=b/c=d", pathInstance.getPath());
+
+        String path = md.getPath();
+        assertEquals("/a=b/c=d", path);
+    }
+
 
     // getSource() -----------------------------------------------------------------------------------------------------
 
