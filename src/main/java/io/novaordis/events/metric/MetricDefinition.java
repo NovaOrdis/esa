@@ -110,7 +110,7 @@ public interface MetricDefinition {
     /**
      * The metric name. Must not contain any spaces. It is used by the factory method getInstance() to create the
      * corresponding class instance, and usually, it is the simple name of the implementing class. Example:
-     * "PhysicalMemoryTotal".
+     * "PhysicalMemoryTotal" or "jboss:localhost:9999/subsystem=test/test-attribute.
      */
     String getName();
 

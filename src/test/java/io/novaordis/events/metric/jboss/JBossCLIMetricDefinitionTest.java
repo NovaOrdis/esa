@@ -24,6 +24,7 @@ import io.novaordis.events.metric.source.MetricSource;
 import io.novaordis.events.metric.source.MockMetricSource;
 import io.novaordis.jboss.cli.JBossCliException;
 import io.novaordis.jboss.cli.JBossControllerClient;
+import io.novaordis.jboss.cli.model.JBossControllerAddress;
 import io.novaordis.utilities.UserErrorException;
 import io.novaordis.utilities.os.OS;
 import org.junit.Test;
@@ -107,6 +108,76 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
         }
     }
 
+    @Override
+    @Test
+    public void getName() throws Exception {
+
+        JBossCliMetricDefinition d = getMetricDefinitionToTest();
+        assertEquals("/name", d.getName());
+    }
+
+    // getName() -------------------------------------------------------------------------------------------------------
+
+    @Test
+    public void getName_EmptyLiteral() throws Exception {
+
+        JBossCliMetricDefinition d = new JBossCliMetricDefinition("jboss:/test-path/test-attribute");
+        String name = d.getName();
+        assertEquals("/test-path/test-attribute", name);
+    }
+
+    @Test
+    public void getName_LocalhostNoPort() throws Exception {
+
+        JBossCliMetricDefinition d = new JBossCliMetricDefinition("jboss:localhost/test-path/test-attribute");
+        String name = d.getName();
+        assertEquals("localhost/test-path/test-attribute", name);
+    }
+
+    @Test
+    public void getName_LocalhostDefaultPort() throws Exception {
+
+        JBossCliMetricDefinition d = new JBossCliMetricDefinition("jboss:localhost:9999/test-path/test-attribute");
+        String name = d.getName();
+        assertEquals("localhost:9999/test-path/test-attribute", name);
+    }
+
+    @Test
+    public void getName_OtherHostNoPort() throws Exception {
+
+        JBossCliMetricDefinition d = new JBossCliMetricDefinition("jboss:somehost/test-path/test-attribute");
+        String name = d.getName();
+        assertEquals("somehost/test-path/test-attribute", name);
+    }
+
+    @Test
+    public void getName_OtherHostOtherPort() throws Exception {
+
+        JBossCliMetricDefinition d = new JBossCliMetricDefinition("jboss:somehost:1111/test-path/test-attribute");
+        String name = d.getName();
+        assertEquals("somehost:1111/test-path/test-attribute", name);
+    }
+
+    @Test
+    public void getName_LocalhostUsername() throws Exception {
+
+        JBossCliMetricDefinition d = new JBossCliMetricDefinition(
+                "jboss:testuser:blah@localhost/test-path/test-attribute");
+
+        String name = d.getName();
+        assertEquals("localhost/test-path/test-attribute", name);
+    }
+
+    @Test
+    public void getName_OtherhostUsername() throws Exception {
+
+        JBossCliMetricDefinition d = new JBossCliMetricDefinition(
+                "jboss:testuser:blah@somehost/test-path/test-attribute");
+
+        String name = d.getName();
+        assertEquals("somehost/test-path/test-attribute", name);
+    }
+
     // getInstance() ---------------------------------------------------------------------------------------------------
 
     @Test
@@ -118,8 +189,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
         JBossCliMetricSource source = d.getSource();
 
-        assertEquals(JBossControllerClient.DEFAULT_HOST, source.getHost());
-        assertEquals(JBossControllerClient.DEFAULT_PORT, source.getPort());
+        JBossControllerAddress controllerAddress = source.getControllerAddress();
+
+        assertEquals(JBossControllerClient.DEFAULT_HOST, controllerAddress.getHost());
+        assertEquals(JBossControllerClient.DEFAULT_PORT, controllerAddress.getPort());
 
         CliPath path = d.getPathInstance();
 
@@ -142,8 +215,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
         JBossCliMetricSource source = d.getSource();
 
-        assertEquals("localhost", source.getHost());
-        assertEquals(JBossControllerClient.DEFAULT_PORT, source.getPort());
+        JBossControllerAddress controllerAddress = source.getControllerAddress();
+
+        assertEquals("localhost", controllerAddress.getHost());
+        assertEquals(JBossControllerClient.DEFAULT_PORT, controllerAddress.getPort());
 
         CliPath path = d.getPathInstance();
 
@@ -166,8 +241,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
         JBossCliMetricSource source = d.getSource();
 
-        assertEquals("blue", source.getHost());
-        assertEquals(JBossControllerClient.DEFAULT_PORT, source.getPort());
+        JBossControllerAddress controllerAddress = source.getControllerAddress();
+
+        assertEquals("blue", controllerAddress.getHost());
+        assertEquals(JBossControllerClient.DEFAULT_PORT, controllerAddress.getPort());
 
         CliPath path = d.getPathInstance();
 
@@ -190,8 +267,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
         JBossCliMetricSource source = d.getSource();
 
-        assertEquals("localhost", source.getHost());
-        assertEquals(9999, source.getPort());
+        JBossControllerAddress controllerAddress = source.getControllerAddress();
+
+        assertEquals("localhost", controllerAddress.getHost());
+        assertEquals(9999, controllerAddress.getPort());
 
         CliPath path = d.getPathInstance();
 
@@ -213,8 +292,10 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
 
         JBossCliMetricSource source = d.getSource();
 
-        assertEquals("blue", source.getHost());
-        assertEquals(9999, source.getPort());
+        JBossControllerAddress controllerAddress = source.getControllerAddress();
+
+        assertEquals("blue", controllerAddress.getHost());
+        assertEquals(9999, controllerAddress.getPort());
 
         CliPath path = d.getPathInstance();
 
@@ -344,7 +425,6 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
         assertEquals("/a=b/c=d", path);
     }
 
-
     // getSource() -----------------------------------------------------------------------------------------------------
 
     @Test
@@ -366,6 +446,7 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
         assertEquals(1, sources.size());
         assertTrue(sources.contains(source));
     }
+
 
     // Package protected -----------------------------------------------------------------------------------------------
 

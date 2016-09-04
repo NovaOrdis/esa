@@ -79,6 +79,34 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
     // MetricDefinitionBase overrides ----------------------------------------------------------------------------------
 
     @Override
+    public String getName() {
+
+        JBossControllerAddress controllerAddress = source.getControllerAddress();
+
+        String hostLiteral = controllerAddress.getHostLiteral();
+        String portLiteral = controllerAddress.getPortLiteral();
+
+        String name;
+
+        if (hostLiteral != null) {
+
+            name = hostLiteral;
+        }
+        else {
+            name = "";
+        }
+
+        if (portLiteral != null) {
+
+            name += ":" + portLiteral;
+        }
+
+        name += path.getPath() + "/" + attribute.getName();
+
+        return name;
+    }
+
+    @Override
     public String getSimpleLabel() {
 
         //

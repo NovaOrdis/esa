@@ -16,6 +16,7 @@
 
 package io.novaordis.events.metric.jboss;
 
+import io.novaordis.events.core.event.IntegerProperty;
 import io.novaordis.events.core.event.Property;
 import io.novaordis.events.core.event.StringProperty;
 import io.novaordis.events.metric.MetricCollectionException;
@@ -102,19 +103,15 @@ public class JBossCliMetricSource implements MetricSource {
 
             JBossCliMetricDefinition jbmd = (JBossCliMetricDefinition)d;
 
-            String path = jbmd.getPath();
-            String attributeName = jbmd.getAttributeName();
-            String attributeValue = null;
-
             //
             // lazy instantiation
+            //
 
             if (controllerClient == null) {
 
-                this.controllerClient = JBossControllerClient.getInstance();
+                setControllerClient(JBossControllerClient.getInstance());
             }
 
-            //
             //
             // if the client is not connected, attempt to connect it, every time we collect metrics. This is useful if
             // the JBoss instance is started after os-stats, or if the JBoss instance becomes inaccessible and then
@@ -126,19 +123,20 @@ public class JBossCliMetricSource implements MetricSource {
                 try {
 
                     log.debug("attempting to connect " + controllerClient);
+
                     controllerClient.connect();
                 }
                 catch(Exception e) {
 
                     log.warn(e.getMessage());
+                    log.debug("controller client connection failure", e);
                     continue;
-
                 }
-
-                //
-                // TODO - disconnect
-                //
             }
+
+            String path = jbmd.getPath();
+            String attributeName = jbmd.getAttributeName();
+            Object attributeValue = null;
 
             try {
 
@@ -149,17 +147,24 @@ public class JBossCliMetricSource implements MetricSource {
                 log.warn(e.getMessage());
             }
 
-            Property p = null;
+            if (attributeValue == null) {
+                properties.add(null);
+                continue;
+            }
 
-            if (attributeValue != null) {
+            String name = jbmd.getName();
+            Property p;
 
-                //
-                // figure out how I converted Strings to Properties for top, and document that in the MetricDefinition doc.
-                //
+            if (attributeValue instanceof String) {
 
-                p = new StringProperty("JBossCliMetricDefinition");
-                p.setValue(attributeValue);
+                p = new StringProperty(name, (String)attributeValue);
+            }
+            else if (attributeValue instanceof Integer) {
 
+                p = new IntegerProperty(name, (Integer)attributeValue);
+            }
+            else {
+                throw new RuntimeException(attributeValue.getClass() + " SUPPORT NOT YET IMPLEMENTED");
             }
 
             properties.add(p);
@@ -170,22 +175,8 @@ public class JBossCliMetricSource implements MetricSource {
 
     // Public ----------------------------------------------------------------------------------------------------------
 
-    public String getHost() {
-
-        return controllerAddress.getHost();
-    }
-
-    public int getPort() {
-
-        return controllerAddress.getPort();
-    }
-
-    /**
-     * @return the username to use to connect to the JBoss controller. null means local connection.
-     */
-    public String getUsername() {
-
-        return controllerAddress.getUsername();
+    public JBossControllerAddress getControllerAddress() {
+        return controllerAddress;
     }
 
     @Override
@@ -218,7 +209,6 @@ public class JBossCliMetricSource implements MetricSource {
         return 7 + 11 * controllerAddress.hashCode();
     }
 
-
     @Override
     public String toString() {
 
@@ -227,12 +217,14 @@ public class JBossCliMetricSource implements MetricSource {
 
     // Package protected -----------------------------------------------------------------------------------------------
 
-    /**
-     * The password to be used by the associated user to connect to the controller. May be null.
-     */
-    char[] getPassword() {
+    void setControllerClient(JBossControllerClient controllerClient) {
 
-        return controllerAddress.getPassword();
+        log.debug(this + " sets the controller client " + controllerClient);
+        this.controllerClient = controllerClient;
+
+        if(controllerClient != null) {
+            this.controllerAddress = controllerClient.getControllerAddress();
+        }
     }
 
     // Protected -------------------------------------------------------------------------------------------------------

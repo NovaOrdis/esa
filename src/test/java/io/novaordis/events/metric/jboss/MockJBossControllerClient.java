@@ -18,6 +18,10 @@ package io.novaordis.events.metric.jboss;
 
 import io.novaordis.jboss.cli.JBossCliException;
 import io.novaordis.jboss.cli.JBossControllerClient;
+import io.novaordis.jboss.cli.model.JBossControllerAddress;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -31,43 +35,40 @@ public class MockJBossControllerClient implements JBossControllerClient {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
+    private boolean connected;
+
+    private Map<String, Map<String, Object>> values;
+
+    private JBossControllerAddress address;
+
     // Constructors ----------------------------------------------------------------------------------------------------
+
+    public MockJBossControllerClient() {
+
+        this.values = new HashMap<>();
+
+        this.address = new JBossControllerAddress(
+                "mock-user", new char[] { 'm', 'o', 'c', 'k'}, "MOCK-HOST", "MOCK-HOST", 7777, "7777");
+    }
 
     // JBossControllerClient implementation ----------------------------------------------------------------------------
 
     @Override
-    public void setHost(String s) {
-        throw new RuntimeException("setHost() NOT YET IMPLEMENTED");
-    }
-
-    @Override
     public String getHost() {
-        throw new RuntimeException("getHost() NOT YET IMPLEMENTED");
-    }
 
-    @Override
-    public void setPort(int i) {
-        throw new RuntimeException("setPort() NOT YET IMPLEMENTED");
+        return address.getHost();
     }
 
     @Override
     public int getPort() {
-        throw new RuntimeException("getPort() NOT YET IMPLEMENTED");
-    }
 
-    @Override
-    public void setUsername(String s) {
-        throw new RuntimeException("setUsername() NOT YET IMPLEMENTED");
+        return address.getPort();
     }
 
     @Override
     public String getUsername() {
-        throw new RuntimeException("getUsername() NOT YET IMPLEMENTED");
-    }
 
-    @Override
-    public void setPassword(char[] chars) {
-        throw new RuntimeException("setPassword() NOT YET IMPLEMENTED");
+        return address.getUsername();
     }
 
     @Override
@@ -76,8 +77,28 @@ public class MockJBossControllerClient implements JBossControllerClient {
     }
 
     @Override
+    public void setControllerAddress(JBossControllerAddress a) {
+
+        this.address = a;
+    }
+
+    @Override
+    public JBossControllerAddress getControllerAddress() {
+
+        return address;
+    }
+
+    @Override
     public void connect() throws JBossCliException {
-        throw new RuntimeException("connect() NOT YET IMPLEMENTED");
+
+        if (connected) {
+
+            log.info(this + " already connected");
+            return;
+        }
+
+        log.info(this + " is connected");
+        connected = true;
     }
 
     @Override
@@ -87,15 +108,44 @@ public class MockJBossControllerClient implements JBossControllerClient {
 
     @Override
     public boolean isConnected() {
-        throw new RuntimeException("isConnected() NOT YET IMPLEMENTED");
+
+        return connected;
     }
 
     @Override
-    public String getAttributeValue(String s, String s1) throws JBossCliException {
-        throw new RuntimeException("getAttributeValue() NOT YET IMPLEMENTED");
+    public Object getAttributeValue(String path, String attributeName) throws JBossCliException {
+
+        Map<String, Object> attributes = values.get(path);
+
+        if (attributes == null) {
+            return null;
+        }
+
+        return attributes.get(attributeName);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
+
+    public void setAttributeValue(String path, String attributeName, Object value) {
+
+
+        Map<String, Object> attributes = values.get(path);
+
+        if (attributes == null) {
+            attributes = new HashMap<>();
+            values.put(path, attributes);
+        }
+
+        attributes.put(attributeName, value);
+    }
+
+    @Override
+    public String toString() {
+
+        return address.getUsername() + ":***@" + address.getHost() + ":" + address.getPort() + "(" +
+                (connected ? "connected" : "disconnected") + ")";
+
+    }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
