@@ -169,13 +169,41 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
     }
 
     @Test
-    public void getName_OtherhostUsername() throws Exception {
+    public void getName_OtherHostUsername() throws Exception {
 
         JBossCliMetricDefinition d = new JBossCliMetricDefinition(
                 "jboss:testuser:blah@somehost/test-path/test-attribute");
 
         String name = d.getName();
         assertEquals("somehost/test-path/test-attribute", name);
+    }
+
+    @Test
+    public void getName2() throws Exception {
+
+        String def = "jboss:test:test123!@localhost/subsystem=remoting/worker-task-core-threads";
+
+        JBossCliMetricDefinition d = new JBossCliMetricDefinition(def);
+
+        String name = d.getName();
+
+        log.info(name);
+
+        assertEquals("localhost/subsystem=remoting/worker-task-core-threads", name);
+    }
+
+    @Test
+    public void getName3() throws Exception {
+
+        String def = "jboss:test:test123!@localhost:9999/subsystem=remoting/worker-task-core-threads";
+
+        JBossCliMetricDefinition d = new JBossCliMetricDefinition(def);
+
+        String name = d.getName();
+
+        log.info(name);
+
+        assertEquals("localhost:9999/subsystem=remoting/worker-task-core-threads", name);
     }
 
     // getInstance() ---------------------------------------------------------------------------------------------------
