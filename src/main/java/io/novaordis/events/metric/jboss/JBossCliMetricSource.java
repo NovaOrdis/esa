@@ -92,16 +92,25 @@ public class JBossCliMetricSource implements MetricSource {
 
         List<Property> properties = new ArrayList<>();
 
-        for(MetricDefinition d: metricDefinitions) {
+        for(MetricDefinition md : metricDefinitions) {
 
-            if (!(d instanceof JBossCliMetricDefinition)) {
+            if (!(md instanceof JBossCliMetricDefinition)) {
 
-                log.debug(this + " does not handle non-jboss CLI metrics: " + d);
+                log.debug(this + " does not handle non-jboss CLI metrics " + md);
                 properties.add(null);
                 continue;
             }
 
-            JBossCliMetricDefinition jbmd = (JBossCliMetricDefinition)d;
+            JBossCliMetricDefinition jbmd = (JBossCliMetricDefinition) md;
+
+            JBossCliMetricSource thatSource = jbmd.getSource();
+
+            if (!this.equals(thatSource)) {
+
+                log.debug(jbmd + " has a different source than " + this + ", ignorning ...");
+                properties.add(null);
+                continue;
+            }
 
             //
             // lazy instantiation

@@ -91,24 +91,56 @@ public class JBossCliMetricSourceTest extends MetricSourceTest {
     // collectMetrics() ------------------------------------------------------------------------------------------------
 
     @Test
-    public void collectMetrics_SomeOfTheDefinitionsAreNotJBossCliMetricDefinitions() throws Exception {
-
-        JBossCliMetricSource jbossSource = getMetricSourceToTest();
+    public void collectMetrics_SourceDoesNotHandleJBossCLIMetricsWithOtherSources() throws Exception {
 
         //
         // configure the internal client as a mock client and install state
         //
 
         JBossControllerClient client = JBossControllerClient.getInstance();
-        assertTrue(client instanceof MockJBossControllerClient);
-        MockJBossControllerClient mockClient = (MockJBossControllerClient)client;
-        mockClient.setAttributeValue("/test-path", "test-attribute", 7);
+        ((MockJBossControllerClient)client).setAttributeValue("/test-path", "test-attribute", 7);
 
+        JBossCliMetricSource jbossSource = getMetricSourceToTest();
+        jbossSource.setControllerClient(client);
+
+        String host = client.getHost();
+        String otherHost = "OTHER-" + host;
+
+        JBossCliMetricDefinition jbossCliMetricWithOtherSource =
+                new JBossCliMetricDefinition("jboss:" + otherHost + "/test-path/test-attribute");
+
+        //noinspection ArraysAsListWithZeroOrOneArgument
+        List<MetricDefinition> definitions = Arrays.asList(jbossCliMetricWithOtherSource);
+        List<Property> properties = jbossSource.collectMetrics(definitions);
+
+        assertEquals(1, properties.size());
+
+        //
+        // the metric with other source must be ignored
+        //
+
+        Property p = properties.get(0);
+        assertNull(p);
+    }
+
+    @Test
+    public void collectMetrics_SomeOfTheDefinitionsAreNotJBossCliMetricDefinitions() throws Exception {
+
+        //
+        // configure the internal client as a mock client and install state
+        //
+
+        JBossControllerClient client = JBossControllerClient.getInstance();
+        ((MockJBossControllerClient)client).setAttributeValue("/test-path", "test-attribute", 7);
+
+        JBossCliMetricSource jbossSource = getMetricSourceToTest();
         jbossSource.setControllerClient(client);
 
         MockMetricDefinition mmd = new MockMetricDefinition("MOCK");
 
-        JBossCliMetricDefinition jbmd = new JBossCliMetricDefinition("jboss:mock/test-path/test-attribute");
+        JBossCliMetricDefinition jbmd = new JBossCliMetricDefinition(
+                "jboss:" + client.getUsername() + ":mock-password" + "@" +
+                        client.getHost() + ":" + client.getPort() + "/test-path/test-attribute");
 
         MockMetricDefinition mmd2 = new MockMetricDefinition("MOCK2");
 
@@ -121,7 +153,9 @@ public class JBossCliMetricSourceTest extends MetricSourceTest {
         assertNull(properties.get(0));
 
         IntegerProperty p = (IntegerProperty)properties.get(1);
-        assertEquals("mock/test-path/test-attribute", p.getName());
+        String name = p.getName();
+        String expected = client.getHost() + ":" + client.getPort() + "/test-path/test-attribute";
+        assertEquals(expected, name);
         assertEquals(7, p.getValue());
 
         assertNull(properties.get(2));
