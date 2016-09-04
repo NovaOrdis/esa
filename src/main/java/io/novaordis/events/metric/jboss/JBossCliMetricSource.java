@@ -188,6 +188,14 @@ public class JBossCliMetricSource implements MetricSource {
         return controllerAddress;
     }
 
+    /**
+     * May return null if the client was not initialized yet.
+     */
+    public JBossControllerClient getControllerClient() {
+
+        return controllerClient;
+    }
+
     @Override
     public boolean equals(Object o) {
 

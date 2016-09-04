@@ -29,10 +29,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -164,23 +166,97 @@ public class JBossCliMetricSourceTest extends MetricSourceTest {
     @Test
     public void collectMetrics_SomeOfTheDefinitionsDoNotExistOnController() throws Exception {
 
-        fail("RETURN HERE");
+        //
+        // configure the internal client as a mock client and install state
+        //
+
+        JBossControllerClient client = JBossControllerClient.getInstance();
+        ((MockJBossControllerClient)client).setAttributeValue("/test-path", "test-attribute-1", 10);
+
+        //
+        // test-attribute-2 does not exist on the controller
+        //
+
+        JBossCliMetricSource jbossSource = getMetricSourceToTest();
+        jbossSource.setControllerClient(client);
+
+        JBossCliMetricDefinition jbmd = new JBossCliMetricDefinition(
+                "jboss:" + client.getUsername() + ":mock-password" + "@" +
+                        client.getHost() + ":" + client.getPort() + "/test-path/test-attribute-1");
+
+        JBossCliMetricDefinition jbmd2 = new JBossCliMetricDefinition(
+                "jboss:" + client.getUsername() + ":mock-password" + "@" +
+                        client.getHost() + ":" + client.getPort() + "/test-path/test-attribute-2");
+
+
+        List<MetricDefinition> definitions = Arrays.asList(jbmd, jbmd2);
+
+        List<Property> properties = jbossSource.collectMetrics(definitions);
+
+        assertEquals(2, properties.size());
+
+        IntegerProperty p = (IntegerProperty)properties.get(0);
+        assertEquals(10, p.getValue());
+
+        Property p2 = properties.get(1);
+        assertNull(p2);
     }
 
     @Test
-    public void collectMetrics_SomeOfTheDefinitionsDoNotHaveCorrespondingValues() throws Exception {
+    public void collectMetrics_DefinitionDoesNotHaveCorrespondingValue() throws Exception {
 
-        fail("RETURN HERE");
+        //
+        // configure the internal client as a mock client and install state
+        //
+
+        JBossControllerClient client = JBossControllerClient.getInstance();
+
+        //
+        // this simulates an "undefined" CLI attribute
+        //
+        ((MockJBossControllerClient)client).setAttributeValue("/test-path", "test-attribute", null);
+
+        JBossCliMetricSource jbossSource = getMetricSourceToTest();
+        jbossSource.setControllerClient(client);
+
+        JBossCliMetricDefinition jbmd = new JBossCliMetricDefinition(
+                "jboss:" + client.getUsername() + ":mock-password" + "@" +
+                        client.getHost() + ":" + client.getPort() + "/test-path/test-attribute");
+
+        List<MetricDefinition> definitions = Collections.singletonList(jbmd);
+
+        List<Property> properties = jbossSource.collectMetrics(definitions);
+
+        assertEquals(1, properties.size());
+        Property p = properties.get(0);
+        assertNull(p);
     }
 
     @Test
     public void collectMetrics_LazyClientInitialization() throws Exception {
 
-        fail("RETURN HERE");
-
         //
         // make sure the first collectMetrics() correctly initializes the internal client
         //
+
+        JBossControllerClient client = JBossControllerClient.getInstance();
+        JBossCliMetricSource jbossSource = getMetricSourceToTest();
+        jbossSource.setControllerClient(client);
+
+        JBossControllerClient client2 = jbossSource.getControllerClient();
+        assertNotNull(client2);
+        assertFalse(client2.isConnected());
+
+        JBossCliMetricDefinition jbmd = new JBossCliMetricDefinition(
+                "jboss:" + client.getUsername() + ":mock-password" + "@" +
+                        client.getHost() + ":" + client.getPort() + "/test-path/test-attribute");
+
+        // this should trigger initialization, even if no properties are read
+        List<Property> properties = jbossSource.collectMetrics(Collections.singletonList(jbmd));
+
+        assertTrue(jbossSource.getControllerClient().isConnected());
+
+        assertFalse(properties.isEmpty());
     }
 
     // host, port and username support ---------------------------------------------------------------------------------
