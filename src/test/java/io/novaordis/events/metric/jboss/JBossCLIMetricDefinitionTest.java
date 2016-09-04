@@ -116,6 +116,80 @@ public class JBossCliMetricDefinitionTest extends MetricDefinitionTest {
         assertEquals("/name", d.getName());
     }
 
+    // toLiteralName() -------------------------------------------------------------------------------------------------
+
+    @Test
+    public void toLiteralName_EmptyLiteral() throws Exception {
+
+        JBossControllerAddress a = JBossControllerAddress.parseAddress("");
+        String name = JBossCliMetricDefinition.toLiteralName(a, new CliPath("/a=b/"), new CliAttribute("c"));
+        assertEquals("/a=b/c", name);
+    }
+
+    @Test
+    public void toLiteralName_LocalhostNoPort() throws Exception {
+
+        JBossControllerAddress a = JBossControllerAddress.parseAddress("localhost");
+        String name = JBossCliMetricDefinition.toLiteralName(a, new CliPath("/a=b/"), new CliAttribute("c"));
+        assertEquals("localhost/a=b/c", name);
+    }
+
+    @Test
+    public void toLiteralName_LocalhostDefaultPort() throws Exception {
+
+        JBossControllerAddress a = JBossControllerAddress.parseAddress("localhost:9999");
+        String name = JBossCliMetricDefinition.toLiteralName(a, new CliPath("/a=b/"), new CliAttribute("c"));
+        assertEquals("localhost:9999/a=b/c", name);
+    }
+
+    @Test
+    public void toLiteralName_OtherHostNoPort() throws Exception {
+
+        JBossControllerAddress a = JBossControllerAddress.parseAddress("somehost");
+        String name = JBossCliMetricDefinition.toLiteralName(a, new CliPath("/a=b/"), new CliAttribute("c"));
+        assertEquals("somehost/a=b/c", name);
+    }
+
+    @Test
+    public void toLiteralName_OtherHostOtherPort() throws Exception {
+
+        JBossControllerAddress a = JBossControllerAddress.parseAddress("somehost:1111");
+        String name = JBossCliMetricDefinition.toLiteralName(a, new CliPath("/a=b/"), new CliAttribute("c"));
+        assertEquals("somehost:1111/a=b/c", name);
+    }
+
+    @Test
+    public void toLiteralName_LocalhostUsername() throws Exception {
+
+        JBossControllerAddress a = JBossControllerAddress.parseAddress("testuser:blah@localhost");
+        String name = JBossCliMetricDefinition.toLiteralName(a, new CliPath("/a=b/"), new CliAttribute("c"));
+        assertEquals("localhost/a=b/c", name);
+    }
+
+    @Test
+    public void toLiteralName_OtherHostUsername() throws Exception {
+
+        JBossControllerAddress a = JBossControllerAddress.parseAddress("testuser:blah@somehost");
+        String name = JBossCliMetricDefinition.toLiteralName(a, new CliPath("/a=b/"), new CliAttribute("c"));
+        assertEquals("somehost/a=b/c", name);
+    }
+
+    @Test
+    public void toLiteralName2() throws Exception {
+
+        JBossControllerAddress a = JBossControllerAddress.parseAddress("test:test123!@localhost");
+        String name = JBossCliMetricDefinition.toLiteralName(a, new CliPath("/a=b/"), new CliAttribute("c"));
+        assertEquals("localhost/a=b/c", name);
+    }
+
+    @Test
+    public void toLiteralName3() throws Exception {
+
+        JBossControllerAddress a = JBossControllerAddress.parseAddress("test:test123!@localhost:9999");
+        String name = JBossCliMetricDefinition.toLiteralName(a, new CliPath("/a=b/"), new CliAttribute("c"));
+        assertEquals("localhost:9999/a=b/c", name);
+    }
+
     // getName() -------------------------------------------------------------------------------------------------------
 
     @Test

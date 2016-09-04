@@ -34,6 +34,9 @@ class CliPath {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
+    /**
+     * @param literal - expected format /a=b/c=d/
+     */
     public CliPath(String literal) throws MetricDefinitionException {
 
         this.path = literal;

@@ -40,10 +40,46 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
 
     // Static ----------------------------------------------------------------------------------------------------------
 
+    // Package protected static ----------------------------------------------------------------------------------------
+
+    /**
+     * @return the original name of the metric definition, the way it was specified in the string it was parsed from.
+     */
+    static String toLiteralName(JBossControllerAddress address, CliPath path, CliAttribute attribute) {
+
+        String hostLiteral = address.getHostLiteral();
+        String portLiteral = address.getPortLiteral();
+
+        String name;
+
+        if (hostLiteral != null) {
+
+            name = hostLiteral;
+        }
+        else {
+            name = "";
+        }
+
+        if (portLiteral != null) {
+
+            name += ":" + portLiteral;
+        }
+
+        name += path.getPath() + "/" + attribute.getName();
+
+        return name;
+    }
+
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private CliPath path;
     private CliAttribute attribute;
+
+    //
+    // we preserve the original name because the underlying source (which otherwise would be the originator for
+    // name) might change in subtle ways
+    //
+    private String name;
 
     //
     // a JBoss CLI metric definition has only one source, irrespective of the OS
@@ -74,34 +110,16 @@ public class JBossCliMetricDefinition extends MetricDefinitionBase {
         }
 
         parse(definition.substring(PREFIX.length()));
+
+        // cache the name, to "freeze" as soon as possible; the source, which otherwise would be the name originator,
+        // may change in subtle ways
+        this.name = toLiteralName(source.getControllerAddress(), path, attribute);
     }
 
     // MetricDefinitionBase overrides ----------------------------------------------------------------------------------
 
     @Override
     public String getName() {
-
-        JBossControllerAddress controllerAddress = source.getControllerAddress();
-
-        String hostLiteral = controllerAddress.getHostLiteral();
-        String portLiteral = controllerAddress.getPortLiteral();
-
-        String name;
-
-        if (hostLiteral != null) {
-
-            name = hostLiteral;
-        }
-        else {
-            name = "";
-        }
-
-        if (portLiteral != null) {
-
-            name += ":" + portLiteral;
-        }
-
-        name += path.getPath() + "/" + attribute.getName();
 
         return name;
     }
