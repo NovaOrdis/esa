@@ -118,7 +118,9 @@ public class JBossCliMetricSource implements MetricSource {
 
             if (controllerClient == null) {
 
-                setControllerClient(JBossControllerClient.getInstance());
+                JBossControllerAddress address = jbmd.getSource().getControllerAddress();
+                JBossControllerClient newClient = JBossControllerClient.getInstance(address);
+                setControllerClient(newClient);
             }
 
             //

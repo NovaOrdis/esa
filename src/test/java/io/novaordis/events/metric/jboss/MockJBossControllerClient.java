@@ -46,9 +46,6 @@ public class MockJBossControllerClient implements JBossControllerClient {
     public MockJBossControllerClient() {
 
         this.values = new HashMap<>();
-
-        this.address = new JBossControllerAddress(
-                "mock-user", new char[] { 'm', 'o', 'c', 'k'}, "MOCK-HOST", "MOCK-HOST", 7777, "7777");
     }
 
     // JBossControllerClient implementation ----------------------------------------------------------------------------

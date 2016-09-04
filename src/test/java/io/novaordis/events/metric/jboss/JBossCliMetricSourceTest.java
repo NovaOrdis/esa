@@ -37,7 +37,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
@@ -99,7 +98,9 @@ public class JBossCliMetricSourceTest extends MetricSourceTest {
         // configure the internal client as a mock client and install state
         //
 
-        JBossControllerClient client = JBossControllerClient.getInstance();
+        JBossControllerAddress mockAddress = new JBossControllerAddress(
+                "MOCK-USER", new char[] { 'm', 'o', 'c', 'k'}, "MOCK-HOST", "MOCK-HOST", 7777, "7777");
+        JBossControllerClient client = JBossControllerClient.getInstance(mockAddress);
         ((MockJBossControllerClient)client).setAttributeValue("/test-path", "test-attribute", 7);
 
         JBossCliMetricSource jbossSource = getMetricSourceToTest();
@@ -132,7 +133,9 @@ public class JBossCliMetricSourceTest extends MetricSourceTest {
         // configure the internal client as a mock client and install state
         //
 
-        JBossControllerClient client = JBossControllerClient.getInstance();
+        JBossControllerAddress mockAddress = new JBossControllerAddress(
+                "MOCK-USER", new char[] { 'm', 'o', 'c', 'k'}, "MOCK-HOST", "MOCK-HOST", 7777, "7777");
+        JBossControllerClient client = JBossControllerClient.getInstance(mockAddress);
         ((MockJBossControllerClient)client).setAttributeValue("/test-path", "test-attribute", 7);
 
         JBossCliMetricSource jbossSource = getMetricSourceToTest();
@@ -170,7 +173,9 @@ public class JBossCliMetricSourceTest extends MetricSourceTest {
         // configure the internal client as a mock client and install state
         //
 
-        JBossControllerClient client = JBossControllerClient.getInstance();
+        JBossControllerAddress mockAddress = new JBossControllerAddress(
+                "MOCK-USER", new char[] { 'm', 'o', 'c', 'k'}, "MOCK-HOST", "MOCK-HOST", 7777, "7777");
+        JBossControllerClient client = JBossControllerClient.getInstance(mockAddress);
         ((MockJBossControllerClient)client).setAttributeValue("/test-path", "test-attribute-1", 10);
 
         //
@@ -209,7 +214,9 @@ public class JBossCliMetricSourceTest extends MetricSourceTest {
         // configure the internal client as a mock client and install state
         //
 
-        JBossControllerClient client = JBossControllerClient.getInstance();
+        JBossControllerAddress mockAddress = new JBossControllerAddress(
+                "MOCK-USER", new char[] { 'm', 'o', 'c', 'k'}, "MOCK-HOST", "MOCK-HOST", 7777, "7777");
+        JBossControllerClient client = JBossControllerClient.getInstance(mockAddress);
 
         //
         // this simulates an "undefined" CLI attribute
@@ -239,7 +246,9 @@ public class JBossCliMetricSourceTest extends MetricSourceTest {
         // make sure the first collectMetrics() correctly initializes the internal client
         //
 
-        JBossControllerClient client = JBossControllerClient.getInstance();
+        JBossControllerAddress mockAddress = new JBossControllerAddress(
+                "MOCK-USER", new char[] { 'm', 'o', 'c', 'k'}, "MOCK-HOST", "MOCK-HOST", 7777, "7777");
+        JBossControllerClient client = JBossControllerClient.getInstance(mockAddress);
         JBossCliMetricSource jbossSource = getMetricSourceToTest();
         jbossSource.setControllerClient(client);
 
