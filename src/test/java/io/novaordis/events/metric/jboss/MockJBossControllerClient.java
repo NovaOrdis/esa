@@ -121,6 +121,11 @@ public class MockJBossControllerClient implements JBossControllerClient {
         return attributes.get(attributeName);
     }
 
+    @Override
+    public void setCommandContextFactory(Object commandContextFactory) {
+        throw new RuntimeException("setCommandContextFactory() NOT YET IMPLEMENTED");
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     public void setAttributeValue(String path, String attributeName, Object value) {
