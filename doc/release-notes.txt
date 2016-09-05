@@ -1,3 +1,4 @@
 
 * Supporting extra "top" output formats on Linux.
 * Added MemoryMeasureUnit.parse() and various memory literals ('kb', 'k', 'KiB', 'mb', 'm', etc.)
+* JBoss CLI metric support.
