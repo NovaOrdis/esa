@@ -11,7 +11,7 @@
     <artifactId>events-core</artifactId>
     <packaging>jar</packaging>
 
-    <version>1-SNAPSHOT-1</version>
+    <version>${module.core.version}</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -154,6 +154,13 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>io.novaordis.events</groupId>
+            <artifactId>events-api</artifactId>
+            <version>${module.api.version}</version>
+        </dependency>
+
     </dependencies>
 
 </project>

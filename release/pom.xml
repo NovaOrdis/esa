@@ -14,7 +14,9 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -26,7 +28,7 @@
 
     <artifactId>release</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0-SNAPSHOT-1</version>
+    <version>${module.release.version}</version>
 
     <build>
         <plugins>
@@ -34,7 +36,10 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <finalName>events-${project.version}</finalName>
+                    <!--
+                        The assembly artifact name will be events-${module.release.version}.zip
+                    -->
+                    <finalName>events-${module.release.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptors>
                         <descriptor>src/assembly/release.xml</descriptor>
@@ -57,7 +62,7 @@
         <dependency>
             <groupId>io.novaordis.events</groupId>
             <artifactId>events-core</artifactId>
-            <version>1-SNAPSHOT-1</version>
+            <version>${module.core.version}</version>
         </dependency>
     </dependencies>
 

@@ -10,6 +10,7 @@
 
     <artifactId>events-api</artifactId>
     <packaging>jar</packaging>
-    <version>1</version>
+
+    <version>${module.api.version}</version>
 
 </project>
