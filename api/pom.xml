@@ -2,14 +2,14 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.novaordis.events</groupId>
-    <artifactId>events</artifactId>
-    <version>0</version>
-    <packaging>pom</packaging>
+    <parent>
+        <groupId>io.novaordis.events</groupId>
+        <artifactId>events</artifactId>
+        <version>0</version>
+    </parent>
 
-    <modules>
-        <module>api</module>
-        <module>core</module>
-    </modules>
+    <artifactId>events-api</artifactId>
+    <packaging>jar</packaging>
+    <version>1</version>
 
 </project>

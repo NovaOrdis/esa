@@ -855,7 +855,7 @@ function build-release-zip-file() {
     # copy the processed resource files into lib
     for i in ${project_home}/src/main/resources/*; do
         i=$(basename ${i})
-        cp ${project_home}/target/classes/${i} ${zip_root_dir}/lib && \
+        cp -r ${project_home}/target/classes/${i} ${zip_root_dir}/lib && \
             debug "${project_home}/target/classes/${i} in ${zip_root_dir}/lib" || exit 1;
     done
 
@@ -895,8 +895,8 @@ function build-release-zip-file() {
 #
 # returns the home directory of the installed application
 #
-function install()
-{
+function install() {
+
     debug-arguments "$@"
 
     local zip_file=$1

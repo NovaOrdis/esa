@@ -1,22 +1,22 @@
 
 events ${version}
 
-Reads, parses and processes timed event series.
-
-Syntax: ------------------------------------------------------------------------------------------
-
-    events < input-file.log [global-options] <input-format-spec> <command> [command-options]
-
-The input format  must be  specified either on command line,  in  an auxiliary file  or  in the
-configuration file. For more details, see the "Input Format" section. More details about commands
-and their options are available in the "Commands" section.
-
-Commands: ----------------------------------------------------------------------------------------
+'events' is a command line tool that reads, parses and processes timed event series.
 
 @COMMANDS@
 To get more details on a specific command, run:
 
     events --help <command-name>
+
+TO CONVERT TO ON-LINE HELP https://kb.novaordis.com/index.php/Events_User_Manual
+
+
+
+events < input-file.log [global-options] <input-format-spec> <command> [command-options]
+
+The input format  must be  specified either on command line,  in  an auxiliary file  or  in the
+configuration file. For more details, see the "Input Format" section. More details about commands
+and their options are available in the "Commands" section.
 
 Global Options: ----------------------------------------------------------------------------------
 
@@ -49,95 +49,3 @@ HH:mm:ss timestamp can be used. It will be assumed to be relative to the date of
 event seen by the parser, so this won't work if the time window spans more than a day. Example:
 
     --from=14:00:00
-
-Input Formats: -----------------------------------------------------------------------------------
-
-The input stream format is required. It can be specified either on command line with:
-
-    -i|--input-format="..."
-
-where the input format is specified in-line, or with:
-
-    --input-format-file=<file-name-that-contains-input-format>
-
-where the input format is defined in the file name referred by the command line option.
-
-Common input formats are httpd log, CSV header definitions or garbage collection log formats.
-Examples:
-
-  httpd log format:  "%h %u [%t] \"%r\" \"%q\" %{c,JSESSIONID} %{i,Some-Request-Header} %s %b %D"
-  CSV format:        "timestamp, count, status-code"
-
-'events' will try to apply heuristics and figure out what type of format was specified.  For more
- details about input formats, see "Input Formats" section below.
-
-httpd Input Format: ------------------------------------------------------------------------------
-
-  When specified on command line, quotes must be escaped: \"%r\". When specified in a format file,
-  quotes do NOT need to be escaped; the following specification is legal and it will be parsed
-  correctly: "%r". HTTP special characters can also be used (&quot;).
-
-  %A - The local IP address.
-  %b - Response entity body size. Stored as long.
-  %D - The time taken to serve the request. WildFly logs the time in milliseconds for %D, while
-       Apache httpd logs the time in microseconds for the same %D.
-  %h - Remote host name or IP address. Will log the IP address if HostnameLookups is set to Off,
-       which is the default.
-  %I - The name of the thread processing the request. Note that this is actually the WildFly
-       convention, not Apache httpd convention (Apache httpd logs "bytes received, including
-       request and headers" for %I)
-  %l - Remote logname from identd (if supplied).
-  %u - Remote user if the request was authenticated. May be irrelevant if return status (%s) is
-       401 (unauthorized).
-  %P - The PID of the process that serviced the request.
-  %q - The query string, excluding the '?' character. Usually enclosed in quotes.
-  %r - First line of request. Note that the first line is enclosed in quotes, you must explicitly
-       specify the \" (double quotes) or ' (single quote) format elements.
-  %s - The status code of the original request (whether was internally redirected or not). Stored
-       as integer.
-  %>s - The status code of the final request (whether was internally redirected or not). Stored as
-       integer.
-  %S - Bytes transferred (received and sent), including request and headers.
-  %t - Time the request was received, in the format [18/Sep/2015:19:18:28 -0400]. The last number
-       indicates the timezone offset from GMT. Usually the timestamp format specification is
-       explicitly declared between brackets, but if the brackets are not present in the log format
-       specification, they are implied: WildFly will enclose the generated timestamp between
-       brackets.
-  %T - Time taken to process the request, in seconds.
-  %v - The local server name.
-
-  The parser can be instructed to drop the log values for certain fields, by using the %?
-  format string:
-
-  %? - Instructs the parser to ignore (drop) the corresponding value.
-
-CSV Input Format: --------------------------------------------------------------------------------
-
-The CSV input format consists in comma separated header names, with optional type and format
-information. If not type or format information are specified, the input fields are handled as
-strings. The general syntax is:
-
-  <field-name>(<type>[:format])
-
-If a value contains commas, it must be enclosed in double quotes to be parsed correctly, otherwise
-the parser will interpret comma as a field separator.
-
-Examples: ----------------------------------------------------------------------------------------
-
-  path - the content of the field be read verbatim and handled as string.
-
-  timestamp(time:yy/MM/dd HH:mm:ss,SSS) - the content of the field will be parsed as time
-  information according to the format specified between (time:...). The format follows Java
-  SimpleDateFormat conventions. If the content cannot be converted into a time stamp, a FaultEvent
-  will be generated and sent down the pipeline. For more details see:
-  http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
-
-  status-code(int) - the content of the field will be interpreted as integer and parsed
-  accordingly. If the content cannot be converted to an integer, a FaultEvent will be generated
-  and sent down the pipeline.
-
-  body-size(long) - the content of the field will be interpreted as long and parsed accordingly.
-  If the content cannot be converted to a long, a FaultEvent will be generated and sent down the
-  pipeline.
-
-
