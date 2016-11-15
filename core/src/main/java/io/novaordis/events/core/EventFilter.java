@@ -25,6 +25,7 @@ import io.novaordis.utilities.time.Timestamp;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * The events that match the filters contained by this instance are are returned unchanged by processInternal(),
@@ -168,7 +169,7 @@ public class EventFilter extends ProcessingLogicBase {
             TimedEvent te = (TimedEvent)e;
             Timestamp ts = te.getTimestamp();
             dayPortion = ts.elementToString("MM/dd/yy");
-            adjustedEventTime = ts.adjustTime(TimeOffset.getDefault());
+            adjustedEventTime = ts.adjustTime(new TimeOffset(TimeZone.getDefault().getOffset(ts.getTime())));
         }
 
         //

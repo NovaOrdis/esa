@@ -20,7 +20,7 @@
         <slf4j-version>1.7.12</slf4j-version>
         <junit-version>4.12</junit-version>
         <novaordis-clad-version>3.3</novaordis-clad-version>
-        <novaordis-utilities-version>4.2.1-SNAPSHOT-5</novaordis-utilities-version>
+        <novaordis-utilities-version>4.2.2-SNAPSHOT-2</novaordis-utilities-version>
         <novaordis-jboss-cli>1.0.0-SNAPSHOT-19</novaordis-jboss-cli>
     </properties>
 
@@ -155,11 +155,13 @@
             <artifactId>junit</artifactId>
         </dependency>
 
+        <!--
         <dependency>
             <groupId>io.novaordis.events</groupId>
             <artifactId>events-api</artifactId>
             <version>${module.api.version}</version>
         </dependency>
+        -->
 
     </dependencies>
 

@@ -23,7 +23,6 @@ import io.novaordis.events.core.event.MockProperty;
 import io.novaordis.events.core.event.MockTimedEvent;
 import io.novaordis.events.httpd.HttpEvent;
 import io.novaordis.events.metric.cpu.CpuUserTime;
-import io.novaordis.utilities.time.TimeOffset;
 import io.novaordis.utilities.time.Timestamp;
 import io.novaordis.utilities.time.TimestampImpl;
 import org.junit.Test;
@@ -190,8 +189,7 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
         assertEquals(expected, s);
     }
 
-    // TODO r43dey
-    //@Test
+    @Test
     public void process_TimestampHasTimezoneOffsetInfo() throws Exception {
 
         CsvOutputFormatter c = getConversionLogicToTest();
@@ -236,8 +234,7 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
         assertEquals("TEST-VALUE", result);
     }
 
-    // TODO r43dey
-    //@Test
+    @Test
     public void toStringEvent_TimestampHasTimezoneOffsetInfo() throws Exception {
 
         CsvOutputFormatter c = getConversionLogicToTest();
@@ -270,8 +267,6 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
 
         DateFormat sourceDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
         Timestamp ts = new TimestampImpl("01/07/16 10:00:00", sourceDateFormat);
-
-        assertEquals(TimeOffset.getDefault(), ts.getTimeOffset());
 
         MockTimedEvent mte = new MockTimedEvent(ts);
 

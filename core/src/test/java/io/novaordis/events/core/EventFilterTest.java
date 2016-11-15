@@ -252,8 +252,7 @@ public class EventFilterTest extends ProcessingLogicTest {
         assertNull(e.processInternal(dayAfterEvent));
     }
 
-    // TODO r43dey
-    //@Test
+    @Test
     public void fromFilterAdjustedForTimezone_TimezoneSpecifiedInLog() throws Exception {
 
         MockConfiguration mc = new MockConfiguration();
@@ -341,8 +340,7 @@ public class EventFilterTest extends ProcessingLogicTest {
         assertEquals(e3, result);
     }
 
-    // TODO r43dey
-    // @Test
+    @Test
     public void fromFilterAdjustedForTimezone_TimezoneSpecifiedInLog_RelativeFormat() throws Exception {
 
         MockConfiguration mc = new MockConfiguration();
@@ -433,8 +431,7 @@ public class EventFilterTest extends ProcessingLogicTest {
         assertEquals(e3, result);
     }
 
-    // TODO r43dey
-    //@Test
+    @Test
     public void toFilterAdjustedForTimezone_TimezoneSpecifiedInLog() throws Exception {
 
         MockConfiguration mc = new MockConfiguration();
@@ -518,8 +515,7 @@ public class EventFilterTest extends ProcessingLogicTest {
         assertNull(result);
     }
 
-    // TODO r43dey
-    //@Test
+    @Test
     public void toFilterAdjustedForTimezone_TimezoneSpecifiedInLog_RelativeFormat() throws Exception {
 
         MockConfiguration mc = new MockConfiguration();

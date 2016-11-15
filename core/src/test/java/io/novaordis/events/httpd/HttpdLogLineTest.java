@@ -249,7 +249,6 @@ public class HttpdLogLineTest {
         HttpEvent event = e.toEvent();
 
         assertEquals(1L, event.getTime().longValue());
-        assertEquals(TimeOffset.getDefault(), event.getTimestamp().getTimeOffset());
     }
 
     @Test
