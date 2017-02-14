@@ -18,7 +18,6 @@ package io.novaordis.events.clad;
 
 import io.novaordis.clad.application.ApplicationRuntimeBase;
 import io.novaordis.clad.configuration.Configuration;
-import io.novaordis.clad.UserErrorException;
 import io.novaordis.clad.option.BooleanOption;
 import io.novaordis.clad.option.Option;
 import io.novaordis.clad.option.StringOption;
@@ -34,6 +33,7 @@ import io.novaordis.events.core.CsvOutputFormatter;
 import io.novaordis.events.core.OutputStreamTerminator;
 import io.novaordis.events.core.ProcessingLogic;
 import io.novaordis.events.core.event.ByteToLineEventConverter;
+import io.novaordis.utilities.UserErrorException;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -139,7 +139,7 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
     }
 
     @Override
-    public void init(Configuration configuration) throws Exception {
+    public void init(Configuration configuration) throws UserErrorException {
 
         log.debug(this + ".init(" + configuration + ")");
 

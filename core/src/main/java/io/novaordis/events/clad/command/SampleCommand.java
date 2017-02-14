@@ -17,14 +17,13 @@
 package io.novaordis.events.clad.command;
 
 import io.novaordis.clad.application.ApplicationRuntime;
-import io.novaordis.clad.configuration.Configuration;
-import io.novaordis.clad.UserErrorException;
 import io.novaordis.clad.command.CommandBase;
 import io.novaordis.clad.option.Option;
 import io.novaordis.clad.option.StringOption;
 import io.novaordis.events.clad.EventsApplicationRuntime;
 import io.novaordis.events.core.EventProcessor;
 import io.novaordis.events.sampling.Sampler;
+import io.novaordis.utilities.UserErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +64,7 @@ public class SampleCommand extends CommandBase {
     }
 
     @Override
-    public void execute(Configuration configuration, ApplicationRuntime applicationRuntime) throws Exception {
+    public void execute(ApplicationRuntime applicationRuntime) throws Exception {
 
         log.debug("executing " + this);
 

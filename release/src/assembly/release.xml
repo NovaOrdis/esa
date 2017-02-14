@@ -22,6 +22,22 @@
             <source>../core/src/main/bash/events</source>
             <outputDirectory>bin</outputDirectory>
         </file>
+        <file>
+            <source>./src/main/bash/.install</source>
+            <outputDirectory>bin</outputDirectory>
+            <fileMode>0755</fileMode>
+        </file>
+        <file>
+            <source>./src/main/resources/VERSION</source>
+            <outputDirectory>lib</outputDirectory>
+            <filtered>true</filtered>
+        </file>
     </files>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+        </dependencySet>
+    </dependencySets>
 
 </assembly>

@@ -19,8 +19,8 @@
         <release_date>${maven.build.timestamp}</release_date>
         <slf4j-version>1.7.12</slf4j-version>
         <junit-version>4.12</junit-version>
-        <novaordis-clad-version>3.3</novaordis-clad-version>
-        <novaordis-utilities-version>4.2.2-SNAPSHOT-2</novaordis-utilities-version>
+        <novaordis-clad-version>3.5</novaordis-clad-version>
+        <novaordis-utilities-version>4.5</novaordis-utilities-version>
         <novaordis-jboss-cli>1.0.0-SNAPSHOT-19</novaordis-jboss-cli>
     </properties>
 
@@ -91,7 +91,7 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>${slf4j-version}</version>
-                <scope>provided</scope>
+                <!-- <scope>provided</scope> -->
             </dependency>
             <!--
             <dependency>

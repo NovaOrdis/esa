@@ -67,6 +67,21 @@ public class MockConfiguration implements Configuration {
         return null;
     }
 
+    @Override
+    public boolean isVerbose() {
+        throw new RuntimeException("isVerbose() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public void set(String configurationLabel, String value) {
+        throw new RuntimeException("set() NOT YET IMPLEMENTED");
+    }
+
+    @Override
+    public String get(String configurationLabel) {
+        throw new RuntimeException("get() NOT YET IMPLEMENTED");
+    }
+
     // Public ----------------------------------------------------------------------------------------------------------
 
     public void addGlobalOption(Option o) {

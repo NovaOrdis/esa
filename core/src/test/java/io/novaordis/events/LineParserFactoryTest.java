@@ -16,7 +16,6 @@
 
 package io.novaordis.events;
 
-import io.novaordis.clad.UserErrorException;
 import io.novaordis.events.core.LineFormat;
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.csv.CsvFormat;
@@ -26,6 +25,7 @@ import io.novaordis.events.httpd.HttpdFormatString;
 import io.novaordis.events.httpd.HttpdFormatStrings;
 import io.novaordis.events.httpd.HttpdLineParser;
 import io.novaordis.events.httpd.HttpdLogFormat;
+import io.novaordis.utilities.UserErrorException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

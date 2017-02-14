@@ -16,11 +16,11 @@
 
 package io.novaordis.events.extensions.bscenarios;
 
-import io.novaordis.clad.UserErrorException;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.FaultEvent;
 import io.novaordis.events.core.event.LongProperty;
 import io.novaordis.events.httpd.HttpEvent;
+import io.novaordis.utilities.UserErrorException;
 import io.novaordis.utilities.time.TimestampImpl;
 import org.junit.Test;
 import org.slf4j.Logger;

@@ -59,7 +59,7 @@ public class OutputCommand extends CommandBase {
     }
 
     @Override
-    public void execute(Configuration configuration, ApplicationRuntime r) throws Exception {
+    public void execute(ApplicationRuntime r) throws Exception {
 
         log.debug("executing " + this);
 
@@ -75,6 +75,7 @@ public class OutputCommand extends CommandBase {
         terminator.setInputQueue(runtime.getLastEventProcessor().getOutputQueue());
 
         StringOption outputFormatOption = (StringOption)getOption(OUTPUT_FORMAT_OPTION);
+        Configuration configuration = r.getConfiguration();
         BooleanOption bo = (BooleanOption)configuration.getGlobalOption(EventsApplicationRuntime.IGNORE_FAULTS_OPTION);
 
         if (outputFormatOption != null) {

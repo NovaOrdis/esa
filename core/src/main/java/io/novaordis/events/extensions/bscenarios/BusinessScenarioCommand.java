@@ -16,7 +16,6 @@
 
 package io.novaordis.events.extensions.bscenarios;
 
-import io.novaordis.clad.UserErrorException;
 import io.novaordis.clad.application.ApplicationRuntime;
 import io.novaordis.clad.command.CommandBase;
 import io.novaordis.clad.configuration.Configuration;
@@ -34,6 +33,7 @@ import io.novaordis.events.extensions.bscenarios.stats.BusinessScenarioStatistic
 import io.novaordis.events.extensions.bscenarios.stats.FaultStatistics;
 import io.novaordis.events.httpd.HttpdFormatString;
 import io.novaordis.events.httpd.HttpEvent;
+import io.novaordis.utilities.UserErrorException;
 import io.novaordis.utilities.time.Timestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,13 +144,15 @@ public class BusinessScenarioCommand extends CommandBase {
     }
 
     @Override
-    public void execute(Configuration configuration, ApplicationRuntime r) throws Exception {
+    public void execute(ApplicationRuntime r) throws Exception {
 
         EventsApplicationRuntime runtime = (EventsApplicationRuntime)r;
 
         //
         // transfer interesting global options values
         //
+
+        Configuration configuration = r.getConfiguration();
 
         Option ignoreFaultsOption = configuration.getGlobalOption(EventsApplicationRuntime.IGNORE_FAULTS_OPTION);
         this.ignoreFaults = ignoreFaultsOption != null && ((BooleanOption)ignoreFaultsOption).getValue();

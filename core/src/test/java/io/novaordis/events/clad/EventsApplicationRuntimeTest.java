@@ -16,12 +16,12 @@
 
 package io.novaordis.events.clad;
 
-import io.novaordis.clad.UserErrorException;
 import io.novaordis.clad.option.StringOption;
 import io.novaordis.clad.option.TimestampOption;
 import io.novaordis.events.core.EventFilter;
 import io.novaordis.events.core.EventProcessor;
 import io.novaordis.events.core.LineStreamParser;
+import io.novaordis.utilities.UserErrorException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

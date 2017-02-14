@@ -16,14 +16,13 @@
 
 package io.novaordis.events.extensions.lab;
 
-import io.novaordis.clad.UserErrorException;
 import io.novaordis.clad.application.ApplicationRuntime;
 import io.novaordis.clad.command.CommandBase;
-import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.events.clad.EventsApplicationRuntime;
 import io.novaordis.events.core.event.EndOfStreamEvent;
 import io.novaordis.events.core.event.Event;
 import io.novaordis.events.httpd.HttpEvent;
+import io.novaordis.utilities.UserErrorException;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -46,7 +45,7 @@ public class LabCommand extends CommandBase {
     // Command implementation ------------------------------------------------------------------------------------------
 
     @Override
-    public void execute(Configuration configuration, ApplicationRuntime r) throws Exception {
+    public void execute(ApplicationRuntime r) throws Exception {
 
         EventsApplicationRuntime runtime = (EventsApplicationRuntime)r;
         runtime.getTerminator().disable();

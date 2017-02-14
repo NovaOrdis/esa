@@ -16,7 +16,6 @@
 
 package io.novaordis.events;
 
-import io.novaordis.clad.UserErrorException;
 import io.novaordis.events.core.LineFormat;
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.event.Event;
@@ -24,6 +23,7 @@ import io.novaordis.events.csv.CsvLineParser;
 import io.novaordis.events.csv.InvalidFieldException;
 import io.novaordis.events.httpd.CorruptedHttpdFormatStringException;
 import io.novaordis.events.httpd.HttpdLineParser;
+import io.novaordis.utilities.UserErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

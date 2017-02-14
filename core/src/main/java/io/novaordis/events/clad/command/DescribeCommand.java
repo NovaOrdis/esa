@@ -18,7 +18,6 @@ package io.novaordis.events.clad.command;
 
 import io.novaordis.clad.application.ApplicationRuntime;
 import io.novaordis.clad.command.CommandBase;
-import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.events.clad.EventsApplicationRuntime;
 import io.novaordis.events.core.event.EndOfStreamEvent;
 import io.novaordis.events.core.event.Event;
@@ -60,7 +59,7 @@ public class DescribeCommand extends CommandBase {
     // CommandBase override --------------------------------------------------------------------------------------------
 
     @Override
-    public void execute(Configuration configuration, ApplicationRuntime r) throws Exception {
+    public void execute(ApplicationRuntime r) throws Exception {
 
         EventsApplicationRuntime runtime = (EventsApplicationRuntime)r;
         runtime.getTerminator().disable();
@@ -88,7 +87,6 @@ public class DescribeCommand extends CommandBase {
 
     /**
      * Build a list of event categories (type, signature) and place them in a tree structure
-     * @param event
      */
     void analyze(Event event) throws InterruptedException {
 
