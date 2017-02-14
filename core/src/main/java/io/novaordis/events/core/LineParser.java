@@ -26,6 +26,13 @@ import io.novaordis.events.core.event.Event;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/5/16
  */
+@Deprecated
+/**
+ * Does not address the following cases:
+ *
+ * 1. Multiple lines make an event (GG logs)
+ * 2. Multiple events on the same line (also GC logs).
+ */
 public interface LineParser {
 
     // Constants -------------------------------------------------------------------------------------------------------
