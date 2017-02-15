@@ -16,7 +16,8 @@
 
 package io.novaordis.events.extensions.bscenarios;
 
-import io.novaordis.events.core.event.FaultType;
+
+import io.novaordis.events.api.event.FaultType;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>

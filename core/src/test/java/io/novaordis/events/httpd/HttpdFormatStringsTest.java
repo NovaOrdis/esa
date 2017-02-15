@@ -16,14 +16,14 @@
 
 package io.novaordis.events.httpd;
 
-import io.novaordis.events.core.event.IntegerProperty;
-import io.novaordis.events.core.event.LongProperty;
-import io.novaordis.events.core.event.MapProperty;
-import io.novaordis.events.core.event.MeasureUnit;
-import io.novaordis.events.core.event.MemoryMeasureUnit;
-import io.novaordis.events.core.event.StringProperty;
-import io.novaordis.events.core.event.TimeMeasureUnit;
 import io.novaordis.events.ParsingException;
+import io.novaordis.events.api.event.IntegerProperty;
+import io.novaordis.events.api.event.LongProperty;
+import io.novaordis.events.api.event.MapProperty;
+import io.novaordis.events.api.event.StringProperty;
+import io.novaordis.events.api.measure.MeasureUnit;
+import io.novaordis.events.api.measure.MemoryMeasureUnit;
+import io.novaordis.events.api.measure.TimeMeasureUnit;
 import io.novaordis.utilities.time.Timestamp;
 import org.junit.Test;
 import org.slf4j.Logger;

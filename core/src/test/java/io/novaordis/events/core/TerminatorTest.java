@@ -16,7 +16,7 @@
 
 package io.novaordis.events.core;
 
-import io.novaordis.events.core.event.Event;
+import io.novaordis.events.api.event.Event;
 import org.junit.Test;
 
 import java.util.concurrent.ArrayBlockingQueue;

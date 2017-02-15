@@ -18,12 +18,12 @@ package io.novaordis.events.clad.command;
 
 import io.novaordis.clad.application.ApplicationRuntime;
 import io.novaordis.clad.command.CommandBase;
+import io.novaordis.events.api.event.EndOfStreamEvent;
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.MapProperty;
+import io.novaordis.events.api.event.Property;
+import io.novaordis.events.api.event.TimedEvent;
 import io.novaordis.events.clad.EventsApplicationRuntime;
-import io.novaordis.events.core.event.EndOfStreamEvent;
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.MapProperty;
-import io.novaordis.events.core.event.Property;
-import io.novaordis.events.core.event.TimedEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -16,9 +16,9 @@
 
 package io.novaordis.events.clad.command;
 
-import io.novaordis.events.core.event.IntegerProperty;
-import io.novaordis.events.core.event.MapProperty;
-import io.novaordis.events.core.event.StringProperty;
+import io.novaordis.events.api.event.IntegerProperty;
+import io.novaordis.events.api.event.MapProperty;
+import io.novaordis.events.api.event.StringProperty;
 import io.novaordis.events.httpd.HttpEvent;
 import io.novaordis.utilities.time.TimestampImpl;
 import org.junit.Test;

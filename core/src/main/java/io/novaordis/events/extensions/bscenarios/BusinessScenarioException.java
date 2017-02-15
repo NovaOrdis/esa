@@ -16,7 +16,8 @@
 
 package io.novaordis.events.extensions.bscenarios;
 
-import io.novaordis.events.core.event.FaultType;
+import io.novaordis.events.api.event.FaultType;
+import io.novaordis.utilities.LineNumberException;
 
 /**
  * An exception that will generate a fault to be sent downstream, but not interrupt processing.
@@ -24,7 +25,7 @@ import io.novaordis.events.core.event.FaultType;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/22/16
  */
-public class BusinessScenarioException extends Exception {
+public class BusinessScenarioException extends LineNumberException {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -33,22 +34,23 @@ public class BusinessScenarioException extends Exception {
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private FaultType faultType;
-    private Long lineNumber;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     public BusinessScenarioException(Long lineNumber, String message) {
+
         this(lineNumber, null, message, null);
     }
 
     public BusinessScenarioException(Long lineNumber, FaultType type, String message) {
+
         this(lineNumber, type, message, null);
     }
 
     public BusinessScenarioException(Long lineNumber, FaultType type, String message, Throwable cause) {
-        super(message, cause);
+
+        super(message, cause, lineNumber);
         this.faultType = type;
-        this.lineNumber = lineNumber;
     }
 
     // Public ----------------------------------------------------------------------------------------------------------
@@ -57,14 +59,8 @@ public class BusinessScenarioException extends Exception {
      * As BusinessScenarioException are usually turned into FaultEvents, we need to know the type. Can be null.
      */
     public FaultType getFaultType() {
-        return faultType;
-    }
 
-    /**
-     * May return null.
-     */
-    public Long getLineNumber() {
-        return lineNumber;
+        return faultType;
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

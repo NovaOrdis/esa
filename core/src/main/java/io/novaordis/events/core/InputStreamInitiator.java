@@ -16,8 +16,8 @@
 
 package io.novaordis.events.core;
 
-import io.novaordis.events.core.event.EndOfStreamEvent;
-import io.novaordis.events.core.event.Event;
+import io.novaordis.events.api.event.EndOfStreamEvent;
+import io.novaordis.events.api.event.Event;
 import io.novaordis.events.core.impl.ComponentBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

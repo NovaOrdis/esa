@@ -17,8 +17,8 @@
 package io.novaordis.events.core;
 
 import io.novaordis.clad.option.TimestampOption;
+import io.novaordis.events.api.event.Event;
 import io.novaordis.events.clad.MockConfiguration;
-import io.novaordis.events.core.event.Event;
 import io.novaordis.events.core.event.MockTimedEvent;
 import io.novaordis.utilities.time.TimeOffset;
 import io.novaordis.utilities.time.Timestamp;

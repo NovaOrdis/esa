@@ -16,10 +16,10 @@
 
 package io.novaordis.events.core.event;
 
+import io.novaordis.events.api.event.GenericEvent;
+
 /**
  * For mock timed events see:
- *
- * @see MockTimedEvent
  *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/24/16

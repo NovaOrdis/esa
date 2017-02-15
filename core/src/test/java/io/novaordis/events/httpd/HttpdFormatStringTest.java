@@ -17,10 +17,10 @@
 package io.novaordis.events.httpd;
 
 import io.novaordis.events.ParsingException;
-import io.novaordis.events.core.event.DoubleProperty;
-import io.novaordis.events.core.event.LongProperty;
-import io.novaordis.events.core.event.StringProperty;
-import io.novaordis.events.core.event.TimeMeasureUnit;
+import io.novaordis.events.api.event.DoubleProperty;
+import io.novaordis.events.api.event.LongProperty;
+import io.novaordis.events.api.event.StringProperty;
+import io.novaordis.events.api.measure.TimeMeasureUnit;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

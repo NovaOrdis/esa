@@ -16,13 +16,13 @@
 
 package io.novaordis.events.sampling;
 
+import io.novaordis.events.api.event.DoubleProperty;
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.GenericTimedEvent;
+import io.novaordis.events.api.event.LongProperty;
+import io.novaordis.events.api.event.Property;
+import io.novaordis.events.api.event.TimedEvent;
 import io.novaordis.events.core.ProcessingLogicBase;
-import io.novaordis.events.core.event.DoubleProperty;
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.GenericTimedEvent;
-import io.novaordis.events.core.event.LongProperty;
-import io.novaordis.events.core.event.Property;
-import io.novaordis.events.core.event.TimedEvent;
 
 import java.util.List;
 

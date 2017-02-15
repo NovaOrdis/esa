@@ -16,6 +16,9 @@
 
 package io.novaordis.events.core.event;
 
+import io.novaordis.events.api.event.EndOfStreamEvent;
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.LineEvent;
 import io.novaordis.events.core.InputStreamConversionLogicTest;
 import org.junit.Test;
 

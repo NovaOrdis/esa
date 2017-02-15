@@ -16,6 +16,9 @@
 
 package io.novaordis.events.core.event;
 
+import io.novaordis.events.api.event.Property;
+import io.novaordis.events.api.event.PropertyBase;
+
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/7/16

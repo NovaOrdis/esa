@@ -16,7 +16,7 @@
 
 package io.novaordis.events.httpd;
 
-import io.novaordis.events.core.event.MapProperty;
+import io.novaordis.events.api.event.MapProperty;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

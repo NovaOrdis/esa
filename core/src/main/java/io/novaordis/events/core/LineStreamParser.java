@@ -16,9 +16,9 @@
 
 package io.novaordis.events.core;
 
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.FaultEvent;
-import io.novaordis.events.core.event.LineEvent;
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.FaultEvent;
+import io.novaordis.events.api.event.LineEvent;
 
 /**
  * Logic wired into event processors that receive lines from their queues (in form of StringEvents) and parse them into

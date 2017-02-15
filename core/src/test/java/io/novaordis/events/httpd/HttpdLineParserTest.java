@@ -17,12 +17,12 @@
 package io.novaordis.events.httpd;
 
 import io.novaordis.events.ParsingException;
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.FaultEvent;
+import io.novaordis.events.api.event.LineEvent;
 import io.novaordis.events.core.LineParserTest;
 import io.novaordis.events.core.LineStreamParser;
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.FaultEvent;
 import io.novaordis.events.core.event.MockEvent;
-import io.novaordis.events.core.event.LineEvent;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

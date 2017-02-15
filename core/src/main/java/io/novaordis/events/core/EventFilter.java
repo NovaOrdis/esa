@@ -18,8 +18,8 @@ package io.novaordis.events.core;
 
 import io.novaordis.clad.configuration.Configuration;
 import io.novaordis.clad.option.TimestampOption;
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.TimedEvent;
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.TimedEvent;
 import io.novaordis.utilities.time.TimeOffset;
 import io.novaordis.utilities.time.Timestamp;
 

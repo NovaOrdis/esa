@@ -16,13 +16,14 @@
 
 package io.novaordis.events.csv;
 
-import io.novaordis.events.core.event.DateProperty;
-import io.novaordis.events.core.event.DoubleProperty;
-import io.novaordis.events.core.event.FloatProperty;
-import io.novaordis.events.core.event.IntegerProperty;
-import io.novaordis.events.core.event.LongProperty;
-import io.novaordis.events.core.event.Property;
-import io.novaordis.events.core.event.StringProperty;
+
+import io.novaordis.events.api.event.DateProperty;
+import io.novaordis.events.api.event.DoubleProperty;
+import io.novaordis.events.api.event.FloatProperty;
+import io.novaordis.events.api.event.IntegerProperty;
+import io.novaordis.events.api.event.LongProperty;
+import io.novaordis.events.api.event.Property;
+import io.novaordis.events.api.event.StringProperty;
 
 import java.text.DateFormat;
 import java.text.Format;

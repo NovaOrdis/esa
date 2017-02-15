@@ -17,10 +17,10 @@
 package io.novaordis.events.core;
 
 import io.novaordis.events.ParsingException;
-import io.novaordis.events.core.event.EndOfStreamEvent;
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.FaultEvent;
-import io.novaordis.events.core.event.LineEvent;
+import io.novaordis.events.api.event.EndOfStreamEvent;
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.FaultEvent;
+import io.novaordis.events.api.event.LineEvent;
 import io.novaordis.events.core.event.MockEvent;
 import org.junit.Test;
 import org.slf4j.Logger;

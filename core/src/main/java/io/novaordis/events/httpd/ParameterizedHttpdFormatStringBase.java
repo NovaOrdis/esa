@@ -16,8 +16,8 @@
 
 package io.novaordis.events.httpd;
 
-import io.novaordis.events.core.event.MapProperty;
 import io.novaordis.events.ParsingException;
+import io.novaordis.events.api.event.MapProperty;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

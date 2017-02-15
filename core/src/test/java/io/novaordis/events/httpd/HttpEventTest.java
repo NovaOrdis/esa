@@ -16,8 +16,7 @@
 
 package io.novaordis.events.httpd;
 
-import io.novaordis.events.core.event.MapProperty;
-import io.novaordis.events.core.event.TimedEventTest;
+import io.novaordis.events.api.event.MapProperty;
 import io.novaordis.events.extensions.bscenarios.BusinessScenario;
 import io.novaordis.utilities.time.TimeOffset;
 import io.novaordis.utilities.time.TimestampImpl;
@@ -33,7 +32,7 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/1/16
  */
-public class HttpEventTest extends TimedEventTest {
+public class HttpEventTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -276,7 +275,6 @@ public class HttpEventTest extends TimedEventTest {
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    @Override
     protected HttpEvent getEventToTest(Long timestamp) throws Exception {
         return new HttpEvent(timestamp == null ? null : new TimestampImpl(timestamp));
     }

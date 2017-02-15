@@ -16,13 +16,13 @@
 
 package io.novaordis.events.httpd;
 
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.IntegerProperty;
-import io.novaordis.events.core.event.LongProperty;
-import io.novaordis.events.core.event.MapProperty;
-import io.novaordis.events.core.event.StringProperty;
-import io.novaordis.events.core.event.TimedEvent;
-import io.novaordis.events.core.event.GenericTimedEvent;
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.GenericTimedEvent;
+import io.novaordis.events.api.event.IntegerProperty;
+import io.novaordis.events.api.event.LongProperty;
+import io.novaordis.events.api.event.MapProperty;
+import io.novaordis.events.api.event.StringProperty;
+import io.novaordis.events.api.event.TimedEvent;
 import io.novaordis.events.extensions.bscenarios.BusinessScenario;
 import io.novaordis.utilities.time.Timestamp;
 

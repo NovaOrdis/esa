@@ -20,8 +20,9 @@
         <slf4j-version>1.7.12</slf4j-version>
         <junit-version>4.12</junit-version>
         <novaordis-clad-version>3.5</novaordis-clad-version>
-        <novaordis-utilities-version>4.5</novaordis-utilities-version>
+        <novaordis-utilities-version>4.6</novaordis-utilities-version>
         <novaordis-jboss-cli>1.0.0-SNAPSHOT-19</novaordis-jboss-cli>
+        <events.api.version>1.1</events.api.version>
     </properties>
 
     <build>
@@ -80,8 +81,7 @@
         </plugins>
     </build>
 
-    <dependencyManagement>
-        <dependencies>
+    <dependencies>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -121,48 +121,16 @@
                 <version>${novaordis-jboss-cli}</version>
             </dependency>
             <dependency>
+                <groupId>io.novaordis.events.api</groupId>
+                <artifactId>events-api</artifactId>
+                <version>${events.api.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit-version}</version>
                 <scope>test</scope>
             </dependency>
-        </dependencies>
-    </dependencyManagement>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.novaordis.utilities</groupId>
-            <artifactId>novaordis-utilities</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.novaordis.clad</groupId>
-            <artifactId>novaordis-clad</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.novaordis.jboss.cli</groupId>
-            <artifactId>novaordis-jboss-cli</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-
-        <!--
-        <dependency>
-            <groupId>io.novaordis.events</groupId>
-            <artifactId>events-api</artifactId>
-            <version>${module.api.version}</version>
-        </dependency>
-        -->
-
     </dependencies>
 
 </project>

@@ -18,9 +18,9 @@ package io.novaordis.events.extensions.lab;
 
 import io.novaordis.clad.application.ApplicationRuntime;
 import io.novaordis.clad.command.CommandBase;
+import io.novaordis.events.api.event.EndOfStreamEvent;
+import io.novaordis.events.api.event.Event;
 import io.novaordis.events.clad.EventsApplicationRuntime;
-import io.novaordis.events.core.event.EndOfStreamEvent;
-import io.novaordis.events.core.event.Event;
 import io.novaordis.events.httpd.HttpEvent;
 import io.novaordis.utilities.UserErrorException;
 

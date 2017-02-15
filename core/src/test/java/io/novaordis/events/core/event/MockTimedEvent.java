@@ -16,6 +16,7 @@
 
 package io.novaordis.events.core.event;
 
+import io.novaordis.events.api.event.GenericTimedEvent;
 import io.novaordis.utilities.time.Timestamp;
 
 /**

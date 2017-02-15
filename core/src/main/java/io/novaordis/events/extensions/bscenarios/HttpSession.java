@@ -16,8 +16,8 @@
 
 package io.novaordis.events.extensions.bscenarios;
 
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.FaultEvent;
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.FaultEvent;
 import io.novaordis.events.httpd.HttpEvent;
 import io.novaordis.utilities.UserErrorException;
 import org.slf4j.Logger;

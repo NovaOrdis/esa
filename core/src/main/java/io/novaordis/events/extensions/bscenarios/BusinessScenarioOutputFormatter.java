@@ -16,11 +16,11 @@
 
 package io.novaordis.events.extensions.bscenarios;
 
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.ListProperty;
+import io.novaordis.events.api.event.Property;
+import io.novaordis.events.api.event.TimedEvent;
 import io.novaordis.events.core.CsvOutputFormatter;
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.ListProperty;
-import io.novaordis.events.core.event.Property;
-import io.novaordis.events.core.event.TimedEvent;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;

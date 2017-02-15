@@ -16,11 +16,11 @@
 
 package io.novaordis.events.extensions.bscenarios;
 
-import io.novaordis.events.core.event.EndOfStreamEvent;
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.FaultEvent;
-import io.novaordis.events.core.event.IntegerProperty;
-import io.novaordis.events.core.event.LongProperty;
+import io.novaordis.events.api.event.EndOfStreamEvent;
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.FaultEvent;
+import io.novaordis.events.api.event.IntegerProperty;
+import io.novaordis.events.api.event.LongProperty;
 import io.novaordis.events.httpd.HttpEvent;
 import io.novaordis.utilities.time.TimestampImpl;
 import org.junit.Test;

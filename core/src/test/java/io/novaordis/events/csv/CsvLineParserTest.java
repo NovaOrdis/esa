@@ -16,15 +16,15 @@
 
 package io.novaordis.events.csv;
 
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.GenericEvent;
+import io.novaordis.events.api.event.GenericTimedEvent;
+import io.novaordis.events.api.event.IntegerProperty;
+import io.novaordis.events.api.event.LongProperty;
+import io.novaordis.events.api.event.Property;
+import io.novaordis.events.api.event.StringProperty;
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.LineParserTest;
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.GenericEvent;
-import io.novaordis.events.core.event.GenericTimedEvent;
-import io.novaordis.events.core.event.IntegerProperty;
-import io.novaordis.events.core.event.LongProperty;
-import io.novaordis.events.core.event.Property;
-import io.novaordis.events.core.event.StringProperty;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

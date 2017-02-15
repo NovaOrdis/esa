@@ -16,7 +16,6 @@
 
 package io.novaordis.events.extensions.bscenarios;
 
-import io.novaordis.events.core.event.TimedEventTest;
 import io.novaordis.utilities.time.TimestampImpl;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -30,7 +29,7 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 4/23/16
  */
-public class BusinessScenarioEventTest extends TimedEventTest {
+public class BusinessScenarioEventTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -79,7 +78,6 @@ public class BusinessScenarioEventTest extends TimedEventTest {
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    @Override
     protected BusinessScenarioEvent getEventToTest(Long timestamp) throws Exception {
         return new BusinessScenarioEvent(timestamp == null ? null : new TimestampImpl(timestamp.longValue()));
     }

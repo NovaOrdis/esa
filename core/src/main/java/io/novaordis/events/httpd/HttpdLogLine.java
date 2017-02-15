@@ -16,9 +16,9 @@
 
 package io.novaordis.events.httpd;
 
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.Property;
-import io.novaordis.events.core.event.StringProperty;
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.Property;
+import io.novaordis.events.api.event.StringProperty;
 import io.novaordis.utilities.time.Timestamp;
 
 import java.util.HashMap;

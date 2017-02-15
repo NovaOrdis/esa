@@ -16,9 +16,9 @@
 
 package io.novaordis.events.core;
 
-import io.novaordis.events.core.event.EndOfStreamEvent;
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.FaultEvent;
+import io.novaordis.events.api.event.EndOfStreamEvent;
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.FaultEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;

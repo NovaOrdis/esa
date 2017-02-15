@@ -16,8 +16,8 @@
 
 package io.novaordis.events.extensions.bscenarios.stats;
 
-import io.novaordis.events.core.event.FaultEvent;
-import io.novaordis.events.core.event.FaultType;
+import io.novaordis.events.api.event.FaultEvent;
+import io.novaordis.events.api.event.FaultType;
 
 import java.util.HashMap;
 import java.util.Map;

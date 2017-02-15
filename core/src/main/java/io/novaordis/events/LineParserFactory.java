@@ -16,9 +16,9 @@
 
 package io.novaordis.events;
 
+import io.novaordis.events.api.event.Event;
 import io.novaordis.events.core.LineFormat;
 import io.novaordis.events.core.LineParser;
-import io.novaordis.events.core.event.Event;
 import io.novaordis.events.csv.CsvLineParser;
 import io.novaordis.events.csv.InvalidFieldException;
 import io.novaordis.events.gc.g1.G1LineParser;

@@ -16,10 +16,7 @@
 
 package io.novaordis.events.gc.g1;
 
-import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.LineParserTest;
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.FaultEvent;
 import org.junit.Test;
 
 /**

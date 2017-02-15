@@ -16,8 +16,8 @@
 
 package io.novaordis.events.httpd;
 
-import io.novaordis.events.core.event.Property;
 import io.novaordis.events.ParsingException;
+import io.novaordis.events.api.event.Property;
 import org.slf4j.Logger;
 
 import java.text.DateFormat;

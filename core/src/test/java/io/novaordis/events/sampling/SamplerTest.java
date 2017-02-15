@@ -16,15 +16,11 @@
 
 package io.novaordis.events.sampling;
 
+import io.novaordis.events.api.event.Event;
+import io.novaordis.events.api.event.GenericTimedEvent;
+import io.novaordis.events.api.event.IntegerProperty;
 import io.novaordis.events.core.ProcessingLogicTest;
-import io.novaordis.events.core.event.Event;
-import io.novaordis.events.core.event.GenericTimedEvent;
-import io.novaordis.events.core.event.IntegerProperty;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
