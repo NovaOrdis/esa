@@ -16,7 +16,7 @@
 
 package io.novaordis.events.httpd.microparsers.cookie;
 
-import io.novaordis.events.ParsingException;
+import io.novaordis.events.api.parser.ParsingException;
 import io.novaordis.events.httpd.HttpdFormatString;
 import io.novaordis.events.httpd.RequestHeaderHttpdFormatString;
 import io.novaordis.events.httpd.ResponseHeaderHttpdFormatString;

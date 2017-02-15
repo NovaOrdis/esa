@@ -16,7 +16,6 @@
 
 package io.novaordis.events.core;
 
-import io.novaordis.events.ParsingException;
 import io.novaordis.events.api.event.EndOfStreamEvent;
 import io.novaordis.events.api.event.Event;
 import io.novaordis.events.api.event.FaultEvent;
@@ -25,6 +24,7 @@ import io.novaordis.events.api.event.Property;
 import io.novaordis.events.api.event.ShutdownEvent;
 import io.novaordis.events.api.event.TimedEvent;
 import io.novaordis.events.api.metric.MetricDefinition;
+import io.novaordis.events.api.parser.ParsingException;
 import io.novaordis.utilities.time.Timestamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

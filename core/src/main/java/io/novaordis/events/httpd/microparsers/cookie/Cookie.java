@@ -16,7 +16,7 @@
 
 package io.novaordis.events.httpd.microparsers.cookie;
 
-import io.novaordis.events.ParsingException;
+import io.novaordis.events.api.parser.ParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

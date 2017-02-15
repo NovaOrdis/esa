@@ -16,7 +16,7 @@
 
 package io.novaordis.events.httpd;
 
-import io.novaordis.events.ParsingException;
+import io.novaordis.events.api.parser.ParsingException;
 import io.novaordis.events.core.LineFormat;
 
 import java.util.ArrayList;

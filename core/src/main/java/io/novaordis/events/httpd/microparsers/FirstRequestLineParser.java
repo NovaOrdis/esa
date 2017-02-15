@@ -16,7 +16,7 @@
 
 package io.novaordis.events.httpd.microparsers;
 
-import io.novaordis.events.ParsingException;
+import io.novaordis.events.api.parser.ParsingException;
 
 /**
  * A parser is useful for particular fields that contain spaces and that were written in the log without being
