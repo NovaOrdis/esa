@@ -11,10 +11,6 @@
 
     <files>
         <file>
-            <source>../api/target/events-api-${module.api.version}.jar</source>
-            <outputDirectory>lib</outputDirectory>
-        </file>
-        <file>
             <source>../core/target/events-core-${module.core.version}.jar</source>
             <outputDirectory>lib</outputDirectory>
         </file>

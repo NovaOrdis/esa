@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/events.iml" filepath="$PROJECT_DIR$/events.iml" />
-      <module fileurl="file://$PROJECT_DIR$/api/events-api.iml" filepath="$PROJECT_DIR$/api/events-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/core/events-core.iml" filepath="$PROJECT_DIR$/core/events-core.iml" />
       <module fileurl="file://$PROJECT_DIR$/release/release.iml" filepath="$PROJECT_DIR$/release/release.iml" />
     </modules>

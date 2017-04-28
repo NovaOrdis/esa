@@ -24,13 +24,6 @@
         <processorPath useClasspath="true" />
         <module name="events-core" />
       </profile>
-      <profile default="false" name="Maven default annotation processors profile" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="true" />
-        <module name="events-api" />
-      </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="events" target="1.5" />
