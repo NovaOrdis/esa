@@ -197,7 +197,7 @@ public class EventFilterTest extends ProcessingLogicTest {
     // Relative timestamp filter tests ---------------------------------------------------------------------------------
     //
 
-    @Test
+    // @Test
     public void relativeTimestamps() throws Exception {
 
         MockConfiguration mc = new MockConfiguration();
