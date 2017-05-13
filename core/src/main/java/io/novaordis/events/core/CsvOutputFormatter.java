@@ -144,7 +144,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     @Override
     public boolean process(Event inputEvent) throws ClosedException {
 
-        if (debug) { log.debug(this + " processing " + inputEvent); }
+        if (debug) { log.debug("processing " + inputEvent); }
 
         if (closed) {
             throw new ClosedException(this + " closed");
