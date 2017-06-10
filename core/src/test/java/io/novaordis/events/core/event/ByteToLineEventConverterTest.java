@@ -68,7 +68,7 @@ public class ByteToLineEventConverterTest extends InputStreamConversionLogicTest
 
         LineEvent le = (LineEvent)events.get(0);
         assertEquals("test", le.get());
-        assertEquals(1, le.getLineNumber());
+        assertEquals(1L, le.getLineNumber().longValue());
 
         assertFalse(c.process('t'));
         assertTrue(c.getEvents().isEmpty());
@@ -93,7 +93,7 @@ public class ByteToLineEventConverterTest extends InputStreamConversionLogicTest
 
         le = (LineEvent)events.get(0);
         assertEquals("test2", le.get());
-        assertEquals(2, le.getLineNumber());
+        assertEquals(2L, le.getLineNumber().longValue());
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

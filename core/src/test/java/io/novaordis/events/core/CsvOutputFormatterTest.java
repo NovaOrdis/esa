@@ -18,7 +18,8 @@ package io.novaordis.events.core;
 
 import io.novaordis.events.api.event.Event;
 import io.novaordis.events.api.event.FaultEvent;
-import io.novaordis.events.api.metric.cpu.CpuUserTime;
+import io.novaordis.events.api.metric.os.LocalOS;
+import io.novaordis.events.api.metric.os.mdefs.CpuUserTime;
 import io.novaordis.events.core.event.MockEvent;
 import io.novaordis.events.core.event.MockProperty;
 import io.novaordis.events.core.event.MockTimedEvent;
@@ -446,7 +447,7 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
 
         String header = CsvOutputFormatter.outputFormatToHeader("CpuUserTime");
 
-        String expected = "# " + new CpuUserTime().getLabel();
+        String expected = "# " + new CpuUserTime(new LocalOS()).getLabel();
 
         log.info(expected);
         log.info(header);

@@ -24,6 +24,7 @@ import io.novaordis.events.api.event.Property;
 import io.novaordis.events.api.event.ShutdownEvent;
 import io.novaordis.events.api.event.TimedEvent;
 import io.novaordis.events.api.metric.MetricDefinition;
+import io.novaordis.events.api.metric.MetricDefinitionParser;
 import io.novaordis.events.api.parser.ParsingException;
 import io.novaordis.utilities.time.Timestamp;
 import org.slf4j.Logger;
@@ -94,7 +95,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
             try {
 
-                MetricDefinition md = MetricDefinition.getInstance(propertyName);
+                MetricDefinition md = MetricDefinitionParser.parse(null, propertyName);
                 header = md.getLabel();
             }
             catch (Exception e) {

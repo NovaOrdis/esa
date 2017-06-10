@@ -317,7 +317,7 @@ public class HttpEvent extends GenericTimedEvent implements TimedEvent {
         setRequestHeader(headerName, null);
     }
 
-    public long getLineNumber() {
+    public Long getLineNumber() {
 
         LongProperty p = getLongProperty(Event.LINE_NUMBER_PROPERTY_NAME);
         Long v = p == null ? null : p.getLong();
