@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <module.core.version>1.0.0-SNAPSHOT-3</module.core.version>
+        <module.core.version>1.0.0-SNAPSHOT-4</module.core.version>
         <module.release.version>3.0.0-SNAPSHOT-1</module.release.version>
     </properties>
 

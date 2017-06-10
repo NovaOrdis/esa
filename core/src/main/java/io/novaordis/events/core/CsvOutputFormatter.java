@@ -72,12 +72,17 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     // Static ----------------------------------------------------------------------------------------------------------
 
     /**
-     * @return a "#" preceded header line, assembled from the given output format, which is a string consisting in
-     * comma-separated property names and a "timestamp" field. We first attempt to resolve the property names to
-     * known metrics. If a known metric can be identified, we use the label instead of the metric name.
+     * @return a header. The line starts with "#", then it lists a "timestamp" field and comma-separated property names.
+     *
+     * We first attempt to resolve the property names by matching the property name to known metric definition IDs.
+     * If a known metric definition whose ID matches the property name is identified, we use that metric definition
+     * label, instead of teh property name.
+     *
+     * TODO: should we attempt to parse the property name every time, or we should introduce a "metric repository"?
+     *
+     * @param outputFormat See CsvOutputFormatter#setOutputFormat(String).
      *
      * @see CsvOutputFormatter#setOutputFormat(String)
-     * @see CsvOutputFormatter#getOutputFormat()
      */
     public static String outputFormatToHeader(String outputFormat) {
 
@@ -85,34 +90,34 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
         for(StringTokenizer st = new StringTokenizer(outputFormat, ","); st.hasMoreTokens(); ) {
 
+            String fieldHeader;
+
             String propertyName = st.nextToken().trim();
 
             //
-            // attempt to identify a known metric
+            // attempt to identify a known metric definition
             //
-
-            String header;
 
             try {
 
                 MetricDefinition md = MetricDefinitionParser.parse(null, propertyName);
-                header = md.getLabel();
+                fieldHeader = md.getLabel();
             }
             catch (Exception e) {
 
                 //
-                // that's fine, no known metric, use the given literal
+                // that's fine, no known metric definition, use the property name as provided
                 //
 
-                header = propertyName;
+                fieldHeader = propertyName;
             }
 
-            headerLine += header;
+            headerLine += fieldHeader;
 
             if (st.hasMoreTokens()) {
+
                 headerLine += ", ";
             }
-
         }
 
         return headerLine;
@@ -197,13 +202,13 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     // Public ----------------------------------------------------------------------------------------------------------
 
     /**
-     * We interpret the given format as comma separated property names and a "timestamp" field.
-     *
-     * For map properties, the dot-separated syntax map-property-name.key is valid.
+     * @param format - a comma separated list of property names and a "timestamp" field. For map properties, we accept
+     *               a "map-property-name.key" dot-separated syntax.
      */
     public void setOutputFormat(String format) {
 
         if (format == null) {
+
             this.outputFormat = null;
             return;
         }
