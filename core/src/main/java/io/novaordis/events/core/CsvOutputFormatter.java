@@ -100,7 +100,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
             try {
 
-                MetricDefinition md = MetricDefinitionParser.parse(null, propertyName);
+                MetricDefinition md = MetricDefinitionParser.parse(propertyName);
                 fieldHeader = md.getLabel();
             }
             catch (Exception e) {
@@ -559,6 +559,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
         // make parsing errors easy to read
         //
 
+        //noinspection ThrowableResultOfMethodCallIgnored
         Throwable cause = f.getCause();
 
         if (cause instanceof ParsingException) {
