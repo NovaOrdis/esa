@@ -150,18 +150,24 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     @Override
     public boolean process(Event inputEvent) throws ClosedException {
 
-        if (debug) { log.debug("processing " + inputEvent); }
+        if (debug) {
+
+            log.debug("processing " + inputEvent);
+        }
 
         if (closed) {
+
             throw new ClosedException(this + " closed");
         }
 
         if (inputEvent instanceof EndOfStreamEvent) {
+
             closed = true;
             return true; // need to collect the output stream close() information
         }
 
         if (inputEvent instanceof ShutdownEvent) {
+
             throw new RuntimeException("ShutdownEvent SUPPORT NOT YET IMPLEMENTED");
         }
 
@@ -210,6 +216,8 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
         if (format == null) {
 
             this.outputFormat = null;
+
+            log.debug(this + " clearing the format");
             return;
         }
 
@@ -219,6 +227,8 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
 
             outputFormat.add(st.nextToken().trim());
         }
+
+        log.debug(this + " setting output format to ");
     }
 
     /**
@@ -227,6 +237,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     public String getOutputFormat() {
 
         if (outputFormat == null) {
+
             return null;
         }
 
@@ -287,9 +298,11 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     protected String toString(Event event) {
 
         if (outputFormat != null) {
+
             return externalizeEventInOutputFormat(outputFormat, event);
         }
         else {
+
             return externalizeEventViaIntrospection(event);
         }
     }
