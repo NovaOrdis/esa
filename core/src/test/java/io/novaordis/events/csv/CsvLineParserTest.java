@@ -42,11 +42,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/6/16
  */
-public class CsvLineParserTest extends LineParserTest {
+public class CSVLineParserTest extends LineParserTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(CsvLineParser.class);
+    private static final Logger log = LoggerFactory.getLogger(CSVLineParser.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -61,11 +61,11 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void constructor() throws Exception {
 
-        CsvLineParser p = new CsvLineParser("a, ");
+        CSVLineParser p = new CSVLineParser("a, ");
 
-        CsvFormat format = (CsvFormat)p.getLineFormat();
+        CSVFormat format = (CSVFormat)p.getLineFormat();
 
-        List<Field> fields = format.getFields();
+        List<CSVField> fields = format.getFields();
         assertEquals(1, fields.size());
         assertEquals("a", fields.get(0).getName());
     }
@@ -73,11 +73,11 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void constructor2() throws Exception {
 
-        CsvLineParser p = new CsvLineParser("a, something, something-else,");
+        CSVLineParser p = new CSVLineParser("a, something, something-else,");
 
-        CsvFormat format = (CsvFormat)p.getLineFormat();
+        CSVFormat format = (CSVFormat)p.getLineFormat();
 
-        List<Field> fields = format.getFields();
+        List<CSVField> fields = format.getFields();
         assertEquals(3, fields.size());
         assertEquals("a", fields.get(0).getName());
         assertEquals("something", fields.get(1).getName());
@@ -87,11 +87,11 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void constructor3_EmptyField() throws Exception {
 
-        CsvLineParser p = new CsvLineParser(",");
+        CSVLineParser p = new CSVLineParser(",");
 
-        CsvFormat format = (CsvFormat)p.getLineFormat();
+        CSVFormat format = (CSVFormat)p.getLineFormat();
 
-        List<Field> fields = format.getFields();
+        List<CSVField> fields = format.getFields();
         assertEquals(1, fields.size());
         assertEquals("CSVField01", fields.get(0).getName());
     }
@@ -99,11 +99,11 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void constructor3_EmptyFields() throws Exception {
 
-        CsvLineParser p = new CsvLineParser(", ,");
+        CSVLineParser p = new CSVLineParser(", ,");
 
-        CsvFormat format = (CsvFormat)p.getLineFormat();
+        CSVFormat format = (CSVFormat)p.getLineFormat();
 
-        List<Field> fields = format.getFields();
+        List<CSVField> fields = format.getFields();
         assertEquals(2, fields.size());
         assertEquals("CSVField01", fields.get(0).getName());
         assertEquals("CSVField02", fields.get(1).getName());
@@ -112,10 +112,10 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void constructor4() throws Exception {
 
-        CsvLineParser p = new CsvLineParser("a, b, c");
-        CsvFormat format = (CsvFormat)p.getLineFormat();
+        CSVLineParser p = new CSVLineParser("a, b, c");
+        CSVFormat format = (CSVFormat)p.getLineFormat();
 
-        List<Field> fields = format.getFields();
+        List<CSVField> fields = format.getFields();
         assertEquals(3, fields.size());
         assertEquals("a", fields.get(0).getName());
         assertEquals("b", fields.get(1).getName());
@@ -126,7 +126,7 @@ public class CsvLineParserTest extends LineParserTest {
     public void constructor_InvalidFormat() throws Exception {
 
         try {
-            new CsvLineParser("a");
+            new CSVLineParser("a");
             fail("should have thrown IllegalArgumentException");
         }
         catch(IllegalArgumentException e) {
@@ -137,20 +137,20 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void constructor_Headers_NoTimestamp() throws Exception {
 
-        CsvLineParser p = new CsvLineParser("a, b, c");
+        CSVLineParser p = new CSVLineParser("a, b, c");
 
-        List<Field> headers = p.getHeaders();
+        List<CSVField> headers = p.getHeaders();
         assertEquals(3, headers.size());
 
-        Field h = headers.get(0);
+        CSVField h = headers.get(0);
         assertEquals("a", h.getName());
         assertTrue(String.class.equals(h.getType()));
 
-        Field h2 = headers.get(1);
+        CSVField h2 = headers.get(1);
         assertEquals("b", h2.getName());
         assertTrue(String.class.equals(h2.getType()));
 
-        Field h3 = headers.get(2);
+        CSVField h3 = headers.get(2);
         assertEquals("c", h3.getName());
         assertTrue(String.class.equals(h3.getType()));
 
@@ -160,21 +160,21 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void constructor_Headers_Timestamp() throws Exception {
 
-        CsvLineParser p = new CsvLineParser("T(time:yyyy), b, c");
+        CSVLineParser p = new CSVLineParser("T(time:yyyy), b, c");
 
-        List<Field> headers = p.getHeaders();
+        List<CSVField> headers = p.getHeaders();
         assertEquals(3, headers.size());
 
-        Field h = headers.get(0);
+        CSVField h = headers.get(0);
         assertEquals("T", h.getName());
         assertTrue(Date.class.equals(h.getType()));
         assertTrue(h.getFormat() instanceof SimpleDateFormat);
 
-        Field h2 = headers.get(1);
+        CSVField h2 = headers.get(1);
         assertEquals("b", h2.getName());
         assertTrue(String.class.equals(h2.getType()));
 
-        Field h3 = headers.get(2);
+        CSVField h3 = headers.get(2);
         assertEquals("c", h3.getName());
         assertTrue(String.class.equals(h3.getType()));
 
@@ -186,7 +186,7 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void parse() throws Exception {
 
-        CsvLineParser parser = new CsvLineParser("a, b, c");
+        CSVLineParser parser = new CSVLineParser("a, b, c");
 
         GenericEvent event = (GenericEvent)parser.parseLine(7L, "A, B, C");
         assertNotNull(event);
@@ -215,7 +215,7 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void parse_LineLongerThanFormat() throws Exception {
 
-        CsvLineParser parser = new CsvLineParser("a, b, c");
+        CSVLineParser parser = new CSVLineParser("a, b, c");
 
         GenericEvent event = (GenericEvent)parser.parseLine(7L, "A, B, C, D");
         assertNotNull(event);
@@ -244,7 +244,7 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void parse_LineShorterThanFormat() throws Exception {
 
-        CsvLineParser parser = new CsvLineParser("a, b, c");
+        CSVLineParser parser = new CSVLineParser("a, b, c");
 
         GenericEvent event = (GenericEvent)parser.parseLine(1L, "A, B");
         assertNotNull(event);
@@ -269,7 +269,7 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void parse_UntimedEvent() throws Exception {
 
-        CsvLineParser parser = new CsvLineParser("brand(string), count(int)");
+        CSVLineParser parser = new CSVLineParser("brand(string), count(int)");
 
         GenericEvent event = (GenericEvent)parser.parseLine(5L, "Audi, 5");
 
@@ -295,7 +295,7 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void parse_TimedEvent_TimestampFirstInLine() throws Exception {
 
-        CsvLineParser parser = new CsvLineParser("T(time:MMM-dd yyyy HH:mm:ss), brand(string), count(int)");
+        CSVLineParser parser = new CSVLineParser("T(time:MMM-dd yyyy HH:mm:ss), brand(string), count(int)");
 
         GenericTimedEvent event = (GenericTimedEvent)parser.parseLine(1L, "Jan-01 2016 12:01:01, BMW, 7");
         assertNotNull(event);
@@ -324,7 +324,7 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void parse_TimedEvent_TimestampNotFirstInLine() throws Exception {
 
-        CsvLineParser parser = new CsvLineParser("brand(string), T(time:MMM-dd yyyy HH:mm:ss), count(int)");
+        CSVLineParser parser = new CSVLineParser("brand(string), T(time:MMM-dd yyyy HH:mm:ss), count(int)");
 
         GenericTimedEvent event = (GenericTimedEvent)parser.parseLine(1L, "BMW, Jan-01 2016 12:01:01, 7");
         assertNotNull(event);
@@ -353,7 +353,7 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void parse_FieldContainsComma() throws Exception {
 
-        CsvLineParser parser = new CsvLineParser("a, b");
+        CSVLineParser parser = new CSVLineParser("a, b");
 
         String line = "something, \"something, else\"";
 
@@ -376,7 +376,7 @@ public class CsvLineParserTest extends LineParserTest {
     @Test
     public void parse_QuotedFields() throws Exception {
 
-        CsvLineParser parser = new CsvLineParser("a, b");
+        CSVLineParser parser = new CSVLineParser("a, b");
 
         String line = "\"blah\", \"blah blah\"";
 
@@ -404,7 +404,7 @@ public class CsvLineParserTest extends LineParserTest {
     @Override
     protected LineParser getLineParserToTest(String format) throws Exception {
 
-        return new CsvLineParser(format);
+        return new CSVLineParser(format);
     }
 
     @Override

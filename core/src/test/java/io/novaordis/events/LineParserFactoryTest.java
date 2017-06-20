@@ -18,9 +18,9 @@ package io.novaordis.events;
 
 import io.novaordis.events.core.LineFormat;
 import io.novaordis.events.core.LineParser;
-import io.novaordis.events.csv.CsvFormat;
-import io.novaordis.events.csv.CsvLineParser;
-import io.novaordis.events.csv.Field;
+import io.novaordis.events.csv.CSVField;
+import io.novaordis.events.csv.CSVFormat;
+import io.novaordis.events.csv.CSVLineParser;
 import io.novaordis.events.httpd.HttpdFormatString;
 import io.novaordis.events.httpd.HttpdFormatStrings;
 import io.novaordis.events.httpd.HttpdLineParser;
@@ -107,13 +107,13 @@ public class LineParserFactoryTest {
     public void getInstance_CsvLineParser() throws Exception {
 
         LineParser parser = LineParserFactory.getInstance("something,");
-        assertTrue(parser instanceof CsvLineParser);
-        CsvLineParser csvLineParser = (CsvLineParser)parser;
+        assertTrue(parser instanceof CSVLineParser);
+        CSVLineParser csvLineParser = (CSVLineParser)parser;
         LineFormat f = csvLineParser.getLineFormat();
-        CsvFormat csvFormat = (CsvFormat)f;
-        List<Field> fields = csvFormat.getFields();
+        CSVFormat csvFormat = (CSVFormat)f;
+        List<CSVField> fields = csvFormat.getFields();
         assertEquals(1, fields.size());
-        Field field = fields.get(0);
+        CSVField field = fields.get(0);
         assertEquals("something", field.getName());
         assertEquals(String.class, field.getType());
         assertNull(field.getValue());

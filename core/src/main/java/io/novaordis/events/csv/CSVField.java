@@ -34,7 +34,7 @@ import java.util.Date;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/6/16
  */
-public class Field {
+public class CSVField {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -83,16 +83,16 @@ public class Field {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
-     * Build a Field instance based on the given specification
+     * Build a CSVField instance based on the given specification
      */
-    public Field(String specification) throws InvalidFieldException {
+    public CSVField(String specification) throws InvalidCSVFieldException {
         parseFieldSpecification(specification);
     }
 
     /**
-     * Builds a "string" Field.
+     * Builds a "string" CSVField.
      */
-    public Field(String name, Class type) {
+    public CSVField(String name, Class type) {
 
         this.name = name;
         this.type = type;
@@ -227,7 +227,7 @@ public class Field {
 
     // Private ---------------------------------------------------------------------------------------------------------
 
-    private void parseFieldSpecification(String fieldSpecification) throws InvalidFieldException {
+    private void parseFieldSpecification(String fieldSpecification) throws InvalidCSVFieldException {
 
         if (fieldSpecification == null) {
             throw new IllegalArgumentException("null field specification");
@@ -241,7 +241,7 @@ public class Field {
             // no type information
             //
             if (rightParenthesis != -1) {
-                throw new InvalidFieldException("unbalanced parentheses");
+                throw new InvalidCSVFieldException("unbalanced parentheses");
             }
 
             this.name = fieldSpecification;
@@ -278,12 +278,12 @@ public class Field {
 
             }
             else {
-                throw new InvalidFieldException("invalid field type specification \"" + typeSpecification + "\"");
+                throw new InvalidCSVFieldException("invalid field type specification \"" + typeSpecification + "\"");
             }
         }
     }
 
-    private void parseTimeSpecification(String timeSpecification) throws InvalidFieldException {
+    private void parseTimeSpecification(String timeSpecification) throws InvalidCSVFieldException {
 
         //
         // must start with "time"
@@ -297,7 +297,7 @@ public class Field {
         timeSpecification = timeSpecification.substring("time".length());
 
         if (!timeSpecification.startsWith(":")) {
-            throw new InvalidFieldException("invalid time specification \"" + timeSpecification + "\", missing ':'");
+            throw new InvalidCSVFieldException("invalid time specification \"" + timeSpecification + "\", missing ':'");
         }
 
         timeSpecification = timeSpecification.substring(1);
@@ -306,7 +306,7 @@ public class Field {
             format = new SimpleDateFormat(timeSpecification);
         }
         catch(Exception e) {
-            throw new InvalidFieldException("invalid timestamp format \"" + timeSpecification + "\"", e);
+            throw new InvalidCSVFieldException("invalid timestamp format \"" + timeSpecification + "\"", e);
         }
     }
 

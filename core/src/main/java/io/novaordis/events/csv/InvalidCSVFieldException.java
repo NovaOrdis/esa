@@ -20,7 +20,7 @@ package io.novaordis.events.csv;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 1/22/16
  */
-public class InvalidFieldException extends Exception {
+public class InvalidCSVFieldException extends Exception {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -30,20 +30,12 @@ public class InvalidFieldException extends Exception {
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
-    public InvalidFieldException() {
-        super();
-    }
-
-    public InvalidFieldException(String message) {
+    public InvalidCSVFieldException(String message) {
         super(message);
     }
 
-    public InvalidFieldException(String message, Throwable cause) {
+    public InvalidCSVFieldException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public InvalidFieldException(Throwable cause) {
-        super(cause);
     }
 
     // Public ----------------------------------------------------------------------------------------------------------

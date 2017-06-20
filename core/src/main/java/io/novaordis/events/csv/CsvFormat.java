@@ -22,10 +22,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * The class encapsulates a CSV line format specification. Instances of this class are used by CSV parsers, which
+ * turn CSV text lines into events, or CSV formatters, which turn events into CSV text lines. The parsing/formatting
+ * is an external concern, this class' only responsibility is to maintain the format information in a way that is as
+ * flexible as possible.
+ *
+ *
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/6/16
  */
-public class CsvFormat implements LineFormat {
+public class CSVFormat implements LineFormat {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -35,21 +41,21 @@ public class CsvFormat implements LineFormat {
 
     private int unnamedFieldCounter = 0;
 
-    private List<Field> fields;
+    private List<CSVField> fields;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
      * @param formatSpecification - a comma-separated field specifications.
      *
-     * @see Field
+     * @see CSVField
      *
      * @throws IllegalArgumentException if the given format specification cannot be used to build a CSV format.
      *
-     * @throws InvalidFieldException we determined that the format specification <b>can</b> be used to build a CSV
+     * @throws InvalidCSVFieldException we determined that the format specification <b>can</b> be used to build a CSV
      * format but we find an incorrectly specified field (example: invalid type, etc.)
      */
-    public CsvFormat(String formatSpecification) throws IllegalArgumentException, InvalidFieldException {
+    public CSVFormat(String formatSpecification) throws IllegalArgumentException, InvalidCSVFieldException {
 
         if (formatSpecification == null) {
 
@@ -76,7 +82,7 @@ public class CsvFormat implements LineFormat {
                 break;
             }
 
-            Field field = new Field(fieldSpec);
+            CSVField field = new CSVField(fieldSpec);
             if (field.getName().length() == 0) {
                 field.setName(nextUnnamedFieldName());
             }
@@ -93,7 +99,7 @@ public class CsvFormat implements LineFormat {
     /**
      * @return the actual underlying storage so handle with care.
      */
-    public List<Field> getFields() {
+    public List<CSVField> getFields() {
         return fields;
     }
 

@@ -37,7 +37,7 @@ import java.util.StringTokenizer;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/6/16
  */
-public class CsvLineParser implements LineParser {
+public class CSVLineParser implements LineParser {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -50,36 +50,36 @@ public class CsvLineParser implements LineParser {
 
     // Attributes ------------------------------------------------------------------------------------------------------
 
-    private CsvFormat lineFormat;
+    private CSVFormat lineFormat;
 
     //
     // we maintain a header different from the line format because this allows us to discover the structure of a
     // CSV file dynamically, even without the presence of a line format specification
     //
-    private List<Field> headers;
+    private List<CSVField> headers;
 
     private int timestampFieldIndex;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
-     * @param formatSpecification: a CsvFormat specification.
+     * @param formatSpecification: a CSVFormat specification.
      *
      * @throws IllegalArgumentException if the given format specification cannot be used to build a CSV format.
      *
-     * @throws InvalidFieldException we determined that the format specification <b>can</b> be used to build a CSV
+     * @throws InvalidCSVFieldException we determined that the format specification <b>can</b> be used to build a CSV
      * format but we find an incorrectly specified field (example: invalid type, etc.)
      *
-     * @see CsvFormat
+     * @see CSVFormat
      */
-    public CsvLineParser(String formatSpecification) throws IllegalArgumentException, InvalidFieldException {
+    public CSVLineParser(String formatSpecification) throws IllegalArgumentException, InvalidCSVFieldException {
 
-        lineFormat = new CsvFormat(formatSpecification);
+        lineFormat = new CSVFormat(formatSpecification);
 
         int i = 0;
         timestampFieldIndex = -1;
         headers = new ArrayList<>();
-        for(Field f: lineFormat.getFields()) {
+        for(CSVField f: lineFormat.getFields()) {
 
             headers.add(f);
 
@@ -209,12 +209,12 @@ public class CsvLineParser implements LineParser {
     @Override
     public String toString() {
 
-        return "CsvLineParser[format: " + lineFormat + "]";
+        return "CSVLineParser[format: " + lineFormat + "]";
     }
 
     // Package protected -----------------------------------------------------------------------------------------------
 
-    List<Field> getHeaders() {
+    List<CSVField> getHeaders() {
         return headers;
     }
 
@@ -230,7 +230,7 @@ public class CsvLineParser implements LineParser {
 
         tok = tok.trim();
 
-        Field header = headers.get(headerIndex);
+        CSVField header = headers.get(headerIndex);
 
         if (headerIndex == timestampFieldIndex) {
 

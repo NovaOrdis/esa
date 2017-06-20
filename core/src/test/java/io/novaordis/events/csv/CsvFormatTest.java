@@ -34,11 +34,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/6/16
  */
-public class CsvFormatTest extends LineFormatTest {
+public class CSVFormatTest extends LineFormatTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(CsvFormatTest.class);
+    private static final Logger log = LoggerFactory.getLogger(CSVFormatTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -53,7 +53,7 @@ public class CsvFormatTest extends LineFormatTest {
 
         try {
 
-            new CsvFormat("something without commas");
+            new CSVFormat("something without commas");
             fail("should have thrown IllegalArgumentException");
 
         }
@@ -67,10 +67,10 @@ public class CsvFormatTest extends LineFormatTest {
     @Test
     public void constructor1() throws Exception {
 
-        CsvFormat csvFormat = new CsvFormat(",");
-        List<Field> fields = csvFormat.getFields();
+        CSVFormat csvFormat = new CSVFormat(",");
+        List<CSVField> fields = csvFormat.getFields();
         assertEquals(1, fields.size());
-        Field f = fields.get(0);
+        CSVField f = fields.get(0);
         assertNotNull(f);
         assertEquals(String.class, f.getType());
         assertNull(f.getValue());
@@ -80,10 +80,10 @@ public class CsvFormatTest extends LineFormatTest {
     @Test
     public void constructor2() throws Exception {
 
-        CsvFormat csvFormat = new CsvFormat("   ,");
-        List<Field> fields = csvFormat.getFields();
+        CSVFormat csvFormat = new CSVFormat("   ,");
+        List<CSVField> fields = csvFormat.getFields();
         assertEquals(1, fields.size());
-        Field f = fields.get(0);
+        CSVField f = fields.get(0);
         assertNotNull(f);
         assertEquals(String.class, f.getType());
         assertNull(f.getValue());
@@ -93,10 +93,10 @@ public class CsvFormatTest extends LineFormatTest {
     @Test
     public void constructor3() throws Exception {
 
-        CsvFormat csvFormat = new CsvFormat("  \t \t  ,");
-        List<Field> fields = csvFormat.getFields();
+        CSVFormat csvFormat = new CSVFormat("  \t \t  ,");
+        List<CSVField> fields = csvFormat.getFields();
         assertEquals(1, fields.size());
-        Field f = fields.get(0);
+        CSVField f = fields.get(0);
         assertNotNull(f);
         assertEquals(String.class, f.getType());
         assertNull(f.getValue());
@@ -106,23 +106,23 @@ public class CsvFormatTest extends LineFormatTest {
     @Test
     public void constructor4() throws Exception {
 
-        CsvFormat csvFormat = new CsvFormat("field1, field2, field3,");
+        CSVFormat csvFormat = new CSVFormat("field1, field2, field3,");
 
-        List<Field> fields = csvFormat.getFields();
+        List<CSVField> fields = csvFormat.getFields();
 
         assertEquals(3, fields.size());
 
-        Field f = fields.get(0);
+        CSVField f = fields.get(0);
         assertEquals(String.class, f.getType());
         assertNull(f.getValue());
         assertEquals("field1", f.getName());
 
-        Field f2 = fields.get(1);
+        CSVField f2 = fields.get(1);
         assertEquals(String.class, f2.getType());
         assertNull(f2.getValue());
         assertEquals("field2", f2.getName());
 
-        Field f3 = fields.get(2);
+        CSVField f3 = fields.get(2);
         assertEquals(String.class, f3.getType());
         assertNull(f3.getValue());
         assertEquals("field3", f3.getName());
@@ -131,10 +131,10 @@ public class CsvFormatTest extends LineFormatTest {
     @Test
     public void constructor5() throws Exception {
 
-        CsvFormat csvFormat = new CsvFormat("field1,  ");
-        List<Field> fields = csvFormat.getFields();
+        CSVFormat csvFormat = new CSVFormat("field1,  ");
+        List<CSVField> fields = csvFormat.getFields();
         assertEquals(1, fields.size());
-        Field f = fields.get(0);
+        CSVField f = fields.get(0);
         assertEquals(String.class, f.getType());
         assertNull(f.getValue());
         assertEquals("field1", f.getName());
@@ -143,23 +143,23 @@ public class CsvFormatTest extends LineFormatTest {
     @Test
     public void constructor6() throws Exception {
 
-        CsvFormat csvFormat = new CsvFormat("a, b, c");
+        CSVFormat csvFormat = new CSVFormat("a, b, c");
 
-        List<Field> fields = csvFormat.getFields();
+        List<CSVField> fields = csvFormat.getFields();
 
         assertEquals(3, fields.size());
 
-        Field f = fields.get(0);
+        CSVField f = fields.get(0);
         assertEquals(String.class, f.getType());
         assertNull(f.getValue());
         assertEquals("a", f.getName());
 
-        Field f2 = fields.get(1);
+        CSVField f2 = fields.get(1);
         assertEquals(String.class, f2.getType());
         assertNull(f2.getValue());
         assertEquals("b", f2.getName());
 
-        Field f3 = fields.get(2);
+        CSVField f3 = fields.get(2);
         assertEquals(String.class, f3.getType());
         assertNull(f3.getValue());
         assertEquals("c", f3.getName());
@@ -168,28 +168,28 @@ public class CsvFormatTest extends LineFormatTest {
     @Test
     public void constructor_typed() throws Exception {
 
-        CsvFormat csvFormat = new CsvFormat("timestamp(time:yy/MM/dd HH:mm:ss), count(int), duration(long), path");
+        CSVFormat csvFormat = new CSVFormat("timestamp(time:yy/MM/dd HH:mm:ss), count(int), duration(long), path");
 
-        List<Field> fields = csvFormat.getFields();
+        List<CSVField> fields = csvFormat.getFields();
 
         assertEquals(4, fields.size());
 
-        Field f = fields.get(0);
+        CSVField f = fields.get(0);
         assertEquals(Date.class, f.getType());
         assertNull(f.getValue());
         assertEquals("timestamp", f.getName());
 
-        Field f2 = fields.get(1);
+        CSVField f2 = fields.get(1);
         assertEquals(Integer.class, f2.getType());
         assertNull(f2.getValue());
         assertEquals("count", f2.getName());
 
-        Field f3 = fields.get(2);
+        CSVField f3 = fields.get(2);
         assertEquals(Long.class, f3.getType());
         assertNull(f3.getValue());
         assertEquals("duration", f3.getName());
 
-        Field f4 = fields.get(3);
+        CSVField f4 = fields.get(3);
         assertEquals(String.class, f4.getType());
         assertNull(f4.getValue());
         assertEquals("path", f4.getName());
@@ -199,7 +199,7 @@ public class CsvFormatTest extends LineFormatTest {
     public void constructor_invalidType() throws Exception {
 
         try {
-            new CsvFormat("duration(ms)");
+            new CSVFormat("duration(ms)");
             fail("should have thrown exception");
         }
         catch(IllegalArgumentException e) {
@@ -212,8 +212,8 @@ public class CsvFormatTest extends LineFormatTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected CsvFormat getLineFormatToTest(String formatSpecification) throws Exception {
-        return new CsvFormat(formatSpecification);
+    protected CSVFormat getLineFormatToTest(String formatSpecification) throws Exception {
+        return new CSVFormat(formatSpecification);
     }
 
     @Override

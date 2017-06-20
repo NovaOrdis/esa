@@ -40,11 +40,11 @@ import static org.junit.Assert.fail;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/6/16
  */
-public class FieldTest {
+public class CSVFieldTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(FieldTest.class);
+    private static final Logger log = LoggerFactory.getLogger(CSVFieldTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -58,10 +58,10 @@ public class FieldTest {
     public void unbalancedParentheses() throws Exception {
 
         try {
-            new Field("a)");
+            new CSVField("a)");
             fail("should throw exception");
         }
-        catch(InvalidFieldException e) {
+        catch(InvalidCSVFieldException e) {
             String msg = e.getMessage();
             log.info(msg);
             assertTrue(msg.contains("unbalanced"));
@@ -71,7 +71,7 @@ public class FieldTest {
     @Test
     public void stringField() throws Exception {
 
-        Field f = new Field("some-string", String.class);
+        CSVField f = new CSVField("some-string", String.class);
 
         assertEquals("some-string", f.getName());
         assertEquals(String.class, f.getType());
@@ -81,7 +81,7 @@ public class FieldTest {
     @Test
     public void stringField2() throws Exception {
 
-        Field f = new Field("some-string(string)");
+        CSVField f = new CSVField("some-string(string)");
 
         assertEquals("some-string", f.getName());
         assertEquals(String.class, f.getType());
@@ -91,7 +91,7 @@ public class FieldTest {
     @Test
     public void fieldSpecificationParsing_SimpleString() throws Exception {
 
-        Field f = new Field("some-string");
+        CSVField f = new CSVField("some-string");
 
         assertEquals("some-string", f.getName());
         assertEquals(String.class, f.getType());
@@ -101,7 +101,7 @@ public class FieldTest {
     @Test
     public void fieldSpecificationParsing_Time() throws Exception {
 
-        Field f = new Field("timestamp(time:yy/MM/dd HH:mm:ss)");
+        CSVField f = new CSVField("timestamp(time:yy/MM/dd HH:mm:ss)");
 
         assertEquals("timestamp", f.getName());
         assertEquals(Date.class, f.getType());
@@ -119,9 +119,9 @@ public class FieldTest {
     public void fieldSpecificationParsing_Time_InvalidTimeFormatSpecification() throws Exception {
 
         try {
-            new Field("timestamp(time:blah)");
+            new CSVField("timestamp(time:blah)");
         }
-        catch(InvalidFieldException e) {
+        catch(InvalidCSVFieldException e) {
             String msg = e.getMessage();
             log.info(msg);
             assertTrue(msg.contains("invalid timestamp format \"blah\""));
@@ -133,7 +133,7 @@ public class FieldTest {
     @Test
     public void fieldSpecificationParsing_Integer() throws Exception {
 
-        Field f = new Field("a(int)");
+        CSVField f = new CSVField("a(int)");
 
         assertEquals("a", f.getName());
         assertEquals(Integer.class, f.getType());
@@ -143,7 +143,7 @@ public class FieldTest {
     @Test
     public void fieldSpecificationParsing_Long() throws Exception {
 
-        Field f = new Field("a(long)");
+        CSVField f = new CSVField("a(long)");
 
         assertEquals("a", f.getName());
         assertEquals(Long.class, f.getType());
@@ -153,7 +153,7 @@ public class FieldTest {
     @Test
     public void fieldSpecificationParsing_Float() throws Exception {
 
-        Field f = new Field("a(float)");
+        CSVField f = new CSVField("a(float)");
 
         assertEquals("a", f.getName());
         assertEquals(Float.class, f.getType());
@@ -163,7 +163,7 @@ public class FieldTest {
     @Test
     public void fieldSpecificationParsing_Double() throws Exception {
 
-        Field f = new Field("a(double)");
+        CSVField f = new CSVField("a(double)");
 
         assertEquals("a", f.getName());
         assertEquals(Double.class, f.getType());
@@ -174,10 +174,10 @@ public class FieldTest {
     public void fieldSpecificationParsing_InvalidType() throws Exception {
 
         try {
-            new Field("fieldA(ms)");
+            new CSVField("fieldA(ms)");
             fail("should throw exception");
         }
-        catch(InvalidFieldException e) {
+        catch(InvalidCSVFieldException e) {
             String msg = e.getMessage();
             log.info(msg);
             assertTrue(msg.contains("invalid field type specification \"ms\""));
@@ -189,7 +189,7 @@ public class FieldTest {
     @Test
     public void toProperty_String() throws Exception {
 
-        Field f = new Field("test", String.class);
+        CSVField f = new CSVField("test", String.class);
         StringProperty sp = (StringProperty)f.toProperty("blah");
         assertEquals("test", sp.getName());
         assertEquals("blah", sp.getValue());
@@ -198,7 +198,7 @@ public class FieldTest {
     @Test
     public void toProperty_Integer() throws Exception {
 
-        Field f = new Field("test", Integer.class);
+        CSVField f = new CSVField("test", Integer.class);
         IntegerProperty ip = (IntegerProperty)f.toProperty("1");
         assertEquals("test", ip.getName());
         assertEquals(1, ip.getInteger().intValue());
@@ -207,7 +207,7 @@ public class FieldTest {
     @Test
     public void toProperty_Integer_InvalidValue() throws Exception {
 
-        Field f = new Field("test", Integer.class);
+        CSVField f = new CSVField("test", Integer.class);
 
         try {
             f.toProperty("blah");
@@ -221,7 +221,7 @@ public class FieldTest {
     @Test
     public void toProperty_Long() throws Exception {
 
-        Field f = new Field("test", Long.class);
+        CSVField f = new CSVField("test", Long.class);
         LongProperty lp = (LongProperty)f.toProperty("1");
         assertEquals("test", lp.getName());
         assertEquals(1, lp.getLong().longValue());
@@ -230,7 +230,7 @@ public class FieldTest {
     @Test
     public void toProperty_Long_InvalidValue() throws Exception {
 
-        Field f = new Field("test", Long.class);
+        CSVField f = new CSVField("test", Long.class);
 
         try {
             f.toProperty("blah");
@@ -244,7 +244,7 @@ public class FieldTest {
     @Test
     public void toProperty_Float() throws Exception {
 
-        Field f = new Field("test", Float.class);
+        CSVField f = new CSVField("test", Float.class);
         FloatProperty fp = (FloatProperty)f.toProperty("1.1");
         assertEquals("test", fp.getName());
         assertEquals(1.1f, fp.getFloat().floatValue(), 0.0001);
@@ -253,7 +253,7 @@ public class FieldTest {
     @Test
     public void toProperty_Float_InvalidValue() throws Exception {
 
-        Field f = new Field("test", Float.class);
+        CSVField f = new CSVField("test", Float.class);
 
         try {
             f.toProperty("blah");
@@ -267,7 +267,7 @@ public class FieldTest {
     @Test
     public void toProperty_Double() throws Exception {
 
-        Field f = new Field("test", Double.class);
+        CSVField f = new CSVField("test", Double.class);
         DoubleProperty fp = (DoubleProperty)f.toProperty("1.1");
         assertEquals("test", fp.getName());
         assertEquals(1.1d, fp.getDouble().doubleValue(), 0.0001);
@@ -276,7 +276,7 @@ public class FieldTest {
     @Test
     public void toProperty_Double_InvalidValue() throws Exception {
 
-        Field f = new Field("test", Double.class);
+        CSVField f = new CSVField("test", Double.class);
 
         try {
             f.toProperty("blah");
@@ -290,7 +290,7 @@ public class FieldTest {
     @Test
     public void toProperty_Date() throws Exception {
 
-        Field f = new Field("test", Date.class);
+        CSVField f = new CSVField("test", Date.class);
         f.setFormat(new SimpleDateFormat("yyyy"));
         DateProperty dp = (DateProperty)f.toProperty("2016");
         assertEquals("test", dp.getName());
@@ -302,7 +302,7 @@ public class FieldTest {
     @Test
     public void toProperty_Date_InvalidValue() throws Exception {
 
-        Field f = new Field("test", Date.class);
+        CSVField f = new CSVField("test", Date.class);
         f.setFormat(new SimpleDateFormat("yyyy"));
 
         try {
@@ -319,7 +319,7 @@ public class FieldTest {
     @Test
     public void setValue_Null() throws Exception {
 
-        Field field = new Field("test", Integer.class);
+        CSVField field = new CSVField("test", Integer.class);
         field.setValue(null);
         assertNull(field.getValue());
     }
@@ -327,7 +327,7 @@ public class FieldTest {
     @Test
     public void setValue() throws Exception {
 
-        Field field = new Field("test", Integer.class);
+        CSVField field = new CSVField("test", Integer.class);
         field.setValue(1);
         assertEquals(1, field.getValue());
     }
@@ -335,7 +335,7 @@ public class FieldTest {
     @Test
     public void setValue_IllegalType() throws Exception {
 
-        Field field = new Field("test", Integer.class);
+        CSVField field = new CSVField("test", Integer.class);
         try {
             field.setValue("blah");
             fail("should throw exception");

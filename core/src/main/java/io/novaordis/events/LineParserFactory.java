@@ -20,8 +20,8 @@ import io.novaordis.events.api.event.Event;
 import io.novaordis.events.api.parser.ParsingException;
 import io.novaordis.events.core.LineFormat;
 import io.novaordis.events.core.LineParser;
-import io.novaordis.events.csv.CsvLineParser;
-import io.novaordis.events.csv.InvalidFieldException;
+import io.novaordis.events.csv.CSVLineParser;
+import io.novaordis.events.csv.InvalidCSVFieldException;
 import io.novaordis.events.gc.g1.G1LineParser;
 import io.novaordis.events.httpd.CorruptedHttpdFormatStringException;
 import io.novaordis.events.httpd.HttpdLineParser;
@@ -103,9 +103,9 @@ public class LineParserFactory {
         }
 
         try {
-            return new CsvLineParser(lineFormat);
+            return new CSVLineParser(lineFormat);
         }
-        catch(InvalidFieldException ife) {
+        catch(InvalidCSVFieldException ife) {
 
             throw new UserErrorException("invalid CSV line format: " + ife.getMessage());
         }
@@ -114,7 +114,7 @@ public class LineParserFactory {
             // this is fine, the HttpdLineParser does not recognize the format, go to the next one
             //
 
-            log.debug("could not build a CsvLineParser from the line format", e);
+            log.debug("could not build a CSVLineParser from the line format", e);
         }
 
         log.debug(LineParserFactory.class.getSimpleName() + "" +
