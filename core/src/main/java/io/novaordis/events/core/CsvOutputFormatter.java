@@ -59,6 +59,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     // Constants -------------------------------------------------------------------------------------------------------
 
     private static final Logger log = LoggerFactory.getLogger(CsvOutputFormatter.class);
+    
     private static final boolean debug = log.isDebugEnabled();
 
     // MM/dd/yy HH:mm:ss (07/25/16 14:00:00) is the default time format so it works straight away with Excel
@@ -126,6 +127,7 @@ public class CsvOutputFormatter implements OutputStreamConversionLogic {
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private StringBuilder sb;
+
     private volatile boolean closed;
 
     /**
