@@ -20,7 +20,7 @@
         -->
 
         <novaordis.utilities.version>4.7.5</novaordis.utilities.version>
-        <events.api.version>1.1.5-SNAPSHOT-39</events.api.version>
+        <events.api.version>1.1.5-SNAPSHOT-41</events.api.version>
         <novaordis.jboss.cli>1.0.3-SNAPSHOT-4</novaordis.jboss.cli>
         <novaordis.clad.version>3.5</novaordis.clad.version>
 

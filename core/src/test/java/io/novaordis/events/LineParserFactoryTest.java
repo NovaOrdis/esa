@@ -20,7 +20,6 @@ import io.novaordis.events.core.LineFormat;
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.csv.CSVField;
 import io.novaordis.events.csv.CSVFormat;
-import io.novaordis.events.csv.CSVLineParser;
 import io.novaordis.events.httpd.HttpdFormatString;
 import io.novaordis.events.httpd.HttpdFormatStrings;
 import io.novaordis.events.httpd.HttpdLineParser;
@@ -107,8 +106,8 @@ public class LineParserFactoryTest {
     public void getInstance_CsvLineParser() throws Exception {
 
         LineParser parser = LineParserFactory.getInstance("something,");
-        assertTrue(parser instanceof CSVLineParser);
-        CSVLineParser csvLineParser = (CSVLineParser)parser;
+        assertTrue(parser instanceof LineParser);
+        LineParser csvLineParser = (LineParser)parser;
         LineFormat f = csvLineParser.getLineFormat();
         CSVFormat csvFormat = (CSVFormat)f;
         List<CSVField> fields = csvFormat.getFields();
@@ -123,13 +122,17 @@ public class LineParserFactoryTest {
     public void getInstance_CsvLineParser_WeKnowItIsACSVParserButItIsBroken() throws Exception {
 
         try {
+
             LineParserFactory.getInstance("something(blah),");
             fail("should have thrown exception");
         }
         catch(UserErrorException e) {
+
             String msg = e.getMessage();
             log.info(e.getMessage());
-            assertTrue(msg.startsWith("invalid CSV line format:"));
+            assertTrue(msg.contains("invalid"));
+            assertTrue(msg.contains("specification"));
+            assertTrue(msg.contains("blah"));
         }
     }
 

@@ -20,8 +20,9 @@ import io.novaordis.events.api.event.Event;
 import io.novaordis.events.api.parser.ParsingException;
 import io.novaordis.events.core.LineFormat;
 import io.novaordis.events.core.LineParser;
-import io.novaordis.events.csv.CSVLineParser;
-import io.novaordis.events.csv.InvalidCSVFieldException;
+import io.novaordis.events.csv.CSVFormat;
+import io.novaordis.events.csv.CSVFormatException;
+import io.novaordis.events.csv.CSVParser;
 import io.novaordis.events.gc.g1.G1LineParser;
 import io.novaordis.events.httpd.CorruptedHttpdFormatStringException;
 import io.novaordis.events.httpd.HttpdLineParser;
@@ -103,13 +104,15 @@ public class LineParserFactory {
         }
 
         try {
-            return new CSVLineParser(lineFormat);
-        }
-        catch(InvalidCSVFieldException ife) {
 
-            throw new UserErrorException("invalid CSV line format: " + ife.getMessage());
+            return new LineParserWrapperForCSVParser(lineFormat);
+        }
+        catch(CSVFormatException e) {
+
+            throw new UserErrorException(e.getMessage());
         }
         catch(Exception e) {
+
             //
             // this is fine, the HttpdLineParser does not recognize the format, go to the next one
             //
@@ -137,6 +140,53 @@ public class LineParserFactory {
     // Protected -------------------------------------------------------------------------------------------------------
 
     // Private ---------------------------------------------------------------------------------------------------------
+
+    /**
+     * Temporary wrapper around a refactored CSVParser, introduced during the moving out of CSV support. The new
+     * CSVParser is not a LineParser anymore, so it needs an adapter. This class must be removed after core refactoring
+     * and elimination of the deprecated LineParser.
+     */
+    @Deprecated
+    private static class LineParserWrapperForCSVParser implements LineParser {
+
+        private CSVParser delegate;
+
+        LineParserWrapperForCSVParser(String lineFormat) throws CSVFormatException {
+
+            this.delegate = new CSVParser(lineFormat);
+        }
+
+        @Override
+        public Event parseLine(long lineNumber, String line) throws ParsingException {
+
+            return delegate.parse(lineNumber, line);
+        }
+
+        @Override
+        public LineFormat getLineFormat() {
+
+            try {
+
+                return new LineFormatWrapper(delegate.getFormat());
+            }
+            catch(Exception e) {
+
+                throw new IllegalArgumentException(e);
+            }
+        }
+    }
+
+    @Deprecated
+    private static class LineFormatWrapper extends CSVFormat implements LineFormat {
+
+        CSVFormat delegate;
+
+        LineFormatWrapper(CSVFormat csvFormat) throws CSVFormatException {
+
+            super(csvFormat.toString());
+            this.delegate = csvFormat;
+        }
+    }
 
     // Inner classes ---------------------------------------------------------------------------------------------------
 
