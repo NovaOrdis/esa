@@ -34,24 +34,32 @@ public class CsvFormat implements LineFormat {
     // Attributes ------------------------------------------------------------------------------------------------------
 
     private int unnamedFieldCounter = 0;
+
     private List<Field> fields;
 
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
+     * @param formatSpecification - a comma-separated field specifications.
+     *
+     * @see Field
+     *
      * @throws IllegalArgumentException if the given format specification cannot be used to build a CSV format.
+     *
      * @throws InvalidFieldException we determined that the format specification <b>can</b> be used to build a CSV
      * format but we find an incorrectly specified field (example: invalid type, etc.)
      */
     public CsvFormat(String formatSpecification) throws IllegalArgumentException, InvalidFieldException {
 
         if (formatSpecification == null) {
+
             throw new IllegalArgumentException("null format specification");
         }
 
         int lastComma = formatSpecification.lastIndexOf(',');
 
         if (lastComma == -1) {
+
             throw new IllegalArgumentException(
                     "\"" + formatSpecification + "\" cannot be a CSV format specification, it does not contain commas");
         }
@@ -63,6 +71,7 @@ public class CsvFormat implements LineFormat {
             String fieldSpec = formatSpecification.substring(i, j).trim();
 
             if (i >= lastComma && fieldSpec.length() == 0 && !fields.isEmpty()) {
+
                 // does not count
                 break;
             }
@@ -101,7 +110,6 @@ public class CsvFormat implements LineFormat {
             }
         }
         return s;
-
     }
 
     // Package protected -----------------------------------------------------------------------------------------------

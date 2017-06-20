@@ -63,9 +63,14 @@ public class CsvLineParser implements LineParser {
     // Constructors ----------------------------------------------------------------------------------------------------
 
     /**
+     * @param formatSpecification: a CsvFormat specification.
+     *
      * @throws IllegalArgumentException if the given format specification cannot be used to build a CSV format.
+     *
      * @throws InvalidFieldException we determined that the format specification <b>can</b> be used to build a CSV
      * format but we find an incorrectly specified field (example: invalid type, etc.)
+     *
+     * @see CsvFormat
      */
     public CsvLineParser(String formatSpecification) throws IllegalArgumentException, InvalidFieldException {
 
