@@ -22,6 +22,7 @@ import io.novaordis.events.api.metric.os.mdefs.CpuUserTime;
 import io.novaordis.events.core.event.MockEvent;
 import io.novaordis.events.core.event.MockProperty;
 import io.novaordis.events.core.event.MockTimedEvent;
+import io.novaordis.events.csv.CSVFormat;
 import io.novaordis.utilities.address.LocalOSAddress;
 import io.novaordis.utilities.time.Timestamp;
 import io.novaordis.utilities.time.TimestampImpl;
@@ -90,7 +91,7 @@ public class ToCSVTest extends OutputStreamConversionLogicTest {
         // make sure no output format is configured, the default formatter provided by the sub-class may come with
         // an output format on its own
         //
-        c.getCSVFormatter().setOutputFormat(null);
+        c.getCSVFormatter().setFormat(null);
 
         MockEvent me = new MockEvent();
 
@@ -118,7 +119,7 @@ public class ToCSVTest extends OutputStreamConversionLogicTest {
         // make sure no output format is configured, the default formatter provided by the sub-class may come with
         // an output format on its own
         //
-        c.getCSVFormatter().setOutputFormat(null);
+        c.getCSVFormatter().setFormat(null);
 
         Date d = new SimpleDateFormat("MM/yy/dd HH:mm:ss").parse("01/16/01 01:01:01");
 
@@ -145,7 +146,7 @@ public class ToCSVTest extends OutputStreamConversionLogicTest {
 
         assertFalse(c.getCSVFormatter().isHeaderOn());
 
-        c.getCSVFormatter().setOutputFormat("B, no-such-property, C");
+        c.getCSVFormatter().setFormat(new CSVFormat("B, no-such-property, C"));
 
         MockEvent me = new MockEvent();
 
@@ -169,7 +170,7 @@ public class ToCSVTest extends OutputStreamConversionLogicTest {
 
         assertFalse(c.getCSVFormatter().isHeaderOn());
 
-        c.getCSVFormatter().setOutputFormat("timestamp");
+        c.getCSVFormatter().setFormat(new CSVFormat("timestamp"));
 
         DateFormat sourceDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm:ss Z");
         Timestamp ts = new TimestampImpl("07/01/16 10:00:00 +1100", sourceDateFormat);
@@ -196,26 +197,30 @@ public class ToCSVTest extends OutputStreamConversionLogicTest {
     public void setOutputFormat_Null() throws Exception {
 
         ToCSV o = getConversionLogicToTest();
-        o.getCSVFormatter().setOutputFormat(null);
-        assertNull(o.getCSVFormatter().getOutputFormat());
+        o.getCSVFormatter().setFormat(null);
+        assertNull(o.getCSVFormatter().getFormat());
     }
 
     @Test
     public void setOutputFormat_OneField() throws Exception {
 
         ToCSV o = getConversionLogicToTest();
-        o.getCSVFormatter().setOutputFormat("a");
-        String s = o.getCSVFormatter().getOutputFormat();
-        assertEquals("a", s);
+        CSVFormat format = new CSVFormat("a");
+        o.getCSVFormatter().setFormat(format);
+        CSVFormat f = o.getCSVFormatter().getFormat();
+        assertEquals(1, f.getFields().size());
+        assertEquals("a", f.getFields().get(0).getName());
     }
 
     @Test
     public void setOutputFormat_TwoFields() throws Exception {
 
         ToCSV o = getConversionLogicToTest();
-        o.getCSVFormatter().setOutputFormat("a,b");
-        String s = o.getCSVFormatter().getOutputFormat();
-        assertEquals("a, b", s);
+        o.getCSVFormatter().setFormat(new CSVFormat("a,b"));
+        CSVFormat f = o.getCSVFormatter().getFormat();
+        assertEquals(2, f.getFields().size());
+        assertEquals("a", f.getFields().get(0).getName());
+        assertEquals("b", f.getFields().get(1).getName());
     }
 
     // header line -----------------------------------------------------------------------------------------------------
@@ -228,7 +233,7 @@ public class ToCSVTest extends OutputStreamConversionLogicTest {
         ToCSV c = getConversionLogicToTest();
         assertFalse(c.getCSVFormatter().isHeaderOn());
 
-        assertNull(c.getCSVFormatter().getOutputFormat());
+        assertNull(c.getCSVFormatter().getFormat());
 
         Date eventTime = dateFormat.parse("01/16/01 01:01:01");
         MockTimedEvent me = new MockTimedEvent(eventTime.getTime());

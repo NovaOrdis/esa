@@ -67,12 +67,6 @@ public class LineParserFactoryTest {
     }
 
     @Test
-    public void getInstance_NoKnownParser() throws Exception {
-
-        assertNull(LineParserFactory.getInstance(")7t97ty283gy289y3"));
-    }
-
-    @Test
     public void getInstance_HttpdLineParser() throws Exception {
 
         LineParser parser = LineParserFactory.getInstance("[%t] %h");
@@ -115,7 +109,6 @@ public class LineParserFactoryTest {
         CSVField field = fields.get(0);
         assertEquals("something", field.getName());
         assertEquals(String.class, field.getType());
-        assertNull(field.getValue());
     }
 
     @Test

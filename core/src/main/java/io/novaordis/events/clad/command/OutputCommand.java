@@ -25,6 +25,7 @@ import io.novaordis.clad.option.StringOption;
 import io.novaordis.events.clad.EventsApplicationRuntime;
 import io.novaordis.events.core.ToCSV;
 import io.novaordis.events.core.OutputStreamTerminator;
+import io.novaordis.events.csv.CSVFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,7 +82,7 @@ public class OutputCommand extends CommandBase {
         if (outputFormatOption != null) {
 
             ToCSV toCSV = (ToCSV)terminator.getConversionLogic();
-            toCSV.getCSVFormatter().setOutputFormat(outputFormatOption.getString());
+            toCSV.getCSVFormatter().setFormat(new CSVFormat(outputFormatOption.getString()));
             toCSV.getCSVFormatter().setIgnoreFaults(bo != null && bo.getValue());
         }
 
