@@ -23,7 +23,7 @@ import io.novaordis.clad.option.BooleanOption;
 import io.novaordis.clad.option.Option;
 import io.novaordis.clad.option.StringOption;
 import io.novaordis.events.clad.EventsApplicationRuntime;
-import io.novaordis.events.core.CsvOutputFormatter;
+import io.novaordis.events.core.ToCSV;
 import io.novaordis.events.core.OutputStreamTerminator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,9 +79,10 @@ public class OutputCommand extends CommandBase {
         BooleanOption bo = (BooleanOption)configuration.getGlobalOption(EventsApplicationRuntime.IGNORE_FAULTS_OPTION);
 
         if (outputFormatOption != null) {
-            CsvOutputFormatter csvOutputFormatter = (CsvOutputFormatter)terminator.getConversionLogic();
-            csvOutputFormatter.setOutputFormat(outputFormatOption.getString());
-            csvOutputFormatter.setIgnoreFaults(bo != null && bo.getValue());
+
+            ToCSV toCSV = (ToCSV)terminator.getConversionLogic();
+            toCSV.getCSVFormatter().setOutputFormat(outputFormatOption.getString());
+            toCSV.getCSVFormatter().setIgnoreFaults(bo != null && bo.getValue());
         }
 
         runtime.start();

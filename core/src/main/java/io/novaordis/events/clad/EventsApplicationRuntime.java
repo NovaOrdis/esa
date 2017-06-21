@@ -29,7 +29,7 @@ import io.novaordis.events.core.EventProcessor;
 import io.novaordis.events.core.InputStreamInitiator;
 import io.novaordis.events.core.LineParser;
 import io.novaordis.events.core.LineStreamParser;
-import io.novaordis.events.core.CsvOutputFormatter;
+import io.novaordis.events.core.ToCSV;
 import io.novaordis.events.core.OutputStreamTerminator;
 import io.novaordis.events.core.ProcessingLogic;
 import io.novaordis.events.core.event.ByteToLineEventConverter;
@@ -76,7 +76,7 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
     //
     // Configure the application to simply drop parsing errors instead of sending them to output
     //
-    // @see CsvOutputFormatter#isIgnoreFaults()
+    // @see ToCSV#isIgnoreFaults()
     //
     public static final BooleanOption IGNORE_FAULTS_OPTION = new BooleanOption("ignore-faults");
 
@@ -183,7 +183,7 @@ public class EventsApplicationRuntime extends ApplicationRuntimeBase {
         terminator = new OutputStreamTerminator(
                 "Output Writer",
                 null,
-                new CsvOutputFormatter(),
+                new ToCSV(),
                 System.out);
 
         endOfStream = new CountDownLatch(1);

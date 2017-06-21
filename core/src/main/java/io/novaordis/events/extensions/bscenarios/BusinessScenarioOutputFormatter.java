@@ -20,7 +20,7 @@ import io.novaordis.events.api.event.Event;
 import io.novaordis.events.api.event.ListProperty;
 import io.novaordis.events.api.event.Property;
 import io.novaordis.events.api.event.TimedEvent;
-import io.novaordis.events.core.CsvOutputFormatter;
+import io.novaordis.events.core.ToCSV;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -32,7 +32,7 @@ import java.util.List;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 5/18/16
  */
-public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
+public class BusinessScenarioOutputFormatter extends ToCSV {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
@@ -77,7 +77,6 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
 
     // Protected -------------------------------------------------------------------------------------------------------
 
-    @Override
     protected String toString(Event event) {
 
         if (!(event instanceof BusinessScenarioEvent)) {
@@ -143,7 +142,6 @@ public class BusinessScenarioOutputFormatter extends CsvOutputFormatter {
         return s;
     }
 
-    @Override
     protected String getHeader(Event event) {
 
         if (!(event instanceof BusinessScenarioEvent)) {

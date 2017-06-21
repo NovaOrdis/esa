@@ -172,7 +172,7 @@ public class BusinessScenarioCommand extends CommandBase {
             //
             // generate headers
             //
-            bsof.setHeaderOn();
+            bsof.getCSVFormatter().setHeaderOn();
 
             terminator.setConversionLogic(bsof);
 

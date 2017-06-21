@@ -18,12 +18,10 @@ package io.novaordis.events.core;
 
 import io.novaordis.events.api.event.Event;
 import io.novaordis.events.api.event.FaultEvent;
-import io.novaordis.events.api.metric.os.LocalOS;
 import io.novaordis.events.api.metric.os.mdefs.CpuUserTime;
 import io.novaordis.events.core.event.MockEvent;
 import io.novaordis.events.core.event.MockProperty;
 import io.novaordis.events.core.event.MockTimedEvent;
-import io.novaordis.events.httpd.HttpEvent;
 import io.novaordis.utilities.address.LocalOSAddress;
 import io.novaordis.utilities.time.Timestamp;
 import io.novaordis.utilities.time.TimestampImpl;
@@ -45,11 +43,11 @@ import static org.junit.Assert.assertTrue;
  * @author Ovidiu Feodorov <ovidiu@novaordis.com>
  * @since 2/2/16
  */
-public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
+public class ToCSVTest extends OutputStreamConversionLogicTest {
 
     // Constants -------------------------------------------------------------------------------------------------------
 
-    private static final Logger log = LoggerFactory.getLogger(CsvOutputFormatterTest.class);
+    private static final Logger log = LoggerFactory.getLogger(ToCSVTest.class);
 
     // Static ----------------------------------------------------------------------------------------------------------
 
@@ -64,9 +62,9 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
     @Test
     public void process_WeDumpTheFaultOnFaultEvent() throws Exception {
 
-        CsvOutputFormatter c = getConversionLogicToTest();
+        ToCSV c = getConversionLogicToTest();
 
-        assertFalse(c.isHeaderOn());
+        assertFalse(c.getCSVFormatter().isHeaderOn());
 
         Event event = new FaultEvent("test message", new RuntimeException("SYNTHETIC"));
         assertTrue(c.process(event));
@@ -84,15 +82,15 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
     @Test
     public void process_RegularUntimedEvent_NoConfiguredOutputFormat() throws Exception {
 
-        CsvOutputFormatter c = getConversionLogicToTest();
+        ToCSV c = getConversionLogicToTest();
 
-        assertFalse(c.isHeaderOn());
+        assertFalse(c.getCSVFormatter().isHeaderOn());
 
         //
         // make sure no output format is configured, the default formatter provided by the sub-class may come with
         // an output format on its own
         //
-        c.setOutputFormat(null);
+        c.getCSVFormatter().setOutputFormat(null);
 
         MockEvent me = new MockEvent();
 
@@ -112,15 +110,15 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
     @Test
     public void process_RegularTimedEvent_NoConfiguredOutputFormat() throws Exception {
 
-        CsvOutputFormatter c = getConversionLogicToTest();
+        ToCSV c = getConversionLogicToTest();
 
-        assertFalse(c.isHeaderOn());
+        assertFalse(c.getCSVFormatter().isHeaderOn());
 
         //
         // make sure no output format is configured, the default formatter provided by the sub-class may come with
         // an output format on its own
         //
-        c.setOutputFormat(null);
+        c.getCSVFormatter().setOutputFormat(null);
 
         Date d = new SimpleDateFormat("MM/yy/dd HH:mm:ss").parse("01/16/01 01:01:01");
 
@@ -136,18 +134,18 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
         byte[] content = c.getBytes();
         String s = new String(content);
 
-        String expected = CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(d) + ", C value, B value, A value\n";
+        String expected = ToCSV.DEFAULT_TIMESTAMP_FORMAT.format(d) + ", C value, B value, A value\n";
         assertEquals(expected, s);
     }
 
     @Test
     public void process_RegularUntimedEvent_WithConfiguredOutputFormat() throws Exception {
 
-        CsvOutputFormatter c = getConversionLogicToTest();
+        ToCSV c = getConversionLogicToTest();
 
-        assertFalse(c.isHeaderOn());
+        assertFalse(c.getCSVFormatter().isHeaderOn());
 
-        c.setOutputFormat("B, no-such-property, C");
+        c.getCSVFormatter().setOutputFormat("B, no-such-property, C");
 
         MockEvent me = new MockEvent();
 
@@ -164,41 +162,14 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
         assertEquals("B value, , C value\n", s);
     }
 
-    // @Test
-    public void process_RegularTimedEvent_WithConfiguredOutputFormat() throws Exception {
-
-        CsvOutputFormatter c = getConversionLogicToTest();
-
-        assertFalse(c.isHeaderOn());
-
-        c.setOutputFormat("B, no-such-property, timestamp, C");
-
-        Date d = new SimpleDateFormat("MM/yy/dd HH:mm:ss").parse("01/16/01 01:01:01");
-
-        MockTimedEvent me = new MockTimedEvent(d.getTime());
-
-        // priority inverse to the name order
-        me.setProperty(new MockProperty("A", "A value", 3));
-        me.setProperty(new MockProperty("B", "B value", 2));
-        me.setProperty(new MockProperty("C", "C value", 1));
-
-        assertTrue(c.process(me));
-
-        byte[] content = c.getBytes();
-        String s = new String(content);
-
-        String expected = "B value, , " + CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(d) + ", C value\n";
-        assertEquals(expected, s);
-    }
-
     @Test
     public void process_TimestampHasTimezoneOffsetInfo() throws Exception {
 
-        CsvOutputFormatter c = getConversionLogicToTest();
+        ToCSV c = getConversionLogicToTest();
 
-        assertFalse(c.isHeaderOn());
+        assertFalse(c.getCSVFormatter().isHeaderOn());
 
-        c.setOutputFormat("timestamp");
+        c.getCSVFormatter().setOutputFormat("timestamp");
 
         DateFormat sourceDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm:ss Z");
         Timestamp ts = new TimestampImpl("07/01/16 10:00:00 +1100", sourceDateFormat);
@@ -219,167 +190,45 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
         assertEquals("07/01/16 10:00:00\n", s);
     }
 
-    // toString(Event) -------------------------------------------------------------------------------------------------
-
-    @Test
-    public void toStringEvent_MapProperty() throws Exception {
-
-        CsvOutputFormatter c = getConversionLogicToTest();
-        assertFalse(c.isHeaderOn());
-
-        c.setOutputFormat("request-headers.TEST-HEADER");
-
-        HttpEvent e = new HttpEvent(new TimestampImpl(1L));
-        e.setRequestHeader("TEST-HEADER", "TEST-VALUE");
-
-        String result = c.toString(e);
-        assertEquals("TEST-VALUE", result);
-    }
-
-    @Test
-    public void toStringEvent_TimestampHasTimezoneOffsetInfo() throws Exception {
-
-        CsvOutputFormatter c = getConversionLogicToTest();
-        assertFalse(c.isHeaderOn());
-
-        c.setOutputFormat("timestamp");
-
-        DateFormat sourceDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss Z");
-        Timestamp ts = new TimestampImpl("01/07/16 10:00:00 +1100", sourceDateFormat);
-        assertEquals("+1100", ts.getTimeOffset().toRFC822String());
-
-        int ourOffset =
-                (TimeZone.getDefault().getDSTSavings() + TimeZone.getDefault().getRawOffset()) / (3600 * 1000);
-        assertTrue(ourOffset != 11);
-
-        MockTimedEvent mte = new MockTimedEvent(ts);
-
-        String result = c.toString(mte);
-
-        assertEquals("07/01/16 10:00:00", result);
-    }
-
-    @Test
-    public void toStringEvent_TimestampDoesNOTHaveTimezoneOffsetInfo() throws Exception {
-
-        CsvOutputFormatter c = getConversionLogicToTest();
-        assertFalse(c.isHeaderOn());
-
-        c.setOutputFormat("timestamp");
-
-        DateFormat sourceDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
-        Timestamp ts = new TimestampImpl("01/07/16 10:00:00", sourceDateFormat);
-
-        MockTimedEvent mte = new MockTimedEvent(ts);
-
-        String result = c.toString(mte);
-
-        assertEquals("07/01/16 10:00:00", result);
-    }
-
     // setOutputFormat() -----------------------------------------------------------------------------------------------
 
     @Test
     public void setOutputFormat_Null() throws Exception {
 
-        CsvOutputFormatter o = getConversionLogicToTest();
-        o.setOutputFormat(null);
-        assertNull(o.getOutputFormat());
+        ToCSV o = getConversionLogicToTest();
+        o.getCSVFormatter().setOutputFormat(null);
+        assertNull(o.getCSVFormatter().getOutputFormat());
     }
 
     @Test
     public void setOutputFormat_OneField() throws Exception {
 
-        CsvOutputFormatter o = getConversionLogicToTest();
-
-        o.setOutputFormat("a");
-
-        String s = o.getOutputFormat();
+        ToCSV o = getConversionLogicToTest();
+        o.getCSVFormatter().setOutputFormat("a");
+        String s = o.getCSVFormatter().getOutputFormat();
         assertEquals("a", s);
     }
 
     @Test
     public void setOutputFormat_TwoFields() throws Exception {
 
-        CsvOutputFormatter o = getConversionLogicToTest();
-
-        o.setOutputFormat("a,b");
-
-        String s = o.getOutputFormat();
+        ToCSV o = getConversionLogicToTest();
+        o.getCSVFormatter().setOutputFormat("a,b");
+        String s = o.getCSVFormatter().getOutputFormat();
         assertEquals("a, b", s);
     }
 
     // header line -----------------------------------------------------------------------------------------------------
-
-    // @Test
-    public void outputHeader_OutputFormatSet() throws Exception {
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/yy/dd HH:mm:ss");
-
-        CsvOutputFormatter c = getConversionLogicToTest();
-        assertFalse(c.isHeaderOn());
-
-        c.setOutputFormat("timestamp, field-1");
-
-        Date eventTime = dateFormat.parse("01/16/01 01:01:01");
-        MockTimedEvent me = new MockTimedEvent(eventTime.getTime());
-        me.setProperty(new MockProperty("field-1", "XXX"));
-
-        assertTrue(c.process(me));
-
-        String output = new String(c.getBytes());
-
-        String expected = CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", XXX\n";
-        assertEquals(expected, output);
-
-        //
-        // turn on header generation
-        //
-
-        c.setHeaderOn();
-        assertTrue(c.isHeaderOn());
-
-        eventTime = dateFormat.parse("01/16/01 01:01:02");
-        me = new MockTimedEvent(eventTime.getTime());
-        me.setProperty(new MockProperty("field-1", "YYY"));
-
-        assertTrue(c.process(me));
-
-        assertFalse(c.isHeaderOn());
-
-        output = new String(c.getBytes());
-
-        expected =
-                "# timestamp, field-1\n" +
-                        CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", YYY\n";
-
-        assertEquals(expected, output);
-
-        //
-        // make sure the header generation turns off automatically
-        //
-
-        eventTime = dateFormat.parse("01/16/01 01:01:03");
-        me = new MockTimedEvent(eventTime.getTime());
-        me.setProperty(new MockProperty("field-1", "ZZZ"));
-
-        assertTrue(c.process(me));
-
-        output = new String(c.getBytes());
-
-        expected = CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", ZZZ\n";
-        assertEquals(expected, output);
-    }
 
     @Test
     public void outputHeader_OutputFormatNotSet() throws Exception {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM/yy/dd HH:mm:ss");
 
-        CsvOutputFormatter c = getConversionLogicToTest();
-        assertFalse(c.isHeaderOn());
+        ToCSV c = getConversionLogicToTest();
+        assertFalse(c.getCSVFormatter().isHeaderOn());
 
-        assertNull(c.getOutputFormat());
+        assertNull(c.getCSVFormatter().getOutputFormat());
 
         Date eventTime = dateFormat.parse("01/16/01 01:01:01");
         MockTimedEvent me = new MockTimedEvent(eventTime.getTime());
@@ -389,15 +238,15 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
 
         String output = new String(c.getBytes());
 
-        String expected = CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", XXX\n";
+        String expected = ToCSV.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", XXX\n";
         assertEquals(expected, output);
 
         //
         // turn on header generation
         //
 
-        c.setHeaderOn();
-        assertTrue(c.isHeaderOn());
+        c.getCSVFormatter().setHeaderOn();
+        assertTrue(c.getCSVFormatter().isHeaderOn());
 
         eventTime = dateFormat.parse("01/16/01 01:01:02");
         me = new MockTimedEvent(eventTime.getTime());
@@ -405,13 +254,13 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
 
         assertTrue(c.process(me));
 
-        assertFalse(c.isHeaderOn());
+        assertFalse(c.getCSVFormatter().isHeaderOn());
 
         output = new String(c.getBytes());
 
         expected =
                 "# timestamp, field-1\n" +
-                        CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", YYY\n";
+                        ToCSV.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", YYY\n";
 
         assertEquals(expected, output);
 
@@ -427,7 +276,7 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
 
         output = new String(c.getBytes());
 
-        expected = CsvOutputFormatter.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", ZZZ\n";
+        expected = ToCSV.DEFAULT_TIMESTAMP_FORMAT.format(eventTime) + ", ZZZ\n";
         assertEquals(expected, output);
     }
 
@@ -436,7 +285,7 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
     @Test
     public void outputFormatToHeader() throws Exception {
 
-        String header = CsvOutputFormatter.outputFormatToHeader("a, b, c");
+        String header = ToCSV.outputFormatToHeader("a, b, c");
 
         log.info(header);
 
@@ -446,7 +295,7 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
     @Test
     public void outputFormatToHeader_KnownMetric() throws Exception {
 
-        String header = CsvOutputFormatter.outputFormatToHeader("CpuUserTime");
+        String header = ToCSV.outputFormatToHeader("CpuUserTime");
 
         String expected = "# " + new CpuUserTime(new LocalOSAddress()).getLabel();
 
@@ -461,9 +310,9 @@ public class CsvOutputFormatterTest extends OutputStreamConversionLogicTest {
     // Protected -------------------------------------------------------------------------------------------------------
 
     @Override
-    protected CsvOutputFormatter getConversionLogicToTest() throws Exception {
+    protected ToCSV getConversionLogicToTest() throws Exception {
 
-        return new CsvOutputFormatter();
+        return new ToCSV();
     }
 
 
