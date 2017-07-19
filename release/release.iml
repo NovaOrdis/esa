@@ -19,8 +19,8 @@
     <orderEntry type="library" name="Maven: io.novaordis.utilities:novaordis-utilities:4.7.6" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:4.11" level="project" />
     <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
-    <orderEntry type="library" name="Maven: io.novaordis.events.api:events-api:1.1.7" level="project" />
+    <orderEntry type="library" name="Maven: io.novaordis.events.api:events-api:1.1.9-SNAPSHOT-1" level="project" />
     <orderEntry type="library" name="Maven: io.novaordis.jboss:novaordis-jboss:1.0.7" level="project" />
-    <orderEntry type="library" name="Maven: io.novaordis.jmx:novaordis-jmx:1.0.1" level="project" />
+    <orderEntry type="library" name="Maven: io.novaordis.jmx:novaordis-jmx:1.2.1" level="project" />
   </component>
 </module>
