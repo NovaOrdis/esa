@@ -19,7 +19,7 @@
             Dependency Versions
         -->
 
-        <events.api.version>1.2.0-SNAPSHOT-4</events.api.version>
+        <events.api.version>1.2.0-SNAPSHOT-5</events.api.version>
         <clad.version>3.5.1</clad.version>
 
         <slf4j-version>1.7.12</slf4j-version>
