@@ -6,7 +6,7 @@
     <artifactId>events-core-deprecated</artifactId>
     <packaging>jar</packaging>
 
-    <version>1.0.3</version>
+    <version>1.0.4-SNAPSHOT-1</version>
 
     <properties>
 
