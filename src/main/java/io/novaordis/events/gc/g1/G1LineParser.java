@@ -16,7 +16,7 @@
 
 package io.novaordis.events.gc.g1;
 
-import io.novaordis.events.api.parser.ParsingException;
+import io.novaordis.utilities.parsing.ParsingException;
 import io.novaordis.events.api.event.Event;
 import io.novaordis.events.core.LineFormat;
 import io.novaordis.events.core.LineParser;

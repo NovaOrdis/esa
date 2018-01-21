@@ -16,7 +16,7 @@
 
 package io.novaordis.events.httpd.microparsers;
 
-import io.novaordis.events.api.parser.ParsingException;
+import io.novaordis.utilities.parsing.ParsingException;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

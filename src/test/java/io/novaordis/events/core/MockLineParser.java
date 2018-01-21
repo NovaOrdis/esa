@@ -17,7 +17,7 @@
 package io.novaordis.events.core;
 
 import io.novaordis.events.api.event.Event;
-import io.novaordis.events.api.parser.ParsingException;
+import io.novaordis.utilities.parsing.ParsingException;
 import io.novaordis.events.core.event.MockEvent;
 
 /**

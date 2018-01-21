@@ -16,15 +16,16 @@
 
 package io.novaordis.events.httpd;
 
-import io.novaordis.events.api.event.Property;
-import io.novaordis.events.api.parser.ParsingException;
-import org.slf4j.Logger;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.slf4j.Logger;
+
+import io.novaordis.events.api.event.Property;
+import io.novaordis.utilities.parsing.ParsingException;
 
 /**
  * An individual httpd log format string, as specified by

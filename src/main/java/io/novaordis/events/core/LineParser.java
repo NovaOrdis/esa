@@ -17,7 +17,7 @@
 package io.novaordis.events.core;
 
 import io.novaordis.events.api.event.Event;
-import io.novaordis.events.api.parser.ParsingException;
+import io.novaordis.utilities.parsing.ParsingException;
 
 /**
  * A line parser gets a line (as String) and turns it into an Event or a null (which mean that the parser willingly

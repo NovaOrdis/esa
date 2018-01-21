@@ -16,7 +16,7 @@
 
 package io.novaordis.events.httpd;
 
-import io.novaordis.events.api.parser.ParsingException;
+import io.novaordis.utilities.parsing.ParsingException;
 import io.novaordis.events.api.event.IntegerProperty;
 import io.novaordis.events.api.event.LongProperty;
 import io.novaordis.events.api.event.MapProperty;
